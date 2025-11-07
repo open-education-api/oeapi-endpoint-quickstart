@@ -1,0 +1,58 @@
+{
+    "organizationId": "333e4567-e89b-12d3-a456-123514174eee",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "OEAPI Test Organization"
+    },
+    "organizationType": "root",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "OEAPI Test Organization"
+        }
+    ],
+    "shortName": "OEAPI-Test",
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "This a Root Organization for Testing"
+        }
+    ],
+    "addresses": [
+        {
+            "addressType": "postal",
+            "street": "Campus XXXXX",
+            "streetNumber": "XXX",
+            "additional": [
+                {
+                    "language": "en-GB",
+                    "value": "From Central Station take bus..."
+                }
+            ],
+            "postalCode": "31006",
+            "city": "Amsterdam",
+            "countryCode": "NL",
+            "geolocation": {
+                "latitude": 52.366667,
+                "longitude": 4.883333
+            },
+            "ext": {}
+        }
+    ],
+    "link": "https://openonderwijsapi.nl/#/",
+    "logo": "https://openonderwijsapi.nl/_media/OpenEducationApi_Logo.png",
+    "otherCodes": [
+        {
+            "codeType": "otherType",
+            "code": "This other code for this organization"
+        }
+    ],
+    "consumers": [
+        {
+            "consumerKey": "x-test-consumer",
+            "additional": "custom",
+            "attributes": "here"
+        }
+    ],
+    "ext": {}
+}

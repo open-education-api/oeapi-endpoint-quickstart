@@ -1,0 +1,3 @@
+type: string
+enum: ["academic year","semester","trimester","quarter","testing period","period"]
+

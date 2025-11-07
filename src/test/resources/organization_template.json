@@ -1,0 +1,58 @@
+{
+    "organizationId": "--ORG_ID_TOBEINFORMED--",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--ORG_CODE_TOBEINFORMED--"
+    },
+    "organizationType": "department",
+    "name": [
+        {
+            "language": "es-ES",
+            "value": "Organization [--ORG_CODE_TOBEINFORMED--]"
+        }
+    ],
+    "shortName": "UPNA",
+    "description": [
+        {
+            "language": "es-ES",
+            "value": "UPNA"
+        }
+    ],
+    "addresses": [
+        {
+            "addressType": "postal",
+            "street": "Campus Arrosadia",
+            "streetNumber": "s/n",
+            "additional": [
+                {
+                    "language": "es-ES",
+                    "value": "Nafarroako..."
+                }
+            ],
+            "postalCode": "31006",
+            "city": "Pamplona",
+            "countryCode": "ES",
+            "geolocation": {
+                "latitude": 52.089123,
+                "longitude": 5.113337
+            },
+            "ext": {}
+        }
+    ],
+    "link": "https://www.unavarra.es",
+    "logo": "https://www.surf.nl/themes/surf/logo.svg",
+    "otherCodes": [
+        {
+            "codeType": "otherType",
+            "code": "Otro"
+        }
+    ],
+    "consumers": [
+        {
+            "consumerKey": "x-test-consumer",
+            "additional": "custom",
+            "attributes": "here"
+        }
+    ],
+    "ext": {}
+}

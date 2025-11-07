@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OEAPI Backup / JSON Viewer (Experimental)</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/init.js"></script>
+    <script src="js/oeapi.js"></script>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css' />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.5.0/css/all.min.css' />
+    <style>
+      .navbar .nav-link#logoutLink,
+      .navbar .nav-link#changePasswordLink {
+        font-weight: bold;
+        color: #fff !important;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        z-index: 1000;
+        display: none;
+        min-width: 100rem;
+        padding: .5rem 0;
+        margin: 0 0 0 -3rem;
+        font-size: 1rem;
+        color: #212529;
+        text-align: left;
+        list-style: none;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid rgba(0, 0, 0, .15);
+        border-radius: .25rem;
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+
+      label {
+        display: block;
+        margin-top: 1rem;
+        font-weight: 600;
+      }
+
+      input,
+      button {
+        padding: 0.4rem 0.6rem;
+        font-size: 1rem;
+        margin-top: 0.3rem;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      pre {
+        background: #fff;
+        padding: 1rem;
+        border-radius: 6px;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+        overflow-x: auto;
+      }
+
+      .endpoint-block {
+        margin-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-light p-4">
+	<!-- Navbar -->
+	<nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+		<!--<nav class="navbar navbar-expand-lg navbar-dark bg-primary">-->
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">OEAPI Tiny Dashboard (Beta)</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarContent">
+				<!--<ul class="navbar-nav ms-auto"> -->
+				<ul class="navbar-nav ms-auto d-flex flex-row">
+					<li class="nav-item">
+						<a class="nav-link active" href="oeapi-td.html">OEAPI Overview</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="courseForm.html" id="addCourse">Add a course</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="catalog.html">My OEAPI as Course Catalog</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" href="backup.html">Backup</a>
+					</li>
+
+					<li class="nav-item dropdown" id="avatar">
+						<a data-mdb-dropdown-init class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center" href="#" id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+								👤 User
+							</a>
+						<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink" id="profileMenu">
+							<li>
+								<a class="dropdown-item" href="#" id="change-password">Change Password</a>
+							</li>
+							<li>
+								<a class="dropdown-item" href="./register.html" id="administration">Administration</a>
+							</li>
+							<li>
+								<a class="dropdown-item" href="#" id="logoutLink">Logout</a>
+							</li>
+						</ul>
+					</li>
+
+
+					<li class="nav-item">
+						<a class="nav-link text-light" href="./login.html" id="loginLink">
+								Login
+							</a>
+					</li>
+
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+
+    <div class="container">
+      <h1 class="mb-4 mt-5">OEAPI Backup / JSON Viewer (Experimental)</h1>
+      <!-- University Selector -->
+      <div class="mb-4">
+        <p>
+          <strong>Endpoint Security: &nbsp;</strong>
+          <span id="epSecurity">Unknown</span>
+        </p>
+      </div>
+      <label>Base URL (no trailing slash)</label>
+      <input id="baseUrl" value="http://localhost:57075" />
+      <label>Bearer Token (optional)</label>
+      <input id="token" type="text" placeholder="JWT or static token if required" />
+      <br>
+      <br>
+      <button id="fetchBtn">Fetch Data</button>
+      <div id="results"></div>
+    </div>
+    <script>
+	
+      const endpoints = ["organizations", "programs", "courses", "offerings", "persons"];
+    
+	  document.getElementById('fetchBtn').addEventListener('click', async () => {
+	  
+        const baseUrl = document.getElementById('baseUrl').value.trim();
+        const token = document.getElementById('token').value.trim();
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+        if (!baseUrl) {
+          alert("Please enter the base OEAPI URL");
+          return;
+        }
+        for (const endpoint of endpoints) {
+          const block = document.createElement('div');
+          block.className = 'endpoint-block';
+          const header = document.createElement('h3');
+          header.textContent = endpoint;
+          block.appendChild(header);
+          const pre = document.createElement('pre');
+          pre.textContent = 'Loading...';
+          block.appendChild(pre);
+          resultsDiv.appendChild(block);
+          try {
+            const res = await fetch(baseUrl+"/"+endpoint, {
+              headers: {
+                'Accept': 'application/json',
+                ...(token && {
+                  'Authorization': `Bearer ${token}`
+                })
+              }
+            });
+            if (!res.ok) {
+              pre.textContent = "Error "+res.status+": "+res.statusText;
+              pre.classList.add('error');
+              continue;
+            }
+            const data = await res.json();
+            pre.textContent = JSON.stringify(data, null, 2);
+            // Add download button
+            const btn = document.createElement('button');
+            btn.textContent = `Download ${endpoint}.json`;
+            btn.onclick = () => {
+              const blob = new Blob([JSON.stringify(data, null, 2)], {
+                type: 'application/json'
+              });
+              const a = document.createElement('a');
+              a.href = URL.createObjectURL(blob);
+              a.download = `${endpoint}.json`;
+              a.click();
+            };
+            block.appendChild(btn);
+          } catch (err) {
+            pre.textContent = "Fetch failed: "+err;
+            pre.classList.add('error');
+          }
+        }
+      });
+	  
+      $(document).ready(function() {
+        const selectEl = $('#universitySelect');
+
+        getJwtSecurityStatus().then(status => {
+          document.getElementById("epSecurity").innerHTML = status;
+          console.log("JWT security active:", status);
+          manageAdminItems();
+        });
+      
+ 	    document.getElementById("logoutLink").addEventListener("click", function(e) {
+          e.preventDefault();
+          localStorage.removeItem("jwt");
+          window.location.href = "login.html";
+        });
+      });
+    </script>
+  </body>
+</html>

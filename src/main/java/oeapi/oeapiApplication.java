@@ -1,0 +1,273 @@
+package oeapi;
+
+import org.modelmapper.Converter;
+import org.modelmapper.spi.MappingContext;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.sql.SQLException;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import oeapi.model.Organization;
+import oeapi.model.Role;
+import oeapi.model.User;
+import oeapi.model.oeapiFieldsOfStudy;
+import oeapi.payload.OrganizationDTO;
+import oeapi.repository.RoleRepository;
+import oeapi.repository.UserRepository;
+import oeapi.service.OrganizationService;
+
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import oeapi.repository.oeapiFieldsOfStudyRepository;
+
+/**
+ * The type Ooapi unita application.
+ *
+ * @author Carlos Alonso - losalo@unavarra.es
+ */
+@SpringBootApplication(scanBasePackages = {"oeapi.*"})
+@EnableJpaRepositories(basePackages = {"oeapi.repository"})
+
+@EntityScan(basePackages = {"oeapi.*"})
+@ComponentScan(basePackages = {"oeapi"})
+
+public class oeapiApplication {
+
+    private static final String dateFormat = "yyyy-MM-dd";
+    private static final String timeFormat = "HH:mm";
+
+    static Logger logger = LoggerFactory.getLogger(oeapiApplication.class);
+
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
+    public static void main(String[] args) {
+
+        // Initialize Spring context to get DataSource bean
+        ApplicationContext context = SpringApplication.run(oeapiApplication.class, args);
+
+        // Get DataSource from Spring Boot
+        DataSource dataSource = context.getBean(DataSource.class);
+
+        logger.info("\n\n -------> Initialization of the OEAPI endpoint....\n\n");
+        logger.info("-->Before starting, let's check the database availability...");
+
+        while (!isDatabaseOnline(dataSource)) {
+            logger.error("-->Database is still offline. Retrying in 5 seconds...");
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.exit(1);
+            }
+        }
+
+       logger.info("\n\n-->Database is online. Application is ready!\n\n");
+        //SpringApplication.run(oeapiApplication.class, args);
+    }
+
+    private static boolean isDatabaseOnline(DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    @Value("${ooapi.security.default.users.pass:null}")
+    private String default_users_pass;
+    
+    @Bean
+    public CommandLineRunner createRolesAndAdmin(RoleRepository roleRepo, UserRepository userRepo, OrganizationService orgService) {
+
+        return (args) -> {
+            Role adminRole = roleRepo.findByName("ROLE_ADMIN")
+                    .orElseGet(() -> roleRepo.save(new Role("ROLE_ADMIN")));
+
+            Role userRole = roleRepo.findByName("ROLE_USER")
+                    .orElseGet(() -> roleRepo.save(new Role("ROLE_USER")));
+
+            // Only create admin if not exists
+            if (!userRepo.findByEmail("test@univ-unita.eu").isPresent()) {
+                User u1 = new User();
+                u1.setEmail("test@univ-unita.eu");
+
+                if (default_users_pass!=null)
+                 { u1.setPassword(new BCryptPasswordEncoder().encode(default_users_pass));
+                   logger.info("-->Admin user created: test@univ-unita.eu with  pass:" + default_users_pass);
+                 }
+                  else
+                 {   
+                    String p1 = oeapiUtils.generatePassword();
+                    u1.setPassword(new BCryptPasswordEncoder().encode(p1)); // encode password
+                    logger.info("-->Admin user created: test@univ-unita.eu with random pass:" + p1);
+                 }
+
+                List<Role> roles = new ArrayList<>();
+                roles.add(adminRole);
+                // roles.add(otherRole); // if needed
+
+                u1.setRoles(roles);
+
+                userRepo.save(u1);
+                
+            }
+
+            if (!userRepo.findByEmail("it.support@univ-unita.eu").isPresent()) {
+                User u2 = new User();
+                u2.setEmail("it.support@univ-unita.eu");
+
+                if (default_users_pass!=null)
+                 { u2.setPassword(new BCryptPasswordEncoder().encode(default_users_pass));
+                   logger.info("-->Admin user created: it.support@univ-unita.eu with  pass:" + default_users_pass);
+                 }
+                  else
+                 {   
+                    String p2 = oeapiUtils.generatePassword();
+                    u2.setPassword(new BCryptPasswordEncoder().encode(p2)); // encode password
+                    logger.info("-->Admin user created: it.support@univ-unita.eu with random pass:" + p2);
+                 }                
+                
+                // Java 8 way of adding roles
+                List<Role> roles = new ArrayList<>();
+                roles.add(adminRole);
+                u2.setRoles(roles);
+
+                userRepo.save(u2);
+
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            InputStream inputStream = getClass().getResourceAsStream("/orgs.json");
+            List<OrganizationDTO> organizations = mapper.readValue(
+                    inputStream,
+                    new TypeReference<List< OrganizationDTO>>() {
+            });
+
+            //orgService.initializeMapper();
+            for (OrganizationDTO dto : organizations) {
+
+                Organization org = orgService.toEntity(dto);
+                if (!orgService.exists(org)) {
+                    orgService.create(org);
+                }
+            }
+        };
+
+    }
+
+    @Bean
+    public CommandLineRunner loadFieldsOfStudy(oeapiFieldsOfStudyRepository repo) {
+
+        return (args) -> {
+
+            logger.info("-->Inserting/Updating Fields of Study from /fieldsOfStudy.json");
+            ObjectMapper mapper = new ObjectMapper();
+            InputStream inputStream = getClass().getResourceAsStream("/fieldsOfStudy.json");
+            List<oeapiFieldsOfStudy> fieldsOfStudies = mapper.readValue(inputStream,
+                    new TypeReference<List< oeapiFieldsOfStudy>>() {
+            });
+
+            for (oeapiFieldsOfStudy fos : fieldsOfStudies) {
+
+                oeapiFieldsOfStudy fos_entity = new oeapiFieldsOfStudy();
+                fos_entity.setFieldsOfStudyId(fos.getFieldsOfStudyId());
+                fos_entity.setLevel(fos.getLevel());
+                fos_entity.setTxtEn(fos.getTxtEn());
+                fos_entity.setTxtFr(fos.getTxtFr());
+                if (fos.getParent() != "") {
+                    fos_entity.setParent(fos.getParent());
+                }
+                repo.save(fos_entity);
+            }
+        };
+
+    }
+
+    /*
+    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+        return new Jackson2ObjectMapperBuilderCustomizer() {
+            @Override
+            public void customize(Jackson2ObjectMapperBuilder builder) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+                builder.deserializers(new LocalDateDeserializer(formatter));
+                builder.serializers(new LocalDateSerializer(formatter));
+            }
+        };
+    }
+
+     */
+    @Bean
+
+    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+        return new Jackson2ObjectMapperBuilderCustomizer() {
+            @Override
+            public void customize(Jackson2ObjectMapperBuilder builder) {
+                // Custom Date format for LocalDate
+
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
+                builder.deserializers(new LocalDateDeserializer(dateFormatter));
+                builder.serializers(new LocalDateSerializer(dateFormatter));
+
+                // Custom Time format for LocalTime
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
+                builder.deserializers(new LocalTimeDeserializer(timeFormatter));
+                builder.serializers(new LocalTimeSerializer(timeFormatter));
+            }
+        };
+    }
+
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+
+        // Converter from String to LocalDate
+        Converter<String, LocalDate> stringToLocalDate = new Converter<String, LocalDate>() {
+            @Override
+            public LocalDate convert(MappingContext<String, LocalDate> context) {
+                return LocalDate.parse(context.getSource(), DateTimeFormatter.ISO_LOCAL_DATE);
+            }
+        };
+
+        // Converter from LocalDate to String
+        Converter<LocalDate, String> localDateToString = new Converter<LocalDate, String>() {
+            @Override
+            public String convert(MappingContext<LocalDate, String> context) {
+                return context.getSource().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            }
+        };
+
+        // Add converters
+        modelMapper.addConverter(stringToLocalDate);
+        modelMapper.addConverter(localDateToString);
+
+        return modelMapper;
+    }
+}

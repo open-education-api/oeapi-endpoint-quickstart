@@ -1,0 +1,3 @@
+type: string
+enum: ["student","employee","guest"]
+

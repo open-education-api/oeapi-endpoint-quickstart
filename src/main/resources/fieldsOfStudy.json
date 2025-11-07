@@ -1,0 +1,1535 @@
+[
+    {
+        "level": "1",
+        "fieldsOfStudyId": "00",
+        "parent": "",
+        "txtEn": "Generic programmes and qualifications",
+        "txtFr": "Programmes et certifications génériques"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "01",
+        "parent": "",
+        "txtEn": "Education",
+        "txtFr": "Éducation"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "02",
+        "parent": "",
+        "txtEn": "Arts and humanities",
+        "txtFr": "Lettres et arts"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "03",
+        "parent": "",
+        "txtEn": "Social sciences, journalism and information",
+        "txtFr": "Sciences sociales, journalisme et information"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "04",
+        "parent": "",
+        "txtEn": "Business, administration and law",
+        "txtFr": "Commerce, administration et droit"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "05",
+        "parent": "",
+        "txtEn": "Natural sciences, mathematics and statistics",
+        "txtFr": "Sciences naturelles, mathématiques et statistiques"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "06",
+        "parent": "",
+        "txtEn": "Information and Communication Technologies",
+        "txtFr": "Technologies de l’information et de la communication"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "07",
+        "parent": "",
+        "txtEn": "Engineering, manufacturing and construction",
+        "txtFr": "Ingénierie, industries de transformation et construction"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "08",
+        "parent": "",
+        "txtEn": "Agriculture, forestry, fisheries and veterinary",
+        "txtFr": "Agriculture, sylviculture, halieutique et sciences vétérinaires"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "09",
+        "parent": "",
+        "txtEn": "Health and welfare",
+        "txtFr": "Santé et protection sociale"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "10",
+        "parent": "",
+        "txtEn": "Services",
+        "txtFr": "Services"
+    },
+    {
+        "level": "1",
+        "fieldsOfStudyId": "99",
+        "parent": "",
+        "txtEn": "Field unknown",
+        "txtFr": "Domaine inconnu"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "000",
+        "parent": "00",
+        "txtEn": "Generic programmes and qualifications not further defined",
+        "txtFr": "Programmes et certifications génériques, non définis"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "001",
+        "parent": "00",
+        "txtEn": "Basic programmes and qualifications",
+        "txtFr": "Programmes et certifications de base"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "002",
+        "parent": "00",
+        "txtEn": "Literacy and numeracy",
+        "txtFr": "Alphabétisation et apprentissage du calcul"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "003",
+        "parent": "00",
+        "txtEn": "Personal skills and development",
+        "txtFr": "Compétences et développement personnels"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "009",
+        "parent": "00",
+        "txtEn": "Generic programmes and qualifications not elsewhere classified",
+        "txtFr": "Programmes et certifications génériques, non définis"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "011",
+        "parent": "01",
+        "txtEn": "Education",
+        "txtFr": "Éducation"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "018",
+        "parent": "01",
+        "txtEn": "Interdisciplinary programmes involving broad field 01",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 01"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "020",
+        "parent": "02",
+        "txtEn": "Arts and humanities not further defined",
+        "txtFr": "Lettres et arts, non définis"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "021",
+        "parent": "02",
+        "txtEn": "Arts",
+        "txtFr": "Arts"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "022",
+        "parent": "02",
+        "txtEn": "Humanities (except languages)",
+        "txtFr": "Lettres (à l’exception des langues)"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "023",
+        "parent": "02",
+        "txtEn": "Languages",
+        "txtFr": "Langues"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "028",
+        "parent": "02",
+        "txtEn": "Interdisciplinary programmes involving broad field 02",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 02"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "029",
+        "parent": "02",
+        "txtEn": "Arts and humanities not elsewhere classified",
+        "txtFr": "Lettres et arts, non classés ailleurs"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "030",
+        "parent": "03",
+        "txtEn": "Social sciences, journalism and informationn.f.d.",
+        "txtFr": "Sciences sociales, journalisme et information, non définis"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "031",
+        "parent": "03",
+        "txtEn": "Social and behavioural sciences",
+        "txtFr": "Sciences sociales et du comportement"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "032",
+        "parent": "03",
+        "txtEn": "Journalism and information",
+        "txtFr": "Journalisme et information"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "038",
+        "parent": "03",
+        "txtEn": "Interdisciplinary programmes involving broad field 03",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 03"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "039",
+        "parent": "03",
+        "txtEn": "Social sciences, journalism and information not elsewhere classified",
+        "txtFr": "Sciences sociales, journalisme et information, non classés ailleurs"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "040",
+        "parent": "04",
+        "txtEn": "Business, administration and law not further defined",
+        "txtFr": "Commerce, administration et droit, non définis"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "041",
+        "parent": "04",
+        "txtEn": "Business and administration",
+        "txtFr": "Commerce et administration"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "042",
+        "parent": "04",
+        "txtEn": "Law",
+        "txtFr": "Droit"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "048",
+        "parent": "04",
+        "txtEn": "Interdisciplinary programmes involving broad field 04",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 04"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "049",
+        "parent": "04",
+        "txtEn": "Business, administration and law not elsewhere classified",
+        "txtFr": "Commerce, administration et droit, non classés ailleurs"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "050",
+        "parent": "05",
+        "txtEn": "Natural sciences, mathematics and statisticsn.f.d.",
+        "txtFr": "Sciences naturelles, mathématiques et statistiques, non définies"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "051",
+        "parent": "05",
+        "txtEn": "Biological and related sciences",
+        "txtFr": "Sciences biologiques et apparentées"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "052",
+        "parent": "05",
+        "txtEn": "Environment",
+        "txtFr": "Environnement"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "053",
+        "parent": "05",
+        "txtEn": "Physical sciences",
+        "txtFr": "Sciences physiques"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "054",
+        "parent": "05",
+        "txtEn": "Mathematics and statistics",
+        "txtFr": "Mathématiques et statistiques"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "058",
+        "parent": "05",
+        "txtEn": "Interdisciplinary programmes involving broad field 05",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 05"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "059",
+        "parent": "05",
+        "txtEn": "Natural sciences, mathematics and statisticsn.e.c.",
+        "txtFr": "Sciences naturelles, mathématiques et statistiques, non classées ailleurs"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "061",
+        "parent": "06",
+        "txtEn": "Information and Communication Technologies",
+        "txtFr": "Technologies de l’information et de la communication"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "068",
+        "parent": "06",
+        "txtEn": "Interdisciplinary programmes involving broad field 06",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 06"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "070",
+        "parent": "07",
+        "txtEn": "Engineering, manufacturing and constructionn.f.d.",
+        "txtFr": "Ingénierie, industries de transformation et construction, non définies"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "071",
+        "parent": "07",
+        "txtEn": "Engineering and engineering trades",
+        "txtFr": "Ingénierie et techniques apparentées"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "072",
+        "parent": "07",
+        "txtEn": "Manufacturing and processing",
+        "txtFr": "Industries de transformation et de traitement"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "073",
+        "parent": "07",
+        "txtEn": "Architecture and construction",
+        "txtFr": "Architecture et bâtiment"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "078",
+        "parent": "07",
+        "txtEn": "Interdisciplinary programmes involving broad field 07",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 07"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "079",
+        "parent": "07",
+        "txtEn": "Engineering, manufacturing and constructionn.e.c.",
+        "txtFr": "Ingénierie, industries de transformation et construction, non classé ailleurs"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "080",
+        "parent": "08",
+        "txtEn": "Agriculture, forestry, fisheries and veterinaryn.f.d.",
+        "txtFr": "Agriculture, sylviculture, halieutique et sciences vétérinaires, non définies"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "081",
+        "parent": "08",
+        "txtEn": "Agriculture",
+        "txtFr": "Agriculture"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "082",
+        "parent": "08",
+        "txtEn": "Forestry",
+        "txtFr": "Sylviculture"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "083",
+        "parent": "08",
+        "txtEn": "Fisheries",
+        "txtFr": "Halieutique"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "084",
+        "parent": "08",
+        "txtEn": "Veterinary",
+        "txtFr": "Sciences vétérinaires"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "088",
+        "parent": "08",
+        "txtEn": "Interdisciplinary programmes involving broad field 08",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 08"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "089",
+        "parent": "08",
+        "txtEn": "Agriculture, forestry, fisheries and veterinaryn.e.c.",
+        "txtFr": "Agriculture, sylviculture, halieutique et sciences vétérinaires, non classées ailleurs"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "090",
+        "parent": "09",
+        "txtEn": "Health and welfare not further defined",
+        "txtFr": "Santé et protection sociale, non définies"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "091",
+        "parent": "09",
+        "txtEn": "Health",
+        "txtFr": "Santé"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "092",
+        "parent": "09",
+        "txtEn": "Welfare",
+        "txtFr": "Protection sociale"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "098",
+        "parent": "09",
+        "txtEn": "Interdisciplinary programmes involving broad field 09",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 09"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "099",
+        "parent": "09",
+        "txtEn": "Health and welfare not elsewhere classified",
+        "txtFr": "Santé et protection sociale, non classées ailleurs"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "100",
+        "parent": "10",
+        "txtEn": "Services not further defined",
+        "txtFr": "Services, non définis"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "101",
+        "parent": "10",
+        "txtEn": "Personal services",
+        "txtFr": "Services aux particuliers"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "102",
+        "parent": "10",
+        "txtEn": "Hygiene and occupational health services",
+        "txtFr": "Services d’hygiène et de santé au travail"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "103",
+        "parent": "10",
+        "txtEn": "Security services",
+        "txtFr": "Services de sûreté"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "104",
+        "parent": "10",
+        "txtEn": "Transport services",
+        "txtFr": "Services de transport"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "108",
+        "parent": "10",
+        "txtEn": "Interdisciplinary programmes involving broad field 10",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 10"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "109",
+        "parent": "10",
+        "txtEn": "Services not elsewhere classified",
+        "txtFr": "Services, non classés ailleurs"
+    },
+    {
+        "level": "2",
+        "fieldsOfStudyId": "999",
+        "parent": "99",
+        "txtEn": "Field unknown",
+        "txtFr": "Domaine inconnu"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0000",
+        "parent": "000",
+        "txtEn": "Generic programmes and qualificationsn.f.d.",
+        "txtFr": "Programmes et certifications génériques, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0011",
+        "parent": "001",
+        "txtEn": "Basic programmes and qualifications",
+        "txtFr": "Programmes et certifications de base"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0021",
+        "parent": "002",
+        "txtEn": "Literacy and numeracy",
+        "txtFr": "Alphabétisation et apprentissage du calcul"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0031",
+        "parent": "003",
+        "txtEn": "Personal skills and development",
+        "txtFr": "Compétences et développement personnels"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0099",
+        "parent": "009",
+        "txtEn": "Generic programmes and qualificationsn.e.c",
+        "txtFr": "Programmes et certifications génériques, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0110",
+        "parent": "011",
+        "txtEn": "Education not further defined",
+        "txtFr": "Éducation, non définie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0111",
+        "parent": "011",
+        "txtEn": "Education science",
+        "txtFr": "Sciences de l’éducation"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0112",
+        "parent": "011",
+        "txtEn": "Training for pre-school teachers",
+        "txtFr": "Formation des enseignants au niveau préscolaire"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0113",
+        "parent": "011",
+        "txtEn": "Teacher training without subject specialisation",
+        "txtFr": "Formation des enseignants (sans spécialisation)"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0114",
+        "parent": "011",
+        "txtEn": "Teacher training with subject specialisation",
+        "txtFr": "Formation des enseignants (avec spécialisation)"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0119",
+        "parent": "011",
+        "txtEn": "Education not elsewhere classified",
+        "txtFr": "Enseignement non classé ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0188",
+        "parent": "018",
+        "txtEn": "Interdisciplinary programmes involving broad field 01",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 01"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0200",
+        "parent": "020",
+        "txtEn": "Arts and humanities not further defined",
+        "txtFr": "Lettres et arts, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0210",
+        "parent": "021",
+        "txtEn": "Arts not further defined",
+        "txtFr": "Arts, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0211",
+        "parent": "021",
+        "txtEn": "Audio-visual techniques and media production",
+        "txtFr": "Techniques audiovisuelles et production multimédia"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0212",
+        "parent": "021",
+        "txtEn": "Fashion, interior and industrial design",
+        "txtFr": "Stylisme, décoration et design industriel"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0213",
+        "parent": "021",
+        "txtEn": "Fine arts",
+        "txtFr": "Beaux-arts"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0214",
+        "parent": "021",
+        "txtEn": "Handicrafts",
+        "txtFr": "Artisanat"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0215",
+        "parent": "021",
+        "txtEn": "Music and performing arts",
+        "txtFr": "Musique, théâtre, danse, cirque"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0219",
+        "parent": "021",
+        "txtEn": "Arts not elsewhere classified",
+        "txtFr": "Arts, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0220",
+        "parent": "022",
+        "txtEn": "Humanities (except languages) not further defined",
+        "txtFr": "Lettres (sauf langues), non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0221",
+        "parent": "022",
+        "txtEn": "Religion and theology",
+        "txtFr": "Religion et théologie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0222",
+        "parent": "022",
+        "txtEn": "History and archaeology",
+        "txtFr": "Histoire et archéologie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0223",
+        "parent": "022",
+        "txtEn": "Philosophy and ethics",
+        "txtFr": "Philosophie et morale"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0229",
+        "parent": "022",
+        "txtEn": "Humanities (except languages) not elsewhere classified",
+        "txtFr": "Lettres (sauf langues), non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0230",
+        "parent": "023",
+        "txtEn": "Languages not further defined",
+        "txtFr": "Langues, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0231",
+        "parent": "023",
+        "txtEn": "Language acquisition",
+        "txtFr": "Acquisition d’une langue"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0232",
+        "parent": "023",
+        "txtEn": "Literature and linguistics",
+        "txtFr": "Littérature et linguistique"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0239",
+        "parent": "023",
+        "txtEn": "Languages not elsewhere classified",
+        "txtFr": "Langues, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0288",
+        "parent": "028",
+        "txtEn": "Interdisciplinary programmes involving broad field 02",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 02"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0299",
+        "parent": "029",
+        "txtEn": "Arts and humanities not elsewhere classified",
+        "txtFr": "Lettres et arts, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0300",
+        "parent": "030",
+        "txtEn": "Social sciences, journalism and informationn.f.d.",
+        "txtFr": "Sciences sociales, journalisme et information, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0310",
+        "parent": "031",
+        "txtEn": "Social and behavioural sciences not further defined.",
+        "txtFr": "Sciences sociales et du comportement, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0311",
+        "parent": "031",
+        "txtEn": "Economics",
+        "txtFr": "Économie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0312",
+        "parent": "031",
+        "txtEn": "Political sciences and civics",
+        "txtFr": "Sciences politiques et éducation civique"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0313",
+        "parent": "031",
+        "txtEn": "Psychology",
+        "txtFr": "Psychologie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0314",
+        "parent": "031",
+        "txtEn": "Sociology and cultural studies",
+        "txtFr": "Sociologie et études culturelles"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0319",
+        "parent": "031",
+        "txtEn": "Social and behavioural sciencesn.e.c.",
+        "txtFr": "Sciences sociales et du comportement, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0320",
+        "parent": "032",
+        "txtEn": "Journalism and information not further defined",
+        "txtFr": "Journalisme et information, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0321",
+        "parent": "032",
+        "txtEn": "Journalism and reporting",
+        "txtFr": "Journalisme et reportage"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0322",
+        "parent": "032",
+        "txtEn": "Library, information and archival studies",
+        "txtFr": "Formation aux bibliothèques, à la documentation et à l’archivisme"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0329",
+        "parent": "032",
+        "txtEn": "Journalism and information not elsewhere classified",
+        "txtFr": "Journalisme et information, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0388",
+        "parent": "038",
+        "txtEn": "Interdisciplinary programmes involving broad field 03",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 03"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0399",
+        "parent": "039",
+        "txtEn": "Social sciences, journalism and information n.e.c.",
+        "txtFr": "Sciences sociales, journalisme et information, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0400",
+        "parent": "040",
+        "txtEn": "Business, administration and law not further defined",
+        "txtFr": "Commerce, administration et droit, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0410",
+        "parent": "041",
+        "txtEn": "Business and administration not further defined",
+        "txtFr": "Commerce et administration, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0411",
+        "parent": "041",
+        "txtEn": "Accounting and taxation",
+        "txtFr": "Comptabilité et fiscalité"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0412",
+        "parent": "041",
+        "txtEn": "Finance, banking and insurance",
+        "txtFr": "Finance, banque et assurances"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0413",
+        "parent": "041",
+        "txtEn": "Management and administration",
+        "txtFr": "Gestion et administration"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0414",
+        "parent": "041",
+        "txtEn": "Marketing and advertising",
+        "txtFr": "Marketing et publicité"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0415",
+        "parent": "041",
+        "txtEn": "Secretarial and office work",
+        "txtFr": "Travail de secrétariat et de bureau"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0416",
+        "parent": "041",
+        "txtEn": "Wholesale and retail sales",
+        "txtFr": "Vente en gros et au détail"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0417",
+        "parent": "041",
+        "txtEn": "Work skills",
+        "txtFr": "Compétences professionnelles"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0419",
+        "parent": "041",
+        "txtEn": "Business and administration not elsewhere classified",
+        "txtFr": "Commerce et administration, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0421",
+        "parent": "042",
+        "txtEn": "Law",
+        "txtFr": "Droit"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0488",
+        "parent": "048",
+        "txtEn": "Interdisciplinary programmes involving broad field 04",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 04"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0499",
+        "parent": "049",
+        "txtEn": "Business, administration and law n.e.c.",
+        "txtFr": "Commerce, administration et droit, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0500",
+        "parent": "050",
+        "txtEn": "Natural sciences, mathematics and statisticsn.f.d.",
+        "txtFr": "Sciences naturelles, mathématiques et statistiques, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0510",
+        "parent": "051",
+        "txtEn": "Biological and related sciences not further defined",
+        "txtFr": "Sciences biologiques et sciences apparentées, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0511",
+        "parent": "051",
+        "txtEn": "Biology",
+        "txtFr": "Biologie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0512",
+        "parent": "051",
+        "txtEn": "Biochemistry",
+        "txtFr": "Biochimie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0519",
+        "parent": "051",
+        "txtEn": "Biological and related sciences not elsewhere classified",
+        "txtFr": "Sciences biologiques et apparentées, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0520",
+        "parent": "052",
+        "txtEn": "Environment not further defined",
+        "txtFr": "Environnement, non défini"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0521",
+        "parent": "052",
+        "txtEn": "Environmental sciences",
+        "txtFr": "Sciences environnementales"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0522",
+        "parent": "052",
+        "txtEn": "Natural environments and wildlife",
+        "txtFr": "Environnements naturels et faune et flore"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0529",
+        "parent": "052",
+        "txtEn": "Environment not elsewhere classified",
+        "txtFr": "Environnement, non classé ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0530",
+        "parent": "053",
+        "txtEn": "Physical sciences not further defined",
+        "txtFr": "Sciences physiques, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0531",
+        "parent": "053",
+        "txtEn": "Chemistry",
+        "txtFr": "Chimie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0532",
+        "parent": "053",
+        "txtEn": "Earth sciences",
+        "txtFr": "Sciences de la Terre"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0533",
+        "parent": "053",
+        "txtEn": "Physics",
+        "txtFr": "Physique"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0539",
+        "parent": "053",
+        "txtEn": "Physical sciences not elsewhere classified",
+        "txtFr": "Sciences physiques, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0540",
+        "parent": "054",
+        "txtEn": "Mathematics and statistics not further defined",
+        "txtFr": "Mathématiques et statistiques, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0541",
+        "parent": "054",
+        "txtEn": "Mathematics",
+        "txtFr": "Mathématiques"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0542",
+        "parent": "054",
+        "txtEn": "Statistics",
+        "txtFr": "Statistiques"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0588",
+        "parent": "058",
+        "txtEn": "Interdisciplinary programmes involving broad field 05",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 05"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0599",
+        "parent": "059",
+        "txtEn": "Natural sciences, mathematics and statisticsn.e.c.",
+        "txtFr": "Sciences naturelles, mathématiques et statistiques, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0610",
+        "parent": "061",
+        "txtEn": "Information and Communication Technologiesn.f.d.",
+        "txtFr": "Technologies de l\u0027information et de la communication, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0611",
+        "parent": "061",
+        "txtEn": "Computer use",
+        "txtFr": "Utilisation d’un ordinateur"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0612",
+        "parent": "061",
+        "txtEn": "Database and network design and administration",
+        "txtFr": "Conception et administration de bases de données et de réseau"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0613",
+        "parent": "061",
+        "txtEn": "Software and applications development and analysis",
+        "txtFr": "Développement et analyse de logiciels et d’applications"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0619",
+        "parent": "061",
+        "txtEn": "Information and Communication Technologiesn.e.c.",
+        "txtFr": "Technologies de l\u0027information et de la communication, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0688",
+        "parent": "068",
+        "txtEn": "Interdisciplinary programmes involving broad field 06",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 06"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0700",
+        "parent": "070",
+        "txtEn": "Engineering, manufacturing and constructionn.f.d.",
+        "txtFr": "Ingénierie, industries de transformation et construction, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0710",
+        "parent": "071",
+        "txtEn": "Engineering and engineering tradesn.f.d.",
+        "txtFr": "Ingénierie et techniques apparentées, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0711",
+        "parent": "071",
+        "txtEn": "Chemical engineering and processes",
+        "txtFr": "Ingénierie chimique et processus"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0712",
+        "parent": "071",
+        "txtEn": "Environmental protection technology",
+        "txtFr": "Technologie de la protection de l’environnement"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0713",
+        "parent": "071",
+        "txtEn": "Electricity and energy",
+        "txtFr": "Électricité et énergie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0714",
+        "parent": "071",
+        "txtEn": "Electronics and automation",
+        "txtFr": "Électronique et automatisation"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0715",
+        "parent": "071",
+        "txtEn": "Mechanics and metal trades",
+        "txtFr": "Mécanique et travail du métal"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0716",
+        "parent": "071",
+        "txtEn": "Motor vehicles, ships and aircraft",
+        "txtFr": "Véhicules à moteur, bateaux et aéronefs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0719",
+        "parent": "071",
+        "txtEn": "Engineering and engineering tradesn.e.c.",
+        "txtFr": "Ingénierie et techniques apparentées, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0720",
+        "parent": "072",
+        "txtEn": "Manufacturing and processing not further defined",
+        "txtFr": "Industrie de transformation et de traitement, non définie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0721",
+        "parent": "072",
+        "txtEn": "Food processing",
+        "txtFr": "Traitement des aliments"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0722",
+        "parent": "072",
+        "txtEn": "Materials (glass, paper, plastic and wood)",
+        "txtFr": "Matériaux (verre, papier, plastique et bois)"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0723",
+        "parent": "072",
+        "txtEn": "Textiles (clothes, footwear and leather)",
+        "txtFr": "Textiles (vêtements, chaussures et cuir)"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0724",
+        "parent": "072",
+        "txtEn": "Mining and extraction",
+        "txtFr": "Exploitation minière et extraction"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0729",
+        "parent": "072",
+        "txtEn": "Manufacturing and processing not elsewhere classified",
+        "txtFr": "Industrie de transformation et de traitement, non classée ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0730",
+        "parent": "073",
+        "txtEn": "Architecture and construction not further defined",
+        "txtFr": "Architecture et construction, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0731",
+        "parent": "073",
+        "txtEn": "Architecture and town planning",
+        "txtFr": "Architecture et urbanisme"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0732",
+        "parent": "073",
+        "txtEn": "Building and civil engineering",
+        "txtFr": "Bâtiment et génie civil"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0788",
+        "parent": "078",
+        "txtEn": "Interdisciplinary programmes involving broad field 07",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 07"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0799",
+        "parent": "079",
+        "txtEn": "Engineering, manufacturing and constructionn.e.c.",
+        "txtFr": "Ingénierie, industrie de transformation et construction, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0800",
+        "parent": "080",
+        "txtEn": "Agriculture, forestry, fisheries and veterinaryn.f.d.",
+        "txtFr": "Agriculture, sylviculture, halieutique et sciences vétérinaires, non définies"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0810",
+        "parent": "081",
+        "txtEn": "Agriculture not further defined",
+        "txtFr": "Agriculture, non défini"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0811",
+        "parent": "081",
+        "txtEn": "Crop and livestock production",
+        "txtFr": "Culture et élevage"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0812",
+        "parent": "081",
+        "txtEn": "Horticulture",
+        "txtFr": "Horticulture"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0819",
+        "parent": "081",
+        "txtEn": "Agriculture not elsewhere classified",
+        "txtFr": "Agriculture, non classée ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0821",
+        "parent": "082",
+        "txtEn": "Forestry",
+        "txtFr": "Sylviculture"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0831",
+        "parent": "083",
+        "txtEn": "Fisheries",
+        "txtFr": "Pêcheries"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0841",
+        "parent": "084",
+        "txtEn": "Veterinary",
+        "txtFr": "Sciences vétérinaires"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0888",
+        "parent": "088",
+        "txtEn": "Interdisciplinary programmes involving broad field 08",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 08"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0899",
+        "parent": "089",
+        "txtEn": "Agriculture, forestry, fisheries and veterinaryn.e.c.",
+        "txtFr": "Agriculture, sylviculture, halieutique et sciences vétérinaires, non classées ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0900",
+        "parent": "090",
+        "txtEn": "Health and welfare not further defined",
+        "txtFr": "Santé et protection sociale, non défini"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0910",
+        "parent": "091",
+        "txtEn": "Health not further defined",
+        "txtFr": "Soins de santé, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0911",
+        "parent": "091",
+        "txtEn": "Dental studies",
+        "txtFr": "Études dentaires"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0912",
+        "parent": "091",
+        "txtEn": "Medicine",
+        "txtFr": "Médecine"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0913",
+        "parent": "091",
+        "txtEn": "Nursing and midwifery",
+        "txtFr": "Soins infirmiers et formation de sages-femmes"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0914",
+        "parent": "091",
+        "txtEn": "Medical diagnostic and treatment technology",
+        "txtFr": "Technologie médicale diagnostique et de traitement"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0915",
+        "parent": "091",
+        "txtEn": "Therapy and rehabilitation",
+        "txtFr": "Thérapie et rééducation"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0916",
+        "parent": "091",
+        "txtEn": "Pharmacy",
+        "txtFr": "Pharmacie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0917",
+        "parent": "091",
+        "txtEn": "Traditional and complementary medicine and therapy",
+        "txtFr": "Médecine et thérapie traditionnelles et complémentaires"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0919",
+        "parent": "091",
+        "txtEn": "Health not elsewhere classified",
+        "txtFr": "Soins de santé, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0920",
+        "parent": "092",
+        "txtEn": "Welfare not further defined",
+        "txtFr": "Protection sociale, non définie"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0921",
+        "parent": "092",
+        "txtEn": "Care of the elderly and of disabled adults",
+        "txtFr": "Soins aux personnes âgées et aux adultes handicapés"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0922",
+        "parent": "092",
+        "txtEn": "Child care and youth services",
+        "txtFr": "Soins aux enfants et services pour la jeunesse"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0923",
+        "parent": "092",
+        "txtEn": "Social work and counselling",
+        "txtFr": "Travail social et accompagnement"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0929",
+        "parent": "092",
+        "txtEn": "Welfare not elsewhere classified",
+        "txtFr": "Protection sociale, non classée ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0988",
+        "parent": "098",
+        "txtEn": "Interdisciplinary programmes involving broad field 09",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 09"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "0999",
+        "parent": "099",
+        "txtEn": "Health and welfare n.e.c.",
+        "txtFr": "Santé et protection sociale, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1000",
+        "parent": "100",
+        "txtEn": "Services not further defined",
+        "txtFr": "Services, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1010",
+        "parent": "101",
+        "txtEn": "Personal services not further defined",
+        "txtFr": "Services personnels, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1011",
+        "parent": "101",
+        "txtEn": "Domestic services",
+        "txtFr": "Services à domicile"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1012",
+        "parent": "101",
+        "txtEn": "Hair and beauty services",
+        "txtFr": "Coiffure et soins de beauté"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1013",
+        "parent": "101",
+        "txtEn": "Hotel, restaurants and catering",
+        "txtFr": "Hôtellerie et services de restauration"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1014",
+        "parent": "101",
+        "txtEn": "Sports",
+        "txtFr": "Sports"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1015",
+        "parent": "101",
+        "txtEn": "Travel, tourism and leisure",
+        "txtFr": "Voyage, tourisme et loisirs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1019",
+        "parent": "101",
+        "txtEn": "Personal services not elsewhere classified",
+        "txtFr": "Services personnels, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1020",
+        "parent": "102",
+        "txtEn": "Hygiene and occupational health servicesn.f.d.",
+        "txtFr": "Services d’hygiène et de santé au travail, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1021",
+        "parent": "102",
+        "txtEn": "Community sanitation",
+        "txtFr": "Salubrité publique"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1022",
+        "parent": "102",
+        "txtEn": "Occupational health and safety",
+        "txtFr": "Santé et sécurité du travail"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1029",
+        "parent": "102",
+        "txtEn": "Hygiene and occupational health servicesn.e.c.",
+        "txtFr": "Services d’hygiène et de santé au travail, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1030",
+        "parent": "103",
+        "txtEn": "Security services not further defined",
+        "txtFr": "Services se sûreté, non définis"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1031",
+        "parent": "103",
+        "txtEn": "Military and defence",
+        "txtFr": "Armée et défense"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1032",
+        "parent": "103",
+        "txtEn": "Protection of persons and property",
+        "txtFr": "Protection des personnes et des biens"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1039",
+        "parent": "103",
+        "txtEn": "Security services not elsewhere classified",
+        "txtFr": "Services se sûreté, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1041",
+        "parent": "104",
+        "txtEn": "Transport services",
+        "txtFr": "Services de transport"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1088",
+        "parent": "108",
+        "txtEn": "Interdisciplinary programmes involving broad field 10",
+        "txtFr": "Programmes interdisciplinaires impliquant le grand groupe 10"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "1099",
+        "parent": "109",
+        "txtEn": "Services not elsewhere classified",
+        "txtFr": "Services, non classés ailleurs"
+    },
+    {
+        "level": "3",
+        "fieldsOfStudyId": "9999",
+        "parent": "999",
+        "txtEn": "Field unknown",
+        "txtFr": "Domaine inconnu"
+    }
+]

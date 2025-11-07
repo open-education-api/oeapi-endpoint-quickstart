@@ -1,0 +1,14 @@
+type: object
+properties:
+    codeType:
+      type: string
+      enum: ["identifier", "otherType"] # Enumerated values
+    code:
+      type: string
+required:
+  - codeType
+  - code
+additionalProperties: false
+example:
+  codeType: 'identifier'
+  code: '1234qwe12'

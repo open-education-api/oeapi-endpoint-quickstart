@@ -1,0 +1,29 @@
+type: object
+properties:
+  primaryCode:
+    type: object
+    properties:
+      codeType:
+        type: string
+        enum: ["identifier", "otherType"] # Enumerated values
+      code:
+        type: string
+    required: ["codeType", "code"]
+  personId:
+    type: string
+    format: uuid
+  givenName:
+    type: string
+  surname:
+    type: string
+  displayName:
+    type: string
+  activeEnrollment:
+    type: boolean
+  personAffiliations:
+    type: string
+    enum: ["student","employee","guest"]
+  mail:
+    type: string
+    format: email
+required: ["primaryCode","surname","givenName","displayName","mail"]

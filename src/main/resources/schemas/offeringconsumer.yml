@@ -1,0 +1,29 @@
+type: object
+required:
+ - consumerKey
+ - alliances
+properties:
+  consumerKey:
+    type: string
+  alliances:
+    type: array
+    items:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name of the alliance
+        enrollmentUrl:
+          type: string
+          format: url
+        enrollmentUrlForGuests:
+          type: string
+          format: url
+        enrollStartTime:
+          type: string
+        enrollEndTime:
+          type: string
+        dateComment:
+          type: string

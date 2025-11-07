@@ -1,0 +1,32 @@
+type: object
+properties:
+
+  academicSessionType:
+    type: string
+    enum: ["academic year","semester","trimester","quarter","testing period","period"]
+  primaryCode:
+    type: object
+    properties:
+      codeType:
+        type: string
+        enum: ["identifier", "otherType"] # Enumerated values
+      code:
+        type: string
+    required: ["codeType", "code"]
+  startDate:
+    type: string
+    format: date
+  endDate:
+    type: string
+    format: date
+  name:
+    type: array
+    items:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+      required: ["language", "value"]
+required: ["startDate","name", "endDate"]

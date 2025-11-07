@@ -1,0 +1,3 @@
+type: string
+enum: ["secondary vocational education","secondary vocational education 1","secondary vocational education 2","secondary vocational education 3","secondary vocational education 4","associate degree","bachelor","master","doctoral","microcredential","undefined","undivided","nt2-1","nt2-2"]
+

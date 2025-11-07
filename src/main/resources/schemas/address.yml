@@ -1,0 +1,36 @@
+type: object
+properties:
+  geolocation:
+    type: object
+    properties:
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
+    required: ["longitude", "latitude"]
+  coutryCode:
+    type: string
+  street:
+    type: string
+  postalCode:
+    type: string
+  city:
+    type: string
+  streetNumber:
+    type: string
+  additional:
+    type: array
+    items:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+      required: ["language", "value"]
+  addressType:
+    type: string
+    enum: ["postal","visit","deliveries","billing","teaching"]
+required: ["addressType"]

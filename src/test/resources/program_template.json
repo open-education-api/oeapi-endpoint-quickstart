@@ -1,0 +1,27 @@
+{
+    "programId": "--PROG_ID_TOBEINFORMED--",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--PROG_CODE_TOBEINFORMED--"
+    },
+    "programType": "minor",
+    "name": [
+        {
+            "language": "es-ES",
+            "value": "Programa [--PROG_ID_TOBEINFORMED--]"
+        }
+    ],
+    "abbreviation": "INF",
+    "description": [
+        {
+            "language": "es-ES",
+            "value": "Descripcion [--PROG_ID_TOBEINFORMED--] ...."
+        }
+    ],
+    "teachingLanguage": "nld",
+    "studyLoad": {
+        "studyLoadUnit": "ects",
+        "value": 3
+    },
+    "level": "master"
+}

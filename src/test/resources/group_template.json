@@ -1,0 +1,31 @@
+{
+    "courseId": "--GROUP_ID_TOBEINFORMED--",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--GROUP_CODE_TOBEINFORMED--"
+    },
+    "groupType": "learning group",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "statistics students"
+        }
+    ],
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "The group of students that follow statistics classes"
+        }
+    ],
+    "startDate": "2020-08-17",
+    "endDate": "2020-12-18",
+    "personCount": 183,
+    "otherCodes": [
+        {
+            "codeType": "identifier",
+            "code": "1234qwe12"
+        }
+    ],
+    "organization": "--ORG_ID_TOBEINFORMED--"
+}
+

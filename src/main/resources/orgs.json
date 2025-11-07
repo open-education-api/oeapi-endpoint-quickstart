@@ -1,0 +1,83 @@
+[
+    {
+        "organizationId": "4f9c7a32-e89b-12d3-a456-7b8e5c9d3a21",
+        "primaryCode": {
+            "codeType": "identifier",
+            "code": "Test-Organization"
+        },
+        "name": [
+            {
+                "language": "es-ES",
+                "value": "Organization for Testing"
+            }
+        ],
+        "shortName": "Test-Org",
+        "organizationType": "root",
+        "link": "https://openonderwijsapi.nl/#/",
+        "logo": "https://openonderwijsapi.nl/_media/OpenEducationApi_Logo.png"
+    },
+    {
+        "organizationId": "77777777-e89b-12d3-a456-123514174eee",
+        "primaryCode": {
+            "codeType": "identifier",
+            "code": "UNIZAR"
+        },
+        "name": [
+            {
+                "language": "es-ES",
+                "value": "Universidad de Zaragoza"
+            }
+        ],
+        "shortName": "UNIZAR",
+        "organizationType": "root",
+        "link": "https://www.unizar.es/",
+        "logo": "https://www.unizar.es/themes/custom/unizar_unizar/logo.svg",
+        "addresses": [
+            {
+                "addressType": "postal",
+                "street": "Calle Pedro Cerbuna",
+                "streetNumber": "12",
+                "postalCode": "50009",
+                "city": "Zaragoza",
+                "countryCode": "ES",
+                "geolocation": {
+                    "latitude": 41.64224026199614,
+                    "longitude": -0.9014957739612532
+                },
+                "ext": {}
+            }
+        ]
+    },	
+    {
+        "organizationId": "11111111-e89b-12d3-a456-123514174eee",
+        "primaryCode": {
+            "codeType": "identifier",
+            "code": "UPNA"
+        },
+        "name": [
+            {
+                "language": "es-ES",
+                "value": "Universidad Pública de Navarra"
+            }
+        ],
+        "shortName": "UPNA",
+        "organizationType": "root",
+        "link": "https://www.unavarra.es/",
+        "logo": "https://www.unavarra.es/si/assets/img/core/upna-logo-ig.svg",
+        "addresses": [
+            {
+                "addressType": "postal",
+                "street": "Arrosadia s/n - 31006 Pamplona",
+                "streetNumber": "s/n",
+                "postalCode": "31006",
+                "city": "Pamplona",
+                "countryCode": "ES",
+                "geolocation": {
+                    "latitude": 42.800358,
+                    "longitude": -1.636871
+                },
+                "ext": {}
+            }
+        ]
+    }	
+]

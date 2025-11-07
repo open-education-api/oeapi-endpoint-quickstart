@@ -1,0 +1,27 @@
+type: object
+description: The amount of effort to complete this education in the specified unit.
+properties:
+  amount:
+    type: string
+  vatAmount:
+    type: string
+  amountWithoutVat:
+    type: string
+  currency:
+    type: string
+  displayAmount:
+    type: string
+  costType:
+    type: string
+    enum:
+      - STAP eligible
+      - total costs
+    example: total costs
+  value:
+    description: The amount of load depicted in numbers
+    type: number
+    example: 3
+example:
+  studyLoadUnit: ects
+  value: 3
+required: ["costType","amount","currency"]

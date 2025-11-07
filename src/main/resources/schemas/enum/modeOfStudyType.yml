@@ -1,0 +1,2 @@
+type: string
+enum: ["full-time","part-time","dual training","self-paced"]

@@ -1,0 +1,3 @@
+type: string
+enum: ["lecturer","practical","tutorial","consultation","project","workshop","excursion","independent study","external","skills training"]
+

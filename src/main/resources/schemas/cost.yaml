@@ -1,0 +1,17 @@
+type: object
+description: The amount of effort to complete this education in the specified unit.
+properties:
+  resultDate:
+    type: string
+    format: date
+  score:
+    type: string
+  comment:
+    type: string
+  pass:
+    type: string
+    enum: ["unknown","passed","failed"]
+  state:
+    type: string
+    enum: ["in progress","postponed","completed","queued"]
+required: ["costType","amount","currency"]

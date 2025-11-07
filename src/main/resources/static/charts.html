@@ -1,0 +1,157 @@
+<!-- Based on examples from https://mdbootstrap.com/docs/standard/extended/side-navbar/
+   and  https://codepen.io/feri-irawan/pen/RwLQKpY
+   -->
+<html>
+   <head>
+      <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css'>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.js"></script>
+      <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.5.0/css/all.min.css' />
+
+   <style>
+      body {
+      background-color: #fbfbfb;
+      }
+      @media (min-width: 991.98px) {
+      main {
+      padding-left: 240px;
+      }
+      }
+      /* Sidebar */
+      .sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 58px 0 0; /* Height of navbar */
+      box-shadow: 0 2px 5px 0 rgb(0 0 0 / 5%), 0 2px 10px 0 rgb(0 0 0 / 5%);
+      width: 240px;
+      z-index: 600;
+      }
+      @media (max-width: 991.98px) {
+      .sidebar {
+      width: 100%;
+      }
+      }
+      .sidebar .active {
+      border-radius: 5px;
+      box-shadow: 0 2px 5px 0 rgb(0 0 0 / 16%), 0 2px 10px 0 rgb(0 0 0 / 12%);
+      }
+      .sidebar-sticky {
+      position: relative;
+      top: 0;
+      height: calc(100vh - 48px);
+      padding-top: 0.5rem;
+      overflow-x: hidden;
+      overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+      }
+      #results { padding-top:2em; }
+   </style> 
+   
+   </head>
+   
+   <body>
+      <!--Main Navigation-->
+      <header>
+         <!-- Sidebar -->
+         <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white">
+            <div class="position-sticky">
+               <div class="list-group list-group-flush mx-3 mt-4">
+                    <a href="#" class="list-group-item list-group-item-action py-2 ripple active" aria-current="true">  </i><span>Main Menu</span> </a>
+                    <a href="https://openonderwijsapi.nl/" class="list-group-item list-group-item-action py-2 ripple "> <i class="fas fa-chart-area fa-fw me-3"></i><span>What is OEAPI?</span> </a>
+                    <a href="catalog.html" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-list fa-fw me-3"></i><span>My Endpoint Offer</span></a>
+                    <a href="charts.html" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-chart-pie fa-fw me-3"></i><span>Graphical Search</span></a>
+                    <a href="catalog.html?level=bachelor" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-chart-bar fa-fw me-3"></i><span>Bachelor Subjects</span></a>
+                    <a href="catalog.html?level=master" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-globe fa-fw me-3"></i><span>Master Subjects</span></a>
+                    <a href="catalog.html?level=microcredential" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-building fa-fw me-3"></i><span>Microdentials</span></a>
+                    <a href="rawoeapi.html" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-plug fa-fw me-3"></i><span>Raw OEAPI</span></a>
+                    <a href="courseForm.html" class="list-group-item list-group-item-action py-2 ripple" id="addCourse"><i class="fas fa-plus fa-fw me-3"></i><span>Add course</span></a>
+                    <a href="oeapi-td.html" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-compass fa-fw me-3"></i><span>Tiny Dashboard</span></a>
+                    <a href="backup.html" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-compass fa-fw me-3"></i><span>Backup</span></a>
+                    <a href="#" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-users fa-fw me-3"></i><span>How to enroll</span></a>
+                    <a href="#" class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-info-circle fa-fw me-3"></i><span>Help</span></a>               </div>
+            </div>
+         </nav>
+         <!-- Sidebar -->
+         <!-- Navbar -->
+         <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+            <!-- Container wrapper -->
+            <div class="container-fluid">
+               <!-- Toggle button -->
+               <button data-mdb-button-init class="navbar-toggler" type="button" data-mdb-collapse-init data-mdb-target="#sidebarMenu"
+                  aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+               <i class="fas fa-bars"></i>
+               </button>
+               <!-- Brand -->
+               <a class="navbar-brand" href="https://openonderwijsapi.nl/#/">
+				<img src="./img/OpenEducationApi_Logo.png" height="60" alt="OEAPILogo" />
+               </a>
+               <!-- Search form 
+                  <input id="search" type="search" class="d-none d-md-flex input-group w-auto my-auto" placeholder="Search by level; degree, master, ..." autocomplete="off" style="max-width: 400px; min-width: 225px;" />
+                  -->
+               <!--
+                  <form class="d-none d-md-flex input-group w-auto my-auto">
+                    <input autocomplete="off" type="search" class="form-control rounded"
+                      placeholder='Search (ctrl + "/" to focus)' style="min-width: 225px;" />
+                    <span class="input-group-text border-0"><i class="fas fa-search"></i></span>
+                  </form>
+                  --> 
+
+                <div class="alert alert-warning " style="margin-left: 2em" role="alert">
+                    The OEAPI Endpoint has no frontend. This catalog view is just for testing
+                </div>                   
+                  
+               <!-- Right links -->
+               <ul class="navbar-nav ms-auto d-flex flex-row">
+                  <!-- Notification dropdown -->
+   
+               </ul>
+            </div>
+            <!-- Container wrapper -->
+         </nav>
+         <!-- Navbar -->
+      </header>
+      <!--Main Navigation-->
+      <!--Main layout-->
+      <main style="margin-top: 58px;">
+         <div id="chartLocal" class="row" style="padding-top: 3em; max-width:50%; ">
+            <canvas id="univLocalSummaryChart"></canvas>
+         </div>              
+         <div class="container" style="display: flex;">
+         <div id="chartUpna" class="row" style="padding-top: 3em; max-width:50%; ">
+            <canvas id="upnaSummaryChart"></canvas>
+         </div>
+         <div id="chartUnizar" class="row" style="padding-top: 3em; max-width:50%; ">
+            <canvas id="unizarSummaryChart"></canvas>
+         </div>
+         <div id="chartUnivbt" class="row" style="padding-top: 3em; max-width:50%; ">
+            <canvas id="univbtSummaryChart"></canvas>
+         </div>
+         
+         <br>
+         <p>.</p>
+      </main>
+      <!--
+         <div class="container-fluid p-3">
+           <p>Search.</p>
+           <input id="search" type="search" class="form-control mb-3" placeholder="Search..." autocomplete="off" />
+           <div>
+           <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
+            Hola
+           </div>
+           
+           <div id="results" class="row g-3"></div>
+           </div>
+         </div>
+         -->
+		 
+		 
+      <script src="js/init.js"></script>
+      <script src="js/htmltize.js"></script>		 
+      <script src="js/charts.js"></script>
+      <script>
+         showCharts();
+      </script>
+      <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>
+   </body>
+</html>

@@ -1,0 +1,30 @@
+{
+
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--PROG_CODE_TOBEINFORMED--"
+    },
+    "programType": "--PROG_programType--",
+    "name": [
+        {
+            "language": "es-ES",
+            "value": "Programa [--PROG_CODE_TOBEINFORMED--]"
+        }
+    ],
+    "abbreviation": "INF",
+    "description": [
+        {
+            "language": "es-ES",
+            "value": "Descripcion [--PROG_CODE_TOBEINFORMED--] ...."
+        }
+    ],
+    "sector": "--PROG_sector--",
+    "levelOfQualification": "--PROG_levelOfQualification--",
+    "qualificationAwarded": "--PROG_qualificationAwarded--",
+    "teachingLanguage": "--PROG_teachingLanguage--",
+    "studyLoad": {
+        "studyLoadUnit": "ects",
+        "value": 3
+    },
+    "level": "--PROG_level--"
+}

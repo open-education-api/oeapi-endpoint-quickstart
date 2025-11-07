@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css" />
+<style>
+    .form button[type="button"] {
+        width: 100%;
+        background: #9c9b9b;
+        color: white;
+        border: none;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    #submit-button[type="submit"] {
+        width: 100%;
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    #Add-coordinator-button {
+        width: 100%;
+        background: #a7283d;
+        color: white;
+        border: none;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    #coordinator-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #coordinator-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-bottom: 1px solid #ddd;
+        background-color: #f9f9f9;
+        font-family: Arial, sans-serif;
+    }
+
+    #coordinator-list li span {
+        flex: 1;
+        text-align: left;
+    }
+
+    #required {
+        font-size: 0.8rem
+    }
+
+    ul.custom-list li span:nth-child(1) {
+        text-align: left;
+    }
+
+    ul.custom-list li span:nth-child(2) {
+        text-align: center;
+    }
+
+    ul.custom-list li span:nth-child(3) {
+        text-align: right;
+    }
+
+    ul.custom-list li button {
+        margin-left: 1em;
+        flex-shrink: 0;
+    }
+
+    .tab-container {
+        max-width: 90%;
+        margin: 2rem auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .tab-buttons {
+        display: flex;
+        border-bottom: 2px solid #eee;
+    }
+
+    .tab-buttons button {
+        flex: 1;
+        padding: 1rem;
+        background: #f4f4f4;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+
+    .tab-buttons button.active {
+        background: #0077ff;
+        color: white;
+    }
+
+    .tab-content {
+        display: none;
+        padding: 2rem;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .tab-content label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .tab-content input,
+    .tab-content textarea,
+    .tab-content select {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    select[multiple] {
+        height: 120px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 0.5rem;
+        font-size: 1rem;
+        background: #fff;
+        color: #333;
+    }
+
+    select[multiple]:focus {
+        border-color: #0077ff;
+        outline: none;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        /* space between columns */
+        align-items: start;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+        /* make this field span both columns */
+    }
+
+    .form-control {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+    }
+
+    /* Divider */
+    .section-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5em 0;
+        grid-column: 1 / -1;
+        /* Forces full-width in grid layouts */
+        width: 100%;
+        /* Make sure it spans the entire container */
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+        content: "";
+        flex: 1;
+        border-bottom: 2px solid #007bff;
+        /* blue line */
+    }
+
+    .divider-title {
+        padding: 0 10px;
+        font-weight: 600;
+        color: #007bff;
+        font-size: 1rem;
+        white-space: nowrap;
+    }
+
+    .section-divider.small {
+        margin: 0.8em 0;
+    }
+
+    .section-divider.small .divider-title {
+        font-size: 0.9rem;
+    }
+
+    .ck-editor__editable_inline {
+        min-height: 200px;
+        /* or whatever suits your layout */
+    }
+
+    .accordion-button {
+        background-color : #f1f1f1
+    }	
+
+    .accordion.full-width {
+        grid-column: 1 / -1;
+        /* make this field span both columns */
+    }
+
+</style>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+<body>
+<!-- Navbar -->
+<nav id="main-navbar" class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+	<!--<nav class="navbar navbar-expand-lg navbar-dark bg-primary">-->
+	<div class="container-fluid">
+		<a class="navbar-brand" href="#">OEAPI Tiny Dashboard (Beta)</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarContent">
+			<!--<ul class="navbar-nav ms-auto"> -->
+			<ul class="navbar-nav ms-auto d-flex flex-row">
+				<li class="nav-item">
+					<a class="nav-link active" href="oeapi-td.html">OEAPI Overview</a>
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link" href="courseForm.html" id="addCourse">Add a course</a>
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link" href="catalog.html">My OEAPI as Course Catalog</a>
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link" href="backup.html">Backup</a>
+				</li>
+
+				<li class="nav-item dropdown" id="avatar">
+					<a data-mdb-dropdown-init class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center" href="#" id="navbarDropdownMenuLink" role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+							👤 User
+						</a>
+					<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink" id="profileMenu">
+						<li>
+							<a class="dropdown-item" href="#" id="change-password">Change Password</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="./register.html" id="administration">Administration</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="#" id="logoutLink">Logout</a>
+						</li>
+					</ul>
+				</li>
+
+
+				<li class="nav-item">
+					<a class="nav-link text-light" href="./login.html" id="loginLink">
+							Login
+						</a>
+				</li>
+
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div class="tab-container">
+    <div class="tab-buttons general-tabs">
+        <button class="tab-btn active" data-tab="basic-info">Course Data</button>
+        <button class="tab-btn" data-tab="detail">Application Info</button>
+        <button class="tab-btn" data-tab="physical">Other Details</button>
+        <button class="tab-btn" data-tab="coordinators">Coordinators</button>
+    </div>
+    <form id="catalogForm" novalidate>
+
+
+        <!---------- Basic Info ----------------------------->
+
+        <div id="tab-basic-info" class="tab-content active">
+            <h4>Course Form</h4>
+            <p style="padding-left:80%" id="destEndpoint"></p>
+            <p style="padding-left:80%"><strong>Fields with (*) are mandatory</strong></p>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="orgUniversity">University</label>
+                    <select class="form-select-sm mt-2 univPartners-select" id="orgUniversity" name="orgUniversity">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>  
+
+
+                <div class="section-divider">
+                    <span class="divider-title">Course ids and main dates</span>
+                </div>
+
+                <div class="form-group full-width mt-2" id="courseName-field">
+                    <label for="courseName">Course Name (*)</label>
+                    <input type="text" id="courseName" name="courseName" class="form-control" placeholder="Enter course name"  required />
+
+                    <small class="text-muted savedLangs-text" id="savedLangs-courseName">No translations yet.</small>
+                    <select class="form-select-sm mt-2 lang-select-text" data-field="courseName" style="width:25%">
+                        <option value="">Loading languages...</option>
+                    </select>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="code">Course Code (*)</label>
+                        <input type="text" name="code" id="code" console.log("saveAllEditorsData: Saving content for "+fieldId+" in lang: "+lang); />
+                    </div>
+                    <div class="form-group">
+                        <label for="abbreviation">Course Abbreviation (*)</label>
+                        <input type="text" name="abbreviation" id="abbreviation" required />
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">  
+                        <label for="startDate">Starts in (*)</label>
+                        <input type="date" id="startDate" name="startDate" required />
+                    </div>
+                    <div class="form-group"> 
+                        <label for="endDate">Ends in (*)</label>
+                        <input type="date" id="endDate" name="endDate" required />
+                    </div>
+                </div>
+
+                <div class="section-divider">
+                    <span class="divider-title">Course basics</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="language">Teaching Language (*)</label>
+                    <select id="teachingLanguage" name="teachingLanguage" class="form-control lang-iso639-select">
+                        <option value="">Loading languages...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fieldsOfStudy">Field of Study</label>
+                    <select name="fieldsOfStudy" id="fieldsOfStudy">
+                        <option disabled>Loading fields of study...</option>
+                    </select>
+                </div>		
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="level">Course Level (*)</label>
+                        <select name="level" id="level" required>
+                            <option value="">Loading levels...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studyLoad">Study Load</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <select name="studyLoadType" id="studyLoadType">
+                                <option disabled>Loading type of study load...</option>
+                            </select>
+                            <input type="number" id="studyLoad" name="studyLoad" placeholder="number" min="1" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="modeOfDelivery">Mode of delivery (more than one is possible)</label>
+                    <select name="modeOfDelivery" id="modeOfDelivery" multiple>
+                        <option disabled>Loading mode of deliveries...</option>
+                    </select>
+                </div>						
+
+                <div class="form-group full-width mt-4" id="description-field">
+                    <label for="description">Objectives and Description (*)</label>
+                    <textarea id="editor-description" rows="10" placeholder="This is the main description of the course shown to students"></textarea>
+                    <small class="text-muted savedLangs" id="savedLangs-description">No translations yet.</small>
+                    <select class="form-select-sm mt-2 lang-select" data-field="description">
+                        <option value="">Loading languages...</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width mt-4">
+                    <label for="abbreviation">(Optional) Link to more info about the course (not to enrollment)</label>
+                    <input type="text" name="link_to_more_info" id="link_to_more_info" />
+                </div>			
+
+
+
+                <div class="accordion full-width" id="acc-learningOutcomes">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-learningOutcomes">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-learningOutcomes" aria-expanded="false" aria-controls="collapse-learningOutcomes">
+                                Skills / Learning Outcomes
+                            </button>
+                        </h2>
+                        <div id="collapse-learningOutcomes" class="accordion-collapse collapse" aria-labelledby="heading-learningOutcomes"
+                             data-bs-parent="#acc-learningOutcomes">
+                            <div class="accordion-body">
+                                <div class="form-group full-width mt-4" id="learningOutcomes-field">
+                                    <label for="learningOutcomes">Skills / Learning Outcomes</label>
+                                    <textarea id="editor-learningOutcomes" rows="10" placeholder="If possible write them in alignment with european frameworks as ESCO"></textarea>
+                                    <small class="text-muted savedLangs" id="savedLangs-learningOutcomes">No translations yet.</small>
+                                    <select class="form-select-sm mt-2 lang-select" data-field="learningOutcomes">
+                                        <option value="">Loading languages...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="accordion full-width" id="acc-assessment">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-assessment">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-assessment" aria-expanded="false" aria-controls="collapse-assessment">
+                                Assessment
+                            </button>
+                        </h2>
+                        <div id="collapse-assessment" class="accordion-collapse collapse" aria-labelledby="heading-assessment"
+                             data-bs-parent="#acc-assessment">
+                            <div class="accordion-body">
+                                <div class="form-group full-width mt-4" id="assessment-field">
+                                    <label for="assessment">Assessment</label>
+                                    <textarea id="editor-assessment" rows="10"  placeholder="Description of assessment: Exams, essays, portfolios, etc." ></textarea>
+                                    <small class="text-muted savedLangs" id="savedLangs-assessment">No translations yet.</small>
+                                    <select class="form-select-sm mt-2 lang-select" data-field="assessment">
+                                        <option value="">Loading languages...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <!-- form-grid -->
+        </div>
+        <!-- tab -->
+
+
+        <!---------- Detail Info  ----------------------------->
+
+        <div id="tab-detail" class="tab-content">
+            <div class="form-grid">
+                <!-- Offering Data -->
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="startEnrollDate">Enrollment From</label>
+                        <input type="date" id="startEnrollDate" name="startEnrollDate" />
+                    </div>
+                    <div class="form-group">
+                        <label for="endEnrollDate">Enrollment Deadline</label>
+                        <input type="date" id="endEnrollDate" name="endEnrollDate" />
+                    </div>			
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="minNumberStudents">Min number of participants</label>
+                        <input type="number"  id="minNumberStudents" name="minNumberStudents" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="maxNumberStudents">Max number of participants</label>
+                        <input type="number"  id="maxNumberStudents" name="maxNumberStudents" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="accordion full-width" id="acc-admissionRequirements">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-admissionRequirements">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-admissionRequirements" aria-expanded="false" aria-controls="collapse-admissionRequirements">
+                                Target Audience / Participants profile
+                            </button>
+                        </h2>
+                        <div id="collapse-admissionRequirements" class="accordion-collapse collapse" aria-labelledby="heading-admissionRequirements"
+                             data-bs-parent="#acc-admissionRequirements">
+                            <div class="accordion-body">
+                                <div class="form-group full-width mt-4" id="admissionRequirements-field">
+                                    <label for="admissionRequirements">Target Audience / Participants profile </label>
+                                    <textarea id="editor-admissionRequirements" rows="10"  placeholder="General public, students, etc. Describe also if previous skills or qualifications are required"></textarea>
+                                    <small class="text-muted savedLangs" id="savedLangs-admissionRequirements">No translations yet.</small>
+                                    <select class="form-select-sm mt-2 lang-select" data-field="admissionRequirements">
+                                        <option value="">Loading languages...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="accordion full-width" id="acc-enrollment">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-enrollment">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-enrollment" aria-expanded="false" aria-controls="collapse-enrollment">
+                                Application Procedure, Detailed Costs
+                            </button>
+                        </h2>
+                        <div id="collapse-enrollment" class="accordion-collapse collapse" aria-labelledby="heading-enrollment"
+                             data-bs-parent="#acc-enrollment">
+                            <div class="accordion-body">
+                                <div class="form-group full-width mt-4" id="enrollment-field">
+                                    <label for="enrollment">Application Procedure, Datailed Costs</label>
+                                    <textarea id="editor-enrollment" rows="10" placeholder="Details of application procedure and deadlines, breakdown of costs, etc."></textarea>
+                                    <small class="text-muted savedLangs" id="savedLangs-enrollment">No translations yet.</small>
+                                    <select class="form-select-sm mt-2 lang-select" data-field="enrollment">
+                                        <option value="">Loading languages...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="form-group">
+                    <label for="amount">Total Cost (in Euros)</label>
+                    <input type="number" id="amount" name="amount" placeholder="Total cost in Euros (only digits, no text or symbols)" min="1" />
+                </div>
+
+                <div class="form-group">
+                    <label for="abbreviation">Link to enrollment (or enrollment info)</label>
+                    <input type="text" name="link_to_enroll" id="link_to_enroll" />
+                </div>
+
+
+            </div>
+            <!-- From Grid -->
+        </div>
+        <!-- Tab Content Grid -->
+
+
+        <!---------- physical Component  ----------------------------->
+
+        <div id="tab-physical" class="tab-content">
+            <h5>More details</h5>
+            <br>
+            <div class="form-grid">
+
+                <div class="accordion full-width" id="acc-offeringDescription">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-offeringDescription">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-offeringDescription" aria-expanded="false" aria-controls="collapse-offeringDescription">
+                                Resources, detailed activities, calendar, etc.
+                            </button>
+                        </h2>
+                        <div id="collapse-offeringDescription" class="accordion-collapse collapse" aria-labelledby="heading-offeringDescription"
+                             data-bs-parent="#acc-offeringDescription">
+                            <div class="accordion-body">
+                                <div class="form-group full-width mt-2" id="offeringDescription-field">
+                                    <label for="offeringDescription">Resources, detailed activities, calendar, etc.</label>
+                                    <textarea id="editor-offeringDescription" rows="10" placeholder="Resources, planned activities, detailed calendar, participation on events, etc." ></textarea>
+                                    <small class="text-muted savedLangs" id="savedLangs-offeringDescription">No translations yet.</small>
+                                    <select class="form-select-sm mt-2 lang-select" data-field="offeringDescription">
+                                        <option value="">Loading languages...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider">
+                    <span class="divider-title">(Optional)  Detailed Address information and Geolocation</span>
+                </div>
+                <!-- Address type in this case : postal
+                         In case of needing it:
+                         <label for="addressType">Address Type</label><select id="addressType" name="addressType" class="form-select"><option value="postal" selected>Postal</option><option value="visit">Visit</option><option value="billing">Billing</option><option value="other">Other</option></select></div>
+                -->
+                <div class="form-group full-width">
+                    <p style="margin:2em 0 2em 0;">Here you can include the details of the specific location where the course is taught and how to get there. 
+                        It may be an on-campus location or a specific center. You can also include geolocation data, which can be used to visually display the course’s location on a map.</p>
+
+                    <!-- ADDRESS accordion: groups street/city/streetNumber/postalCode/countryCode + addressAdditional editor -->
+                    <div class="accordion full-width" id="acc-address">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading-address">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse-address" aria-expanded="false" aria-controls="collapse-address">
+                                    Detailed Address information and Geolocation
+                                </button>
+                            </h2>
+                            <div id="collapse-address" class="accordion-collapse collapse" aria-labelledby="heading-address"
+                                 data-bs-parent="#acc-address">
+                                <div class="accordion-body">
+
+                                    <div class="form-group">
+                                        <label for="street">Street / Site or Center</label>
+                                        <input type="text" id="street" name="street" class="form-control" placeholder="e.g. street like Park Avenue or a site as Advanced Computing Center" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="city">City</label>
+                                        <input type="text" id="city" name="city" class="form-control" placeholder="e.g., Roma" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="streetNumber">Street Number</label>
+                                        <input type="text" id="streetNumber" name="streetNumber" class="form-control" placeholder="e.g., 48" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="postalCode">Postal Code</label>
+                                        <input type="text" id="postalCode" name="postalCode" class="form-control" placeholder="e.g., 3511 EP" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="countryCode">Country</label>
+                                        <select id="countryCode" name="countryCode" class="form-select">
+                                            <option value="">Select country</option>
+                                            <option value="AL">Albania</option>
+                                            <option value="AT">Austria</option>
+                                            <option value="BE">Belgium</option>
+                                            <option value="BA">Bosnia and Herzegovina</option>
+                                            <option value="BG">Bulgaria</option>
+                                            <option value="HR">Croatia</option>
+                                            <option value="CY">Cyprus</option>
+                                            <option value="CZ">Czech Republic</option>
+                                            <option value="DK">Denmark</option>
+                                            <option value="EE">Estonia</option>
+                                            <option value="FI">Finland</option>
+                                            <option value="FR">France</option>
+                                            <option value="DE">Germany</option>
+                                            <option value="GR">Greece</option>
+                                            <option value="HU">Hungary</option>
+                                            <option value="IS">Iceland</option>
+                                            <option value="IE">Ireland</option>
+                                            <option value="IT">Italy</option>
+                                            <option value="XK">Kosovo</option>
+                                            <option value="LV">Latvia</option>
+                                            <option value="LI">Liechtenstein</option>
+                                            <option value="LT">Lithuania</option>
+                                            <option value="LU">Luxembourg</option>
+                                            <option value="MT">Malta</option>
+                                            <option value="MD">Moldova</option>
+                                            <option value="ME">Montenegro</option>
+                                            <option value="NL">Netherlands</option>
+                                            <option value="MK">North Macedonia</option>
+                                            <option value="NO">Norway</option>
+                                            <option value="PL">Poland</option>
+                                            <option value="PT">Portugal</option>
+                                            <option value="RO">Romania</option>
+                                            <option value="RS">Serbia</option>
+                                            <option value="SK">Slovakia</option>
+                                            <option value="SI">Slovenia</option>
+                                            <option value="ES">Spain</option>
+                                            <option value="SE">Sweden</option>
+                                            <option value="CH">Switzerland</option>
+                                            <option value="UA">Ukraine</option>
+                                            <option value="UK">United Kingdom</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- addressAdditional editor (kept inside accordion) -->
+                                    <div class="form-group full-width">
+                                        <label for="addressAdditional">Additional Information</label>
+                                        <textarea id="editor-addressAdditional" rows="10" placeholder="e.g., From city center take bus number..."></textarea>
+                                        <small class="text-muted" id="savedLangs-addressAdditional">No translations yet.</small>
+                                        <select class="form-select-sm lang-select" data-field="addressAdditional">
+                                            <option value="">Loading languages...</option>
+                                        </select>
+                                    </div>
+
+
+                                    <div class="section-divider">
+                                        <span class="divider-title">Geolocation</span>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="latitude">Latitude</label>
+                                            <input type="number" step="0.000001" id="latitude" name="latitude" class="form-control" placeholder="e.g., 52.089123" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="longitude">Longitude</label>
+                                            <input type="number" step="0.000001" id="longitude" name="longitude" class="form-control" placeholder="e.g., 5.113337" />
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <!-- form grid -->
+        </div>
+        <!-- tab -->
+
+
+        <!-- Coordinators -->
+        <div id="tab-coordinators" class="tab-content">
+            <p style="margin:2em 0 2em 0;">In this tab the name and email of coordinators is gathered to offer a resumed list of name-email of coordinators involved. 
+                If any other detail should appear with them about their roles or responsabilities, such as their role as "John Doe. Academic counsellor" this is supposed 
+                to be described in other spaces such as "Description", "Application Procedure", etc. at which describing their role is relevant.</p>
+            <div class="item-group">
+                <input type="text" id="coordinator_name" placeholder="Name" />
+                <input type="text" id="coordinator_surname" placeholder="Surname" />
+                <input type="text" id="coordinator_email" placeholder="Email" />
+                <button type="button" id="add-coordinator-button" onclick="addCoordinator()"> Add Coordinator </button>
+            </div>
+            <br />
+            <h5>Coordinators assigned to this course</h5>		  
+            <ul id="coordinator-list" class="custom-list">
+                <li>
+                    <span>Name</span>
+                    <span>Surname</span>
+                    <span>Email</span>
+                </li>
+            </ul>
+            <button type="submit" style="margin-top:15%" id="submit-button"> Submit Course </button>
+        </div>
+    </form>
+</div>
+
+<script src="js/init.js"></script>
+<script src="js/oeapi.js"></script>
+<script src="js/forms.js"></script>	
+
+
+<script>
+
+    const formCourseType = "stdCourse";
+
+    document.getElementById("logoutLink").addEventListener("click", function (e) {
+        e.preventDefault();
+        localStorage.removeItem("jwt");
+        window.location.href = "./login.html";
+    });
+
+
+    window.addEventListener("load", () => {
+        fillItemSelectorsByClassName("lang-select", languages);
+        fillItemSelectorsByClassName("lang-select-text", languages);
+        fillItemSelectorsByClassName("univPartners-select", univPartners);
+        fillLanguageISO639Selectors();
+        fillFieldsOfStudy("fieldsOfStudy");
+        initMultilingualEditors();
+        initMultilingualTextFields();
+    });
+
+
+    renderForm();
+
+</script>
+</body>
+</html>

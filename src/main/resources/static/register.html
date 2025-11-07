@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Register User</title>
+        <style>
+            body {
+                background: linear-gradient(135deg, #43cea2, #185a9d);
+                font-family: sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+
+            .register-container {
+                background: #fff;
+                padding: 2em;
+                border-radius: 12px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+                width: 350px;
+            }
+
+            h2 {
+                text-align: center;
+                margin-bottom: 1.5em;
+            }
+
+            label {
+                display: block;
+                margin-top: 1em;
+                font-weight: bold;
+            }
+
+            input, select {
+                width: 100%;
+                padding: 0.7em;
+                margin-top: 0.3em;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+                font-size: 1em;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 1.5em;
+                padding: 0.8em;
+                background: #43cea2;
+                color: white;
+                font-size: 1em;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.3s ease;
+            }
+
+            button:hover {
+                background: #36b89a;
+            }
+
+            #message {
+                text-align: center;
+                margin-top: 1em;
+            }
+
+            .success {
+                color: green;
+            }
+            .error {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="register-container">
+            <h2>Register New User</h2>
+            <form id="registerForm">
+                <label for="username">Username (email)</label>
+                <input type="text" id="username" required />
+
+                <label for="password">Password</label>
+                <input type="password" id="password" required />
+
+                <label for="role">Select Role</label>
+                <select id="role">
+                    <option value="ROLE_USER" selected>User</option>
+                    <option value="ROLE_ADMIN">Admin</option>
+                </select>
+
+                <button type="submit">Register</button>
+                <button type="submit" id="login">Login</button>
+				<br>
+				<button type="text" id="bckdb">(Go back to dashboard)</button>
+            </form>
+
+            <div id="message"></div>
+        </div>
+        <script src="js/init.js"></script>
+        <script src="js/oeapi.js"></script>
+        <script>
+            document.getElementById('login').style.display = "none";
+            document.getElementById('login').addEventListener('click', () => {
+                window.location.href = './login.html';
+            });
+            
+            const form = document.getElementById('registerForm');
+            const messageDiv = document.getElementById('message');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const email = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                const role = document.getElementById('role').value;
+
+                const user = {
+                    email,
+                    password,
+                    roles: [{name: role}]
+                };
+                const userJSON = JSON.stringify(user);
+                console.log("New user: " + userJSON);
+                //const token = localStorage.getItem('jwt');
+                if (!isAdmin()) {
+                    alert("Access denied. Admins only.");
+                    return;
+                }
+                try {
+                    const res = await fetch(ooapiDefaultEndpointURL + '/auth/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + localStorage.getItem('jwt') // Must be from an ADMIN user
+                        },
+                        body: userJSON
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`Error ${res.status}: ${await res.text()}`);
+                    }
+
+                    messageDiv.textContent = 'User registered successfully!';
+                    messageDiv.className = 'success';
+                    form.reset();
+                    document.getElementById('login').style.display = "block";
+                } catch (err) {
+                    messageDiv.textContent = err.message;
+                    messageDiv.className = 'error';
+                }
+            });
+            function isAdmin() {
+                const token = localStorage.getItem('jwt');
+                if (!token)
+                    return false;
+
+                // If you decode the token, check for 'roles' or 'authorities'
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                console.log(payload);
+                return payload.roles?.includes('ROLE_ADMIN') || payload.authorities?.includes('ROLE_ADMIN');
+            }
+
+// Redirect if not admin
+            if (!isAdmin()) {
+                alert("Access denied. Admins only.");
+                window.location.href = "./catalog.html"; // Or login
+            }
+			
+			
+            document.getElementById('bckdb').addEventListener('click', () => {
+            window.location.href = './oeapi-td.html';
+            });
+        </script>
+
+    </body>
+</html>

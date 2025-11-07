@@ -1,0 +1,155 @@
+package oeapi.service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import oeapi.model.Organization;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import javax.transaction.Transactional;
+
+import oeapi.payload.OrganizationDTO;
+import oeapi.model.oeapiIdentifierEntry;
+import oeapi.model.oeapiLanguageTypedString;
+import oeapi.oeapiException;
+import oeapi.repository.OrganizationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+/**
+ *
+ * @author itziar.urrutia
+ */
+@Service
+@Transactional
+
+public class OrganizationService extends oeapiEndpointDTOService<Organization, OrganizationRepository, OrganizationDTO> implements oeapiRelatedObjServiceInterface<Organization> {
+
+    Logger logger = LoggerFactory.getLogger(OrganizationService.class);
+
+    @Value("${ooapi.config.autoCreateOrgIfNotExists:false}")
+    private boolean autoCreateIfNotExists;
+
+    // Values needed in case of building a default organization from application.properties  ooapi.config.autoCreateOrg*
+    @Value("${ooapi.config.autoCreateOrg_Name:Unita}")
+    private String autoCreateOrg_Name;
+
+    @Value("${ooapi.config.autoCreateOrg_Code:0}")
+    private String autoCreateOrg_Code;
+
+    @Value("${ooapi.config.autoCreateOrg_ShortName:Unita Default Organization}")
+    private String autoCreateOrg_ShortName;
+
+    @Value("${ooapi.config.autoCreateOrg_Type:root}")
+    private String autoCreateOrg_Type;
+
+    @Autowired
+    private oeapiEnumConversionService enumService;
+
+    public Optional<Organization> getParent(String code) {
+        return Optional.empty();
+        //return super.getByPrimaryCode(code, organizationRepository);
+    }
+
+    @Override
+    public Optional<Organization> manageRelated(Organization related) {
+        
+        logger.debug("--> Organization, manageRelated: Searching for the supplied ORG... ["+related+"]");
+        String id = related.getOrganizationId();
+        
+        Optional<Organization> objExisting = Optional.empty();
+        try {
+            objExisting = super.manageRelated(related);
+            if (!objExisting.isPresent()) {
+                logger.debug("--> Organization, manageRelated: No org exist like the supplied one.");
+                throw new oeapiException(HttpStatus.BAD_REQUEST, "Check Organization", "Element [" + objExisting.get().getOrganizationId() + "] not found");
+            } else {
+                logger.debug("--> Organization, manageRelated: The ORG supplied exists. OrgID = ["+objExisting.get().getOrganizationId()+"] returning it");
+            }
+        } catch (Exception e) {
+                throw new oeapiException(HttpStatus.BAD_REQUEST, "Check Organization", "Element [" + id + "] not found");
+        } 
+        
+       return objExisting;
+
+    }
+
+
+    public OrganizationService() {
+        super();
+        super.initializeMapper(Organization.class, OrganizationDTO.class, enumService, Arrays.asList("organizationType"));
+    }
+
+    public Optional<Organization> getDefault(boolean createIfNotExists) {
+
+        logger.debug("Organization getDefault is called. Searching for Org with default code [" + autoCreateOrg_Code + "]...");
+
+        List<Organization> existingDefault = super.getObjectByPrimaryCode(autoCreateOrg_Code);
+
+        if (!existingDefault.isEmpty()) {
+            logger.debug("Organization getDefault is called. Returning Org with default code [" + autoCreateOrg_Code + "] ("+existingDefault.get(0).getShortName()+")");
+            return Optional.of(existingDefault.get(0));
+        }
+        if (createIfNotExists) {
+            logger.debug("Organization getDefault is called. No previous default Org, creating one...");
+            return Optional.of(this.autoGenerateBasicItem());
+        }
+        
+        // Normally this point should be not reached. Either a default or autocreate one should be returned
+        return Optional.empty();
+    }
+
+    public Optional<Organization> getDefault() {
+        return this.getDefault(autoCreateIfNotExists);
+    }    
+
+    @Override
+    public Organization autoGenerateBasicItem(String organizationId) {
+
+        // This is called when an organization is mentioned but it does not existed before
+        // Normally you should declare your organization before and then use it accordingly
+        // In application properties this can be override for easing tests, but do
+        // not use it in real cases
+        OrganizationDTO o = new OrganizationDTO();
+
+        o.setOrganizationId(organizationId);
+
+        oeapiLanguageTypedString name_gb = new oeapiLanguageTypedString("en-GB", "Autocreated Org - " + organizationId + " (You should point to default or real organization loading courses)");
+        List<oeapiLanguageTypedString> defaultListNames = new ArrayList();
+        defaultListNames.add(name_gb);
+        o.setName(defaultListNames);
+        o.setPrimaryCode(new oeapiIdentifierEntry("identifier", organizationId + "-AutoGenerated"));
+        o.setOrganizationType(autoCreateOrg_Type);
+        o.setShortName("AutoOrg-" + organizationId);
+        return super.create(super.toEntity(o));
+
+    }
+
+    @Override
+    public Organization autoGenerateBasicItem() {
+
+        // If no info is supplied, let's use application.properties default values
+        OrganizationDTO o = new OrganizationDTO();
+        String orgID = UUID.randomUUID().toString();
+        o.setOrganizationId(orgID);
+
+        oeapiLanguageTypedString name_gb = new oeapiLanguageTypedString("en-GB", autoCreateOrg_Name);
+        List<oeapiLanguageTypedString> defaultListNames = new ArrayList();
+        defaultListNames.add(name_gb);
+        o.setName(defaultListNames);
+        o.setPrimaryCode(new oeapiIdentifierEntry("identifier", autoCreateOrg_Code));
+        o.setOrganizationType(autoCreateOrg_Type);
+        o.setShortName(autoCreateOrg_ShortName);
+
+        return super.create(super.toEntity(o));
+    }
+
+    public Optional<Organization> findByOrganizationId(String organizationId) {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+}

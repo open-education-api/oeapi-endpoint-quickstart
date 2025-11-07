@@ -1,0 +1,2 @@
+type: string
+enum: ["program","course","component"]## YAML Template.

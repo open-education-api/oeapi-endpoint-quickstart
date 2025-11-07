@@ -1,0 +1,28 @@
+{
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "2026-601-101102"
+    },
+    "description": [
+        {
+            "language": "es-ES",
+            "value": "Hola5"
+        },
+        {
+            "language": "en-GB",
+            "value": "Hello2"
+        }
+    ],
+    "name": [
+        {
+            "language": "es-ES",
+            "value": "Universidad Pública de Navarra"
+        },
+        {
+            "language": "en-GB",
+            "value": "Public University of Navarra"
+        }
+    ],
+    "shortName": "UPNA",
+    "organizationType": "root"
+}

@@ -1,0 +1,8 @@
+- [ ] deploy the endpoint in your own datacenter according to the instruction provided in the Readme
+- [ ] secure the endpoint 
+    - [ ] protect angainst unauthorized data uploads (create, delete, modify)
+    - [ ] https
+- [ ] create and upload organizational data
+- [ ] make the endpoint available on the Internet
+- [ ] communicate the endpoint address to be added to the catalogue browser
+- [ ] upload course information according to the OOAPI standard

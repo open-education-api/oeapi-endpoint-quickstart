@@ -1,0 +1,3 @@
+type: string
+enum: ["pass-or-fail","US letter","UK letter","0-100","1-10"]## YAML Template.
+

@@ -1,0 +1,3 @@
+type: string
+enum: ["general purpose","lecture room","computer room","laboratory","office","workspace","exam location", "study room","examination room","conference room"]## YAML Template.
+

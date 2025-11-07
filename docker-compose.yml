@@ -1,0 +1,37 @@
+version: '2.4'
+
+services:
+  
+  oeapi_qs:
+    image: oeapi_qs
+    container_name: oeapi_qs
+    hostname: oeapi_qs
+    build:
+      dockerfile:  ./Dockerfile
+      context: .
+    ports:
+      - "57075:57075"
+    restart: always
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+
+  mysqldb:
+    image: mysql:8
+    container_name: mysqldb
+    hostname: mysqldb
+    ports:
+    - 3306:3306
+    expose:
+      - 53307
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: oeapi_qs
+      MYSQL_USER: oeapi_qs
+      MYSQL_PASSWORD: oeapi_qs
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_0900_ai_ci']
+    healthcheck:
+     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+     interval: 10s
+     timeout: 5s
+     retries: 5

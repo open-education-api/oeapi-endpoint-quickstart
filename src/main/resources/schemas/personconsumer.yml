@@ -1,0 +1,34 @@
+type: object
+required:
+ - consumerKey
+ - enrollments
+properties:
+  consumerKey:
+    type: string
+  enrollments:
+    type: array
+    items:
+      type: object
+      required:
+        - name
+        - crohoCreboCode
+      properties:
+        name:
+          type: string
+          description: the name of the program this enrollment is for
+        crohoCreboCode:
+          type: string
+          description: the crohoCreboCode for this program
+        phase:
+          type: string
+          enum: ["bachelor","master"]
+        modeOfStudy:
+          type: string
+          enum: ["full-time","part-time","dual training","self-paced"]
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          formate: date
+

@@ -1,0 +1,3 @@
+type: string
+enum: ["presential","online","hybrid","blended","research_lab_bases","work_based","project_based"]## YAML Template.
+

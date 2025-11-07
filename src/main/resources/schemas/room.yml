@@ -1,0 +1,38 @@
+type: object
+properties:
+  primaryCode:
+    type: object
+    properties:
+      codeType:
+        type: string
+        enum: ["identifier", "otherType"] # Enumerated values
+      code:
+        type: string
+    required: ["codeType", "code"]
+  buildingId:
+    type: string
+    format: uuid
+  address:
+    type: String
+  name:
+    type: array
+    items:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+      required: ["language", "value"]
+  description:
+    type: array
+    items:
+      type: object
+      properties:
+        language:
+          type: string
+          enum: ["bg-BG","hr-HR","cs-CZ","da-DK","nl-NL","en-GB","et-EE","fi-FI","fr-FR","de-DE","el-GR","hu-HU","ga-IE","it-IT","lv-LV","lt-LT","mt-MT","pl-PL","pt-PT","ro-RO","sk-SK","sl-SI","es-ES","sv-SE","ca-ES","eu-ES","gl-ES","no-NO","is-IS","de-CH","fr-CH","it-CH","rm-CH","cy-GB","gd-GB","sr-RS","bs-BA","cnr-ME","mk-MK","sq-AL"]
+        value:
+          type: string
+      required: ["language", "value"]
+  required: ["primaryCode","name","address","description"]

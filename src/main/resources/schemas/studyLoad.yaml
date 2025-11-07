@@ -1,0 +1,13 @@
+type: object
+description: The amount of effort to complete this education in the specified unit.
+properties:
+  studyLoadUnit:
+    type: string
+    enum: ["contacttime","ects","sbu","sp","hour"]
+  value:
+    type: number
+required:
+  - studyLoadUnit
+  - value
+
+

@@ -1,0 +1,45 @@
+type: object
+properties:
+  primaryCode:
+    type: object
+    properties:
+      codeType:
+        type: string
+        enum: ["identifier","courseCode","otherType"] # Enumerated values
+      code:
+        type: string
+    required: ["codeType", "code"]
+  name:
+    type: array
+    items:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+      required: ["language", "value"]
+  description:
+    type: array
+    items:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+      required: ["language", "value"]
+  courseId:
+    type: string
+    format: uuid # Validate UUID format
+  teachingLanguage:
+    type: string
+    pattern: '^[a-z]{3}$'
+  abbreviation:
+    type: string
+  level:
+    type: string
+    enum: ["secondary vocational education","secondary vocational education 1","secondary vocational education 2","secondary vocational education 3","secondary vocational education 4","associate degree","bachelor","master","doctoral","microcredential","undefined","undivided","nt2-1","nt2-2"]
+  fieldsOfStudy:
+    type: string
+required: ["primaryCode", "name","teachingLanguage","abbreviation","description","level"]

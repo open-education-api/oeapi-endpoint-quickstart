@@ -1,0 +1,28 @@
+type: object
+properties:
+  primaryCode:
+    type: object
+    properties:
+      codeType:
+        type: string
+        enum: ["identifier", "otherType"] # Enumerated values
+      code:
+        type: string
+    required: ["codeType", "code"]
+  groupId:
+    type: string
+    format: uuid
+  groupType:
+    type: string
+    enum: ["learning group","class","team"]
+  name:
+    type: array
+    items:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+      required: ["language", "value"]
+required: ["primaryCode","name","groupType"]

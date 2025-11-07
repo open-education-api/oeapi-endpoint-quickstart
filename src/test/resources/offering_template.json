@@ -1,0 +1,26 @@
+{
+    "offeringId": "--OFFERING_ID_TOBEINFORMED--",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--OFFERING_ID_TOBEINFORMED--"
+    },
+    "offeringType": "course",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "Course Offering"
+        }
+    ],
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "Offering for this course"
+        }
+    ],
+    "teachingLanguage": "spa",
+    "resultExpected": true,
+    "startDate": "2025-09-17",
+    "endDate": "2025-12-18",
+    "course": "--COURSE_ID_TOBEINFORMED--"
+}
+

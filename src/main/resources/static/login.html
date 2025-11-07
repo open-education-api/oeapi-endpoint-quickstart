@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Login</title>
+        <style>
+            body {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+
+            .login-container {
+                background: #ffffff;
+                padding: 2.5em 2em;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+                width: 320px;
+            }
+
+            .login-container h2 {
+                text-align: center;
+                margin-bottom: 1.5em;
+                color: #333;
+            }
+
+            label {
+                display: block;
+                margin-top: 1em;
+                color: #555;
+                font-weight: 600;
+            }
+
+            input {
+                width: 100%;
+                padding: 0.7em;
+                margin-top: 0.3em;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                font-size: 1em;
+                box-sizing: border-box;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 1.5em;
+                padding: 0.8em;
+                background: #667eea;
+                color: white;
+                font-size: 1em;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.3s ease;
+            }
+
+            button:hover {
+                background: #5a67d8;
+            }
+
+            #message {
+                margin-top: 1em;
+                text-align: center;
+                font-weight: 500;
+            }
+
+            .success {
+                color: green;
+            }
+
+            .error {
+                color: red;
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="login-container">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="username">Username (email):</label>
+                <input type="text" id="username" name="username" required />
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+
+                <button type="submit" id="login">Login</button>
+				<br>
+				<button type="text" id="bckdb">(Go back to dashboard)</button>
+            </form>
+
+            <div id="message"></div>
+        </div>
+        <script src="js/init.js"></script>
+        <script>
+            
+            const form = document.getElementById('loginForm');
+            const messageDiv = document.getElementById('message');
+
+            form.addEventListener('submit', async (e) => {
+                                
+                e.preventDefault();
+                const email = form.username.value;
+                const password = form.password.value;
+                //const roles = [{name:"ROLE_USER"}];
+
+                const url = ooapiDefaultEndpointURL + "/auth/login";
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({email, password})
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log(data);
+                    const token = data.token || data.access_token;
+                    console.log(token);
+                    localStorage.setItem('jwt', token);
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Login successful! Token stored in localStorage.';
+
+                    // Optionally: redirect
+                    window.location.href = "./oeapi-td.html";
+
+                } else {
+                    messageDiv.textContent = 'Login failed: ' + res.status;
+                }
+            });
+
+            document.getElementById('bckdb').addEventListener('click', () => {
+                window.location.href = './oeapi-td.html';
+            });
+        </script>
+
+    </body>
+</html>

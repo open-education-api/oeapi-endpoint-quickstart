@@ -1,0 +1,165 @@
+{
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--COURSE_CODE_TOBEINFORMED--"
+    },
+    "name": [
+        {
+            "language": "es-ES",
+            "value": "Curso [--COURSE_CODE_TOBEINFORMED--]"
+        },
+        {
+            "language": "en-GB",
+            "value": "Course [--COURSE_CODE_TOBEINFORMED--]"
+        }
+    ],
+    "abbreviation": "MATHS-UNITA",
+    "level": "bachelor",
+    "link": "https://univ-unita.eu/",
+    "studyLoad": {
+        "studyLoadUnit": "ects",
+        "value": 6
+    },
+    "modeOfDelivery": [
+        "on campus",
+        "online"
+    ],
+
+    "description": [
+        {
+            "language": "es-ES",
+            "value": "\n <p>Conjuntos de números. Operaciones básicas con números reales y complejos.</p> \n <p>Funciones, límites, continuidad, derivabilidad, integrabilidad. Conceptos básicos sobre funciones escalares de una variable real. Funciones<br>elementales. Límites. Continuidad de una función en un punto. Propiedades de funciones continuas. Derivación, aplicaciones de la derivada.<br>Integrales definidas e indefinidas, aplicaciones de las integrales</p> \n <p>Espacios vectoriales sobre R: Subespacios. Base y dimensión</p> \n <p>Espacio euclídeo: producto escalar y norma euclídea, bases ortonormales,ortogonalización de Gram-Schmidt.</p> \n <p>Diagonalización de matrices: valores y vectores propios. Subespacios fundamentales. Aproximación por mínimos cuadrados.</p> \n <p>Matrices: matriz inversa, sistemas lineales, Teorema de Rouché-Frobenius.</p> \n <p>Determinantes</p>\n"
+        },
+        {
+            "language": "en-GB",
+            "value": "<p>Description of the course. This course will be: <ul><li>Nice</li><li>Interesting...</li></ul></p>"
+        }
+    ],
+    "teachingLanguage": "spa",
+    "admissionRequirements": [
+        {
+            "language": "es-ES",
+            "value": "<p>Consulta los criterios generales de acceso y admisión en esta <a href='https://www.unavarra.es/sites/estudios/acceso-y-admision.html' title='Criterios Generales de Acceso y Admisión.'><strong>página</strong></a></p>"
+        },
+        {
+            "language": "en-GB",
+            "value": "<p>Check the general access and admission criteria on this <a href='https://www.unavarra.es/sites/estudios/acceso-y-admision.html' title='General Access and Admission Criteria.'><strong>page</strong></a></p>"
+        }
+    ],
+    "qualificationRequirements": [
+        {
+            "language": "es-ES",
+            "value": "<p>Consulta los requisitos que debes cumplir en esta <a href='#' title='Criterios Generales de los candidatos.'><strong>página</strong></a></p>"
+        },
+        {
+            "language": "en-GB",
+            "value": "<p>Check the general access and admission criteria on this <a href='https://www.unavarra.es/sites/estudios/acceso-y-admision.html' title='General Access and Admission Criteria.'><strong>page</strong></a></p>"
+        }
+    ],
+    "enrollment": [
+        {
+            "language": "es-ES",
+            "value": "<p>Las condiciones de matrícula pueden consultarse en....</p>"
+        },
+        {
+            "language": "en-GB",
+            "value": "<p>Enrollment criteria will be....</p>"
+        }
+    ],
+    "resources": [
+        "Projector",
+        "Computer"
+    ],
+    "assessment": [
+        {
+            "language": "es-ES",
+            "value": "\n <p>&nbsp;</p> \n <table style=' table-layout: auto;' border='1' cellpadding='10'> \n  <thead> \n   <tr> \n    <th style='width: 245px;'><strong>Resultados de </strong><br><strong>aprendizaje</strong></th> \n    <th style='width: 435px;'><strong>Actividad de </strong><br><strong>evaluación</strong></th> \n    <th style='width: 95px;'><strong>Peso (%)</strong></th> \n    <th style='width: 120px;'><strong>Carácter </strong><br><strong>recuperable</strong></th> \n    <th style='width: 100px;'><strong>Nota mínima </strong><br><strong>requerida</strong></th> \n   </tr> \n  </thead> \n  <tbody> \n   <tr> \n    <td style='width: 245px;'>R1, R2, R3, R4, ENAEE-1</td> \n    <td style='width: 435px;'>Prueba escrita que recoja los conceptos adquiridos en cálculo.</td> \n    <td style='width: 95px;'>43 %</td> \n    <td style='width: 100px;'>&nbsp;Sí</td> \n    <td style='width: 100px;'>3</td> \n   </tr> \n   <tr> \n    <td style='width: 245px;'>R4, R5, R6, R7, R8, ENAEE-1</td> \n    <td style='width: 435px;'>Prueba escrita que recoja los conceptos adquiridos en álgebra.</td> \n    <td style='width: 95px;'>42 %</td> \n    <td style='width: 120px;'>&nbsp;Sí</td> \n    <td style='width: 100px;'>3</td> \n   </tr> \n   <tr> \n    <td style='width: 245px;'>R1, R2, R3, R4, R5, R6, R7, R8, &nbsp;ENAEE-1</td> \n    <td style='width: 435px;'>Trabajo individual&nbsp;</td> \n    <td style='width: 95px;'>15 %</td> \n    <td style='width: 120px;'>No</td> \n    <td style='width: 100px;'>&nbsp;</td> \n   </tr> \n  </tbody> \n </table> \n <p>En caso de no obtener el mínimo requerido en las pruebas escritas el estudiante deberá realizar la evaluación de recuperación si quiere aprobar la asignatura.</p> \n <p>La evaluación de recuperación no tiene nota mínima, y consta de un único examen en el que se evalúa la parte de álgebra y la de cálculo. La nota en esa prueba es el 85 % de la nota final. A este examen de recuperación se podrán presentar todos los estudiantes que no hayan superado la asignatura en la evaluación continua.</p> \n <p>Los estudiantes que, habiendo superado la asignatura en la evaluación continua, quieran mejorar su nota podrán presentarse al examen de recuperación.</p> \n <p>Si el estudiante sólo se presenta a una prueba escrita parcial (o a ninguna) se considerará No Presentado.</p> \n <p><em>Si en alguna de las actividades no se cumpliera el mínimo para ponderar, la nota de la asignatura será como máximo 4,9 sobre 10 (suspenso).&nbsp;</em></p>\n"
+        },
+        {
+            "language": "en-GB",
+            "value": "<p>Assesment details.....</p>"
+        }
+    ],
+    "learningOutcomes": [
+        [
+            {
+                "language": "en-GB",
+                "value": "<p>Description of the learning outcomes</p>"
+            }
+        ]
+    ],
+    "addresses": [
+        {
+            "addressType": "teaching",
+            "street": "Mayor",
+            "streetNumber": "10",
+            "postalCode": "31001",
+            "city": "Pamplona",
+            "countryCode": "es",
+            "additional": [
+                {
+                    "language": "es-ES",
+                    "value": "Classroom location"
+                }
+            ],
+            "geolocation": {
+                "latitude": 42.818446,
+                "longitude": -1.646196
+            }
+        },
+        {
+            "addressType": "postal",
+            "street": "Cataluña",
+            "streetNumber": "s/n",
+            "postalCode": "31006",
+            "city": "Pamplona",
+            "countryCode": "ES",
+            "additional": [
+                {
+                    "language": "es-ES",
+                    "value": "Adicional Cataluña 1"
+                }
+            ],
+            "geolocation": {
+                "latitude": 42.799866,
+                "longitude": -1.637177
+            }
+        }
+    ],
+    "otherCodes": [
+        {
+            "codeType": "identifier",
+            "code": "2023-501-OTHER"
+        },
+        {
+            "codeType": "identifier",
+            "code": "2022-501-OTHER"
+        }
+    ],
+    "consumers": [
+        {
+            "consumerKey": "UNITA",
+            "alliances": [
+                {
+                    "name": "unita",
+                    "enrollmentForGuests": "broker",
+                    "visibleForGuests": true,
+                    "enrollmentForOwnStudents": "url",
+                    "type": "deepening",
+                    "visibleForOwnStudents": false,
+                    "selection": true,
+                    "jointPartnerCodes": [
+                        "UPNA",
+                        "USMB",
+                        "UNIZAR",
+                        "UNITBV"
+                    ],
+                    "themes": [
+                        "Agriculture",
+                        "Ecology"
+                    ]
+                }
+            ]
+        }
+    ]
+}
