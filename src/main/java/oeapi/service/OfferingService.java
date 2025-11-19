@@ -181,15 +181,18 @@ public class OfferingService extends oeapiEndpointService<Offering, OfferingRepo
 
     @Override
     public boolean delete(String id) {
+        logger.debug("*>-Offering delete: Deleting Offering with ID:"+id); 
         super.delete(id);
         return true;
     }
 
-    public void delete(Course course) {
+    public void deleteByCourse(Course course) {
         List<CourseOffering> offerings = repository.findByCourse_CourseId(course.getCourseId());
+        
         for (CourseOffering offering : offerings) {
+            logger.debug("*>-Offering deleteByCourse: Deleting Offering with ID"+offering.getOfferingId()); 
             offering.setCourse(null); // disassociate
-            repository.delete(offering); // delete
+            repository.delete(offering); // deleteByCourse
         }
     }
 

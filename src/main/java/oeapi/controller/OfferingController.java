@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,14 +28,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 /**
  *
  * @author itziar.urrutia
  */
 @RestController
 @RequestMapping("/offerings")
-public class OfferingController extends oeapiController<Offering>  {
+public class OfferingController extends oeapiController<Offering> {
 
     static Logger logger = LoggerFactory.getLogger(OfferingController.class);
 
@@ -45,9 +45,9 @@ public class OfferingController extends oeapiController<Offering>  {
     private CourseService courseService;
 
     @GetMapping
-    public ResponseEntity<?> getAll(@ModelAttribute oeapiOfferingRequestParam requestParam) {                
-        
-      // return super.getResponse(requestParam.toPageable(Arrays.asList("offeringId", "name")), new ArrayList());
+    public ResponseEntity<?> getAll(@ModelAttribute oeapiOfferingRequestParam requestParam) {
+
+        // return super.getResponse(requestParam.toPageable(Arrays.asList("offeringId", "name")), new ArrayList());
         Map.Entry<String, String> filter = requestParam.getFilter();
 
         if (filter == null) {
@@ -60,7 +60,6 @@ public class OfferingController extends oeapiController<Offering>  {
             return super.getAllByFieldValue(filter.getKey(), filter.getValue(), requestParam.toPageable(), offeringService);
         }
     }
-    
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> get(@PathVariable String id) {
@@ -103,8 +102,8 @@ public class OfferingController extends oeapiController<Offering>  {
     public ResponseEntity<?> create(@RequestBody Offering offering) {
         return super.create(offering, offeringService);
     }
- 
-   @PostMapping(value = "/courseOffering", produces = "application/json")
+
+    @PostMapping(value = "/courseOffering", produces = "application/json")
     public ResponseEntity<?> createCourseOffering(@RequestBody CourseOffering courseOffering) {
 
         logger.debug("Creating CourseOffering...");
@@ -113,6 +112,40 @@ public class OfferingController extends oeapiController<Offering>  {
 
         return super.create(courseOffering, offeringService);
     }
+
+    
+    @DeleteMapping("/{offeringId}")
+    public ResponseEntity<?> delete(@PathVariable String offeringId) {
+
+        Optional<Offering> existing = offeringService.getById(offeringId);
+
+        if (existing.isPresent()) {
+            offeringService.delete(offeringId);  
+            return ResponseEntity.ok().build();
+        } else {
+            // return super.NotFound(courseId);
+           throw new oeapiException(HttpStatus.NOT_FOUND, "Error deleting Offering with Id: " + offeringId);
+        }
+    }
+           
+    
+    @DeleteMapping("/deleteByCourseId/{courseId}")
+    public ResponseEntity<?> deleteByCourseId(@PathVariable String courseId) {
+
+        try {
+            Optional<Course> existing = courseService.getById(courseId);
+            if (existing.isPresent()) {
+                offeringService.deleteByCourse((Course) existing.get());
+                return ResponseEntity.ok().build();
+            } else {
+                throw new oeapiException(HttpStatus.NOT_FOUND, "Error: Trying to delete offering of not existing course with Id: " + courseId);
+            }
+          } catch (Exception ex)
+             {  
+                throw new oeapiException(HttpStatus.NOT_FOUND, "Error trying to delete offering of course with Id: " + courseId + "Reason: "+ex.getLocalizedMessage());
+             }
+    }
+    
 
     public void manageOfferingCourse(CourseService courseService, CourseOffering courseOffering, boolean autoCreateCourseIfNotExists) {
 

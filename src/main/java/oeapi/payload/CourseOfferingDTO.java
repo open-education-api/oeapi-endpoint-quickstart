@@ -15,6 +15,15 @@ import oeapi.model.Organization;
  */
 public class CourseOfferingDTO extends OfferingDTO {
 
+
+
+    @JsonProperty("course")
+    private String courseJSON;
+
+    @JsonIgnore
+    private Course course;
+
+    
     /**
      * @return the courseJSON
      */
@@ -41,14 +50,8 @@ public class CourseOfferingDTO extends OfferingDTO {
      */
     public void setCourse(Course course) {
         this.course = course;
-    }
-
-    @JsonProperty("course")
-    private String courseJSON;
-
-    @JsonIgnore
-    private Course course;
-
+    }    
+    
     @Override
     public String getOfferingType() {
         return "course";

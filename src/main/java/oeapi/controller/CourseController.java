@@ -250,8 +250,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         Optional<Course> existing = courseService.getById(courseId);
 
         if (existing.isPresent()) {
-            offeringService.delete((Course) existing.get());
-            courseService.delete(courseId);
+            courseService.delete(courseId);  // delete course in service will take care of deleting all related objects
             return ResponseEntity.ok().build();
         } else {
             // return super.NotFound(courseId);

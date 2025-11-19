@@ -45,9 +45,6 @@ public class ComponentController extends oeapiDTOController<Component, Component
     private oeapiObjectsValidator validator;
 
     @Autowired
-    private OfferingService offeringService;
-
-    @Autowired
     private ComponentService service;
 
     @GetMapping(produces = "application/json")

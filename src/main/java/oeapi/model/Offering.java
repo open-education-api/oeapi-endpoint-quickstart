@@ -87,8 +87,8 @@ public class Offering extends PrimaryCode {
     @ValidEnumYaml(yamlfile = "resultValueType.yml")
     private String resultValueType;
     private String link;
-    private LocalDate startEnrollDate;
-    private LocalDate endEnrollDate;
+    private LocalDate enrollStartDate;
+    private LocalDate enrollEndDate;
     private LocalDate flexibleEntryPeriodStart;
     private LocalDate flexibleEntryPeriodEnd;
 
@@ -372,32 +372,32 @@ public class Offering extends PrimaryCode {
     }
 
     /**
-     * @return the startEnrollDate
+     * @return the enrollStartDate
      */
-    public LocalDate getStartEnrollDate() {
-        return startEnrollDate;
+    public LocalDate getEnrollStartDate() {
+        return enrollStartDate;
     }
 
     /**
-     * @param startEnrollDate the startEnrollDate to set
+     * @param enrollStartDate the enrollStartDate to set
      */
-    public void setStartEnrollDate(LocalDate startEnrollDate) {
-        this.startEnrollDate = startEnrollDate;
+    public void setEnrollStartDate(LocalDate enrollStartDate) {
+        this.enrollStartDate = enrollStartDate;
     }
 
     /**
-     * @return the endEnrollDate
+     * @return the enrollEndDate
      */
-    public LocalDate getEndEnrollDate() {
-        return endEnrollDate;
+    public LocalDate getEnrollEndDate() {
+        return enrollEndDate;
     }
 
     /**
-     * @param endEnrollDate the endEnrollDate to set
+     * @param enrollEndDate the enrollEndDate to set
      */
-    public void setEndEnrollDate(LocalDate endEnrollDate) {
-        this.endEnrollDate = endEnrollDate;
-    }
+    public void setEnrollEndDate(LocalDate enrollEndDate) {
+        this.enrollEndDate = enrollEndDate;
+    }    
 
     /**
      * @return the flexibleEntryPeriodStart
@@ -536,6 +536,8 @@ public class Offering extends PrimaryCode {
     public void setOfferingType(String offeringType) {
         logger.warn("offeringType is determined automatically and cannot be set manually.");
     }    
+
+
     
     
 }

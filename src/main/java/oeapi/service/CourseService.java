@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import oeapi.controller.oeapiCourseMapper;
+import oeapi.model.CourseOffering;
 
 import oeapi.model.ModeOfDelivery;
 import oeapi.model.Organization;
@@ -37,6 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static oeapi.oeapiUtils.defaultDescription;
+import oeapi.repository.OfferingRepository;
 import oeapi.repository.oeapiFieldsOfStudyRepository;
 import oeapi.repository.oeapiStudyLoadRepository;
 
@@ -55,6 +57,9 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
     @Autowired
     private PersonService personService;
 
+//    @Autowired
+//    private OfferingService offeringService;
+    
     @Autowired
     private oeapiStudyLoadRepository studyLoadRepository;
 
@@ -63,6 +68,9 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
 
     @Autowired
     private oeapiFieldsOfStudyRepository fieldsOfStudyRepository;
+    
+    @Autowired
+    private OfferingRepository offeringRepository;    
 
     @Autowired
     oeapiEnumConversionService enumService;
@@ -129,6 +137,20 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
 
         }
         Course c = courseExisting.get();
+        
+        // Delete child offerings
+        logger.debug("*>-CourseService delete: Deleting Offerings  for Course with ID:"+c.getCourseId()); 
+        
+        List<CourseOffering> offerings = offeringRepository.findByCourse_CourseId(c.getCourseId());
+        
+        for (CourseOffering offering : offerings) {
+            logger.debug("*>-CourseService delete: Deleting Offering with ID"+offering.getOfferingId()); 
+            offering.setCourse(null); // disassociate
+            offeringRepository.delete(offering); // deleteByCourse
+        }
+        
+        // Clear all rest relatons
+        logger.debug("*>-CourseService delete:  Clear course relations for Course with ID:"+c.getCourseId()); 
         this.clearRelations(c);
         super.delete(c);
         return true;

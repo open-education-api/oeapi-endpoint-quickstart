@@ -5,6 +5,7 @@
 package oeapi.payload;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -85,10 +86,12 @@ public class OfferingDTO extends PrimaryCode {
 
     //@JsonIgnore
     //private String startDateJSON;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")    
     private LocalDate startDate;
 
     //@JsonIgnore
     //private String endDateJSON;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     private String teachingLanguage;
 
@@ -102,8 +105,8 @@ public class OfferingDTO extends PrimaryCode {
     private Boolean resultExpected;
     private String resultValueType;
     private String link;
-    private LocalDate startEnrollDate;
-    private LocalDate endEnrollDate;
+    private LocalDate enrollStartDate;
+    private LocalDate enrollEndDate;
     private LocalDate flexibleEntryPeriodStart;
     private LocalDate flexibleEntryPeriodEnd;
 
@@ -364,31 +367,31 @@ public class OfferingDTO extends PrimaryCode {
     }
 
     /**
-     * @return the startEnrollDate
+     * @return the enrollStartDate
      */
-    public LocalDate getStartEnrollDate() {
-        return startEnrollDate;
+    public LocalDate getEnrollStartDate() {
+        return enrollStartDate;
     }
 
     /**
-     * @param startEnrollDate the startEnrollDate to set
+     * @param enrollStartDate the enrollStartDate to set
      */
-    public void setStartEnrollDate(LocalDate startEnrollDate) {
-        this.startEnrollDate = startEnrollDate;
+    public void setEnrollStartDate(LocalDate enrollStartDate) {
+        this.enrollStartDate = enrollStartDate;
     }
 
     /**
-     * @return the endEnrollDate
+     * @return the enrollEndDate
      */
-    public LocalDate getEndEnrollDate() {
-        return endEnrollDate;
+    public LocalDate getEnrollEndDate() {
+        return enrollEndDate;
     }
 
     /**
-     * @param endEnrollDate the endEnrollDate to set
+     * @param enrollEndDate the enrollEndDate to set
      */
-    public void setEndEnrollDate(LocalDate endEnrollDate) {
-        this.endEnrollDate = endEnrollDate;
+    public void setEnrollEndDate(LocalDate enrollEndDate) {
+        this.enrollEndDate = enrollEndDate;
     }
 
     /**
@@ -526,5 +529,6 @@ public class OfferingDTO extends PrimaryCode {
     public void setOfferingType(String offeringType) {
         logger.warn("offeringType is determined automatically and cannot be set manually.");
     }
+
 
 }
