@@ -24,7 +24,7 @@
 			position: absolute;
 			z-index: 1000;
 			display: none;
-			min-width: 100rem;
+			/* min-width: 100rem; */
 			padding: .5rem 0;
 			margin: 0 0 0 -3rem;
 			font-size: 1rem;
@@ -57,9 +57,15 @@
 					<a class="nav-link active" href="oeapi-td.html">OEAPI Overview</a>
 				</li>
 
-				<li class="nav-item">
-					<a class="nav-link" href="courseForm.html" id="addCourse">Add a course</a>
-				</li>
+                                <li class="nav-item dropdown">
+                                  <a class="nav-link dropdown-toggle" href="#" id="addCoursesLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Add Courses
+                                  </a>
+                                  <ul class="dropdown-menu" style="font-size: 0.9rem;" aria-labelledby="addCoursesLink">
+                                    <li><a class="dropdown-item py-1" href="./courseForm.html">Course and Microcredentials</a></li>
+                                    <li><a class="dropdown-item py-1" href="./bipForm.html">Bips</a></li>
+                                  </ul>
+                                </li>                         
 
 				<li class="nav-item">
 					<a class="nav-link" href="catalog.html">My OEAPI as Course Catalog</a>

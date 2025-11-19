@@ -19,14 +19,9 @@ const languages = [
 
 const univPartners = [
     {code: "4f9c7a32-e89b-12d3-a456-7b8e5c9d3a21", name: "Organization for Testing"}
-    /*,
+    /*, 
     {code: "11111111-e89b-12d3-a456-123514174eee", name: "Universidad Pública de Navarra (UPNA)"},
-    {code: "22222222-e89b-12d3-a456-123514174eee", name: "Université Savoie Mont Blanc (USMB)"},
-    {code: "33333333-e89b-12d3-a456-123514174eee", name: "Hayte Ecole Spécialisée de Suisse occidentale (HES_SO)"},
-    {code: "44444444-e89b-12d3-a456-123514174eee", name: "Université de Paue et des Pays de L'Adour (UPPA)"},
-    {code: "55555555-e89b-12d3-a456-123514174eee", name: "Poli Técnico Guarda (IPG)"},
-    {code: "77777777-e89b-12d3-a456-123514174eee", name: "Universidad de Zaragoza (UNIZAR)"}
-    */
+    {code: "77777777-e89b-12d3-a456-123514174eee", name: "Universidad de Zaragoza (UNIZAR)"} */
 ];
 
 // Function to find university name by code
@@ -203,11 +198,34 @@ async function loadFullCourseData(univShortName, courseID) {
 
 
     try {
-        let {courseJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(ooapiDefaultEndpointURL, courseID);
+        let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(ooapiDefaultEndpointURL, courseID);
 
         courseJSONData = courseJSON;  // To have visibility of during HTML some async rendering
-
-        console.log("Async call results:", courseJSON, resultCoordinatorsList, resultProgramsList);
+        
+        let accBipVirtDisplay = "none";
+        let firstOfferingTitle = "Additional Course Info";  
+        let idVirt = 1;  
+        let idNormOrPhy = 0;
+        
+        // Is it a BIP (two offerings; physical and virtual) or ordinary course/microdential)
+        if (offeringsJSON.items[1])  // has two offerings
+          { accBipVirtDisplay = "block" ;   //BIP
+            firstOfferingTitle = "Physical Component";    
+            console.log("Displaying a BIP...");
+            // Which is for virtualComponent
+            let firstItemCode = offeringsJSON.items[0].primaryCode.code;
+            if (firstItemCode.includes("virtualComponent"))
+             { idVirt = 0; // Virt is the second offering
+               idNormOrPhy = 1;
+             }  
+          }
+         else
+           { accBipVirtDisplay = "none" ;   
+             firstOfferingTitle = "Additional Course Info";  
+            console.log("Displaying an ordinary or microdential course...");
+           }
+          
+        console.log("Async call results:", courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList);
 
         const oneCourseElement =
                 oneCourseCard.replace(/{imgSrc}/gi, htmltizeLogo(courseJSON))
@@ -220,10 +238,42 @@ async function loadFullCourseData(univShortName, courseID) {
                 .replace(/{targetUniversities}/gi, htmltizeTargetUniversities(courseJSON))
                 .replace(/{summary}/gi, "<p>" + htmltizeMultiLingualText(courseJSON,"description") + "</p><p style='float:right;font-size: small;'><strong>Course Code:</strong> &nbsp; " + courseJSON.primaryCode.code + "<strong><br>Id: </strong>"+ courseJSON.courseId +"</p>")
                 .replace(/{footcolor}/gi, cardFooterColor(courseJSON.level))
-                .replace(/{level}/gi, "<strong>Level: </strong>" + (courseJSON.level.toLowerCase() == 'bachelor' ? 'degree' : courseJSON.level))
+                .replace(/{level}/gi, "Level: &nbsp; <strong style='color:white;'>" + (courseJSON.level.toLowerCase() == 'bachelor' ? 'degree' : courseJSON.level)+"</strong>")
                 .replace(/{admissionRequirements}/gi, htmltizeMultiLingualText(courseJSON,"admissionRequirements"))
                 .replace(/{learningOutcomes}/gi, htmltizeMultiLingualText(courseJSON,"learningOutcomes"))
-                .replace(/{coordinators}/gi, (courseJSON.coordinators ? htmltizeCoordinators(resultCoordinatorsList) : "Not defined"));
+                .replace(/{coordinators}/gi, (courseJSON.coordinators ? htmltizeCoordinators(resultCoordinatorsList) : "Not defined"))
+                .replace(/{validStartDate}/gi, (courseJSON.validFrom ? courseJSON.validFrom : ""))
+                .replace(/{validEndDate}/gi, (courseJSON.validTo ? courseJSON.validTo : ""))
+
+        
+        
+                .replace(/{infoLink}/gi, (courseJSON.link ? courseJSON.link : "#"))
+        
+                // Activate or not accordions by course type
+                .replace(/{firstOfferingTitle}/gi, firstOfferingTitle)
+                .replace(/{accBipVirtDisplay}/gi, accBipVirtDisplay)
+        
+        
+                // from offering
+                .replace(/{costJson}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].priceInformation ? offeringsJSON.items[idNormOrPhy].priceInformation[0].amount + " Euros" : ""))
+                .replace(/{startDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].startDate ? offeringsJSON.items[idNormOrPhy].startDate : ""))
+                .replace(/{endDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].startDate ? offeringsJSON.items[idNormOrPhy].endDate : ""))
+                .replace(/{enrollStartDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].enrollStartDate ? offeringsJSON.items[idNormOrPhy].enrollStartDate : ""))
+                .replace(/{enrollEndDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].enrollEndDate ? offeringsJSON.items[idNormOrPhy].enrollEndDate : ""))
+                .replace(/{minNumberStudents}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].minNumberStudents ? offeringsJSON.items[idNormOrPhy].minNumberStudents : ""))
+                .replace(/{maxNumberStudents}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].maxNumberStudents ? offeringsJSON.items[idNormOrPhy].maxNumberStudents : ""))
+        
+             
+                .replace(/{enrollLink}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].link ? offeringsJSON.items[idNormOrPhy].link : "#"))
+        
+                .replace(/{offeringDescription}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].description[0] ? offeringsJSON.items[idNormOrPhy].description[0].value : "Not defined.."))
+                .replace(/{addresses}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].addresses ? htmltizeAddresses(offeringsJSON.items[idNormOrPhy].addresses) : "No additional address info."))
+        
+                // Beware, virtual component not always present
+                .replace(/{virtualDescription}/gi, (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].description[0] ? offeringsJSON.items[idVirt].description[0].value : "Not defined.."))
+                .replace(/{virtStartDate}/gi, (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].startDate ? offeringsJSON.items[idVirt].startDate : ""))
+                .replace(/{virtEndDate}/gi,   (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].endDate ? offeringsJSON.items[idVirt].endDate : ""));
+        
 
         resultsContainer.innerHTML = oneCourseElement;
         // Enable or disable admin options, like add, delete, etc. if logged or not
@@ -235,6 +285,7 @@ async function loadFullCourseData(univShortName, courseID) {
     }
 }
 
+
 function deleteCourse()
 {
 
@@ -243,6 +294,10 @@ function deleteCourse()
     console.log("deleteCourse token",localStorage.getItem('jwt'));
    
     if (confirm('Are you sure you want to delete this course?')) {
+        
+        console.log("Delete course with Id: "+theCourse+" confirmed");
+        console.log("Delete call to: "+ ooapiDefaultEndpointURL + "/courses/" + theCourse);
+
         fetch(ooapiDefaultEndpointURL + "/courses/" + theCourse, {method: "DELETE",
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('jwt'),
@@ -251,7 +306,7 @@ function deleteCourse()
         })
                 .then(async response => {
                     if (!response.ok) {
-                        throw new Error('deleteCourse Failed to delete resource');
+                        throw new Error('deleteCourse Failed to delete resource: '+response.text());
                     }
                     return response.text(); // use `.json()` if server returns JSON
                 })
@@ -265,12 +320,18 @@ function deleteCourse()
     }
     ;
 }
+
 async function loadAsyncCourseData(ooapiEndPoint, courseID) {
 
     try {
         console.log("loadCourseData: Get course main data...");
         const courseData = await fetch(ooapiEndPoint + "/courses/" + courseID);
         const courseJSON = await courseData.json();
+        
+        console.log("loadCourseData: Get course offerings...");
+        const offeringsData = await fetch(ooapiEndPoint + "/courses/" + courseID + "/offerings");
+        const offeringsJSON = await offeringsData.json();
+        
         // Get other values/keys
         const coordinators = courseJSON.coordinators || [];
         const programs = courseJSON.programs || [];
@@ -293,40 +354,18 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
                 programResponses.map(res => res.json())
                 );
         console.log('Course:', courseJSON);
+        console.log('OfferingsJSON:', offeringsJSON);        
         console.log('Coordinators:', resultCoordinatorsList);
         console.log('Programs:', resultProgramsList);
-        return {courseJSON, resultCoordinatorsList, resultProgramsList};
+        
+        return {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList};
         
     } catch (error) {
         console.error('Error during API call sequence:', error);
         throw error;
     }
+       
 }
-
-async function loadAsyncFirstOfferingData(ooapiEndPoint, courseID) {
-
-    try {
-        console.log("loadOfferingData: Get offering data...");
-        const response = await fetch(ooapiEndPoint + "/courses/" + courseID + "/offerings");
-		
-        if (!response.ok) {
-            throw new Error('loadOfferingData HTTP error! Status: ${response.status}');
-            return ;
-        } 	
-		
-        const allOfferingData = await response.json();
-
-        console.log('All OfferingData:', allOfferingData);
-        firstOfferingData = allOfferingData.items[0];
-        console.log('firstOfferingData:', firstOfferingData);
-        return {firstOfferingData};
-        
-    } catch (error) {
-        console.error('Error during API call sequence on loadOfferingData :', error);
-        throw error;
-    }
-}
-
 
 /* 	Security JWT  */
 
@@ -514,6 +553,23 @@ let oneCourseCard = `
     <div class="card-body">
       <div class="card-text" style="color: blue; font-siz">{title}</div>
       <div class="card-text">{summary}</div>
+
+<br>
+
+<strong>Total Cost: </strong> {costJson}
+<hr>
+
+<strong>Course dates (Start &minus; End) :</strong> {startDate} &minus; {endDate}
+<hr>
+
+<strong>Enrollment dates (Start &minus; Deadline):</strong> {enrollStartDate} &minus; {enrollEndDate}
+<hr>
+
+<strong>Visible in catalog (Start &minus; End):</strong> {validStartDate} &minus; {validEndDate}
+<hr>
+
+<strong>Min / Max Students</strong> {minNumberStudents} &minus; {maxNumberStudents}
+<hr>
 	
 <div class="accordion" style="padding-top: 3em;" id="courseExtraInfo">
 
@@ -566,13 +622,14 @@ let oneCourseCard = `
     <h2 class="accordion-header" id="headingFour">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
         data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-        Enrollment Info
+        Application and Enrollment Procedure, Datailed Costs, Organizing Board
       </button>
     </h2>
     <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour"
       data-bs-parent="#courseExtraInfo">
       <div class="accordion-body">
         {enrollment}
+        <a href="{enrollLink}">Enroll or more info clicking here</a>
       </div>
     </div>
   </div>
@@ -592,6 +649,7 @@ let oneCourseCard = `
     </div>
   </div>
 
+<!--
   <div class="accordion-item">
     <h2 class="accordion-header" id="headingSix">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -607,17 +665,89 @@ let oneCourseCard = `
     </div>
   </div>
 
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingSeven">
+-->
+
+
+
+
+<!-- Phisical component -->
+
+<div class="accordion-item">
+  <h2 class="accordion-header" id="headingAdditional">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+      data-bs-target="#collapseAdditional" aria-expanded="false" aria-controls="collapseAdditional">
+      {firstOfferingTitle}
+    </button>
+  </h2>
+  <div id="collapseAdditional" class="accordion-collapse collapse" aria-labelledby="headingAdditional"
+    data-bs-parent="#courseExtraInfo">
+    <div class="accordion-body">
+      <strong>Dates (Start &minus; End) :</strong> {startDate} &minus; {endDate}
+      <hr>
+      <strong>Resources, detailed activities, calendar, etc.</strong>
+      <br>
+      <br>
+      <div>{offeringDescription}</div>
+      <hr>
+    </div>
+  </div>
+</div>
+
+<div class="accordion-item">
+  <h2 class="accordion-header" id="headingAddress">
+    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+      data-bs-target="#collapseAddress" aria-expanded="false" aria-controls="collapseAddress">
+      Addresses
+    </button>
+  </h2>
+  <div id="collapseAddress" class="accordion-collapse collapse" aria-labelledby="headingAddress"
+    data-bs-parent="#courseExtraInfo">
+    <div class="accordion-body">
+      {addresses}
+    </div>
+  </div>
+</div>
+
+<!--  End Phisical component -->
+
+
+
+
+
+<!--  Virtual component -->
+
+  <div class="accordion-item" style="display : {accBipVirtDisplay}" >
+    <h2 class="accordion-header" id="headingVirtual">
       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-        data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+        data-bs-target="#collapseheadingVirtual" aria-expanded="false" aria-controls="headingVirtual">
+        Virtual Component
+      </button>
+    </h2>
+    <div id="collapseheadingVirtual" class="accordion-collapse collapse" aria-labelledby="headingVirtual"
+      data-bs-parent="#courseExtraInfo">
+      <div class="accordion-body">
+         <strong>Dates for Virtual Component (Start &minus; End) :</strong> {virtStartDate} &minus; {virtEndDate}
+         <hr>
+         <p><strong>Virtual Component Description (activities, tools, etc.) :</strong></p>
+         <br>
+        {virtualdescription}
+      </div>
+    </div>
+  </div>
+
+<!--  End Virtual component -->
+
+  <div class="accordion-item" >
+    <h2 class="accordion-header" id="headingExtra">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+        data-bs-target="#collapseheadingExtra" aria-expanded="false" aria-controls="headingExtra">
         Extra Info
       </button>
     </h2>
-    <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven"
+    <div id="collapseheadingExtra" class="accordion-collapse collapse" aria-labelledby="headingExtra"
       data-bs-parent="#courseExtraInfo">
       <div class="accordion-body">
-        <ul><li>For more information, visit the university’s page at … </li></ul>
+        For more information about this course visit this <a href="{infoLink}"><strong>page</strong></a>
       </div>
     </div>
   </div>

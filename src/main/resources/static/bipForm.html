@@ -81,7 +81,7 @@
     .tab-container {
         max-width: 90%;
         margin: 2rem auto;
-        margin-top: 6rem;        
+        margin-top: 6rem;
         background: #fff;
         border-radius: 12px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -224,11 +224,12 @@
         /* make this field span both columns */
     }
 
+    
     .navbar .nav-link#logoutLink,
-         .navbar .nav-link#changePasswordLink {
-                 font-weight: bold;
-                 color: #fff !important;
-         }
+             .navbar .nav-link#changePasswordLink {
+                     font-weight: bold;
+                     color: #fff !important;
+             }
 
      .dropdown-menu {
              position: absolute;
@@ -246,7 +247,7 @@
              border: 1px solid rgba(0,0,0,.15);
              border-radius: .25rem;
      }            
-
+     
 </style>
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -268,7 +269,7 @@
 				<li class="nav-item">
 					<a class="nav-link active" href="oeapi-td.html">OEAPI Overview</a>
 				</li>
-
+                                
                                 <li class="nav-item dropdown">
                                   <a class="nav-link dropdown-toggle" href="#" id="addCoursesLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Add Courses
@@ -319,8 +320,9 @@
 <div class="tab-container">
     <div class="tab-buttons general-tabs">
         <button class="tab-btn active" data-tab="basic-info">Course Data</button>
-        <button class="tab-btn" data-tab="detail">Application Info</button>
-        <button class="tab-btn" data-tab="physical">Offering Details</button>
+        <button class="tab-btn" data-tab="detail">Application Info</button>        
+        <button class="tab-btn" data-tab="physical">Physical Component</button>
+        <button class="tab-btn" data-tab="virtual">Virtual Component</button>
         <button class="tab-btn" data-tab="coordinators">Coordinators</button>
     </div>
     <form id="catalogForm" novalidate>
@@ -329,7 +331,7 @@
         <!---------- Basic Info ----------------------------->
 
         <div id="tab-basic-info" class="tab-content active">
-            <h4>Course Form</h4>
+            <h4>Form for BIP Courses</h4>
             <p style="padding-left:80%" id="destEndpoint"></p>
             <p style="padding-left:80%"><strong>Fields with (*) are mandatory</strong></p>
 
@@ -552,14 +554,14 @@
                         <h2 class="accordion-header" id="heading-enrollment">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapse-enrollment" aria-expanded="false" aria-controls="collapse-enrollment">
-                                Application Procedure, Detailed Costs
+                                Enrollment and Application Procedure, Datailed Costs, Organizing Board, ...
                             </button>
                         </h2>
                         <div id="collapse-enrollment" class="accordion-collapse collapse" aria-labelledby="heading-enrollment"
                              data-bs-parent="#acc-enrollment">
                             <div class="accordion-body">
                                 <div class="form-group full-width mt-4" id="enrollment-field">
-                                    <label for="enrollment">Application Procedure, Datailed Costs</label>
+                                    <label for="enrollment">Application Procedure, Datailed Costs, Organizing Board, ...</label>
                                     <textarea id="editor-enrollment" rows="10" placeholder="Details of application procedure and deadlines, breakdown of costs, etc."></textarea>
                                     <small class="text-muted savedLangs" id="savedLangs-enrollment">No translations yet.</small>
                                     <select class="form-select-sm mt-2 lang-select" data-field="enrollment">
@@ -591,38 +593,35 @@
         <!---------- physical Component  ----------------------------->
 
         <div id="tab-physical" class="tab-content">
-            <h5>More details</h5>
+            <h5>Physical Component</h5>
             <br>
             <div class="form-grid">
 
-                <div class="form-grid">
-                    <div class="form-group">  
-                        <label for="startDate">Starts in (*)</label>
-                        <input type="date" id="startDate" name="startDate" required />
-                    </div>
-                    <div class="form-group"> 
-                        <label for="endDate">Ends in (*)</label>
-                        <input type="date" id="endDate" name="endDate" required />
-                    </div>
-                </div>
+            <div class="form-group mt-4">
+              <label for="physicalStartDate">Start date for physical activity</label>
+              <input type="date" id="physicalStartDate" name="physicalStartDate" required />
+            </div>
+            <div class="form-group mt-4">
+              <label for="physicalEndDate">End date for physical activity</label>
+              <input type="date" id="physicalEndDate" name="physicalEndDate" required/>
+            </div>
                 
-                
-                <div class="accordion full-width" id="acc-offeringDescription">
+                <div class="accordion full-width" id="acc-physicalDescription">
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading-offeringDescription">
+                        <h2 class="accordion-header" id="heading-physicalDescription">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapse-offeringDescription" aria-expanded="false" aria-controls="collapse-offeringDescription">
-                                Calendar, Resources, Detailed Activities, etc. (Required *)
+                                    data-bs-target="#collapse-physicalDescription" aria-expanded="false" aria-controls="collapse-physicalDescription">
+                                Resources, detailed activities, calendar, etc. (Required *)
                             </button>
                         </h2>
-                        <div id="collapse-offeringDescription" class="accordion-collapse collapse" aria-labelledby="heading-offeringDescription"
-                             data-bs-parent="#acc-offeringDescription">
+                        <div id="collapse-physicalDescription" class="accordion-collapse collapse" aria-labelledby="heading-physicalDescription"
+                             data-bs-parent="#acc-physicalDescription">
                             <div class="accordion-body">
-                                <div class="form-group full-width mt-2" id="offeringDescription-field">
-                                    <label for="offeringDescription">Resources, detailed activities, calendar, etc.</label>
-                                    <textarea id="editor-offeringDescription" rows="10" placeholder="Resources, planned activities, detailed calendar, participation on events, etc." ></textarea>
-                                    <small class="text-muted savedLangs" id="savedLangs-offeringDescription">No translations yet.</small>
-                                    <select class="form-select-sm mt-2 lang-select" data-field="offeringDescription">
+                                <div class="form-group full-width mt-2" id="physicalDescription-field">
+                                    <label for="physicalDescription">Resources, detailed activities, calendar, etc.</label>
+                                    <textarea id="editor-physicalDescription" rows="10" placeholder="Resources, planned activities, detailed calendar, participation on events, etc." ></textarea>
+                                    <small class="text-muted savedLangs" id="savedLangs-physicalDescription">No translations yet.</small>
+                                    <select class="form-select-sm mt-2 lang-select" data-field="physicalDescription">
                                         <option value="">Loading languages...</option>
                                     </select>
                                 </div>
@@ -631,6 +630,13 @@
                     </div>
                 </div>
 
+                <div class="form-group full-width">
+                    <label for="physicalUniversity">Location of Physical Activity</label>
+                    <select class="form-select-sm mt-2 univPartners-select" id="physicalUniversity" name="physicalUniversity">
+                      <option value="">Loading...</option>
+                    </select>
+                </div>
+                
                 <div class="section-divider">
                     <span class="divider-title">(Optional)  Detailed Address information and Geolocation</span>
                 </div>
@@ -757,6 +763,48 @@
         </div>
         <!-- tab -->
 
+        
+  <!---------- Virtual Component  ----------------------------->
+		
+        <div id="tab-virtual" class="tab-content">
+          <h5>Virtual Component</h5>
+          <div class="form-grid">
+            <div class="form-group mt-4">
+              <label for="virtualStartDate">Start date for virtual activity</label>
+              <input type="date" id="virtualStartDate" name="virtualStartDate" required />
+            </div>
+            <div class="form-group mt-4">
+              <label for="virtualEndDate">End date for virtual activity</label>
+              <input type="date" id="virtualEndDate" name="virtualEndDate" required />
+            </div>
+              
+                <div class="accordion full-width" id="acc-virtualDescription">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-virtualDescription">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-virtualDescription" aria-expanded="false" aria-controls="collapse-virtualDescription">
+                                Virtual Component Description (activities, tools, etc.)
+                            </button>
+                        </h2>
+                        <div id="collapse-virtualDescription" class="accordion-collapse collapse" aria-labelledby="heading-virtualDescription"
+                             data-bs-parent="#acc-virtualDescription">
+                            <div class="accordion-body">
+                                <div class="form-group full-width mt-2" id="virtualDescription-field">
+                                    <label for="virtualDescription">Virtual Component Description (activities, tools, etc.)</label>
+                                    <textarea id="editor-virtualDescription" rows="10" placeholder="Resources, planned activities, detailed calendar, participation on events, etc." ></textarea>
+                                    <small class="text-muted savedLangs" id="savedLangs-virtualDescription">No translations yet.</small>
+                                    <select class="form-select-sm mt-2 lang-select" data-field="virtualDescription">
+                                        <option value="">Loading languages...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>              
+                                                    
+          </div>
+          <!-- form grid -->
+        </div>        
 
         <!-- Coordinators -->
         <div id="tab-coordinators" class="tab-content">
@@ -790,7 +838,7 @@
 
 <script>
 
-    const formCourseType = "stdCourse";
+    const formCourseType = "BIPCourse";
 
     document.getElementById("logoutLink").addEventListener("click", function (e) {
         e.preventDefault();

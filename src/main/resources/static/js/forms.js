@@ -741,14 +741,16 @@ async function postCourse(listCoordinators, callback) {
         modeOfDelivery: $('#modeOfDelivery').val(),
         learningOutcomes: [getMultilingualEditorJSON("learningOutcomes")],
         admissionRequirements: getMultilingualEditorJSON("admissionRequirements"),
-        assessment: getMultilingualEditorJSON("assesment"),
+        assessment: getMultilingualEditorJSON("assessment"),
         enrollment: getMultilingualEditorJSON("enrollment"),
         abbreviation: $('#abbreviation').val(),
-		link: $('#link_to_more_info').val(),
+	link: $('#link_to_more_info').val(),
         teachingLanguage: $('#teachingLanguage').val(),
         organization: ooapiDefaultOrganizationId,
         level: $('#level').val(),
         coordinators: listCoordinators,
+        validFrom: $('#validStartDate').val(),
+        validTo:   $('#validEndDate').val(),        
         primaryCode: {
             codeType: "identifier",
             code: $('#code').val()
@@ -808,7 +810,7 @@ async function postOffering(courseId, callback) {
     {
         costJson = {
             amount: $('#amount').val(),
-            currency: "Euro",
+            currency: "EUR",
             costType: "total costs"
         };
     }
@@ -826,13 +828,15 @@ async function postOffering(courseId, callback) {
         minNumberStudents: minNumberStudents,
         maxNumberStudents: maxNumberStudents,
         resultExpected: false,  
-		cost : costJson,
-		link: $('#link_to_enrollment').val(),
+	priceInformation : [ costJson ],
+	link: $('#link_to_enroll').val(),
         offeringType: "course",
         startDate: $('#startDate').val(),
         endDate:   $('#endDate').val(),
+        enrollStartDate: $('#startEnrollDate').val(),
+        enrollEndDate:   $('#endEnrollDate').val(),
         modeOfDelivery: $('#modeOfDelivery').val(),
-		addresses: [courseAddress],
+	addresses: [courseAddress],
         course: courseId
     }
 	
@@ -878,6 +882,19 @@ async function postPhysicalComponentOffering(courseId, callback) {
 
     const startDate = $('#physicalStartDate').val() ? $('#physicalStartDate').val() : null;
     const endDate = $('#physicalEndDate').val() ? $('#physicalEndDate').val() : null;
+    
+    var costJson = null;
+    var costInForm = $('#amount').val() ? $('#amount').val() : null;
+	
+    if (costInForm)
+    {
+        costJson = {
+            amount: $('#amount').val(),
+            currency: "EUR",
+            costType: "total costs"
+        };
+    }
+    
 	
     const courseAddress = buildAddressJSON();
     
@@ -892,10 +909,17 @@ async function postPhysicalComponentOffering(courseId, callback) {
         description: getMultilingualEditorJSON("physicalDescription"),
         resultExpected: true,
         offeringType: "course",
+        priceInformation : [ costJson ],
         startDate: $('#physicalStartDate').val(),
-        endDate: $('#physicalEndDate').val(),
+        endDate:   $('#physicalEndDate').val(),    
+        link: $('#link_to_enroll').val(),
+        minNumberStudents: $('#minNumberStudents').val(),
+        maxNumberStudents: $('#maxNumberStudents').val(),    
+        enrollStartDate: $('#startEnrollDate').val(),
+        enrollEndDate:   $('#endEnrollDate').val(),            
         modeOfDelivery: ["on campus"],
-		addresses: [courseAddress],
+        addresses: [courseAddress],
+        organization:  $('#physicalUniversity').val(),
         course: courseId
     }
 	
@@ -950,7 +974,7 @@ async function postVirtualComponentOffering(courseId, callback) {
         teachingLanguage: $('#teachingLanguage').val(),
         name: getMultilingualTextJSONFor("courseName"),
         description: getMultilingualEditorJSON("virtualDescription"),
-        resultExpected: true,
+        resultExpected: false,
         offeringType: "course",
         startDate: $('#virtualStartDate').val(),
         endDate: $('#virtualEndDate').val(),

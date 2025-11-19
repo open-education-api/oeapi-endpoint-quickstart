@@ -144,6 +144,44 @@ function htmltizeLogo(courseJson) {
 }
 
 
+function htmltizeAddresses(addresses, selectedLanguage = "en-GB") {
+  if (!addresses || addresses.length === 0) return "";
+
+  return addresses.map(addr => {
+    const additionalText =
+      addr.additional?.find(a => a.language === selectedLanguage)?.value ?? "";
+/*
+    return `
+      <strong>${capitalize(addr.addressType)} Address</strong><br>
+      ${addr.street} ${addr.streetNumber}<br>
+      ${addr.postalCode} ${addr.city}, ${addr.countryCode}<br>
+      ${additionalText ? `<br><em>${additionalText}</em><br>` : ""}
+      <br>
+      Latitude: ${addr.geolocation?.latitude}<br>
+      Longitude: ${addr.geolocation?.longitude}
+    `;
+  }).join("<hr>");
+*/  
+    return `
+      <strong>Location information</strong><br>
+      ${addr.street ?? "" } ${addr.streetNumber ?? ""}<br>
+      ${addr.postalCode ?? ""} ${addr.city ?? ""}  ${addr.countryCode ?? ""}<br>
+      ${additionalText ? `<br><em>${additionalText}</em><br>` : ""}
+      <br>
+      Latitude: ${addr.geolocation?.latitude ?? ""}<br>
+      Longitude: ${addr.geolocation?.longitude ?? ""}
+    `;
+  }).join("<hr>");
+  
+  
+}
+
+function capitalize(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+
+
 function cardFooterColor(levelType) {
     switch (levelType.toLowerCase()) {
         case "degree":
