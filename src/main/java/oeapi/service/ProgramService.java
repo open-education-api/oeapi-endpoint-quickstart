@@ -45,7 +45,7 @@ public class ProgramService extends oeapiEndpointService<Program, ProgramReposit
     @Value("${ooapi.config.autoCreateProgIfNotExists:false}")
     private boolean autoCreateIfNotExists;
 
-    Logger logger = LoggerFactory.getLogger(CourseService.class);
+    Logger logger = LoggerFactory.getLogger(ProgramService.class);
 
     @Autowired
     private OrganizationService organizationService;
