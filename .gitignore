@@ -97,3 +97,6 @@ META-INF/
 
 ##Mac noise
 .DS_Store
+
+# Eclipse JDT Language Server
+.factorypath

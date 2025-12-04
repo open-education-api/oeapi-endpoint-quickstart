@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/")
-public class MetadataControler {
+public class MetadataController {
 
     private final Metadata metadata;
 
-    public MetadataControler(Metadata metadata) {
+    public MetadataController(Metadata metadata) {
         this.metadata = metadata;
     }
 
