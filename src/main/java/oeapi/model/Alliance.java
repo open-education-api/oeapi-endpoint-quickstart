@@ -2,7 +2,7 @@ package oeapi.model;
 
 import java.time.LocalTime;
 import java.util.List;
-import javax.persistence.Convert;
+import jakarta.persistence.Convert;
 import oeapi.converter.oeapiListStringConverter;
 
 /**

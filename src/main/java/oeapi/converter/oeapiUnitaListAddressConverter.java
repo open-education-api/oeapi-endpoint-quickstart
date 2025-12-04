@@ -1,6 +1,6 @@
 package oeapi.converter;
 
-import javax.persistence.Converter;
+import jakarta.persistence.Converter;
 import oeapi.model.Address;
 
 

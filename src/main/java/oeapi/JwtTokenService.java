@@ -1,24 +1,26 @@
 package oeapi;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.security.core.GrantedAuthority;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 
-import org.springframework.security.core.userdetails.UserDetails;
+import javax.crypto.SecretKey;
 
 @Component
 public class JwtTokenService {
@@ -29,32 +31,40 @@ public class JwtTokenService {
 
     @Value("${app.jwt.secret}")
     private String SECRET_KEY;
+    private SecretKey secretKey;
+
+    public JwtTokenService() {
+        super();
+
+        if (SECRET_KEY != null) {
+            secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        } else {
+            secretKey = Jwts.SIG.HS256.key().build();
+        }
+    }
 
     public String generateAccessToken(UserDetails user) {
-        //List<GrantedAuthority> ga = this.g
         List<String> roles = user.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return Jwts.builder()
-                .setSubject(String.format("%s", user.getUsername()))
+                .subject(String.format("%s", user.getUsername()))
                 .claim("roles", roles) // 👈 Include roles here
-                .setIssuer("CodeJava")
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
-                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+                .issuer("CodeJava")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
+                .signWith(secretKey)
                 .compact();
-    }
-
-    public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean validateAccessToken(String token) {
         try {
-            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token);
             return true;
         } catch (ExpiredJwtException ex) {
             LOGGER.error("JWT expired", ex.getMessage());
@@ -71,15 +81,12 @@ public class JwtTokenService {
         return false;
     }
 
-    public String getSubject(String token) {
-        return parseClaims(token).getSubject();
-    }
-
-    private Claims parseClaims(String token) {
+    public String extractUsername(String token) {
         return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
     }
-
 }

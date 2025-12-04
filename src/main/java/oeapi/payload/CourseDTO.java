@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.persistence.Convert;
+import jakarta.persistence.Convert;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 
 import oeapi.model.Consumer;

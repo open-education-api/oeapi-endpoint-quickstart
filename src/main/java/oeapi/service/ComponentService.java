@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import java.util.UUID;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import oeapi.controller.oeapiCourseMapper;
 import oeapi.controller.oeapiDTOMapper;
 import oeapi.model.Component;

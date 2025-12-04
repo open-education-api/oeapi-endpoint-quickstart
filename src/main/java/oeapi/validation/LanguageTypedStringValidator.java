@@ -2,8 +2,8 @@ package oeapi.validation;
 
 import java.util.List;
 import java.util.Locale;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import oeapi.model.oeapiLanguageTypedString;
 import oeapi.oeapiException;

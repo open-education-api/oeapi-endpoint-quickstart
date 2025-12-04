@@ -1,8 +1,8 @@
 package oeapi.validation;
 
 import java.util.Optional;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import oeapi.model.oeapiUnitaEnumeration;
 

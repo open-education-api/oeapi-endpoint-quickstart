@@ -1,8 +1,8 @@
 package oeapi.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintViolationException;
 import oeapi.oeapiException;
 import oeapi.oeapiSchemaValidator;
 import org.springframework.http.HttpStatus;

@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import oeapi.model.Component;
 import oeapi.oeapiException;

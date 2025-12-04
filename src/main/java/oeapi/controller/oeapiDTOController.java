@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import oeapi.model.Course;
 import oeapi.oeapiException;
 import oeapi.oeapiObjectsValidator;

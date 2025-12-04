@@ -1,7 +1,7 @@
 package oeapi.converter;
 
 import oeapi.model.oeapiLanguageTypedString;
-import javax.persistence.Converter;
+import jakarta.persistence.Converter;
 
 @Converter
 public class oeapiUnitaLanguageTypedStringConverter extends oeapiListConverter<oeapiLanguageTypedString> {

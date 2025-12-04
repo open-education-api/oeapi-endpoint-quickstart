@@ -4,7 +4,7 @@
  */
 package oeapi;
 
-import javax.persistence.PrePersist;
+import jakarta.persistence.PrePersist;
 import oeapi.payload.oeapiEducationDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

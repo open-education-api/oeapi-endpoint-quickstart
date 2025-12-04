@@ -14,8 +14,8 @@ import oeapi.model.PrimaryCode;
 import oeapi.oeapiException;
 import oeapi.oeapiUtils;
 
-import javax.validation.ValidationException;
-import javax.transaction.Transactional;
+import jakarta.validation.ValidationException;
+import jakarta.transaction.Transactional;
 import oeapi.model.Course;
 import oeapi.model.Room;
 import static oeapi.oeapiUtils.ooapiObjectMapper;

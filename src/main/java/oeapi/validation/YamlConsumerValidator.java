@@ -1,9 +1,9 @@
 package oeapi.validation;
 
 import java.util.List;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintViolationException;
 
 import oeapi.model.Consumer;
 import oeapi.oeapiException;

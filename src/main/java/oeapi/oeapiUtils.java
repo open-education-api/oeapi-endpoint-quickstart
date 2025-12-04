@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import oeapi.model.oeapiIdentifierEntry;
 import oeapi.model.oeapiLanguageTypedString;
 
@@ -141,7 +141,7 @@ public class oeapiUtils {
         // Search for a field annotated with @Id
         for (Field field : entity.getClass().getDeclaredFields()) {
             logger.debug("Utils getID field revised for Id: " + field);
-            if (field.isAnnotationPresent(javax.persistence.Id.class)) {
+            if (field.isAnnotationPresent(jakarta.persistence.Id.class)) {
                 idField = field;
                 logger.debug("Utils getID, field with Id found: " + field);
                 break;
