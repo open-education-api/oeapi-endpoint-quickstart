@@ -1,0 +1,40 @@
+name: Run tests
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql
+        env:
+          MYSQL_ROOT_PASSWORD: x
+          MYSQL_DATABASE: oeapi_qs
+          MYSQL_USER: oeapi_qs
+          MYSQL_PASSWORD: oeapi_qs
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u root -px"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+        ports:
+          - 3306:3306
+
+    steps:
+
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '18'
+
+    - uses: actions/checkout@v4
+
+    - uses: actions/cache@v4
+      with: { path: "~/.m2", key: "${{ runner.os }}-${{ hashFiles('pom.xml') }}-m2" }
+
+    - name: run tests
+      run: |
+        mvn -DskipTests=false \
+            -Dspring.datasource.url='jdbc:mysql://localhost/oeapi_qs' \
+            clean test
