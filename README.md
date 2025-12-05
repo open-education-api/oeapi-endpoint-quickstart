@@ -341,6 +341,32 @@ The "right way" should be using a tool for testing APIs like HTTPie, Postman, et
 Also, for seeing and checking the data in your OEAPI a tiny frontend is included (not for production!)  You can reach it at http://localhost:57075/oeapi-td.html
 
 
+# Configuration
+
+The following environment variables can be use to change the behavior of this application:
+
+- `SERVER_PORT`
+
+  HTTP port the application is served on.  Default value:  57075.
+
+- `SPRING_DATASOURCE_URL`
+
+  JDBC URL to the database.
+
+- `SPRING_DATASOURCE_DRIVER_CLASS_NAME`
+
+  Class name of JDBC driver.   Default value: `com.mysql.cj.jdbc.Driver`), make sure to add the dependency to the [pom.xml file](./pom.xml) when changing this.
+
+- `SPRING_DATASOURCE_USERNAME`
+
+  Database user name.
+
+- `SPRING_DATASOURCE_PASSWORD`
+
+  Database user password.
+
+Note: all defaults (and more properties) are defined in [application.properties](./src/main/resources/application.properties).
+
 # Development
 
 ## Running tests
@@ -370,5 +396,3 @@ As described in [Running it as a jar](#running-it-as-a-jar) you'll probably need
 ```sh
 export JDK_JAVA_OPTIONS='--add-opens java.base/java.lang=ALL-UNNAMED --enable-native-access=ALL-UNNAMED'
 ```
-
-Note: the database username and password are configured in [application.properties](src/main/resources/application.properties) and can be overridden too.
