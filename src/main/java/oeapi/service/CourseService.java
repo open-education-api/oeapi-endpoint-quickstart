@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import oeapi.controller.oeapiCourseMapper;
+import oeapi.model.Component;
 import oeapi.model.CourseOffering;
 
 import oeapi.model.ModeOfDelivery;
@@ -38,6 +39,7 @@ import org.springframework.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static oeapi.oeapiUtils.defaultDescription;
+import oeapi.repository.ComponentRepository;
 import oeapi.repository.OfferingRepository;
 import oeapi.repository.oeapiFieldsOfStudyRepository;
 import oeapi.repository.oeapiStudyLoadRepository;
@@ -71,6 +73,9 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
     
     @Autowired
     private OfferingRepository offeringRepository;    
+    
+    @Autowired
+    private ComponentRepository componentRepository;      
 
     @Autowired
     oeapiEnumConversionService enumService;
@@ -139,14 +144,33 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
         Course c = courseExisting.get();
         
         // Delete child offerings
-        logger.debug("*>-CourseService delete: Deleting Offerings  for Course with ID:"+c.getCourseId()); 
+        logger.debug("*>-CourseService delete: Deleting Offerings  for Course with ID: "+c.getCourseId()); 
         
         List<CourseOffering> offerings = offeringRepository.findByCourse_CourseId(c.getCourseId());
         
         for (CourseOffering offering : offerings) {
-            logger.debug("*>-CourseService delete: Deleting Offering with ID"+offering.getOfferingId()); 
-            offering.setCourse(null); // disassociate
-            offeringRepository.delete(offering); // deleteByCourse
+            logger.debug("*>-CourseService delete: Deleting Offering with ID: "+offering.getOfferingId()); 
+            
+            // disassociate
+            offering.setCourse(null);            
+            offering.getModeOfDelivery().clear();
+            
+            offeringRepository.delete(offering); 
+        }
+        
+        // Delete child components
+        logger.debug("*>-CourseService delete: Deleting Components  for Course with ID: "+c.getCourseId()); 
+        
+        List<Component> components = componentRepository.findByCourse_CourseId(c.getCourseId());
+        
+        for (Component component : components) {
+            logger.debug("*>-CourseService delete: Deleting Component with ID: "+component.getComponentId()); 
+            
+            // disassociate
+            component.setCourse(null);            
+            component.getModeOfDelivery().clear();
+            
+            componentRepository.delete(component); 
         }
         
         // Clear all rest relatons
