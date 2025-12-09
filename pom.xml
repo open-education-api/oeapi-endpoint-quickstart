@@ -79,12 +79,12 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>8.0.33</version>
+            <version>9.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>1.18.42</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -145,6 +145,30 @@
                 <configuration>
                     <finalName>${project.artifactId}</finalName>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.1.9</version>
+                <configuration>
+                    <nvdApiKeyEnvironmentVariable>NVD_API_TOKEN</nvdApiKeyEnvironmentVariable>
+
+                    <!-- fail build when vulnerabilities found -->
+                    <failBuildOnCVSS>0</failBuildOnCVSS>
+
+                    <!-- need oss index user/password, we're fine without it for now -->
+                    <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+
+                    <suppressionFile>.dependency-check-suppressions.xml</suppressionFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
