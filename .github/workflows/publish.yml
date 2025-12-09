@@ -1,0 +1,53 @@
+name: Build and Push Container Image
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+
+  nvd:
+    uses: ./.github/workflows/nvd.yml
+    secrets:
+       NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
+
+  build-and-push:
+    needs: [test, nvd]
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Required to publish to GHCR
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels)
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}
+        tags: |
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+
+    - name: Build and push container image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
