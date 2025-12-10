@@ -21,19 +21,22 @@ import oeapi.validation.ValidLanguageTypedString;
 @Entity(name = "organization")
 public class Organization extends PrimaryCode {
 
-    /**
-     * @return the organizationTypeId
-     */
     @Id
     @Column(name = "organization_id")
     private String organizationId = UUID.randomUUID().toString();
+    
     private Long organizationTypeId;
+    
     private String shortName;
+    
     @Column(columnDefinition = "text")
     @Convert(converter = oeapiUnitaListIdentifierEntryConverter.class)
     private List<oeapiIdentifierEntry> otherCodes;
+    
     private String link;
+    
     private String logo;
+    
     @Column(columnDefinition = "text")
     @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
     //@ValidItemYaml(yamlfile = "LanguageTypedString.yml")
@@ -44,7 +47,6 @@ public class Organization extends PrimaryCode {
     @Convert(converter = oeapiUnitaListAddressConverter.class)
     //@ValidAddresses(message = "Null or Invalid address string elements")
     private List<Address> addresses;
-
 
     private Organization parent;
 
@@ -200,87 +202,4 @@ public class Organization extends PrimaryCode {
         this.children = children;
     }
 
-//    /**
-//     * @return the groups
-//     */
-//    public List<Group> getGroups() {
-//        return groups;
-//    }
-//
-//    /**
-//     * @param groups the groups to set
-//     */
-//    public void setGroups(List<Group> groups) {
-//        this.groups = groups;
-//    }
-//
-//    /**
-//     * @return the offerings
-//     */
-//    public List<Offering> getOfferings() {
-//        return offerings;
-//    }
-//
-//    /**
-//     * @param offerings the offerings to set
-//     */
-//    public void setOfferings(List<Offering> offerings) {
-//        this.offerings = offerings;
-//    }
-//
-//    /**
-//     * @return the courses
-//     */
-//    public List<Course> getCourses() {
-//        return courses;
-//    }
-//
-//    /**
-//     * @param courses the courses to set
-//     */
-//    public void setCourses(List<Course> courses) {
-//        this.courses = courses;
-//    }
-//
-//    /**
-//     * @return the programs
-//     */
-//    public List<Program> getPrograms() {
-//        return programs;
-//    }
-//
-//    /**
-//     * @param programs the programs to set
-//     */
-//    public void setPrograms(List<Program> programs) {
-//        this.programs = programs;
-//    }
-//
-//    /**
-//     * @return the components
-//     */
-//    public List<Component> getComponents() {
-//        return components;
-//    }
-//
-//    /**
-//     * @param components the components to set
-//     */
-//    public void setComponents(List<Component> components) {
-//        this.components = components;
-//    }
-//
-//    /**
-//     * @return the educationSpecifications
-//     */
-//    public List<EducationSpecification> getEducationSpecifications() {
-//        return educationSpecifications;
-//    }
-//
-//    /**
-//     * @param educationSpecifications the educationSpecifications to set
-//     */
-//    public void setEducationSpecifications(List<EducationSpecification> educationSpecifications) {
-//        this.educationSpecifications = educationSpecifications;
-//    }
 }
