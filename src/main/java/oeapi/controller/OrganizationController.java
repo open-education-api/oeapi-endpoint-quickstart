@@ -217,14 +217,15 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
     }
 
     @PutMapping
-    public ResponseEntity<?> updateOrganization(@RequestBody Organization o) {
+    public ResponseEntity<?> updateOrganization(@RequestBody OrganizationDTO o) {
         Errors errors = new BeanPropertyBindingResult(o, "organization");
         validator.validate(o, errors);
         if (errors.hasErrors()) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Error updating Organization at validate: " + errors.getAllErrors());
         }
-        Organization updated = organizationService.update(o);
-        return ResponseEntity.ok("Organization updated successfully");
+        return super.updateDTO(o, organizationService);
+        //Organization updated = organizationService.update(o);
+        //return ResponseEntity.ok("Organization updated successfully");
     }
 
     @PostMapping("/{organizationId}/update")
