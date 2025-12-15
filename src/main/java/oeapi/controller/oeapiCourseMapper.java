@@ -28,7 +28,7 @@ import oeapi.repository.oeapiFieldsOfStudyRepository;
  */
 public class oeapiCourseMapper extends oeapiDTOMapper<Course, CourseDTO> {
 
-    static Logger logger = LoggerFactory.getLogger(oeapiUtils.class);
+    static Logger logger = LoggerFactory.getLogger(oeapiCourseMapper.class);
 
     private ObjectMapper objectMapper = ooapiObjectMapper();
 

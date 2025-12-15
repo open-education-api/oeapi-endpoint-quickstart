@@ -178,24 +178,45 @@ public class OfferingService extends oeapiEndpointService<Offering, OfferingRepo
     public Offering update(String id, Offering object) {
         return super.update(id, object);
     }
-
+      
     @Override
     public boolean delete(String id) {
-        logger.debug("*>-Offering delete: Deleting Offering with ID:"+id); 
+
+        Optional<Offering> offeringExisting = this.getById(id);
+        if (!offeringExisting.isPresent()) {
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Offering not found", "Offering [" + id + "] not found");
+
+        }
+        Offering offering = offeringExisting.get();
+        logger.debug("*>-Offering Service: Deleting Offering with ID:"+id); 
+               
+        // Clear all rest relatons
+        offering = this.clearRelations(offering);
         super.delete(id);
         return true;
-    }
+    }    
+    
 
     public void deleteByCourse(Course course) {
         List<CourseOffering> offerings = repository.findByCourse_CourseId(course.getCourseId());
         
         for (CourseOffering offering : offerings) {
             logger.debug("*>-Offering deleteByCourse: Deleting Offering with ID"+offering.getOfferingId()); 
-            offering.setCourse(null); // disassociate
-            repository.delete(offering); // deleteByCourse
+            this.delete(offering.getOfferingId());
         }
     }
 
+    public Offering clearRelations(Offering offering) {
+
+        List<ModeOfDelivery> modeOfDelivery = offering.getModeOfDelivery();
+        if (!(modeOfDelivery == null) && !modeOfDelivery.isEmpty()) {
+            offering.getModeOfDelivery().clear();
+        }
+        
+        return offering;
+
+    }
+           
     public Offering checkRelations(Offering offering, boolean mandatoryOrganization) {
 
         logger.debug("+(Course) Offering service checkRelations: Organization...");

@@ -35,6 +35,7 @@ import oeapi.service.OfferingService;
 import oeapi.service.oeapiEnumConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -76,6 +77,9 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
 
     @Autowired
     private ComponentService componentService;
+    
+    @Value("${ooapi.config.autoCreateOfferIfNotExists:false}")
+    private boolean defaultAutoCreateOfferIfNotExists;
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiCourseRequestParam requestParam) {
@@ -113,10 +117,12 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         }
         List<CourseOffering> courseOfferings = offeringService.getByCourseId(id);
 
-        // If there is no CourseOffering, return a basic autogen offering
+        // If there is no CourseOffering and Autocreate is on, return a basic autogen offering
         if (courseOfferings.isEmpty()) {
             List<Offering> offerings = new ArrayList<>();
-            offerings.add(offeringService.autoGenerateBasicItem(id));
+            if (defaultAutoCreateOfferIfNotExists) {
+               offerings.add(offeringService.autoGenerateBasicItem(id));
+             }
             return super.getResponse(requestParam, offerings);
         }
         mapper = new oeapiDTOMapper(CourseOffering.class, CourseOfferingDTO.class, enumService, Arrays.asList());

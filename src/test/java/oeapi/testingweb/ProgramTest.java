@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ProgramTest {
 
-    Logger logger = LoggerFactory.getLogger(PersonTest.class);
+    Logger logger = LoggerFactory.getLogger(ProgramTest.class);
     String restResource = "programs";
     String templateAbrev = "PROG";
     String entity = "program";

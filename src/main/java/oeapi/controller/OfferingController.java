@@ -9,7 +9,11 @@ import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
 import oeapi.model.Course;
 import oeapi.model.CourseOffering;
 import oeapi.model.Offering;
+import oeapi.model.Organization;
 import oeapi.oeapiException;
+import oeapi.oeapiObjectsValidator;
+import oeapi.payload.CourseOfferingDTO;
+import oeapi.payload.OrganizationDTO;
 import oeapi.service.CourseService;
 import oeapi.service.OfferingService;
 
@@ -19,11 +23,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/offerings")
 public class OfferingController extends oeapiController<Offering> {
-
+        
     static Logger logger = LoggerFactory.getLogger(OfferingController.class);
 
     @Autowired
@@ -44,6 +51,10 @@ public class OfferingController extends oeapiController<Offering> {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private oeapiObjectsValidator validator;    
+    
+    
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiOfferingRequestParam requestParam) {
 
@@ -112,6 +123,15 @@ public class OfferingController extends oeapiController<Offering> {
 
         return super.create(courseOffering, offeringService);
     }
+    
+    
+    @PutMapping
+    public ResponseEntity<?> putCourseOffering(@RequestBody CourseOffering courseOffering) {
+
+        logger.debug("Putting CourseOffering...");        
+        return super.update(courseOffering, offeringService);        
+    }
+    
 
     
     @DeleteMapping("/{offeringId}")
