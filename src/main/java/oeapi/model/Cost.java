@@ -2,8 +2,8 @@ package oeapi.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Convert;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import oeapi.converter.oeapiUnitaExtConverter;
 
 /**

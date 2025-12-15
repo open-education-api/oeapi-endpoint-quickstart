@@ -2,10 +2,10 @@ package oeapi.validation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import oeapi.oeapiException;
 import oeapi.oeapiSchemaValidator;
 import static oeapi.oeapiUtils.ooapiObjectMapper;

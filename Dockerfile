@@ -12,7 +12,4 @@ RUN mvn -f /usr/src/app/pom.xml clean package
 #
 FROM eclipse-temurin:18-jre-alpine
 COPY --from=build /usr/src/app/target/oeapi_qs.jar  /usr/app/oeapi_qs.jar
-EXPOSE 57075
-CMD ["java","-jar","/usr/app/oeapi_qs.jar"]  
-
-
+CMD ["java","-jar","/usr/app/oeapi_qs.jar"]

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import oeapi.model.Association;
 import oeapi.model.Result;
 import oeapi.repository.AssociationRepository;

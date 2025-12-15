@@ -2,7 +2,7 @@ package oeapi.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
-import javax.persistence.Convert;
+import jakarta.persistence.Convert;
 import oeapi.converter.oeapiUnitaListEnrollmentConverter;
 
 /**

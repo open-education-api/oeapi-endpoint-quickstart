@@ -1,8 +1,8 @@
 package oeapi.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.ValidationException;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.ValidationException;
 import oeapi.oeapiSchemaValidator;
 import oeapi.service.PersonService;
 import org.slf4j.Logger;

@@ -3,9 +3,9 @@ package oeapi.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.MappedSuperclass;
 import oeapi.converter.oeapiIdentifierEntryConverter;
 
 import oeapi.validation.ValidObjectYaml;

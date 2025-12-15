@@ -2,9 +2,9 @@ package oeapi.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.validation.Valid;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.validation.Valid;
 import oeapi.converter.oeapiGeolocationConverter;
 import oeapi.converter.oeapiResultConverter;
 import oeapi.converter.oeapiUnitaExtConverter;

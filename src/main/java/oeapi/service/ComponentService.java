@@ -8,7 +8,9 @@ import java.util.Optional;
 
 import java.util.UUID;
 
-import javax.transaction.Transactional;
+
+import oeapi.controller.oeapiCourseMapper;
+
 import oeapi.controller.oeapiDTOMapper;
 import oeapi.model.Component;
 import oeapi.model.ComponentOffering;
@@ -21,6 +23,8 @@ import oeapi.payload.ComponentDTO;
 
 import oeapi.repository.ComponentRepository;
 import oeapi.repository.ModeOfDeliveryRepository;
+
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.domain.Page;

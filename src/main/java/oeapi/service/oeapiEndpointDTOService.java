@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import oeapi.controller.oeapiDTOMapper;
 import static oeapi.oeapiUtils.ooapiObjectMapper;
 

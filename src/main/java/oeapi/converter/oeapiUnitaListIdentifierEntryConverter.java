@@ -1,13 +1,13 @@
 package oeapi.converter;
 
-import javax.persistence.Converter;
+import jakarta.persistence.Converter;
 import java.util.List;
 import oeapi.model.oeapiIdentifierEntry;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 import oeapi.oeapiException;
 import static oeapi.oeapiUtils.ooapiObjectMapper;
 import org.springframework.http.HttpStatus;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import oeapi.model.Organization;
 import oeapi.model.Person;
 import oeapi.oeapiException;

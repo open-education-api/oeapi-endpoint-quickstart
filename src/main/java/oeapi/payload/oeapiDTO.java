@@ -1,7 +1,7 @@
 package oeapi.payload;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javax.persistence.Convert;
+import jakarta.persistence.Convert;
 import oeapi.converter.oeapiIdentifierEntryConverter;
 import oeapi.model.oeapiIdentifierEntry;
 import oeapi.validation.ValidObjectYaml;

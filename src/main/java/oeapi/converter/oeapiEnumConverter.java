@@ -2,7 +2,7 @@ package oeapi.converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 import oeapi.model.oeapiUnitaEnumeration;
 import oeapi.oeapiException;
 import org.springframework.beans.factory.annotation.Autowired;

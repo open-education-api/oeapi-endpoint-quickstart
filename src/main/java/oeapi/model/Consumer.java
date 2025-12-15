@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import oeapi.converter.oeapiUnitaListAllianceConverter;
 import oeapi.converter.oeapiUnitaListEnrollmentConverter;
 

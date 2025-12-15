@@ -69,9 +69,31 @@ Please note that this is a development version, not intended for production use.
 
 ### Running it as a jar
 
-In this case, you should build the JAR file from the source code using the IDE of your choice (e.g., NetBeans, Eclipse, etc.).
+In this case, you should build the JAR file from the source code using the IDE of your choice (e.g., NetBeans, Eclipse, etc.) or on the command line.
 
 Before building the JAR, make sure to review the file located at _src/main/resources/application.properties_ and configure the datasource settings to point to your desired DBMS.
+
+Building using the command line goes as follows:
+
+```sh
+mvn package
+```
+
+If the above fails with the following error:
+
+```
+[ERROR] Error executing Maven.
+[ERROR] java.lang.IllegalStateException: Unable to load cache item
+[ERROR] Caused by: Unable to load cache item
+[ERROR] Caused by: Could not initialize class net.sf.cglib.core.MethodWrapper
+[ERROR] Caused by: Exception net.sf.cglib.core.CodeGenerationException: java.lang.reflect.InaccessibleObjectException-->Unable to make protected final java.lang.Class java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain) throws java.lang.ClassFormatError accessible: module java.base does not "opens java.lang" to unnamed module @13a5fe33 [in thread "main"]
+```
+
+add the following environment variable and try again:
+
+```sh
+export JDK_JAVA_OPTIONS='--add-opens java.base/java.lang=ALL-UNNAMED --enable-native-access=ALL-UNNAMED'
+```
 
 Once you've built the JAR file, and assuming your Java environment is properly set up, you can start the application with the following command (note that the JAR file name may vary):
 
@@ -317,3 +339,60 @@ Regardless of the approach, all options ultimately come down to one simple actio
 The "right way" should be using a tool for testing APIs like HTTPie, Postman, etc. and follow the spec to interact with it.
 
 Also, for seeing and checking the data in your OEAPI a tiny frontend is included (not for production!)  You can reach it at http://localhost:57075/oeapi-td.html
+
+
+# Configuration
+
+The following environment variables can be use to change the behavior of this application:
+
+- `SERVER_PORT`
+
+  HTTP port the application is served on.  Default value:  57075.
+
+- `SPRING_DATASOURCE_URL`
+
+  JDBC URL to the database.
+
+- `SPRING_DATASOURCE_DRIVER_CLASS_NAME`
+
+  Class name of JDBC driver.   Default value: `com.mysql.cj.jdbc.Driver`), make sure to add the dependency to the [pom.xml file](./pom.xml) when changing this.
+
+- `SPRING_DATASOURCE_USERNAME`
+
+  Database user name.
+
+- `SPRING_DATASOURCE_PASSWORD`
+
+  Database user password.
+
+Note: all defaults (and more properties) are defined in [application.properties](./src/main/resources/application.properties).
+
+# Development
+
+## Running tests
+
+The test suite needs a database to run.  Use the following docker invocation to start MySQL or us another method.
+
+```sh
+docker run -p 3306:3306 \
+    -e MYSQL_ROOT_PASSWORD=x \
+    -e MYSQL_DATABASE=oeapi_qs \
+    -e MYSQL_USER=oeapi_qs \
+    -e MYSQL_PASSWORD=oeapi_qs \
+    docker.io/mysql
+```
+
+The tests are skipped by default and we need to override the configured datasource URL:
+
+```sh
+mvn \
+    -DskipTests=false \
+    -Dspring.datasource.url='jdbc:mysql://localhost/oeapi_qs' \
+    test
+```
+
+As described in [Running it as a jar](#running-it-as-a-jar) you'll probably need the following to run the tests:
+
+```sh
+export JDK_JAVA_OPTIONS='--add-opens java.base/java.lang=ALL-UNNAMED --enable-native-access=ALL-UNNAMED'
+```

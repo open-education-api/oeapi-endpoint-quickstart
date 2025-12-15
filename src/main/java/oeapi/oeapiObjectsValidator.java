@@ -1,7 +1,7 @@
 package oeapi;
 
 import java.net.URL;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

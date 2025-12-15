@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.EntityListeners;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.EntityListeners;
 
 import oeapi.converter.oeapiResourcesConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
