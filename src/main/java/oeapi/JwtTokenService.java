@@ -31,17 +31,6 @@ public class JwtTokenService {
 
     @Value("${app.jwt.secret}")
     private String SECRET_KEY;
-    private SecretKey secretKey;
-
-    public JwtTokenService() {
-        super();
-
-        if (SECRET_KEY != null) {
-            secretKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-        } else {
-            secretKey = Jwts.SIG.HS256.key().build();
-        }
-    }
 
     public String generateAccessToken(UserDetails user) {
         List<String> roles = user.getAuthorities()
@@ -55,14 +44,14 @@ public class JwtTokenService {
                 .issuer("CodeJava")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION))
-                .signWith(secretKey)
+                .signWith(getSecretKey())
                 .compact();
     }
 
     public boolean validateAccessToken(String token) {
         try {
             Jwts.parser()
-                    .verifyWith(secretKey)
+                    .verifyWith(getSecretKey())
                     .build()
                     .parseSignedClaims(token);
             return true;
@@ -83,10 +72,21 @@ public class JwtTokenService {
 
     public String extractUsername(String token) {
         return Jwts.parser()
-                .verifyWith(secretKey)
+                .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    private volatile SecretKey _secretKey = null;
+
+    private SecretKey getSecretKey() {
+        if (_secretKey == null) {
+            _secretKey = SECRET_KEY != null
+                ? Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8))
+                : Jwts.SIG.HS256.key().build();
+        }
+        return _secretKey;
     }
 }
