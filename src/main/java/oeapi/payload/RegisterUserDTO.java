@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import oeapi.model.Role;
 
-public class AuthRequest {
+public class RegisterUserDTO {
 
     @NotNull
     @Email

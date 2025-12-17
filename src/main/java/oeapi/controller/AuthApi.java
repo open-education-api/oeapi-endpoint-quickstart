@@ -4,32 +4,32 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import oeapi.JwtTokenService;
-
 import oeapi.model.CustomUserDetails;
 import oeapi.model.Role;
 import oeapi.model.User;
-import oeapi.payload.AuthRequest;
+import oeapi.payload.LoginDTO;
 import oeapi.payload.ChangePasswordDTO;
+import oeapi.payload.RegisterUserDTO;
 import oeapi.repository.RoleRepository;
 import oeapi.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 public class AuthApi {
@@ -46,11 +46,10 @@ public class AuthApi {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO dto) {
         try {
             Authentication auth = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
             );
 
             CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
@@ -65,22 +64,22 @@ public class AuthApi {
 
     @PostMapping("auth/signup")
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody AuthRequest signUpDto) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserDTO dto) {
 
         // checking for username exists in a database
         // checking for email exists in a database
-        if (userRepository.existsUserByEmail(signUpDto.getEmail())) {
+        if (userRepository.existsUserByEmail(dto.getEmail())) {
             return new ResponseEntity<>("Email already exists!", HttpStatus.BAD_REQUEST);
         }
 
         // creating user object
         User user = new User();
-        user.setEmail(signUpDto.getEmail());
-        user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+        user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         List<Role> roleList = new ArrayList<>();
 
-        for (Role r : signUpDto.getRoles()) {
+        for (Role r : dto.getRoles()) {
             Role role = roleRepository.findByName(r.getName()).get();
             roleList.add(role);
         }
