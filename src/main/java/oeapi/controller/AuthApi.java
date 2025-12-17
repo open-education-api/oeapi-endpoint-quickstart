@@ -46,7 +46,7 @@ public class AuthApi {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@RequestBody @Valid AuthRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) {
         try {
             Authentication auth = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -65,7 +65,7 @@ public class AuthApi {
 
     @PostMapping("auth/signup")
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> registerUser(@RequestBody AuthRequest signUpDto) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody AuthRequest signUpDto) {
 
         // checking for username exists in a database
         // checking for email exists in a database
@@ -78,7 +78,7 @@ public class AuthApi {
         user.setEmail(signUpDto.getEmail());
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
 
-        List<Role> roleList = new ArrayList();
+        List<Role> roleList = new ArrayList<>();
 
         for (Role r : signUpDto.getRoles()) {
             Role role = roleRepository.findByName(r.getName()).get();
@@ -93,7 +93,7 @@ public class AuthApi {
     }
 
     @PostMapping("/auth/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO dto, Principal principal) {
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordDTO dto, Principal principal) {
         String email = principal.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
