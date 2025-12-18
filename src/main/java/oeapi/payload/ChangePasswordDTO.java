@@ -4,6 +4,9 @@
  */
 package oeapi.payload;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 /**
  *
  * @author itziar.urrutia
@@ -11,6 +14,9 @@ package oeapi.payload;
 public class ChangePasswordDTO {
 
     private String oldPassword;
+
+    @NotNull
+    @Size(min = 5, max = 50)
     private String newPassword;
 
     // Getters and setters

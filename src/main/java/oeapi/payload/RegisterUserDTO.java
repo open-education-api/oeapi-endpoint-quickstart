@@ -3,19 +3,18 @@ package oeapi.payload;
 import java.util.List;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import oeapi.model.Role;
 
-import org.hibernate.validator.constraints.Length;
-
-public class AuthRequest {
+public class RegisterUserDTO {
 
     @NotNull
     @Email
-    @Length(min = 5, max = 90)
+    @Size(min = 5, max = 50)
     private String email;
 
     @NotNull
-    @Length(min = 5, max = 40)
+    @Size(min = 5, max = 50)
     private String password;
 
     private List<Role> roles;
