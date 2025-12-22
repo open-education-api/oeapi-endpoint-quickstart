@@ -136,6 +136,11 @@
                 <includes>
                     <include>*/**</include>
                 </includes>
+                <!-- To use an external application.properties uncomment these lines
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>     
+                -->                       
             </resource>
         </resources>
         <plugins>
@@ -145,6 +150,13 @@
                 <configuration>
                     <finalName>${project.artifactId}</finalName>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>                
             </plugin>
 
             <plugin>
