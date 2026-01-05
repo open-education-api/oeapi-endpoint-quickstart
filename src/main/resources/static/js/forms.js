@@ -7,7 +7,6 @@
 
 
 const courseNames = {};
-
 /* Rich Text management (CKEditor) **********************/
 
 var editors = {};
@@ -19,8 +18,8 @@ var currentLang = {}; // Current language per field
 /* For rich text values */
 function initMultilingualEditors() {
 
-	// Fill language selectors
-	fillItemSelectorsByClassName("lang-select", languages);
+    // Fill language selectors
+    fillItemSelectorsByClassName("lang-select", languages);
 
     // Automatically initialize all CKEditor textareas that have a corresponding lang-select	
     document.querySelectorAll('textarea[id^="editor-"]').forEach(function (el) {
@@ -30,72 +29,72 @@ function initMultilingualEditors() {
         currentLang[fieldId] = 'en-GB'; // default language
 
         // Initialize CKEditor
-        ClassicEditor.create(el , {  // Config - Disable font change
-						removePlugins: ['FontFamily', 'FontSize', 'FontColor', 'FontBackgroundColor'],
-						htmlSupport: {
-							disallow: [
-								{ name: /.*/, attributes: ['style'], classes: true }
-							]
-						},
-						fontFamily: {
-							options: ['default'],
-							supportAllValues: false
-						},
-						fontSize: {
-							options: ['default'],
-							supportAllValues: false
-						}
-               })
+        ClassicEditor.create(el, {// Config - Disable font change
+            removePlugins: ['FontFamily', 'FontSize', 'FontColor', 'FontBackgroundColor'],
+            htmlSupport: {
+                disallow: [
+                    {name: /.*/, attributes: ['style'], classes: true}
+                ]
+            },
+            fontFamily: {
+                options: ['default'],
+                supportAllValues: false
+            },
+            fontSize: {
+                options: ['default'],
+                supportAllValues: false
+            }
+        })
                 .then(function (editor) {
-					
+
                     // Save instance for possible future use
                     editorsData[fieldId]._editorInstance = editor;
-					
-					// Automatically save current language text whenever it changes
-					editor.model.document.on('change:data', () => {
-					  const currentLanguage = currentLang[fieldId];
-						// If empty is ignored
+
+                    // Automatically save current language text whenever it changes
+                    editor.model.document.on('change:data', () => {
+                        const currentLanguage = currentLang[fieldId];
+                        // If empty is ignored
                         if (editor.getData().trim()) {
-                           	editorsData[fieldId][currentLanguage] = editor.getData().trim();
+                            editorsData[fieldId][currentLanguage] = editor.getData().trim();
                         } else {
                             delete editorsData[fieldId][currentLanguage];
-                        }						  						  						  
-						console.log("Text changed: ",fieldId,currentLanguage,editor.getData().trim());
-						
-						updateSavedEditorLangs(fieldId);
-						
-					 });					
-					
+                        }
+                        console.log("Text changed: ", fieldId, currentLanguage, editor.getData().trim());
+
+                        updateSavedEditorLangs(fieldId);
+
+                    });
+
                     // Get corresponding language select
                     var langSelect = document.querySelector('select.lang-select[data-field="' + fieldId + '"]');
                     if (!langSelect)
                         return;
 
-					langSelect.addEventListener('change', function (event) {
-						const newLang = event.target.value;
-						const oldLang = currentLang[fieldId];
-						const content = editor.getData().trim();
+                    langSelect.addEventListener('change', function (event) {
+                        const newLang = event.target.value;
+                        const oldLang = currentLang[fieldId];
+                        const content = editor.getData().trim();
 
-						// Save current text under the old language key
-						if (content) {
-							editorsData[fieldId][oldLang] = content;
-						} else {
-							delete editorsData[fieldId][oldLang];
-						}
+                        // Save current text under the old language key
+                        if (content) {
+                            editorsData[fieldId][oldLang] = content;
+                        } else {
+                            delete editorsData[fieldId][oldLang];
+                        }
 
-						// Switch the tracking variable BEFORE setting data
-						currentLang[fieldId] = newLang;
+                        // Switch the tracking variable BEFORE setting data
+                        currentLang[fieldId] = newLang;
 
-						// Load text for the new language (if any)
-						const newContent = editorsData[fieldId][newLang] || '';
-						editor.setData(newContent);
-						
-						console.log("CKeditor for "+fieldId+" Switched from "+oldLang+" to "+newLang);
-						updateSavedEditorLangs(fieldId);
-					});
-					
-				console.log("CKEditor initialized for: "+fieldId);		
-					
+                        // Load text for the new language (if any)
+                        const newContent = editorsData[fieldId][newLang] || '';
+                        editor.setData(newContent);
+
+                        console.log("CKeditor for " + fieldId + " Switched from " + oldLang + " to " + newLang);
+                        updateSavedEditorLangs(fieldId);
+                    });
+
+                    console.log("CKEditor initialized for: " + fieldId);
+
                 })
                 .catch(function (err) {
                     console.error('CKEditor init failed for ' + fieldId + ':', err);
@@ -150,36 +149,36 @@ function collectAllEditorData() {
  * Save the currently visible content for all CKEditor fields before submit.
  * It ensures the latest edited content is stored in editorsData[fieldId][lang].
  */
-  
+
 function saveAllEditorsData() {
-	
+
     for (var fieldId in editorsData) {
-		
-		console.log("saveAllEditorsData: Checking "+fieldId);
-		
+
+        console.log("saveAllEditorsData: Checking " + fieldId);
+
         if (editorsData.hasOwnProperty(fieldId)) {
             var editorInstance = editorsData[fieldId]._editorInstance;
             if (!editorInstance)
                 continue; // skip if no CKEditor instance
 
-			// Get actual visible language from select 
-			var langSelect = document.querySelector('select.lang-select[data-field="' + fieldId + '"]');
-			var lang = langSelect ? langSelect.value : (currentLang[fieldId] || "en-GB");
-			
-			// Get editor data
-			var content = "";
-			try {
-				content = editorInstance.getData().trim();
-			} catch (e) {
-				console.warn("Could not read data for editor:", fieldId, e);
-			}
+            // Get actual visible language from select 
+            var langSelect = document.querySelector('select.lang-select[data-field="' + fieldId + '"]');
+            var lang = langSelect ? langSelect.value : (currentLang[fieldId] || "en-GB");
 
-			// Save or delete depending on content
-			if (content) {
-				editorsData[fieldId][lang] = content;
-			} else {
-				delete editorsData[fieldId][lang];
-			}
+            // Get editor data
+            var content = "";
+            try {
+                content = editorInstance.getData().trim();
+            } catch (e) {
+                console.warn("Could not read data for editor:", fieldId, e);
+            }
+
+            // Save or delete depending on content
+            if (content) {
+                editorsData[fieldId][lang] = content;
+            } else {
+                delete editorsData[fieldId][lang];
+            }
         }
     }
 }
@@ -292,16 +291,17 @@ function getMultilingualTextJSON() {
 
 // helper to get JSON for a single text field (array of {language,value})
 function getMultilingualTextJSONFor(fieldId) {
-  var out = [];
-  var map = textFieldData[fieldId] || {};
-  for (var lang in map) {
-    if (!map.hasOwnProperty(lang)) continue;
-    var v = map[lang];
-    if (typeof v === "string" && v.trim() !== "") {
-      out.push({ language: lang, value: v.trim() });
+    var out = [];
+    var map = textFieldData[fieldId] || {};
+    for (var lang in map) {
+        if (!map.hasOwnProperty(lang))
+            continue;
+        var v = map[lang];
+        if (typeof v === "string" && v.trim() !== "") {
+            out.push({language: lang, value: v.trim()});
+        }
     }
-  }
-  return out;
+    return out;
 }
 
 /* Load Selectors ****************/
@@ -346,7 +346,7 @@ function fillLanguageISO639Selectors() {
         select.innerHTML = "";
 
         // Populate with languages
-        languages.forEach((lang, index) => {
+        languagesISO639.forEach((lang, index) => {
             const option = document.createElement("option");
             option.value = lang.iso639_2;
             option.textContent = lang.name;
@@ -412,70 +412,72 @@ function safeToString(value) {
 
 
 // Remove empty or null properties recursively
-  function cleanNullsOrEmpties(obj) {
+function cleanNullsOrEmpties(obj) {
     if (Array.isArray(obj)) {
-      obj = obj.map(cleanNullsOrEmpties).filter(Boolean);
-      return obj.length ? obj : null;
+        obj = obj.map(cleanNullsOrEmpties).filter(Boolean);
+        return obj.length ? obj : null;
     } else if (typeof obj === "object" && obj !== null) {
-      var newObj = {};
-      Object.keys(obj).forEach(function(key) {
-        var val = cleanNullsOrEmpties(obj[key]);
-        if (val !== null && val !== "" && !(typeof val === "object" && Object.keys(val).length === 0)) {
-          newObj[key] = val;
-        }
-      });
-      return Object.keys(newObj).length ? newObj : null;
+        var newObj = {};
+        Object.keys(obj).forEach(function (key) {
+            var val = cleanNullsOrEmpties(obj[key]);
+            if (val !== null && val !== "" && !(typeof val === "object" && Object.keys(val).length === 0)) {
+                newObj[key] = val;
+            }
+        });
+        return Object.keys(newObj).length ? newObj : null;
     }
     return obj;
-  }
+}
 
 
 function buildAddressJSON() {
-  function getValue(id) {
-    var el = document.getElementById(id);
-    return el ? el.value.trim() : "";
-  }
-
-  function getFloat(id) {
-    var el = document.getElementById(id);
-    var val = el && el.value ? parseFloat(el.value) : null;
-    return isNaN(val) ? null : val;
-  }
-
-  var address = {
-    addressType: "postal",
-    street: getValue("street"),
-    streetNumber: getValue("streetNumber"),
-    postalCode: getValue("postalCode"),
-    city: getValue("city"),
-    countryCode: getValue("countryCode"),
-    additional: [],
-    geolocation: {
-      latitude: getFloat("latitude"),
-      longitude: getFloat("longitude")
+    function getValue(id) {
+        var el = document.getElementById(id);
+        return el ? el.value.trim() : "";
     }
-  };
 
-  // Handle multilingual "additional" info
-  if (typeof window.addressAdditionalTexts === "object" && Object.keys(window.addressAdditionalTexts).length > 0) {
-    address.additional = Object.keys(window.addressAdditionalTexts)
-      .filter(function(lang) { return window.addressAdditionalTexts[lang].trim() !== ""; })
-      .map(function(lang) {
-        return { language: lang, value: window.addressAdditionalTexts[lang].trim() };
-      });
-  } else {
-    // fallback to single text field
-    var addEl = document.getElementById("addressAdditional");
-    if (addEl && addEl.value.trim()) {
-      address.additional = [{ language: "en-GB", value: addEl.value.trim() }];
+    function getFloat(id) {
+        var el = document.getElementById(id);
+        var val = el && el.value ? parseFloat(el.value) : null;
+        return isNaN(val) ? null : val;
     }
-  }
-  
-  // Remove empty values
-  cleaned = cleanNullsOrEmpties(address);
 
-  // Return "" if all fields are empty
-  return cleaned && Object.keys(cleaned).length > 0 ? cleaned : "";
+    var address = {
+        addressType: "postal",
+        street: getValue("street"),
+        streetNumber: getValue("streetNumber"),
+        postalCode: getValue("postalCode"),
+        city: getValue("city"),
+        countryCode: getValue("countryCode"),
+        additional: [],
+        geolocation: {
+            latitude: getFloat("latitude"),
+            longitude: getFloat("longitude")
+        }
+    };
+
+    // Handle multilingual "additional" info
+    if (typeof window.addressAdditionalTexts === "object" && Object.keys(window.addressAdditionalTexts).length > 0) {
+        address.additional = Object.keys(window.addressAdditionalTexts)
+                .filter(function (lang) {
+                    return window.addressAdditionalTexts[lang].trim() !== "";
+                })
+                .map(function (lang) {
+                    return {language: lang, value: window.addressAdditionalTexts[lang].trim()};
+                });
+    } else {
+        // fallback to single text field
+        var addEl = document.getElementById("addressAdditional");
+        if (addEl && addEl.value.trim()) {
+            address.additional = [{language: "en-GB", value: addEl.value.trim()}];
+        }
+    }
+
+    // Remove empty values
+    cleaned = cleanNullsOrEmpties(address);
+
+    // Return "" if all fields are empty
+    return cleaned && Object.keys(cleaned).length > 0 ? cleaned : "";
 }
 
 let editorInstance = null;
@@ -516,22 +518,22 @@ document.querySelectorAll(".general-tabs .tab-btn").forEach(button => {
 // Language tabs
 
 /*
-document.querySelectorAll(".lang-tabs .lang-tab-btn").forEach(button => {
-    button.addEventListener("click", () => {
-        const lang = button.dataset.lang;
-        const parent = button.closest("#tab-basic-info"); // adjust if language tabs are in other tabs too
-
-        parent.querySelectorAll(".lang-tab-btn").forEach(btn => btn.classList.remove("active"));
-        parent.querySelectorAll(".lang-content").forEach(el => el.classList.remove("active"));
-        button.classList.add("active");
-        parent.querySelector(`#desc-${lang}`).classList.add("active");
-        document.querySelectorAll(".lang-content").forEach(div => {
-            div.style.display = "none";
-        });
-        document.getElementById(`desc-${lang}`).style.display = "block";
-    });
-});
-*/
+ document.querySelectorAll(".lang-tabs .lang-tab-btn").forEach(button => {
+ button.addEventListener("click", () => {
+ const lang = button.dataset.lang;
+ const parent = button.closest("#tab-basic-info"); // adjust if language tabs are in other tabs too
+ 
+ parent.querySelectorAll(".lang-tab-btn").forEach(btn => btn.classList.remove("active"));
+ parent.querySelectorAll(".lang-content").forEach(el => el.classList.remove("active"));
+ button.classList.add("active");
+ parent.querySelector(`#desc-${lang}`).classList.add("active");
+ document.querySelectorAll(".lang-content").forEach(div => {
+ div.style.display = "none";
+ });
+ document.getElementById(`desc-${lang}`).style.display = "block";
+ });
+ });
+ */
 
 $(document).ready(function () {
 
@@ -548,180 +550,181 @@ $(document).ready(function () {
                     console.error("Failed to load enum:", preLoadItems.name);
                 });
     });
-  });
-   
- /* Submit Form */
-	
- $('#catalogForm').on('submit', async function (e) {
+});
 
-	 event.preventDefault();			
-     
-	 /* Ensure save values of CKEditor fields */
-	 console.log("CKeditorsData right now:", editorsData);
-	 saveAllEditorsData();  
+/* Submit Form */
 
-     /* Check requiered fields are ok */	 
-	 const tabs = document.querySelectorAll('.tab-content');
-	  let allValid = true;
+$('#catalogForm').on('submit', async function (e) {
 
-	  for (const tab of tabs) {
+    event.preventDefault();
 
-                const inputs = tab.querySelectorAll('input, textarea, select');
-		for (const input of inputs) {
-		  if (!input.checkValidity()) {
+    /* Ensure save values of CKEditor fields */
+    console.log("CKeditorsData right now:", editorsData);
+    saveAllEditorsData();
 
-			// Activate the tab that contains the invalid input
-			if (!tab.classList.contains('active')) {
-			  // Remove active from current tab and button
-			  document.querySelector('.tab-content.active')?.classList.remove('active');
-			  document.querySelector('.tab-btn.active')?.classList.remove('active');
+    /* Check requiered fields are ok */
+    const tabs = document.querySelectorAll('.tab-content');
+    let allValid = true;
 
-			  // Activate this tab
-			  tab.classList.add('active');
+    for (const tab of tabs) {
 
-			  // Activate matching tab button
-			  const tabId = tab.id.replace('tab-', ''); // e.g. "basic-info"
-			  document.querySelector(`.tab-btn[data-tab="${tabId}"]`)?.classList.add('active');
-			}
+        const inputs = tab.querySelectorAll('input, textarea, select');
+        for (const input of inputs) {
+            if (!input.checkValidity()) {
 
-			// Show browser's native validation message
-			input.reportValidity();
+                // Activate the tab that contains the invalid input
+                if (!tab.classList.contains('active')) {
+                    // Remove active from current tab and button
+                    document.querySelector('.tab-content.active')?.classList.remove('active');
+                    document.querySelector('.tab-btn.active')?.classList.remove('active');
 
-			// Scroll to the invalid input for visibility
-			input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Activate this tab
+                    tab.classList.add('active');
 
-			allValid = false;
-			return; // Stop further validation
-		  }
-		}
-	  }
-			
-		/* Gather all info from CKEditors */
-		
-		for (const fieldId in editorsData) {
-			if (!editorsData.hasOwnProperty(fieldId)) continue;
-
-			const editorInstance = editorsData[fieldId]._editorInstance;
-			if (editorInstance) {
-			  editorInstance.updateSourceElement(); // Push visual text into <textarea>
-			}
-		}	
-		
-		// Can really do an update (am i logged or no JWT?)
-        let updatesArePermited = await canDoUpdates(); 
-
-        if (updatesArePermited) {
-            console.log("On submit: User is validated to perform updates...");
-            if (validateDates()) {
-                console.log("On submit: Required dates are valid...");
-
-				/* Manage coordinators... */
-
-                const coordinatorsData = await Promise.all(coordinators.map(async coordinator => {
-                    return {
-                        givenName: coordinator.name,
-                        surname: coordinator.surname,
-                        mail: coordinator.email,
-                        displayName: coordinator.name + " " + coordinator.surname,
-                        activeEnrollment: false,
-                        affiliations: ["employee"],
-                        primaryCode: {
-                            code: coordinator.email,
-                            codeType: "identifier"
-                        }
-                    };
-                }));
-                console.log("On submit: Coordinator list processed: ", coordinatorsData);
-                console.log("On submit: num of coordinators:", coordinatorsData.length);
-                let coordinatorsId = [];
-                if (coordinatorsData.length > 0) {
-
-                    console.log("On submit: Processing coordinators (obtaining ids) ...");
-                    // 2. Process each coordinator to get their personId
-                    let personRes1, personRes2, personJson1, personJson2, queryUrl
-                    coordinatorsId = await Promise.all(coordinatorsData.map(async c => {
-                        console.log("mail: " + c.mail);
-                        // First: check if person already exists
-                        queryUrl = `${endpointURL}/persons?primaryCode=${encodeURIComponent(c.mail)}`; // Use query param
-                        personRes1 = await fetch(queryUrl, {
-                            method: "GET",
-                            headers: {
-                                "Content-Type": "application/json"
-                            }
-                        });
-                        if (personRes1.ok) {
-                            // Doesn't exist: create
-                            personJson1 = await personRes1.json();
-                            if (personJson1.items.length == 0) {
-                                console.log("On submit: New coordinator: " + c.mail);
-                                personRes2 = await fetch(`${endpointURL}/persons`, {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                        "Authorization": "Bearer " + localStorage.getItem('jwt')
-                                    },
-                                    body: JSON.stringify(c)
-                                });
-                                personJson2 = await personRes2.json();
-                                return personJson2.personId + "";
-                            } else {
-                                // Exists: use existing
-                                console.log("On submit: Coordinator already in OOAPI: " + c.mail);
-                                return personJson1.items[0].personId + "";
-                            }
-                        }
-                    }));
+                    // Activate matching tab button
+                    const tabId = tab.id.replace('tab-', ''); // e.g. "basic-info"
+                    document.querySelector(`.tab-btn[data-tab="${tabId}"]`)?.classList.add('active');
                 }
 
+                // Show browser's native validation message
+                input.reportValidity();
 
-                // 3. coordinatorsId now contains all personIds
-                console.log("On submit: Final list of coordinators ids:", coordinatorsId);
-                console.log("On submit: Posting course and Offering... ", coordinatorsId);
+                // Scroll to the invalid input for visibility
+                input.scrollIntoView({behavior: 'smooth', block: 'center'});
 
-
-				/* Post main course data */
-
-                let postCourseResponse = await postCourse(coordinatorsId, function (err, response) {
-                    postCourseResponse = response;
-                    console.log("On submit: Posting course response: ", response);
-                });
-				
-				/* Post offerings */
-				
-				/* postCourseResponse.courseId is the ID of parent course for offering */
-
-                switch (formCourseType) {
-
-                    case "stdCourse":
-                        let postCourseOfferResponse = await postOffering(postCourseResponse.courseId, function (err, response) {
-                            console.log("On submit (stdCourse): postOffering response: ", offeringData);
-                            // TBD rollback could be neccesary if fails
-                        });
-                        break;
-
-                    case "BIPCourse":
-                        // Physical Component 	  
-                        let postPhysicalComponentCourseOfferResponse = await postPhysicalComponentOffering(postCourseResponse.courseId, function (err, response) {
-                            console.log("On submit (Physical Component): postOffering response: ", PhysicalComponentOfferingData);
-                            // TBD a rollback could be neccesary if fails
-                        });
-                        // Virtual Component 	  
-                        let postVirtualComponentCourseOfferResponse = await postVirtualComponentOffering(postCourseResponse.courseId, function (err, response) {
-                            console.log("On submit (Virtual Component): postOffering response: ", VirtualComponentOfferingData);
-                            // TBD a rollback could be neccesary if fails
-                        });
-
-                        break;
-
-                } // end switch
-
-            } // end if-else validate dates
-            
-        } else // No valid session and JWT activated
-        {
-           alert("You cannot update data in your OEAPI Endpoint. Maybe you are not logged or your session has expired");
+                allValid = false;
+                return; // Stop further validation
+            }
         }
- });
+    }
+
+    /* Gather all info from CKEditors */
+
+    for (const fieldId in editorsData) {
+        if (!editorsData.hasOwnProperty(fieldId))
+            continue;
+
+        const editorInstance = editorsData[fieldId]._editorInstance;
+        if (editorInstance) {
+            editorInstance.updateSourceElement(); // Push visual text into <textarea>
+        }
+    }
+
+    // Can really do an update (am i logged or no JWT?)
+    let updatesArePermited = await canDoUpdates();
+
+    if (updatesArePermited) {
+        console.log("On submit: User is validated to perform updates...");
+        if (validateDates()) {
+            console.log("On submit: Required dates are valid...");
+
+            /* Manage coordinators... */
+
+            const coordinatorsData = await Promise.all(coordinators.map(async coordinator => {
+                return {
+                    givenName: coordinator.name,
+                    surname: coordinator.surname,
+                    mail: coordinator.email,
+                    displayName: coordinator.name + " " + coordinator.surname,
+                    activeEnrollment: false,
+                    affiliations: ["employee"],
+                    primaryCode: {
+                        code: coordinator.email,
+                        codeType: "identifier"
+                    }
+                };
+            }));
+            console.log("On submit: Coordinator list processed: ", coordinatorsData);
+            console.log("On submit: num of coordinators:", coordinatorsData.length);
+            let coordinatorsId = [];
+            if (coordinatorsData.length > 0) {
+
+                console.log("On submit: Processing coordinators (obtaining ids) ...");
+                // 2. Process each coordinator to get their personId
+                let personRes1, personRes2, personJson1, personJson2, queryUrl
+                coordinatorsId = await Promise.all(coordinatorsData.map(async c => {
+                    console.log("mail: " + c.mail);
+                    // First: check if person already exists
+                    queryUrl = `${endpointURL}/persons?primaryCode=${encodeURIComponent(c.mail)}`; // Use query param
+                    personRes1 = await fetch(queryUrl, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    });
+                    if (personRes1.ok) {
+                        // Doesn't exist: create
+                        personJson1 = await personRes1.json();
+                        if (personJson1.items.length == 0) {
+                            console.log("On submit: New coordinator: " + c.mail);
+                            personRes2 = await fetch(`${endpointURL}/persons`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": "Bearer " + localStorage.getItem('jwt')
+                                },
+                                body: JSON.stringify(c)
+                            });
+                            personJson2 = await personRes2.json();
+                            return personJson2.personId + "";
+                        } else {
+                            // Exists: use existing
+                            console.log("On submit: Coordinator already in OOAPI: " + c.mail);
+                            return personJson1.items[0].personId + "";
+                        }
+                    }
+                }));
+            }
+
+
+            // 3. coordinatorsId now contains all personIds
+            console.log("On submit: Final list of coordinators ids:", coordinatorsId);
+            console.log("On submit: Posting course and Offering... ", coordinatorsId);
+
+
+            /* Post main course data */
+
+            let postCourseResponse = await postCourse(coordinatorsId, function (err, response) {
+                postCourseResponse = response;
+                console.log("On submit: Posting course response: ", response);
+            });
+
+            /* Post offerings */
+
+            /* postCourseResponse.courseId is the ID of parent course for offering */
+
+            switch (formCourseType) {
+
+                case "stdCourse":
+                    let postCourseOfferResponse = await postOffering(postCourseResponse.courseId, function (err, response) {
+                        console.log("On submit (stdCourse): postOffering response: ", offeringData);
+                        // TBD rollback could be neccesary if fails
+                    });
+                    break;
+
+                case "BIPCourse":
+                    // Physical Component 	  
+                    let postPhysicalComponentCourseOfferResponse = await postPhysicalComponentOffering(postCourseResponse.courseId, function (err, response) {
+                        console.log("On submit (Physical Component): postOffering response: ", PhysicalComponentOfferingData);
+                        // TBD a rollback could be neccesary if fails
+                    });
+                    // Virtual Component 	  
+                    let postVirtualComponentCourseOfferResponse = await postVirtualComponentOffering(postCourseResponse.courseId, function (err, response) {
+                        console.log("On submit (Virtual Component): postOffering response: ", VirtualComponentOfferingData);
+                        // TBD a rollback could be neccesary if fails
+                    });
+
+                    break;
+
+            } // end switch
+
+        } // end if-else validate dates
+
+    } else // No valid session and JWT activated
+    {
+        alert("You cannot update data in your OEAPI Endpoint. Maybe you are not logged or your session has expired");
+    }
+});
 
 
 async function postCourse(listCoordinators, callback) {
@@ -744,25 +747,25 @@ async function postCourse(listCoordinators, callback) {
         assessment: getMultilingualEditorJSON("assessment"),
         enrollment: getMultilingualEditorJSON("enrollment"),
         abbreviation: $('#abbreviation').val(),
-	link: $('#link_to_more_info').val(),
+        link: $('#link_to_more_info').val(),
         teachingLanguage: $('#teachingLanguage').val(),
         organization: ooapiDefaultOrganizationId,
         level: $('#level').val(),
         coordinators: listCoordinators,
         validFrom: $('#validStartDate').val(),
-        validTo:   $('#validEndDate').val(),        
+        validTo: $('#validEndDate').val(),
         primaryCode: {
             codeType: "identifier",
             code: $('#code').val()
         }
     };
-	
-	// Remove empty values
-	
-	console.log("postCourse: Json previous cleaning of empty values.. " + safeToString(courseData));
 
-	courseData = cleanNullsOrEmpties(courseData);
-	
+    // Remove empty values
+
+    console.log("postCourse: Json previous cleaning of empty values.. " + safeToString(courseData));
+
+    courseData = cleanNullsOrEmpties(courseData);
+
     console.log("postCourse: Ready to post course data to " + endpointURL + "/courses with " + safeToString(courseData), courseData);
 
     var univ = ooapiDefaultShortUnivName; // from init.js
@@ -781,10 +784,12 @@ async function postCourse(listCoordinators, callback) {
         const text = await response.text();
 
         let parsedResponse = manageResponse(response, text, "postCourse");
-        console.log("parsedResponse: ",parsedResponse);
-        
+        console.log("parsedResponse: ", parsedResponse);
+
         if (parsedResponse == null)
-         {  alert("Submission of Course failed!"); }
+        {
+            alert("Submission of Course failed!");
+        }
 
         return parsedResponse;
 
@@ -800,12 +805,12 @@ async function postOffering(courseId, callback) {
 
     const minNumberStudents = $('#minNumberStudents').val() ? $('#minNumberStudents').val() : null;
     const maxNumberStudents = $('#maxNumberStudents').val() ? $('#maxNumberStudents').val() : null;
-    
-	const courseAddress = buildAddressJSON();
-	
-	var costJson = null;
-	var costInForm = $('#amount').val() ? $('#amount').val() : null;
-	
+
+    const courseAddress = buildAddressJSON();
+
+    var costJson = null;
+    var costInForm = $('#amount').val() ? $('#amount').val() : null;
+
     if (costInForm)
     {
         costJson = {
@@ -814,7 +819,7 @@ async function postOffering(courseId, callback) {
             costType: "total costs"
         };
     }
-	
+
 
     OfferingData = {
         primaryCode: {
@@ -827,23 +832,23 @@ async function postOffering(courseId, callback) {
         description: getMultilingualEditorJSON("offeringDescription"),
         minNumberStudents: minNumberStudents,
         maxNumberStudents: maxNumberStudents,
-        resultExpected: false,  
-	priceInformation : [ costJson ],
-	link: $('#link_to_enroll').val(),
+        resultExpected: false,
+        priceInformation: [costJson],
+        link: $('#link_to_enroll').val(),
         offeringType: "course",
         startDate: $('#startDate').val(),
-        endDate:   $('#endDate').val(),
+        endDate: $('#endDate').val(),
         enrollStartDate: $('#startEnrollDate').val(),
-        enrollEndDate:   $('#endEnrollDate').val(),
+        enrollEndDate: $('#endEnrollDate').val(),
         modeOfDelivery: $('#modeOfDelivery').val(),
-	addresses: [courseAddress],
+        addresses: [courseAddress],
         course: courseId
     }
-	
-	// Remove empty values
-	OfferingData = cleanNullsOrEmpties(OfferingData);
-		
-    console.log("Ready to post offering data: ",OfferingData);
+
+    // Remove empty values
+    OfferingData = cleanNullsOrEmpties(OfferingData);
+
+    console.log("Ready to post offering data: ", OfferingData);
 
     try {
         response = await fetch(endpointURL + "/offerings", {
@@ -851,7 +856,7 @@ async function postOffering(courseId, callback) {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
-				
+
             },
             body: JSON.stringify(OfferingData)
         });
@@ -861,10 +866,12 @@ async function postOffering(courseId, callback) {
         const text = await response.text();
 
         let parsedResponse = manageResponse(response, text, "postOfferingData");
-        console.log("parsedResponse: ",parsedResponse);
-        
+        console.log("parsedResponse: ", parsedResponse);
+
         if (parsedResponse == null)
-         {  alert("Submission of Offering Data failed!"); }
+        {
+            alert("Submission of Offering Data failed!");
+        }
 
         return parsedResponse;
 
@@ -882,10 +889,10 @@ async function postPhysicalComponentOffering(courseId, callback) {
 
     const startDate = $('#physicalStartDate').val() ? $('#physicalStartDate').val() : null;
     const endDate = $('#physicalEndDate').val() ? $('#physicalEndDate').val() : null;
-    
+
     var costJson = null;
     var costInForm = $('#amount').val() ? $('#amount').val() : null;
-	
+
     if (costInForm)
     {
         costJson = {
@@ -894,11 +901,11 @@ async function postPhysicalComponentOffering(courseId, callback) {
             costType: "total costs"
         };
     }
-    
-	
+
+
     const courseAddress = buildAddressJSON();
-    
-	PhysicalComponentOfferingData = {
+
+    PhysicalComponentOfferingData = {
         primaryCode: {
             code: $('#code').val() + " (PhysicalComponent)",
             codeType: "identifier"
@@ -909,23 +916,23 @@ async function postPhysicalComponentOffering(courseId, callback) {
         description: getMultilingualEditorJSON("physicalDescription"),
         resultExpected: true,
         offeringType: "course",
-        priceInformation : [ costJson ],
+        priceInformation: [costJson],
         startDate: $('#physicalStartDate').val(),
-        endDate:   $('#physicalEndDate').val(),    
+        endDate: $('#physicalEndDate').val(),
         link: $('#link_to_enroll').val(),
         minNumberStudents: $('#minNumberStudents').val(),
-        maxNumberStudents: $('#maxNumberStudents').val(),    
+        maxNumberStudents: $('#maxNumberStudents').val(),
         enrollStartDate: $('#startEnrollDate').val(),
-        enrollEndDate:   $('#endEnrollDate').val(),            
+        enrollEndDate: $('#endEnrollDate').val(),
         modeOfDelivery: ["on campus"],
         addresses: [courseAddress],
-        organization:  $('#physicalUniversity').val(),
+        organization: $('#physicalUniversity').val(),
         course: courseId
     }
-	
-	// Remove empty values
-	PhysicalComponentOfferingData = cleanNullsOrEmpties(PhysicalComponentOfferingData);	
-	
+
+    // Remove empty values
+    PhysicalComponentOfferingData = cleanNullsOrEmpties(PhysicalComponentOfferingData);
+
     console.log(PhysicalComponentOfferingData);
 
     try {
@@ -933,7 +940,7 @@ async function postPhysicalComponentOffering(courseId, callback) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-				"Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
+                "Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
             },
             body: JSON.stringify(PhysicalComponentOfferingData)
         });
@@ -943,10 +950,12 @@ async function postPhysicalComponentOffering(courseId, callback) {
         const text = await response.text();
 
         let parsedResponse = manageResponse(response, text, "postPhysicalComponentOffering");
-        console.log("parsedResponse: ",parsedResponse);
-        
+        console.log("parsedResponse: ", parsedResponse);
+
         if (parsedResponse == null)
-         {  alert("Submission of PhysicalComponentOffering failed!"); }
+        {
+            alert("Submission of PhysicalComponentOffering failed!");
+        }
 
         return parsedResponse;
 
@@ -982,8 +991,8 @@ async function postVirtualComponentOffering(courseId, callback) {
         course: courseId
     }
 
-	// Remove empty values
-	VirtualComponentOfferingData = cleanNullsOrEmpties(VirtualComponentOfferingData);	
+    // Remove empty values
+    VirtualComponentOfferingData = cleanNullsOrEmpties(VirtualComponentOfferingData);
 
     console.log(VirtualComponentOfferingData);
 
@@ -993,7 +1002,7 @@ async function postVirtualComponentOffering(courseId, callback) {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-						"Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
+                        "Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
                     },
                     body: JSON.stringify(VirtualComponentOfferingData)
                 });
@@ -1002,12 +1011,14 @@ async function postVirtualComponentOffering(courseId, callback) {
         const text = await response.text();
 
         let parsedResponse = manageResponse(response, text, "postVirtualComponentOffering");
-        console.log("parsedResponse: ",parsedResponse);
-        
-        if (parsedResponse == null)
-         {  alert("Submission of VirtualComponentOffering failed!"); }
+        console.log("parsedResponse: ", parsedResponse);
 
-       return parsedResponse;
+        if (parsedResponse == null)
+        {
+            alert("Submission of VirtualComponentOffering failed!");
+        }
+
+        return parsedResponse;
 
     } catch (err)
     {
@@ -1058,7 +1069,7 @@ function post(resource, data) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-			"Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
+            "Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
         },
         body: JSON.stringify(data)
     });
@@ -1170,15 +1181,15 @@ function validateDates() {
         } else {
             const endDate = new Date(document.getElementById("endDate").value);
         }
-		
+
         if (startDate && endDate && endDate < startDate) {
             alert("End date of offering must be after start date.");
             return false;
-        }		
+        }
     }
     const startEnrollDate = new Date(document.getElementById("startEnrollDate").value);
-    const endEnrollDate   = new Date(document.getElementById("endEnrollDate").value);
-  
+    const endEnrollDate = new Date(document.getElementById("endEnrollDate").value);
+
     // Check enroll dates
     if (startEnrollDate && endEnrollDate) {
         if (endEnrollDate < startEnrollDate) {

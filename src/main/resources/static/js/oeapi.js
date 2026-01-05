@@ -1,51 +1,68 @@
 
 const languages = [
-    {code: "en-GB", iso639_2: "eng", name: "English (UK)"},
-    {code: "es-ES", iso639_2: "spa", name: "Spanish"},
-    {code: "fr-FR", iso639_2: "fra", name: "French"},
-    {code: "pt-PT", iso639_2: "por", name: "Portuguese"},
-    {code: "it-IT", iso639_2: "ita", name: "Italian"},
-    {code: "ro-RO", iso639_2: "ron", name: "Romanian"},
-    {code: "de-DE", iso639_2: "ger", name: "German"},
-    {code: "nl-NL", iso639_2: "nld", name: "Dutch"},
-    {code: "el-GR", iso639_2: "ell", name: "Greek"},
-    {code: "ca-ES", iso639_2: "cat", name: "Catalan"},
-    {code: "eu_ES", iso639_2: "eus", name: "Basque"}
+    {code: "en-GB", name: "English (UK)"},
+    {code: "es-ES", name: "Spanish"},
+    {code: "fr-FR", name: "French"},
+    {code: "pt-PT", name: "Portuguese"},
+    {code: "it-IT", name: "Italian"},
+    {code: "ro-RO", name: "Romanian"},
+    {code: "de-DE", name: "German"},
+    {code: "nl-NL", name: "Dutch"},
+    {code: "el-GR", name: "Greek"},
+    {code: "ca-ES", name: "Catalan"},
+    {code: "eu-ES", name: "Basque"}
 ];
 
 
-/* Org codes */ 
+const languagesISO639 = [
+    {iso639_2: "eng", name: "English"},
+    {iso639_2: "spa", name: "Spanish"},
+    {iso639_2: "fra", name: "French"},
+    {iso639_2: "por", name: "Portuguese"},
+    {iso639_2: "ita", name: "Italian"},
+    {iso639_2: "ron", name: "Romanian"},
+    {iso639_2: "ger", name: "German"},
+    {iso639_2: "nld", name: "Dutch"},
+    {iso639_2: "ell", name: "Greek"},
+    {iso639_2: "cat", name: "Catalan"},
+    {iso639_2: "eus", name: "Basque"},
+    {iso639_2: "mul", name: "Multiple Languages"}  // Special case 
+];
+
+
+/* Org codes */
 /* if not changed the default org will be Organization for Testing defined in orgs.json */
 
 const univPartners = [
     {code: "4f9c7a32-e89b-12d3-a456-7b8e5c9d3a21", name: "Organization for Testing"}
     /*, 
-    {code: "11111111-e89b-12d3-a456-123514174eee", name: "Universidad Pública de Navarra (UPNA)"},
-    {code: "77777777-e89b-12d3-a456-123514174eee", name: "Universidad de Zaragoza (UNIZAR)"} */
+     {code: "11111111-e89b-12d3-a456-123514174eee", name: "Universidad Pública de Navarra (UPNA)"},
+     {code: "77777777-e89b-12d3-a456-123514174eee", name: "Universidad de Zaragoza (UNIZAR)"} */
 ];
 
 // Function to find university name by code
 function getUniversityNameByCode(code) {
-  const found = univPartners.find(u => u.code === code);
-  return found ? found.name : 'TBD';
+    const found = univPartners.find(u => u.code === code);
+    return found ? found.name : 'TBD';
 }
 
 // Function to find language name using ISO639_2
 function getLanguageNameByCodeISO639_2(code) {
-  const found = languages.find(u => u.iso639_2 === code);
-  return found ? found.name : 'TBD';
+    console.log("getLanguageNameByCodeISO639_2 Received : " + code);
+    const found = languagesISO639.find(u => u.iso639_2 === code.toLowerCase());
+    return found ? found.name : 'TBD';
 }
 
 
 /* Only ooapiDefaultEndpointURL is accessed, but here you
-   could add code to merge data from other endpoints */
+ could add code to merge data from other endpoints */
 
 const getAndMergeAllCoursesData = async () => {
 
- const response = await fetch(ooapiDefaultEndpointURL + "/courses");
- const res = await response.json();
- console.log("getAndMergeAllCoursesData res:", res)
- return res.items;
+    const response = await fetch(ooapiDefaultEndpointURL + "/courses");
+    const res = await response.json();
+    console.log("getAndMergeAllCoursesData res:", res)
+    return res.items;
 
 }
 
@@ -53,14 +70,14 @@ const input = document.getElementById("search");
 const resultsContainer = document.getElementById("results");
 
 function getCourseUniv(courseJson) {
-  return ooapiDefaultShortUnivName;
+    return ooapiDefaultShortUnivName;
 }
 
 /* Rendering of courses
-   Some of the html rendering of the courses is based 
-   on the code https://codepen.io/feri-irawan/pen/RwLQKpY 
-   (By Feri Irawan - 29/12/2021)
-*/   
+ Some of the html rendering of the courses is based 
+ on the code https://codepen.io/feri-irawan/pen/RwLQKpY 
+ (By Feri Irawan - 29/12/2021)
+ */
 
 
 /* Full list of courses */
@@ -95,7 +112,7 @@ async function renderAllMergedCoursesData() {
         renderAllCoursesResults(data);
     }
 
-	// Watchout search box...
+    // Watchout search box...
     input.onkeyup = async (e) => {
 
         const q = e.target.value;
@@ -130,7 +147,7 @@ async function renderAllCourses() {
     }
 
 
-	// Watchout search box...
+    // Watchout search box...
     input.onkeyup = async (e) => {
 
         const q = e.target.value;
@@ -150,7 +167,7 @@ async function renderAllCourses() {
 function renderAllCoursesResults(results, q = "") {
 
     console.log("Using OEAPI endpoint: " + ooapiDefaultEndpointURL);
-    console.log("Results: " , results);
+    console.log("Results: ", results);
 
     if (results.length === 0) {
         resultsContainer.innerHTML = `
@@ -158,11 +175,11 @@ function renderAllCoursesResults(results, q = "") {
       No items found with level '${q}'.
     </div>
     `;
-	manageAdminItems(); // if there is no course here we manage admin opts
+        manageAdminItems(); // if there is no course here we manage admin opts
         return;
     }
-	
-	console.log(results);
+
+    console.log(results);
 
     const allCoursesElements = results
             .map((course) => {
@@ -170,7 +187,7 @@ function renderAllCoursesResults(results, q = "") {
                         .replace(/{imgSrc}/gi, htmltizeLogo(course))
                         .replace(/{link}/gi, 'course.html?courseId=' + course.courseId + '&univ=' + getCourseUniv(course))
                         .replace(/{title}/gi, course.name[0].value)
-                        .replace(/{summary}/gi, "<p><strong>Mode of delivery:</strong> " + course.modeOfDelivery + "</p><p style='float:right;font-size: x-small;'><strong>Course Code:</strong> &nbsp; " + course.primaryCode.code + "<strong><br>Id: </strong>"+ course.courseId +"</p>")
+                        .replace(/{summary}/gi, "<p><strong>Mode of delivery:</strong> " + course.modeOfDelivery + "</p><p style='float:right;font-size: x-small;'><strong>Course Code:</strong> &nbsp; " + course.primaryCode.code + "<strong><br>Id: </strong>" + course.courseId + "</p>")
                         .replace(/{footcolor}/gi, cardFooterColor(course.level))
                         .replace(/{level}/gi, "Course Level: " + (course.level == 'bachelor' ? 'degree' : course.level));
             })
@@ -201,30 +218,32 @@ async function loadFullCourseData(univShortName, courseID) {
         let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(ooapiDefaultEndpointURL, courseID);
 
         courseJSONData = courseJSON;  // To have visibility of during HTML some async rendering
-        
+
         let accBipVirtDisplay = "none";
-        let firstOfferingTitle = "Additional Course Info";  
-        let idVirt = 1;  
-        let idNormOrPhy = 0;
-        
+        let firstOfferingTitle = "Additional Course Info";
+        let idVirt = 1;  // In case of BIPs it has two offerings; physical and virtual. In case of BIP this will hold position of the virtual one
+        let idNormOrPhy = 0;  // Normal courses normally would have only one offering. In case of BIP this will hold position of the physical one
+
         // Is it a BIP (two offerings; physical and virtual) or ordinary course/microdential)
         if (offeringsJSON.items[1])  // has two offerings
-          { accBipVirtDisplay = "block" ;   //BIP
-            firstOfferingTitle = "Physical Component";    
+        {
+            accBipVirtDisplay = "block";   //BIP
+            firstOfferingTitle = "Physical Component";
             console.log("Displaying a BIP...");
             // Which is for virtualComponent
             let firstItemCode = offeringsJSON.items[0].primaryCode.code;
             if (firstItemCode.includes("virtualComponent"))
-             { idVirt = 0; // Virt is the second offering
-               idNormOrPhy = 1;
-             }  
-          }
-         else
-           { accBipVirtDisplay = "none" ;   
-             firstOfferingTitle = "Additional Course Info";  
+            {
+                idVirt = 0; // Virt is the first offering
+                idNormOrPhy = 1;
+            }
+        } else
+        {
+            accBipVirtDisplay = "none";
+            firstOfferingTitle = "Additional Course Info";
             console.log("Displaying an ordinary or microdential course...");
-           }
-          
+        }
+
         console.log("Async call results:", courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList);
 
         const oneCourseElement =
@@ -232,28 +251,28 @@ async function loadFullCourseData(univShortName, courseID) {
                 .replace(/{cardHeader}/gi, "<strong>Level: </strong>" + courseJSON.level +
                         "&nbsp; " + htmltizeStudyLoad(courseJSON) +
                         "&nbsp; <strong>Mode of Delivery: </strong>" + courseJSON.modeOfDelivery)
-                .replace(/{title}/gi,"<span style='font-size:1.25em; font-weight:bold'>"+htmltizeMultiLingualText(courseJSON,"name")+"</span>")
-                .replace(/{assessment}/gi, htmltizeMultiLingualText(courseJSON,"assessment"))
-                .replace(/{enrollment}/gi, htmltizeMultiLingualText(courseJSON,"enrollment"))
+                .replace(/{title}/gi, "<span style='font-size:1.25em; font-weight:bold'>" + htmltizeMultiLingualText(courseJSON, "name") + "</span>")
+                .replace(/{assessment}/gi, htmltizeMultiLingualText(courseJSON, "assessment"))
+                .replace(/{enrollment}/gi, htmltizeMultiLingualText(courseJSON, "enrollment"))
                 .replace(/{targetUniversities}/gi, htmltizeTargetUniversities(courseJSON))
-                .replace(/{summary}/gi, "<p>" + htmltizeMultiLingualText(courseJSON,"description") + "</p><p style='float:right;font-size: small;'><strong>Course Code:</strong> &nbsp; " + courseJSON.primaryCode.code + "<strong><br>Id: </strong>"+ courseJSON.courseId +"</p>")
+                .replace(/{summary}/gi, "<p>" + htmltizeMultiLingualText(courseJSON, "description") + "</p><p style='float:right;font-size: small;'><strong>Course Code:</strong> &nbsp; " + courseJSON.primaryCode.code + "<strong><br>Id: </strong>" + courseJSON.courseId + "</p>")
                 .replace(/{footcolor}/gi, cardFooterColor(courseJSON.level))
-                .replace(/{level}/gi, "Level: &nbsp; <strong style='color:white;'>" + (courseJSON.level.toLowerCase() == 'bachelor' ? 'degree' : courseJSON.level)+"</strong>")
-                .replace(/{admissionRequirements}/gi, htmltizeMultiLingualText(courseJSON,"admissionRequirements"))
-                .replace(/{learningOutcomes}/gi, htmltizeMultiLingualText(courseJSON,"learningOutcomes"))
+                .replace(/{level}/gi, "Level: &nbsp; <strong style='color:white;'>" + (courseJSON.level.toLowerCase() == 'bachelor' ? 'degree' : courseJSON.level) + "</strong>")
+                .replace(/{admissionRequirements}/gi, htmltizeMultiLingualText(courseJSON, "admissionRequirements"))
+                .replace(/{learningOutcomes}/gi, htmltizeMultiLingualText(courseJSON, "learningOutcomes"))
                 .replace(/{coordinators}/gi, (courseJSON.coordinators ? htmltizeCoordinators(resultCoordinatorsList) : "Not defined"))
                 .replace(/{validStartDate}/gi, (courseJSON.validFrom ? courseJSON.validFrom : ""))
                 .replace(/{validEndDate}/gi, (courseJSON.validTo ? courseJSON.validTo : ""))
 
-        
-        
+
+
                 .replace(/{infoLink}/gi, (courseJSON.link ? courseJSON.link : "#"))
-        
+
                 // Activate or not accordions by course type
                 .replace(/{firstOfferingTitle}/gi, firstOfferingTitle)
                 .replace(/{accBipVirtDisplay}/gi, accBipVirtDisplay)
-        
-        
+
+
                 // from offering
                 .replace(/{costJson}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].priceInformation ? offeringsJSON.items[idNormOrPhy].priceInformation[0].amount + " Euros" : ""))
                 .replace(/{startDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].startDate ? offeringsJSON.items[idNormOrPhy].startDate : ""))
@@ -262,18 +281,18 @@ async function loadFullCourseData(univShortName, courseID) {
                 .replace(/{enrollEndDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].enrollEndDate ? offeringsJSON.items[idNormOrPhy].enrollEndDate : ""))
                 .replace(/{minNumberStudents}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].minNumberStudents ? offeringsJSON.items[idNormOrPhy].minNumberStudents : ""))
                 .replace(/{maxNumberStudents}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].maxNumberStudents ? offeringsJSON.items[idNormOrPhy].maxNumberStudents : ""))
-        
-             
+
+
                 .replace(/{enrollLink}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].link ? offeringsJSON.items[idNormOrPhy].link : "#"))
-        
+
                 .replace(/{offeringDescription}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].description[0] ? offeringsJSON.items[idNormOrPhy].description[0].value : "Not defined.."))
                 .replace(/{addresses}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].addresses ? htmltizeAddresses(offeringsJSON.items[idNormOrPhy].addresses) : "No additional address info."))
-        
+
                 // Beware, virtual component not always present
                 .replace(/{virtualDescription}/gi, (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].description[0] ? offeringsJSON.items[idVirt].description[0].value : "Not defined.."))
                 .replace(/{virtStartDate}/gi, (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].startDate ? offeringsJSON.items[idVirt].startDate : ""))
-                .replace(/{virtEndDate}/gi,   (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].endDate ? offeringsJSON.items[idVirt].endDate : ""));
-        
+                .replace(/{virtEndDate}/gi, (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].endDate ? offeringsJSON.items[idVirt].endDate : ""));
+
 
         resultsContainer.innerHTML = oneCourseElement;
         // Enable or disable admin options, like add, delete, etc. if logged or not
@@ -291,12 +310,12 @@ function deleteCourse()
 
     console.log("deleteCourse: endpointURL..." + ooapiDefaultEndpointURL);
     console.log("deleteCourse: the Course..." + theCourse);
-    console.log("deleteCourse token",localStorage.getItem('jwt'));
-   
+    console.log("deleteCourse token", localStorage.getItem('jwt'));
+
     if (confirm('Are you sure you want to delete this course?')) {
-        
-        console.log("Delete course with Id: "+theCourse+" confirmed");
-        console.log("Delete call to: "+ ooapiDefaultEndpointURL + "/courses/" + theCourse);
+
+        console.log("Delete course with Id: " + theCourse + " confirmed");
+        console.log("Delete call to: " + ooapiDefaultEndpointURL + "/courses/" + theCourse);
 
         fetch(ooapiDefaultEndpointURL + "/courses/" + theCourse, {method: "DELETE",
             headers: {
@@ -306,7 +325,7 @@ function deleteCourse()
         })
                 .then(async response => {
                     if (!response.ok) {
-                        throw new Error('deleteCourse Failed to delete resource: '+response.text());
+                        throw new Error('deleteCourse Failed to delete resource: ' + response.text());
                     }
                     return response.text(); // use `.json()` if server returns JSON
                 })
@@ -327,11 +346,11 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
         console.log("loadCourseData: Get course main data...");
         const courseData = await fetch(ooapiEndPoint + "/courses/" + courseID);
         const courseJSON = await courseData.json();
-        
+
         console.log("loadCourseData: Get course offerings...");
         const offeringsData = await fetch(ooapiEndPoint + "/courses/" + courseID + "/offerings");
         const offeringsJSON = await offeringsData.json();
-        
+
         // Get other values/keys
         const coordinators = courseJSON.coordinators || [];
         const programs = courseJSON.programs || [];
@@ -354,17 +373,17 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
                 programResponses.map(res => res.json())
                 );
         console.log('Course:', courseJSON);
-        console.log('OfferingsJSON:', offeringsJSON);        
+        console.log('OfferingsJSON:', offeringsJSON);
         console.log('Coordinators:', resultCoordinatorsList);
         console.log('Programs:', resultProgramsList);
-        
+
         return {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList};
-        
+
     } catch (error) {
         console.error('Error during API call sequence:', error);
         throw error;
     }
-       
+
 }
 
 /* 	Security JWT  */
@@ -373,38 +392,40 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
 const token = localStorage.getItem("jwt");
 
 async function canDoUpdates()
-{    
-  let updatesArePossible = false
-  
-  let JTWSecurityEnabled = await isJwtSecurityEnabled();
+{
+    let updatesArePossible = false
 
-	if (!JTWSecurityEnabled)
-	  {	console.log("canDoUpdates? "+"Yes, JWT is disabled. Be sure this is what you want. See doc.");
-        updatesArePossible = true ;	
-	  }	    
-	 else
-	  { if (!isJwtValid())
-	     { console.log("canDoUpdates? "+"No, JWT is enabled and no valid token found");
-          updatesArePossible = false ;			  
-	     }	
-        else
-		 { console.log("canDoUpdates? "+"Yes, JWT is enabled and valid token found");
-          updatesArePossible = true ;			  
-	     }	
-	  } 
-	  
-   return  updatesArePossible;
- 
- }		 
+    let JTWSecurityEnabled = await isJwtSecurityEnabled();
+
+    if (!JTWSecurityEnabled)
+    {
+        console.log("canDoUpdates? " + "Yes, JWT is disabled. Be sure this is what you want. See doc.");
+        updatesArePossible = true;
+    } else
+    {
+        if (!isJwtValid())
+        {
+            console.log("canDoUpdates? " + "No, JWT is enabled and no valid token found");
+            updatesArePossible = false;
+        } else
+        {
+            console.log("canDoUpdates? " + "Yes, JWT is enabled and valid token found");
+            updatesArePossible = true;
+        }
+    }
+
+    return  updatesArePossible;
+
+}
 
 function isJwtValid() {
-	
+
     const token = localStorage.getItem("jwt");
-	
-	console.log("Token is: "+token);
-	
+
+    console.log("Token is: " + token);
+
     if (!token) {
-        return false; 
+        return false;
     }
 
     try {
@@ -414,7 +435,7 @@ function isJwtValid() {
 
         // exp is in seconds since epoch
         const now = Math.floor(Date.now() / 1000);
-		console.log("jwt expires in: ", new Date(payload.exp*1000));
+        console.log("jwt expires in: ", new Date(payload.exp * 1000));
         return payload.exp && payload.exp > now;
     } catch (e) {
         console.error("Invalid JWT format", e);
@@ -423,100 +444,135 @@ function isJwtValid() {
 }
 
 async function isJwtSecurityEnabled() {
- let isEnabled = false;	
+    let isEnabled = false;
 
- let textResponse = await getJwtSecurityStatus();
- isEnabled = textResponse.toLowerCase().includes("enabled");	
-	
+    let textResponse = await getJwtSecurityStatus();
+    isEnabled = textResponse.toLowerCase().includes("enabled");
+
 // getJwtSecurityStatus().then(textResponse => {
 //	 isEnabled = textResponse.toLowerCase().includes("enabled")
 //     console.log("isJwtSecurityEnabled :", isEnabled);
 //	 });
 
-  return isEnabled;
-}  
-	 
+    return isEnabled;
+}
 
+async function loadAsyncOfferingData(ooapiEndPoint, courseID, which) {
+
+    try {
+        console.log("loadOfferingData: Get offering data...");
+        const response = await fetch(ooapiEndPoint + "/courses/" + courseID + "/offerings");
+
+        if (!response.ok) {
+            throw new Error('loadOfferingData HTTP error! Status: ${response.status}');
+            return;
+        }
+
+        const allOfferingData = await response.json();
+
+        console.log('All OfferingData:', allOfferingData);
+        whichOfferingData = allOfferingData.items[which];
+        console.log('OfferingData num ' + which + ' :', whichOfferingData);
+        return whichOfferingData;
+
+    } catch (error) {
+        console.error('Error during API call sequence on loadOfferingData :', error);
+        throw error;
+    }
+}
 
 async function getJwtSecurityStatus() {
-	
-	let status = "Unknown"; 
-	
+
+    let status = "Unknown";
+
     try {
         const response = await fetch('./auth/secStatus');
         if (!response.ok) {
-              console.error("Error checking JWT security: no valid response");
-              return status+": no valid response";
+            console.error("Error checking JWT security: no valid response");
+            return status + ": no valid response";
         }
-        
+
         const statusText = await response.text();
         console.log("Security Status:", statusText);
 
         const enabled = statusText.toLowerCase().includes("enabled");
 
-        if (enabled) 
-		  {	status = "Enabled, you must login before updates";    }
- 		  else { status = " Disabled. (Updates are allowed without login. Check that's what you want. See doc.) ";     }
+        if (enabled)
+        {
+            status = "Enabled, you must login before updates";
+        } else {
+            status = " Disabled. (Updates are allowed without login. Check that's what you want. See doc.) ";
+        }
 
-       } catch (error) {
-           console.error("Error checking JWT security:", err);
-           status = "Unknown, error checking JWT security "; 
-        }     
-	
-	return status; 
+    } catch (error) {
+        console.error("Error checking JWT security:", err);
+        status = "Unknown, error checking JWT security ";
+    }
+
+    return status;
 }
 
 async function manageAdminItems()
 {
-	let JTWSecurityEnabled = await isJwtSecurityEnabled();
-	
-	if (!JTWSecurityEnabled ) {
-		 console.log("manageAdminItems: No JWT activated, updates are allowed");
-	     document.getElementById("avatar").style = "display: none;";
-		 // addCourse is not ever present 
-		 if (document.getElementById("addCourse")) { document.getElementById("addCourse").style = "cursor: pointer;"; }
-		 // Delete is only in single course view, 
-		 if (document.getElementById("deleteIcon")) { document.getElementById("deleteIcon").style = "display:block;"; }				 				 
-		 document.getElementById("loginLink").style = "display : none";
-		 document.getElementById("administration").style = "display : none";
-	  }
-      else
-  		if (isJwtValid() ) {
-		 console.log("manageAdminItems: JWT activated and valid JWT token, can admin");	
-	     document.getElementById("avatar").style = "cursor: pointer;";
-		 // addCourse is not ever present 
-		 if (document.getElementById("addCourse")) { document.getElementById("addCourse").style = "cursor: pointer;"; }		 
-		 // Delete is only in single course view, 
-		 if (document.getElementById("deleteIcon")) { document.getElementById("deleteIcon").style = "display:block;"; }				 				 
-		 document.getElementById("loginLink").style = "display : none";
-		 if (isAdmin()) {
-			document.getElementById("administration").style = "cursor: pointer;";
-		   }
-	     } 
-         else		 
-		  {
-		   console.log("manageAdminItems: No valid JWT token, must login");				  
-           document.getElementById("avatar").style = "display: none;";
- 		   // addCourse is not ever present 
-    	   if (document.getElementById("addCourse")) { document.getElementById("addCourse").style = "display : none"; }		   
-		   // Delete is only in single course view, 
- 		   if (document.getElementById("deleteIcon")) { document.getElementById("deleteIcon").style = "display:block;"; }				 				 
-		   document.getElementById("loginLink").style = "cursor: pointer;";
-		   document.getElementById("administration").style = "display : none";		
-		  } 
-		
+    let JTWSecurityEnabled = await isJwtSecurityEnabled();
+
+    if (!JTWSecurityEnabled) {
+        console.log("manageAdminItems: No JWT activated, updates are allowed");
+        document.getElementById("avatar").style = "display: none;";
+        // addCourse is not ever present 
+        if (document.getElementById("addCourse")) {
+            document.getElementById("addCourse").style = "cursor: pointer;";
+        }
+        // Delete is only in single course view, 
+        if (document.getElementById("deleteIcon")) {
+            document.getElementById("deleteIcon").style = "display:block;";
+        }
+        document.getElementById("loginLink").style = "display : none";
+        document.getElementById("administration").style = "display : none";
+    } else
+    if (isJwtValid()) {
+        console.log("manageAdminItems: JWT activated and valid JWT token, can admin");
+        document.getElementById("avatar").style = "cursor: pointer;";
+        // addCourse is not ever present 
+        if (document.getElementById("addCourse")) {
+            document.getElementById("addCourse").style = "cursor: pointer;";
+        }
+        // Delete is only in single course view, 
+        if (document.getElementById("deleteIcon")) {
+            document.getElementById("deleteIcon").style = "display:block;";
+        }
+        document.getElementById("loginLink").style = "display : none";
+        if (isAdmin()) {
+            document.getElementById("administration").style = "cursor: pointer;";
+        }
+    } else
+    {
+        console.log("manageAdminItems: No valid JWT token, must login");
+        document.getElementById("avatar").style = "display: none;";
+        // addCourse is not ever present 
+        if (document.getElementById("addCourse")) {
+            document.getElementById("addCourse").style = "display : none";
+        }
+        // Delete is only in single course view, 
+        if (document.getElementById("deleteIcon")) {
+            document.getElementById("deleteIcon").style = "display:block;";
+        }
+        document.getElementById("loginLink").style = "cursor: pointer;";
+        document.getElementById("administration").style = "display : none";
+    }
+
 }
 
 
 function isAdmin() {
-	const token = localStorage.getItem('jwt');
-	if (!token)
-		return false;
+    const token = localStorage.getItem('jwt');
+    if (!token)
+        return false;
 
-	// If you decode the token, check for 'roles' or 'authorities'
-	const payload = JSON.parse(atob(token.split('.')[1]));
-	console.log(payload);
-	return payload.roles?.includes('ROLE_ADMIN') || payload.authorities?.includes('ROLE_ADMIN');
+    // If you decode the token, check for 'roles' or 'authorities'
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    console.log(payload);
+    return payload.roles?.includes('ROLE_ADMIN') || payload.authorities?.includes('ROLE_ADMIN');
 }
 
 
@@ -558,14 +614,15 @@ let oneCourseCard = `
 
 <strong>Total Cost: </strong> {costJson}
 <hr>
-
-<strong>Course dates (Start &minus; End) :</strong> {startDate} &minus; {endDate}
+<br>
+<p> <strong style="color:black;">(This data would appear differently when shown in Course Catalog. This only an internal preview) </strong><p>
+<br>
+<strong> Course dates (Physical Component in BIPs) &nbsp; [Start &minus; End] :</strong> &nbsp; {startDate} &minus; {endDate}
+<hr>
+<strong>Enrollment dates &nbsp; [Start &minus; Deadline]:</strong> &nbsp; {enrollStartDate} &minus; {enrollEndDate}
 <hr>
 
-<strong>Enrollment dates (Start &minus; Deadline):</strong> {enrollStartDate} &minus; {enrollEndDate}
-<hr>
-
-<strong>Visible in catalog (Start &minus; End):</strong> {validStartDate} &minus; {validEndDate}
+<strong>Visible in catalog &nbsp; [Start &minus; End]:</strong> &nbsp; {validStartDate} &minus; {validEndDate}
 <hr>
 
 <strong>Min / Max Students</strong> {minNumberStudents} &minus; {maxNumberStudents}
