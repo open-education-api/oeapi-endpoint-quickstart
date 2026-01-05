@@ -1,4 +1,5 @@
 
+
 # Open Education API Implementation Quickstart
  
 
@@ -101,8 +102,11 @@ Once you've built the JAR file, and assuming your Java environment is properly s
 
 nohup java -jar oeapi-qs.jar &
 
-# (jar is tagged with version in this case with 1.7, change accordingly)
+# (if jar is tagged with version, change accordingly)
 ```
+
+More details can be found here ["Installing the Quickstart as a Microservice Using the JAR File (Without Docker)"](docs/quickstart_as_microservice_using_jar.md)
+
 
 ## Database Backend
 
@@ -396,3 +400,13 @@ As described in [Running it as a jar](#running-it-as-a-jar) you'll probably need
 ```sh
 export JDK_JAVA_OPTIONS='--add-opens java.base/java.lang=ALL-UNNAMED --enable-native-access=ALL-UNNAMED'
 ```
+
+# Other
+
+## Additional API calls intended to support the frontend (not part of the specification)
+
+The quickstart includes several API calls designed to support frontend development. Most of these calls are intended to provide the frontend with valid or allowed values for certain enumerations (such as mode of delivery, fields of study, etc.).
+
+This approach allows frontend selectors to be populated dynamically with values provided by the endpoint, rather than hard-coding them in the frontend itself. It also simplifies maintenance, since values can be added, corrected, or updated on the backend without requiring frontend changes.
+
+Detailed info can be found [here](docs/additional_apis.md)
