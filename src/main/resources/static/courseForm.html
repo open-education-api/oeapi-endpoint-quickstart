@@ -392,7 +392,7 @@
                 <div class="form-group">
                     <label for="fieldsOfStudy">Field of Study</label>
                     <select name="fieldsOfStudy" id="fieldsOfStudy">
-                        <option disabled>Loading fields of study...</option>
+                        <option value="">Loading fields of study...</option>
                     </select>
                 </div>		
 
@@ -801,11 +801,11 @@
 
 
     window.addEventListener("load", () => {
+        populateSelectFieldsOfStudy('#fieldsOfStudy');
+        populateSelectOrganization('.univPartners-select');
         fillItemSelectorsByClassName("lang-select", languages);
         fillItemSelectorsByClassName("lang-select-text", languages);
-        fillItemSelectorsByClassName("univPartners-select", univPartners);
         fillLanguageISO639Selectors();
-        fillFieldsOfStudy("fieldsOfStudy");
         initMultilingualEditors();
         initMultilingualTextFields();
     });

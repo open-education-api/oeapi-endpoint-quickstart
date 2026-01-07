@@ -29,23 +29,6 @@ const languagesISO639 = [
     {iso639_2: "mul", name: "Multiple Languages"}  // Special case 
 ];
 
-
-/* Org codes */
-/* if not changed the default org will be Organization for Testing defined in orgs.json */
-
-const univPartners = [
-    {code: "4f9c7a32-e89b-12d3-a456-7b8e5c9d3a21", name: "Organization for Testing"}
-    /*, 
-     {code: "11111111-e89b-12d3-a456-123514174eee", name: "Universidad Pública de Navarra (UPNA)"},
-     {code: "77777777-e89b-12d3-a456-123514174eee", name: "Universidad de Zaragoza (UNIZAR)"} */
-];
-
-// Function to find university name by code
-function getUniversityNameByCode(code) {
-    const found = univPartners.find(u => u.code === code);
-    return found ? found.name : 'TBD';
-}
-
 // Function to find language name using ISO639_2
 function getLanguageNameByCodeISO639_2(code) {
     console.log("getLanguageNameByCodeISO639_2 Received : " + code);
@@ -53,9 +36,40 @@ function getLanguageNameByCodeISO639_2(code) {
     return found ? found.name : 'TBD';
 }
 
-
 /* Only ooapiDefaultEndpointURL is accessed, but here you
  could add code to merge data from other endpoints */
+
+
+// Extract name from OOAPI entity, use `language` list order as
+// preference.
+function extractName({name}) {
+    return name && name.find(n => languages.map(({code}) => n.language == code).find(x => x)).value;
+}
+
+// Sort items by name.
+async function sortAsyncItemsByName(asyncItems) {
+    return (await asyncItems).sort((a, b) => {
+        const aName = extractName(a);
+        const bName = extractName(b);
+        return a > b ? -1 : (b > a ? 1 : 0)
+    });
+}
+
+// Fetch JSON from path.
+async function fetchData(path) {
+    const response = await fetch(`${endpointURL}/${path}`, {
+        headers: {'Content-Type': 'application/json'}
+    });
+    if (! response.ok) {
+        throw new Error(`Failed to fetch ${path}, got status ${response.status}`);
+    }
+    return response.json();
+}
+
+// Fetch items from path.
+async function fetchItems(path) {
+    return (await fetchData(path)).items;
+}
 
 const getAndMergeAllCoursesData = async () => {
 
