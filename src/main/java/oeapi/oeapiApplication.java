@@ -1,38 +1,31 @@
 package oeapi;
 
-import org.modelmapper.Converter;
-import org.modelmapper.spi.MappingContext;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.InputStream;
-import java.sql.SQLException;
-import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import oeapi.model.Organization;
-import oeapi.model.Role;
-import oeapi.model.User;
-import oeapi.model.oeapiFieldsOfStudy;
-import oeapi.payload.OrganizationDTO;
-import oeapi.repository.RoleRepository;
-import oeapi.repository.UserRepository;
-import oeapi.service.OrganizationService;
 
+import javax.sql.DataSource;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.spi.MappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -41,10 +34,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import oeapi.model.Organization;
+import oeapi.model.Role;
+import oeapi.model.User;
+import oeapi.model.oeapiFieldsOfStudy;
+import oeapi.payload.OrganizationDTO;
+import oeapi.repository.RoleRepository;
+import oeapi.repository.UserRepository;
 import oeapi.repository.oeapiFieldsOfStudyRepository;
+import oeapi.service.OrganizationService;
 
 /**
  * The type Ooapi unita application.
@@ -102,68 +102,61 @@ public class oeapiApplication {
         }
     }
 
-    @Value("${ooapi.security.default.users.pass:null}")
-    private String default_users_pass;
-    
+    @Value("${ooapi.security.default.users.pass:unset}")
+    private String adminPassword;
+
+    @Value("${ooapi.security.default.users.emails:test@example.com}")
+    private List<String> adminEmails;
+
+    private User createUserIfNotExists(UserRepository userRepo, String email, String password, List<Role> roles) {
+        Optional<User> existing = userRepo.findByEmail(email);
+        if (existing.isPresent()) {
+            logger.info("User {} already exists..", email);
+            return existing.get();
+        }
+
+        User user = new User();
+        user.setEmail(email);
+        user.setRoles(roles);
+
+        String generatedPassword = null;
+        if (password.equals("unset")) {
+            generatedPassword = oeapiUtils.generatePassword();
+            user.setPassword(generatedPassword);
+        } else {
+            user.setPassword(password);
+        }
+
+        userRepo.save(user);
+
+        logger.info("Created user \"{}\", password {}, and roles: {}.",
+                    email,
+                    generatedPassword == null ? "from configuration" : String.format("\"%s\"", generatedPassword),
+                    String.join(", ", roles.stream().map(Role::getName).toList()));
+
+        return user;
+    }
+
     @Bean
-    public CommandLineRunner createRolesAndAdmin(RoleRepository roleRepo, UserRepository userRepo, OrganizationService orgService) {
-
+    public CommandLineRunner createUsersAndRoles(UserRepository userRepo, RoleRepository roleRepo) {
         return (args) -> {
-            Role adminRole = roleRepo.findByName("ROLE_ADMIN")
-                    .orElseGet(() -> roleRepo.save(new Role("ROLE_ADMIN")));
+            logger.info("-->Inserting/Updating users and roles from application properties");
 
-            Role userRole = roleRepo.findByName("ROLE_USER")
-                    .orElseGet(() -> roleRepo.save(new Role("ROLE_USER")));
-
-            // Only create admin if not exists
-            if (!userRepo.findByEmail("test@univ-unita.eu").isPresent()) {
-                User u1 = new User();
-                u1.setEmail("test@univ-unita.eu");
-
-                if (default_users_pass!=null)
-                 { u1.setPassword(new BCryptPasswordEncoder().encode(default_users_pass));
-                   logger.info("-->Admin user created: test@univ-unita.eu with  pass:" + default_users_pass);
-                 }
-                  else
-                 {   
-                    String p1 = oeapiUtils.generatePassword();
-                    u1.setPassword(new BCryptPasswordEncoder().encode(p1)); // encode password
-                    logger.info("-->Admin user created: test@univ-unita.eu with random pass:" + p1);
-                 }
-
-                List<Role> roles = new ArrayList<>();
-                roles.add(adminRole);
-                // roles.add(otherRole); // if needed
-
-                u1.setRoles(roles);
-
-                userRepo.save(u1);
-                
+            for (String roleName : Arrays.asList("ROLE_ADMIN", "ROLE_USER")) {
+                roleRepo.findByName(roleName).orElseGet(() -> roleRepo.save(new Role(roleName)));
             }
 
-            if (!userRepo.findByEmail("it.support@univ-unita.eu").isPresent()) {
-                User u2 = new User();
-                u2.setEmail("it.support@univ-unita.eu");
-
-                if (default_users_pass!=null)
-                 { u2.setPassword(new BCryptPasswordEncoder().encode(default_users_pass));
-                   logger.info("-->Admin user created: it.support@univ-unita.eu with  pass:" + default_users_pass);
-                 }
-                  else
-                 {   
-                    String p2 = oeapiUtils.generatePassword();
-                    u2.setPassword(new BCryptPasswordEncoder().encode(p2)); // encode password
-                    logger.info("-->Admin user created: it.support@univ-unita.eu with random pass:" + p2);
-                 }                
-                
-                // Java 8 way of adding roles
-                List<Role> roles = new ArrayList<>();
-                roles.add(adminRole);
-                u2.setRoles(roles);
-
-                userRepo.save(u2);
-
+            Role adminRole = roleRepo.findByName("ROLE_ADMIN").get();
+            for (String email : adminEmails) {
+                createUserIfNotExists(userRepo, email, adminPassword, Arrays.asList(adminRole));
             }
+        };
+    }
+
+    @Bean
+    public CommandLineRunner createOrganizations(OrganizationService orgService) {
+        return (args) -> {
+            logger.info("-->Inserting/Updating organizations from /orgs.json");
 
             ObjectMapper mapper = new ObjectMapper();
             InputStream inputStream = getClass().getResourceAsStream("/orgs.json");
@@ -172,23 +165,18 @@ public class oeapiApplication {
                     new TypeReference<List< OrganizationDTO>>() {
             });
 
-            //orgService.initializeMapper();
             for (OrganizationDTO dto : organizations) {
-
                 Organization org = orgService.toEntity(dto);
                 if (!orgService.exists(org)) {
                     orgService.create(org);
                 }
             }
         };
-
     }
 
     @Bean
     public CommandLineRunner loadFieldsOfStudy(oeapiFieldsOfStudyRepository repo) {
-
         return (args) -> {
-
             logger.info("-->Inserting/Updating Fields of Study from /fieldsOfStudy.json");
             ObjectMapper mapper = new ObjectMapper();
             InputStream inputStream = getClass().getResourceAsStream("/fieldsOfStudy.json");
@@ -197,7 +185,6 @@ public class oeapiApplication {
             });
 
             for (oeapiFieldsOfStudy fos : fieldsOfStudies) {
-
                 oeapiFieldsOfStudy fos_entity = new oeapiFieldsOfStudy();
                 fos_entity.setFieldsOfStudyId(fos.getFieldsOfStudyId());
                 fos_entity.setLevel(fos.getLevel());
@@ -209,24 +196,9 @@ public class oeapiApplication {
                 repo.save(fos_entity);
             }
         };
-
     }
 
-    /*
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-        return new Jackson2ObjectMapperBuilderCustomizer() {
-            @Override
-            public void customize(Jackson2ObjectMapperBuilder builder) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
-                builder.deserializers(new LocalDateDeserializer(formatter));
-                builder.serializers(new LocalDateSerializer(formatter));
-            }
-        };
-    }
-
-     */
     @Bean
-
     public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
         return new Jackson2ObjectMapperBuilderCustomizer() {
             @Override
