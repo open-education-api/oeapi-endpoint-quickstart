@@ -24,3 +24,14 @@ function init(config) {
   ooapiDefaultOrganizationId = config.ooapiDefaultOrganizationId;
   ooapiDefaultEndpointURL = config.ooapiDefaultEndpointURL || window.location.origin;
 }
+
+// Peek function for debugging.
+function pk(a, b) {
+  if (arguments.length == 1) {
+    console.debug(a);
+    return a;
+  } else {
+    console.debug(a, b);
+    return b;
+  }
+}

@@ -358,37 +358,64 @@ function fillLanguageISO639Selectors() {
 
 }
 
+// Transform OEAPI items into an async array of `{label, value,
+// selected}`.
+async function asyncItemsToOptions(asyncItems, idAttribute, defaultValue) {
+    return (await asyncItems).map(item => ({
+        label: extractName(item),
+        value: item[idAttribute],
+        selected: item[idAttribute] == defaultValue
+    }));
+}
 
+// Populate <select> elements from `selector` with options.  The
+// options are an async array of `{label, value, selected}`.
+async function populateSelect(selector, asyncOptions) {
+    try {
+        const options = await asyncOptions;
+        document.querySelectorAll(selector).forEach(selectEl => {
+            selectEl.innerHTML = '';
+            options.forEach(({label, value, selected}) => {
+                const optionEl = document.createElement('option');
+                optionEl.label = label;
+                optionEl.value = value;
+                optionEl.selected = selected;
+                selectEl.appendChild(optionEl);
+            })
+        });
+    } catch (err) {
+        console.error('Failed to fetch options', err);
 
-function fillFieldsOfStudy(elementId) {
-    const select = document.getElementById(elementId);
-    select.innerHTML = "Loading... ";
-    //console.log("fechFieldsOfStudy ..." + endpointURL);
-    fetch(endpointURL + "/fieldsofstudy?level=1", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                select.innerHTML = ""; // Clear loading or old options
-                data.items.forEach(fieldOfStudy => {
-                    const option = document.createElement("option");
-                    option.value = fieldOfStudy.fieldsOfStudyId;
-                    option.textContent = fieldOfStudy.txtEn;
-                    select.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error("Failed to load fields of study:", error);
-                select.innerHTML = `<option value="">Error loading fields of study</option>`;
-            });
+        document.querySelectorAll(selector).forEach(selectEl => {
+            selectEl.innerHTML = '';
+            const optionEl = document.createElement('option');
+            optionEl.label = 'ERROR: failed to fetch options';
+            selectEl.appendChild(optionEl);
+        })
+    }
+}
+
+// Populate <select> elements from `selector` with OEAPI organizations.
+async function populateSelectOrganization(selector) {
+    populateSelect(
+        selector,
+        asyncItemsToOptions(
+            sortAsyncItemsByName(fetchItems('organizations')),
+            'organizationId',
+            ooapiDefaultOrganizationId
+        )
+    );
+}
+
+async function populateSelectFieldsOfStudy(selector) {
+    const asyncFieldsOfStudyOptions = async (asyncFields) => (
+        (await asyncFields).map(x => ({label: x.txtEn, value: x.fieldsOfStudyId}))
+    );
+
+    populateSelect(
+        selector,
+        asyncFieldsOfStudyOptions(fetchItems('fieldsofstudy?level=1'))
+    );
 }
 
 /* JSON auxiliary functions */
