@@ -1,7 +1,6 @@
 package oeapi.controller;
 
 import java.util.ArrayList;
-import oeapi.controller.requestparameters.oeapiRequestParam;
 import java.util.Map;
 import java.util.Optional;
 import oeapi.controller.requestparameters.oeapiGroupRequestParam;
@@ -9,11 +8,8 @@ import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
 import oeapi.model.Course;
 import oeapi.model.CourseOffering;
 import oeapi.model.Offering;
-import oeapi.model.Organization;
 import oeapi.oeapiException;
 import oeapi.oeapiObjectsValidator;
-import oeapi.payload.CourseOfferingDTO;
-import oeapi.payload.OrganizationDTO;
 import oeapi.service.CourseService;
 import oeapi.service.OfferingService;
 
@@ -23,8 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -129,8 +123,20 @@ public class OfferingController extends oeapiController<Offering> {
     public ResponseEntity<?> putCourseOffering(@RequestBody CourseOffering courseOffering) {
 
         logger.debug("Putting CourseOffering...");        
-        return super.update(courseOffering, offeringService);        
+        if ( courseOffering.getOfferingId() == null )
+         {  throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId is missing" ); }
+        
+        return putCourseOffering(courseOffering.getOfferingId(), courseOffering) ;       
     }
+
+    @PutMapping(value = "/{offeringId}")
+    public ResponseEntity<?> putCourseOffering(@PathVariable String offeringId, @RequestBody CourseOffering courseOffering) {
+
+        logger.debug("Putting CourseOffering...");        
+        if ( (courseOffering.getOfferingId() == null) || ( !courseOffering.getOfferingId().equalsIgnoreCase(offeringId) ) )
+         {  throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId on JSON does not match URL request or is missing : ["+offeringId +","+ courseOffering.getOfferingId()+ "]" ); }
+        return super.update(courseOffering, offeringService);        
+    }    
     
 
     
