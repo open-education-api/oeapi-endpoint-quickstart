@@ -17,6 +17,9 @@
 
     <properties>
         <skipTests>true</skipTests>
+       <!-- Security override for SpringBoot-3.5.7,
+        CVE-2025-68161(6.3) with log4j-api-2.24.3 --> 
+       <log4j2.version>2.25.3</log4j2.version>        
     </properties>
 
     <dependencies>
