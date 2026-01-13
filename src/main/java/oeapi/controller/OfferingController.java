@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/offerings")
 public class OfferingController extends oeapiController<Offering> {
-        
+
     static Logger logger = LoggerFactory.getLogger(OfferingController.class);
 
     @Autowired
@@ -46,9 +46,8 @@ public class OfferingController extends oeapiController<Offering> {
     private CourseService courseService;
 
     @Autowired
-    private oeapiObjectsValidator validator;    
-    
-    
+    private oeapiObjectsValidator validator;
+
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiOfferingRequestParam requestParam) {
 
@@ -117,44 +116,43 @@ public class OfferingController extends oeapiController<Offering> {
 
         return super.create(courseOffering, offeringService);
     }
-    
-    
+
+    @Deprecated
     @PutMapping
     public ResponseEntity<?> putCourseOffering(@RequestBody CourseOffering courseOffering) {
 
-        logger.debug("Putting CourseOffering...");        
-        if ( courseOffering.getOfferingId() == null )
-         {  throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId is missing" ); }
-        
-        return putCourseOffering(courseOffering.getOfferingId(), courseOffering) ;       
+        logger.debug("Putting CourseOffering...");
+        if (courseOffering.getOfferingId() == null) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId is missing");
+        }
+
+        return putCourseOffering(courseOffering.getOfferingId(), courseOffering);
     }
 
     @PutMapping(value = "/{offeringId}")
     public ResponseEntity<?> putCourseOffering(@PathVariable String offeringId, @RequestBody CourseOffering courseOffering) {
 
-        logger.debug("Putting CourseOffering...");        
-        if ( (courseOffering.getOfferingId() == null) || ( !courseOffering.getOfferingId().equalsIgnoreCase(offeringId) ) )
-         {  throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId on JSON does not match URL request or is missing : ["+offeringId +","+ courseOffering.getOfferingId()+ "]" ); }
-        return super.update(courseOffering, offeringService);        
-    }    
-    
+        logger.debug("Putting CourseOffering...");
+        if ((courseOffering.getOfferingId() == null) || (!courseOffering.getOfferingId().equalsIgnoreCase(offeringId))) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId on JSON does not match URL request or is missing : [" + offeringId + "," + courseOffering.getOfferingId() + "]");
+        }
+        return super.update(courseOffering, offeringService);
+    }
 
-    
     @DeleteMapping("/{offeringId}")
     public ResponseEntity<?> delete(@PathVariable String offeringId) {
 
         Optional<Offering> existing = offeringService.getById(offeringId);
 
         if (existing.isPresent()) {
-            offeringService.delete(offeringId);  
+            offeringService.delete(offeringId);
             return ResponseEntity.ok().build();
         } else {
             // return super.NotFound(courseId);
-           throw new oeapiException(HttpStatus.NOT_FOUND, "Error deleting Offering with Id: " + offeringId);
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error deleting Offering with Id: " + offeringId);
         }
     }
-           
-    
+
     @DeleteMapping("/deleteByCourseId/{courseId}")
     public ResponseEntity<?> deleteByCourseId(@PathVariable String courseId) {
 
@@ -166,12 +164,10 @@ public class OfferingController extends oeapiController<Offering> {
             } else {
                 throw new oeapiException(HttpStatus.NOT_FOUND, "Error: Trying to delete offering of not existing course with Id: " + courseId);
             }
-          } catch (Exception ex)
-             {  
-                throw new oeapiException(HttpStatus.NOT_FOUND, "Error trying to delete offering of course with Id: " + courseId + "Reason: "+ex.getLocalizedMessage());
-             }
+        } catch (Exception ex) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error trying to delete offering of course with Id: " + courseId + "Reason: " + ex.getLocalizedMessage());
+        }
     }
-    
 
     public void manageOfferingCourse(CourseService courseService, CourseOffering courseOffering, boolean autoCreateCourseIfNotExists) {
 
