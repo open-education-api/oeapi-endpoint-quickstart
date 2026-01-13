@@ -783,6 +783,27 @@
     </form>
 </div>
 
+
+<!-- Message popup -->
+<div class="modal fade" id="alertModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" id="alertModalHeader">
+        <h5 class="modal-title" id="alertModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="alertModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 <script src="js/init.js"></script>
 <script src="_quickdashboard_config.json?callback=init"></script>
 <script src="js/oeapi.js"></script>
@@ -792,13 +813,25 @@
 <script>
 
     const formCourseType = "stdCourse";
+    
+    // Check if we are editing or creating
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseIdEd = urlParams.get("courseId"); // null if creating new
+
+    const isEditMode = !!courseIdEd;
+
+    if (isEditMode) {
+        document.querySelector("h4").innerText = "Edit Course";
+        document.getElementById("submit-button").innerText = "Update Course";
+        offeringIdEd = null;  // Later will be use when recovering actual data from course
+    }
 
     document.getElementById("logoutLink").addEventListener("click", function (e) {
         e.preventDefault();
         localStorage.removeItem("jwt");
         window.location.href = "./login.html";
     });
-
 
     window.addEventListener("load", () => {
         populateSelectFieldsOfStudy('#fieldsOfStudy');
@@ -813,6 +846,11 @@
 
     renderForm();
 
+    if (isEditMode) {
+        // initMultilingualEditors();
+        loadCourseForEdit(courseIdEd);
+    }
+ 
 </script>
 
 <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>

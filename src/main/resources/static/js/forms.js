@@ -210,6 +210,70 @@ function getMultilingualEditorJSON(fieldId) {
     return result;
 }
 
+/* Cleanup previous values on new or before modifing */
+
+function resetEditors() {
+    Object.keys(editorsData).forEach(fieldId => {
+        const editor = editorsData[fieldId]._editorInstance;
+        if (editor) {
+            editor.setData("");
+        }
+    });
+
+    editorsData = {};
+    currentLang = {};
+}
+
+/* When editing */
+
+function setMultilingualEditorContent(fieldId, values) {
+
+    if (!values || !Array.isArray(values))
+        return;
+    if (!editorsData[fieldId])
+        return;
+
+    // Clear existing content (important when switching between courses)
+    Object.keys(editorsData[fieldId]).forEach(k => {
+        if (k !== "_editorInstance")
+            delete editorsData[fieldId][k];
+    });
+
+    // Store all languages
+    values.forEach(v => {
+        if (v.language && v.value) {
+            editorsData[fieldId][v.language] = v.value;
+        }
+    });
+
+    // Pick which language to show
+    const preferredLang =
+            values.find(v => v.language === "en-GB")?.language ||
+            values[0]?.language;
+
+    if (!preferredLang)
+        return;
+
+    currentLang[fieldId] = preferredLang;
+
+    // Update language selector
+    const langSelect = document.querySelector(
+            `select.lang-select[data-field="${fieldId}"]`
+            );
+    if (langSelect) {
+        langSelect.value = preferredLang;
+    }
+
+    // Update editor UI
+    const editor = editorsData[fieldId]._editorInstance;
+    if (editor) {
+        editor.setData(editorsData[fieldId][preferredLang] || "");
+    }
+
+    updateSavedEditorLangs(fieldId);
+}
+
+
 /* For simple text fields */
 
 // Global storage for multilingual plain-text fields
@@ -225,7 +289,7 @@ function initMultilingualTextFields() {
         var savedLabel = document.getElementById("savedLangs-" + fieldId);
 
         if (!input) {
-            console.warn("⚠️ Missing text input for field:", fieldId);
+            console.warn("Missing text input for field! : ", fieldId);
             return;
         }
 
@@ -304,6 +368,85 @@ function getMultilingualTextJSONFor(fieldId) {
     return out;
 }
 
+/* Cleanup previous values on new or before modifing */
+
+function resetMultilingualTextFields() {
+    Object.keys(textFieldData).forEach(fieldId => {
+        const input = document.getElementById(fieldId);
+        const select = document.querySelector(
+                '.lang-select-text[data-field="' + fieldId + '"]'
+                );
+        const label = document.getElementById("savedLangs-" + fieldId);
+
+        // Clear visible input
+        if (input) {
+            input.value = "";
+        }
+
+        // Reset language selector to default
+        if (select) {
+            select.value = "en-GB";
+        }
+
+        // Clear saved translations
+        textFieldData[fieldId] = {};
+        currentTextLang[fieldId] = "en-GB";
+
+        // Update UI label
+        if (label) {
+            label.innerHTML = "No translations yet.";
+        }
+    });
+
+    // Safety reset
+    textFieldData = {};
+    currentTextLang = {};
+}
+
+// For editing...
+
+function setMultilingualTextField(fieldId, values) {
+    if (!Array.isArray(values))
+        return;
+
+    const input = document.getElementById(fieldId);
+    const select = document.querySelector(
+            '.lang-select-text[data-field="' + fieldId + '"]'
+            );
+    const label = document.getElementById("savedLangs-" + fieldId);
+
+    if (!input || !select)
+        return;
+
+    textFieldData[fieldId] = textFieldData[fieldId] || {};
+
+    // Load all translations
+    values.forEach(v => {
+        if (v.language && v.value) {
+            textFieldData[fieldId][v.language] = v.value;
+        }
+    });
+
+    // Ensure current language is valid
+    const langs = Object.keys(textFieldData[fieldId]);
+    const activeLang = langs.includes(select.value)
+            ? select.value
+            : langs[0];
+
+    select.value = activeLang;
+    currentTextLang[fieldId] = activeLang;
+    input.value = textFieldData[fieldId][activeLang] || "";
+
+    updateSavedTextLangs(fieldId, label);
+}
+
+
+function resetAllMultilingualFields() {
+    resetEditors();                // CKEditor fields
+    resetMultilingualTextFields(); // Text inputs
+}
+
+
 /* Load Selectors ****************/
 
 function fillItemSelectorsByClassName(className, itemList) {
@@ -362,10 +505,10 @@ function fillLanguageISO639Selectors() {
 // selected}`.
 async function asyncItemsToOptions(asyncItems, idAttribute, defaultValue) {
     return (await asyncItems).map(item => ({
-        label: extractName(item),
-        value: item[idAttribute],
-        selected: item[idAttribute] == defaultValue
-    }));
+            label: extractName(item),
+            value: item[idAttribute],
+            selected: item[idAttribute] == defaultValue
+        }));
 }
 
 // Populate <select> elements from `selector` with options.  The
@@ -398,24 +541,24 @@ async function populateSelect(selector, asyncOptions) {
 // Populate <select> elements from `selector` with OEAPI organizations.
 async function populateSelectOrganization(selector) {
     populateSelect(
-        selector,
-        asyncItemsToOptions(
-            sortAsyncItemsByName(fetchItems('organizations')),
-            'organizationId',
-            ooapiDefaultOrganizationId
-        )
-    );
+            selector,
+            asyncItemsToOptions(
+                    sortAsyncItemsByName(fetchItems('organizations')),
+                    'organizationId',
+                    ooapiDefaultOrganizationId
+                    )
+            );
 }
 
 async function populateSelectFieldsOfStudy(selector) {
     const asyncFieldsOfStudyOptions = async (asyncFields) => (
-        (await asyncFields).map(x => ({label: x.txtEn, value: x.fieldsOfStudyId}))
-    );
+                (await asyncFields).map(x => ({label: x.txtEn, value: x.fieldsOfStudyId}))
+                );
 
     populateSelect(
-        selector,
-        asyncFieldsOfStudyOptions(fetchItems('fieldsofstudy?level=1'))
-    );
+            selector,
+            asyncFieldsOfStudyOptions(fetchItems('fieldsofstudy?level=1'))
+            );
 }
 
 /* JSON auxiliary functions */
@@ -544,23 +687,6 @@ document.querySelectorAll(".general-tabs .tab-btn").forEach(button => {
 
 // Language tabs
 
-/*
- document.querySelectorAll(".lang-tabs .lang-tab-btn").forEach(button => {
- button.addEventListener("click", () => {
- const lang = button.dataset.lang;
- const parent = button.closest("#tab-basic-info"); // adjust if language tabs are in other tabs too
- 
- parent.querySelectorAll(".lang-tab-btn").forEach(btn => btn.classList.remove("active"));
- parent.querySelectorAll(".lang-content").forEach(el => el.classList.remove("active"));
- button.classList.add("active");
- parent.querySelector(`#desc-${lang}`).classList.add("active");
- document.querySelectorAll(".lang-content").forEach(div => {
- div.style.display = "none";
- });
- document.getElementById(`desc-${lang}`).style.display = "block";
- });
- });
- */
 
 $(document).ready(function () {
 
@@ -578,6 +704,67 @@ $(document).ready(function () {
                 });
     });
 });
+
+async function loadOfferingsForCourse(courseId) {
+    const res = await fetch(`${ooapiDefaultEndpointURL}/courses/${courseId}/offerings`);
+    if (!res.ok) {
+        console.warn("No offerings found for course", courseId);
+        return;
+    }
+
+    const page = await res.json();
+    offeringsById = {};
+
+    page.items.forEach(o => {
+        offeringsById[o.offeringId] = o;
+    });
+
+    populateOfferingSelector(page.items);
+}
+
+
+
+function loadOfferingIntoForm(offeringId) {
+    const offering = offeringsById[offeringId];
+    if (!offering)
+        return;
+
+    currentOfferingId = offeringId;
+
+    // Reset editors first
+    resetEditors();
+
+    // ---- Dates ----
+    document.getElementById("startDate").value = offering.startDate || "";
+    document.getElementById("endDate").value = offering.endDate || "";
+
+    document.getElementById("startEnrollDate").value = offering.enrollStartDate || "";
+    document.getElementById("endEnrollDate").value = offering.enrollEndDate || "";
+
+    // ---- Numbers ----
+    document.getElementById("minNumberStudents").value = offering.minNumberStudents ?? "";
+    document.getElementById("maxNumberStudents").value = offering.maxNumberStudents ?? "";
+
+    // ---- Offering multilingual fields ----
+    setMultilingualEditorContent("offeringDescription", offering.description);
+
+    // ---- Address ----
+    if (offering.addresses?.length) {
+        const addr = offering.addresses[0];
+        document.getElementById("street").value = addr.street || "";
+        document.getElementById("streetNumber").value = addr.streetNumber || "";
+        document.getElementById("postalCode").value = addr.postalCode || "";
+        document.getElementById("city").value = addr.city || "";
+        document.getElementById("countryCode").value = addr.countryCode || "";
+        document.getElementById("latitude").value = addr.geolocation?.latitude || "";
+        document.getElementById("longitude").value = addr.geolocation?.longitude || "";
+
+        setMultilingualEditorContent("addressAdditional", addr.additional);
+    }
+
+    console.log("Loaded offering", offeringId);
+}
+
 
 /* Submit Form */
 
@@ -649,26 +836,29 @@ $('#catalogForm').on('submit', async function (e) {
 
             const coordinatorsData = await Promise.all(coordinators.map(async coordinator => {
                 return {
-                    givenName: coordinator.name,
+                    givenName: coordinator.givenName,
                     surname: coordinator.surname,
-                    mail: coordinator.email,
-                    displayName: coordinator.name + " " + coordinator.surname,
+                    mail: coordinator.mail,
+                    displayName: coordinator.givenName + " " + coordinator.surname,
                     activeEnrollment: false,
                     affiliations: ["employee"],
                     primaryCode: {
-                        code: coordinator.email,
+                        code: coordinator.mail,
                         codeType: "identifier"
                     }
                 };
             }));
+
             console.log("On submit: Coordinator list processed: ", coordinatorsData);
             console.log("On submit: num of coordinators:", coordinatorsData.length);
+
             let coordinatorsId = [];
             if (coordinatorsData.length > 0) {
 
                 console.log("On submit: Processing coordinators (obtaining ids) ...");
                 // 2. Process each coordinator to get their personId
                 let personRes1, personRes2, personJson1, personJson2, queryUrl
+
                 coordinatorsId = await Promise.all(coordinatorsData.map(async c => {
                     console.log("mail: " + c.mail);
                     // First: check if person already exists
@@ -711,35 +901,107 @@ $('#catalogForm').on('submit', async function (e) {
 
             /* Post main course data */
 
-            let postCourseResponse = await postCourse(coordinatorsId, function (err, response) {
-                postCourseResponse = response;
-                console.log("On submit: Posting course response: ", response);
-            });
+//            let postCourseResponse = await postCourse(coordinatorsId, function (err, response) {
+//                postCourseResponse = response;
+//                console.log("On submit: Posting course response: ", response);
+//            });
+
+            let postCourseResponse;
+
+            try {
+                postCourseResponse = await postCourse(coordinatorsId);
+                console.log("Posting course response: ", postCourseResponse);
+
+            } catch (err) {
+                // Stop the function immediately
+                console.log("Posting course exiting due to errors: ", postCourseResponse);
+                showAlert("error", "Error", "Submission of Course failed!");
+                return;
+            }
+
 
             /* Post offerings */
 
             /* postCourseResponse.courseId is the ID of parent course for offering */
 
+
+            let sendMode = isEditMode ? "Updated!" : "Created!";
+
             switch (formCourseType) {
 
                 case "stdCourse":
-                    let postCourseOfferResponse = await postOffering(postCourseResponse.courseId, function (err, response) {
-                        console.log("On submit (stdCourse): postOffering response: ", offeringData);
-                        // TBD rollback could be neccesary if fails
-                    });
+                    let postCourseOfferResponse;
+                    try {
+                        postCourseOfferResponse = await postOffering(postCourseResponse.courseId);
+                        console.log("On submit (stdCourse): postOffering response: ", postCourseOfferResponse);
+                        if (postCourseOfferResponse !== null)
+                        {
+                            showAlert("success", "Course sent!", "Course " + sendMode);
+                        }
+
+                    } catch (err) {
+                        // Stop the function immediately
+                        console.log("postOffering course exiting due to errors: ", err);
+
+                        // if course is new, it is not completed if it has no offering, then delete it
+                        if (!isEditMode)
+                        {
+                            console.log("postOffering deleting uncomplete course: ", postCourseResponse.courseId);
+                            deleteCourse(postCourseResponse.courseId, false);
+                        }
+                        showAlert("error", "Error", "Submission of Course failed, problem submitting offering!");
+                        return;
+                    }
+
                     break;
 
                 case "BIPCourse":
-                    // Physical Component 	  
-                    let postPhysicalComponentCourseOfferResponse = await postPhysicalComponentOffering(postCourseResponse.courseId, function (err, response) {
-                        console.log("On submit (Physical Component): postOffering response: ", PhysicalComponentOfferingData);
-                        // TBD a rollback could be neccesary if fails
-                    });
-                    // Virtual Component 	  
-                    let postVirtualComponentCourseOfferResponse = await postVirtualComponentOffering(postCourseResponse.courseId, function (err, response) {
-                        console.log("On submit (Virtual Component): postOffering response: ", VirtualComponentOfferingData);
-                        // TBD a rollback could be neccesary if fails
-                    });
+
+                    // Physical Component
+                    let postPhysicalComponentCourseOfferResponse;
+                    try {
+                        postPhysicalComponentCourseOfferResponse = await postPhysicalComponentOffering(postCourseResponse.courseId);
+                        console.log("On submit (Physical Component): postOffering response: ", postPhysicalComponentCourseOfferResponse);
+                        if (postPhysicalComponentCourseOfferResponse !== null)
+                        {
+                            console.log("On submit (Physical Component): Success !");
+                        }
+                    } catch (err) {
+                        // Stop the function immediately
+                        console.log("On submit (Physical Component): postOffering: ", err);
+                        // if course is new, it is not completed if it has no offering, then delete it
+                        if (!isEditMode)
+                        {
+                            console.log("On submit (Physical Component) deleting uncomplete course: ", postCourseResponse.courseId);
+                            deleteCourse(postCourseResponse.courseId, false);
+                        }
+                        showAlert("error", "Error", "Submission of Course failed, problem submitting offering (Physical Component) ");
+                        return;
+                    }
+
+
+                    // Virtual Component
+                    let postVirtualComponentCourseOfferResponse;
+                    try {
+                        postVirtualComponentCourseOfferResponse = await postVirtualComponentOffering(postCourseResponse.courseId);
+                        console.log("On submit (Virtual Component): postOffering response: ", postVirtualComponentCourseOfferResponse);
+                        if (postVirtualComponentCourseOfferResponse !== null)
+                        {
+                            console.log("On submit (Virtual Component): Success !");
+                            showAlert("success", "BIP Course sent!", "Course " + sendMode);
+                        }
+                    } catch (err) {
+                        // Stop the function immediately
+                        console.log("On submit (Virtual Component): postOffering: ", err);
+                        // if course is new, it is not completed if it has no offering, then delete it
+                        if (!isEditMode)
+                        {
+                            console.log("On submit (Virtual Component) deleting uncomplete course: ", postCourseResponse.courseId);
+                            deleteCourse(postCourseResponse.courseId, false);
+                        }
+                        showAlert("error", "Error", "Submission of Course failed, problem submitting offering (Virtual Component) ");
+                        return;
+                    }
 
                     break;
 
@@ -749,12 +1011,12 @@ $('#catalogForm').on('submit', async function (e) {
 
     } else // No valid session and JWT activated
     {
-        alert("You cannot update data in your OEAPI Endpoint. Maybe you are not logged or your session has expired");
+        showAlert("error", "Error", "You cannot update data in your OEAPI Endpoint. Maybe you are not logged or your session has expired");
     }
 });
 
 
-async function postCourse(listCoordinators, callback) {
+async function postCourse(listCoordinators) {
 
     const studyLoad = $('#studyLoad').val() ? {
         studyLoadUnit: $('#studyLoadType').val(),
@@ -791,6 +1053,11 @@ async function postCourse(listCoordinators, callback) {
 
     console.log("postCourse: Json previous cleaning of empty values.. " + safeToString(courseData));
 
+    if (isEditMode)
+    {
+        courseData.courseId = courseIdEd;
+    } // Ensure no new Id 
+
     courseData = cleanNullsOrEmpties(courseData);
 
     console.log("postCourse: Ready to post course data to " + endpointURL + "/courses with " + safeToString(courseData), courseData);
@@ -798,11 +1065,22 @@ async function postCourse(listCoordinators, callback) {
     var univ = ooapiDefaultShortUnivName; // from init.js
 
     try {
-        const response = await fetch(`${endpointURL}/courses`, {
-            method: 'POST',
+
+        let whichEndpoint = isEditMode
+                ? ooapiDefaultEndpointURL + "/courses/" + courseIdEd
+                : ooapiDefaultEndpointURL + "/courses";
+
+        let methodToFollow = isEditMode ? "PUT" : "POST";
+
+        console.log("postCourse: isEditMode? : " + isEditMode);
+        console.log("postCourse: methodToFollow? : " + methodToFollow);
+        console.log("postCourse: whichEndpoint? : " + whichEndpoint);
+
+        const response = await fetch(whichEndpoint, {
+            method: methodToFollow,
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('jwt')   // If security is disabled, will be ignored
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + localStorage.getItem("jwt")
             },
             body: JSON.stringify(courseData)
         });
@@ -813,22 +1091,17 @@ async function postCourse(listCoordinators, callback) {
         let parsedResponse = manageResponse(response, text, "postCourse");
         console.log("parsedResponse: ", parsedResponse);
 
-        if (parsedResponse == null)
-        {
-            alert("Submission of Course failed!");
-        }
-
         return parsedResponse;
 
     } catch (err)
     {
-        console.error("Network or unexpected error:", err);
-        alert("Network or unexpected error:\n" + err.message);
+        console.error("postCourse: Network or unexpected error:", err);
+        showAlert("error", "Error", "Network or unexpected error:\n" + err.message);
         return null;
     }
 }
 
-async function postOffering(courseId, callback) {
+async function postOffering(courseId) {
 
     const minNumberStudents = $('#minNumberStudents').val() ? $('#minNumberStudents').val() : null;
     const maxNumberStudents = $('#maxNumberStudents').val() ? $('#maxNumberStudents').val() : null;
@@ -875,44 +1148,53 @@ async function postOffering(courseId, callback) {
     // Remove empty values
     OfferingData = cleanNullsOrEmpties(OfferingData);
 
+    if (isEditMode)
+    {
+        OfferingData.offeringId = offeringIdEd;
+    } // Ensure no new Id 
+
     console.log("Ready to post offering data: ", OfferingData);
 
+    let whichEndpoint = isEditMode
+            ? ooapiDefaultEndpointURL + "/offerings/" + offeringIdEd
+            : ooapiDefaultEndpointURL + "/offerings";
+
+    let methodToFollow = isEditMode ? "PUT" : "POST";
+
+    console.log("postOffering: isEditMode? : " + isEditMode);
+    console.log("postOffering: methodToFollow? : " + methodToFollow);
+    console.log("postOffering: whichEndpoint? : " + whichEndpoint);
+
     try {
-        response = await fetch(endpointURL + "/offerings", {
-            method: "POST",
+        response = await fetch(whichEndpoint, {
+            method: methodToFollow,
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
-
+                "Authorization": "Bearer " + localStorage.getItem("jwt")
             },
             body: JSON.stringify(OfferingData)
         });
-
 
         // Read the response body as text
         const text = await response.text();
 
         let parsedResponse = manageResponse(response, text, "postOfferingData");
-        console.log("parsedResponse: ", parsedResponse);
 
-        if (parsedResponse == null)
-        {
-            alert("Submission of Offering Data failed!");
-        }
+        console.log("parsedResponse: ", parsedResponse);
 
         return parsedResponse;
 
     } catch (err)
     {
         console.error("Network or unexpected error:", err);
-        alert("Network or unexpected error:\n" + err.message);
+        showAlert("error", "Error", "Network or unexpected error:\n" + err.message);
         return null;
     }
 
 }
 
 
-async function postPhysicalComponentOffering(courseId, callback) {
+async function postPhysicalComponentOffering(courseId) {
 
     const startDate = $('#physicalStartDate').val() ? $('#physicalStartDate').val() : null;
     const endDate = $('#physicalEndDate').val() ? $('#physicalEndDate').val() : null;
@@ -960,43 +1242,54 @@ async function postPhysicalComponentOffering(courseId, callback) {
     // Remove empty values
     PhysicalComponentOfferingData = cleanNullsOrEmpties(PhysicalComponentOfferingData);
 
-    console.log(PhysicalComponentOfferingData);
+    if (isEditMode)
+    {
+        PhysicalComponentOfferingData.offeringId = physicalOfferingIdEd;
+    } // Ensure no new Id 
+
+    console.log("Ready to post Physical offering data: ", PhysicalComponentOfferingData);
+
+
+    let whichEndpoint = isEditMode
+            ? ooapiDefaultEndpointURL + "/offerings/" + physicalOfferingIdEd
+            : ooapiDefaultEndpointURL + "/offerings";
+
+    let methodToFollow = isEditMode ? "PUT" : "POST";
+
+    console.log("postPhysicalOffering: isEditMode? : " + isEditMode);
+    console.log("postPhysicalOffering: methodToFollow? : " + methodToFollow);
+    console.log("postPhysicalOffering: whichEndpoint? : " + whichEndpoint);
 
     try {
-        response = await fetch(endpointURL + "/offerings", {
-            method: "POST",
+        response = await fetch(whichEndpoint, {
+            method: methodToFollow,
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
+                "Authorization": "Bearer " + localStorage.getItem("jwt")
             },
             body: JSON.stringify(PhysicalComponentOfferingData)
         });
-
 
         // Read the response body as text
         const text = await response.text();
 
         let parsedResponse = manageResponse(response, text, "postPhysicalComponentOffering");
-        console.log("parsedResponse: ", parsedResponse);
 
-        if (parsedResponse == null)
-        {
-            alert("Submission of PhysicalComponentOffering failed!");
-        }
+        console.log("parsedResponse: ", parsedResponse);
 
         return parsedResponse;
 
     } catch (err)
     {
         console.error("Network or unexpected error:", err);
-        alert("Network or unexpected error:\n" + err.message);
+        showAlert("error", "Error", "Network or unexpected error:\n" + err.message);
         return null;
     }
 
 }
 
 
-async function postVirtualComponentOffering(courseId, callback) {
+async function postVirtualComponentOffering(courseId) {
 
     const startDate = $('#virtualStartDate').val() ? $('#virtualStartDate').val() : null;
     const endDate = $('#virtualEndDate').val() ? $('#virtualEndDate').val() : null;
@@ -1021,38 +1314,49 @@ async function postVirtualComponentOffering(courseId, callback) {
     // Remove empty values
     VirtualComponentOfferingData = cleanNullsOrEmpties(VirtualComponentOfferingData);
 
-    console.log(VirtualComponentOfferingData);
+    if (isEditMode)
+    {
+        VirtualComponentOfferingData.offeringId = virtualOfferingIdEd;
+    } // Ensure no new Id 
+
+    console.log("Ready to post Virtual offering data: ", VirtualComponentOfferingData);
+
+    let whichEndpoint = isEditMode
+            ? ooapiDefaultEndpointURL + "/offerings/" + virtualOfferingIdEd
+            : ooapiDefaultEndpointURL + "/offerings";
+
+    let methodToFollow = isEditMode ? "PUT" : "POST";
+
+    console.log("postVirtualComponentOffering: isEditMode? : " + isEditMode);
+    console.log("postVirtualComponentOffering: methodToFollow? : " + methodToFollow);
+    console.log("postVirtualComponentOffering: whichEndpoint? : " + whichEndpoint);
 
     try {
-        response = await fetch(endpointURL + "/offerings",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + localStorage.getItem('jwt')   // If security is disabled, will be ignored
-                    },
-                    body: JSON.stringify(VirtualComponentOfferingData)
-                });
+        response = await fetch(whichEndpoint, {
+            method: methodToFollow,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + localStorage.getItem("jwt")
+            },
+            body: JSON.stringify(VirtualComponentOfferingData)
+        });
 
         // Read the response body as text
         const text = await response.text();
 
         let parsedResponse = manageResponse(response, text, "postVirtualComponentOffering");
-        console.log("parsedResponse: ", parsedResponse);
 
-        if (parsedResponse == null)
-        {
-            alert("Submission of VirtualComponentOffering failed!");
-        }
+        console.log("parsedResponse: ", parsedResponse);
 
         return parsedResponse;
 
     } catch (err)
     {
         console.error("Network or unexpected error:", err);
-        alert("Network or unexpected error:\n" + err.message);
+        showAlert("error", "Error", "Network or unexpected error:\n" + err.message);
         return null;
     }
+
 
 }
 
@@ -1067,7 +1371,8 @@ function manageResponse(responseResult, textResult, messageHelper) {
         let message = `Submission failed (${responseResult.status} ${responseResult.statusText})`;
         if (textResult)
             message += `\n\nServer response:\n${textResult}`;
-        alert(message);
+
+        showAlert("error", "Error at " + messageHelper, message);
 
         return null;
     }
@@ -1076,7 +1381,7 @@ function manageResponse(responseResult, textResult, messageHelper) {
     let parsed;
     try {
         parsed = JSON.parse(textResult);
-        alert(messageHelper + ": submitted to " + endpointURL + "!");
+        console.log("Success" + messageHelper + ": submitted to " + endpointURL + "!");
         console.log(messageHelper + ": submitted successfully:", parsed);
     } catch (e)
     {
@@ -1104,6 +1409,205 @@ function post(resource, data) {
 }
 
 
+async function loadCourseForEdit(courseId) {
+
+    resetAllMultilingualFields();
+
+    let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(ooapiDefaultEndpointURL, courseId);
+
+    switch (formCourseType) {
+
+        case "stdCourse":
+            populateCourseForm(courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList);
+            break;
+        case "BIPCourse":
+            populateBIPCourseForm(courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList);
+            break;
+    }
+}
+
+
+async function populateCourseForm(course, offerings, courseCoordinators, programs) {
+
+    console.log("populateCourseForm: loading course...");
+
+    setMultilingualTextField("courseName", course.name);
+
+    document.getElementById("code").value = course.primaryCode.code ?? "";
+    document.getElementById("abbreviation").value = course.abbreviation ?? "";
+    document.getElementById("validStartDate").value = course.validFrom ?? "";
+    document.getElementById("validEndDate").value = course.validTo ?? "";
+    document.getElementById("teachingLanguage").value = course.teachingLanguage ?? "";
+    document.getElementById("level").value = course.level ?? "";
+    document.getElementById("studyLoadType").value = course.studyLoad.studyLoadUnit ?? "";
+    document.getElementById("studyLoad").value = course.studyLoad.value ?? "";
+    document.getElementById("fieldsOfStudy").value = course.fieldsOfStudy ?? "";
+
+    document.getElementById("link_to_more_info").value = course.link ?? "";
+
+    populateSelectMultiple("modeOfDelivery", course.modeOfDelivery);
+
+    // Multilingual editors
+    setMultilingualEditorContent("description", course.description);
+    setMultilingualEditorContent("learningOutcomes", course.learningOutcomes);
+    setMultilingualEditorContent("assessment", course.assessment);
+    setMultilingualEditorContent("admissionRequirements", course.admissionRequirements);
+    setMultilingualEditorContent("enrollment", course.enrollment);
+
+    // Offering / dates
+    console.log("populateCourseForm: Checking offerings...");
+
+    if (offerings.items?.length > 0) {
+        const offering = offerings.items[0];
+        console.log("populateCourseForm: Load offering.items[0]...");
+
+        offeringIdEd = offering.offeringId;
+
+        document.getElementById("startDate").value = offering.startDate ?? "";
+        document.getElementById("endDate").value = offering.endDate ?? "";
+        document.getElementById("maxNumberStudents").value = offering.maxNumberStudents ?? "";
+        document.getElementById("minNumberStudents").value = offering.minNumberStudents ?? "";
+        document.getElementById("startEnrollDate").value = offering.enrollStartDate ?? "";
+        document.getElementById("endEnrollDate").value = offering.enrollEndDate ?? "";
+        document.getElementById("amount").value = offering.priceInformation?.[0]?.amount ?? "";
+        document.getElementById("link_to_enroll").value = offering.link ?? "";
+
+        setMultilingualEditorContent("offeringDescription", offering.description);
+
+        // Address
+        const addr = offering.addresses?.[0];
+        if (addr) {
+            document.getElementById("street").value = addr.street ?? "";
+            document.getElementById("streetNumber").value = addr.streetNumber ?? "";
+            document.getElementById("postalCode").value = addr.postalCode ?? "";
+            document.getElementById("city").value = addr.city ?? "";
+            document.getElementById("countryCode").value = addr.countryCode ?? "";
+            document.getElementById("latitude").value = addr.geolocation?.latitude ?? "";
+            document.getElementById("longitude").value = addr.geolocation?.longitude ?? "";
+
+            setMultilingualEditorContent("addressAdditional", addr.additional);
+        }
+    }
+
+    // Fill form coordinators with received ones
+    coordinators = Array.from(courseCoordinators);
+    updateCoordinatorList();
+    console.log(coordinators);
+
+    // Programs are still to be handled in the form
+
+}
+
+// For BIPs
+
+// Needed when editing 
+
+let physicalOfferingIdEd;
+let virtualOfferingIdEd;
+
+async function populateBIPCourseForm(course, offerings, courseCoordinators, programs) {
+
+    console.log("populateBIPCourseForm: loading course...");
+
+    setMultilingualTextField("courseName", course.name);
+
+    document.getElementById("code").value = course.primaryCode.code ?? "";
+    document.getElementById("abbreviation").value = course.abbreviation ?? "";
+    document.getElementById("validStartDate").value = course.validFrom ?? "";
+    document.getElementById("validEndDate").value = course.validTo ?? "";
+    document.getElementById("teachingLanguage").value = course.teachingLanguage ?? "";
+    document.getElementById("level").value = course.level ?? "";
+    document.getElementById("studyLoadType").value = course.studyLoad.studyLoadUnit ?? "";
+    document.getElementById("studyLoad").value = course.studyLoad.value ?? "";
+    document.getElementById("fieldsOfStudy").value = course.fieldsOfStudy ?? "";
+
+    document.getElementById("link_to_more_info").value = course.link ?? "";
+
+    populateSelectMultiple("modeOfDelivery", course.modeOfDelivery);
+
+    // Multilingual editors
+    setMultilingualEditorContent("description", course.description);
+    setMultilingualEditorContent("learningOutcomes", course.learningOutcomes);
+    setMultilingualEditorContent("assessment", course.assessment);
+    setMultilingualEditorContent("admissionRequirements", course.admissionRequirements);
+    setMultilingualEditorContent("enrollment", course.enrollment);
+
+    // Offering / dates
+    console.log("populateBIPCourseForm: Checking offerings...");
+
+    if (offerings.items?.length > 0) {
+
+        // Locate which is physical o virtual
+        let idNormOrPhy = 0; // Default: The first offering is normal or physical component
+        let idVirt = 1;      // Default: The second offering is virtual component
+
+        // Actualy?
+        let firstItemCode = offerings.items[0].primaryCode.code;
+        if (firstItemCode.includes("virtualComponent"))
+        {
+            idVirt = 0;      // The first offering is virtual component
+            idNormOrPhy = 1; // The first offering is virtual component
+        }
+
+        const physicalOffering = offerings.items[idNormOrPhy];
+
+        physicalOfferingIdEd = physicalOffering.offeringId;
+
+        document.getElementById("physicalStartDate").value = physicalOffering.startDate ?? "";
+        document.getElementById("physicalEndDate").value = physicalOffering.endDate ?? "";
+        document.getElementById("maxNumberStudents").value = physicalOffering.maxNumberStudents ?? "";
+        document.getElementById("minNumberStudents").value = physicalOffering.minNumberStudents ?? "";
+        document.getElementById("startEnrollDate").value = physicalOffering.enrollStartDate ?? "";
+        document.getElementById("endEnrollDate").value = physicalOffering.enrollEndDate ?? "";
+        document.getElementById("amount").value = physicalOffering.priceInformation?.[0]?.amount ?? "";
+        // Not present in BIPS
+        // document.getElementById("link_to_enroll").value = physicalOffering.link ?? "";
+
+        setMultilingualEditorContent("physicalDescription", physicalOffering.description);
+
+        // Address
+        const addr = physicalOffering.addresses?.[0];
+        if (addr) {
+            document.getElementById("street").value = addr.street ?? "";
+            document.getElementById("streetNumber").value = addr.streetNumber ?? "";
+            document.getElementById("postalCode").value = addr.postalCode ?? "";
+            document.getElementById("city").value = addr.city ?? "";
+            document.getElementById("countryCode").value = addr.countryCode ?? "";
+            document.getElementById("latitude").value = addr.geolocation?.latitude ?? "";
+            document.getElementById("longitude").value = addr.geolocation?.longitude ?? "";
+
+            setMultilingualEditorContent("addressAdditional", addr.additional);
+        }
+
+        const virtualOffering = offerings.items[idVirt];
+        virtualOfferingIdEd = virtualOffering.offeringId;
+
+        document.getElementById("virtualStartDate").value = physicalOffering.startDate ?? "";
+        document.getElementById("virtualEndDate").value = physicalOffering.endDate ?? "";
+
+        setMultilingualEditorContent("virtualDescription", physicalOffering.description);
+
+    }
+
+    // Coordinators disabled in BIPS
+    // Fill form coordinators with received ones
+    //    coordinators = Array.from(courseCoordinators);
+    //    updateCoordinatorList();
+    //    console.log(coordinators);
+
+    // Programs are still to be handled in the form
+
+}
+
+
+function populateSelectMultiple(item, values) {
+    const select = document.getElementById(item);
+
+    Array.from(select.options).forEach(option => {
+        option.selected = values.includes(option.value);
+    });
+}
+
 
 function showTab(index) {
     const contents = document.querySelectorAll("general-tabs .tab-content");
@@ -1126,22 +1630,28 @@ function showTabLanguage(index) {
         btn.classList.toggle("active", i === index);
     });
 }
-const coordinators = [];
+
+// Handle coordinators
+
+let coordinators = [];
 
 function addCoordinator() {
-    const name = document.getElementById('coordinator_name').value.trim();
+
+    const givenName = document.getElementById('coordinator_name').value.trim();
     const surname = document.getElementById('coordinator_surname').value;
-    const email = document.getElementById('coordinator_email').value;
-    if (!name || !surname || !email) {
-        alert("Please fill in all fields correctly.");
+    const mail = document.getElementById('coordinator_email').value;
+
+    if (!givenName || !surname || !mail) {
+        showAlert("error", "Error", "Please fill in all fields correctly.");
         return;
     }
 
-    const coordinator = {
-        name,
+    let coordinator = {
+        givenName,
         surname,
-        email
+        mail
     };
+
     coordinators.push(coordinator);
     updateCoordinatorList();
     // Clear inputs
@@ -1153,6 +1663,7 @@ function addCoordinator() {
 function updateCoordinatorList() {
     const list = document.getElementById('coordinator-list');
     list.innerHTML = ''; // Clear existing list
+
     const header = document.createElement('li');
     const nameHeaderSpan = document.createElement('span');
     nameHeaderSpan.textContent = "Name";
@@ -1162,6 +1673,7 @@ function updateCoordinatorList() {
     emailHeaderSpan.textContent = "Email";
     const removeButtonSpan = document.createElement('span');
     removeButtonSpan.textContent = "   Action     ";
+
     header.appendChild(nameHeaderSpan);
     header.appendChild(surnameHeaderSpan);
     header.appendChild(emailHeaderSpan);
@@ -1170,11 +1682,11 @@ function updateCoordinatorList() {
     coordinators.forEach((coordinator, index) => {
         const li = document.createElement('li');
         const nameSpan = document.createElement('span');
-        nameSpan.textContent = coordinator.name;
+        nameSpan.textContent = coordinator.givenName;
         const surnameSpan = document.createElement('span');
         surnameSpan.textContent = coordinator.surname;
         const emailSpan = document.createElement('span');
-        emailSpan.textContent = coordinator.email;
+        emailSpan.textContent = coordinator.mail;
         li.appendChild(nameSpan);
         li.appendChild(surnameSpan);
         li.appendChild(emailSpan);
@@ -1196,21 +1708,21 @@ function validateDates() {
     if (formCourseType != "BIPCourse")  // BIP has dates for PC and VC
     {
         if (!document.getElementById("startDate").value) {
-            alert("Offering start date is missing or incorrect");
+            showAlert("error", "Error", "Offering start date is missing or incorrect");
             return false;
         } else {
             const startDate = new Date(document.getElementById("startDate").value);
         }
 
         if (!document.getElementById("endDate").value) {
-            alert("Offering endDate date is missing or incorrect");
+            showAlert("error", "Error", "Offering endDate date is missing or incorrect");
             return false;
         } else {
             const endDate = new Date(document.getElementById("endDate").value);
         }
 
         if (startDate && endDate && endDate < startDate) {
-            alert("End date of offering must be after start date.");
+            showAlert("error", "Error", "End date of offering must be after start date.");
             return false;
         }
     }
@@ -1220,18 +1732,18 @@ function validateDates() {
     // Check enroll dates
     if (startEnrollDate && endEnrollDate) {
         if (endEnrollDate < startEnrollDate) {
-            alert("Enrollment end date must be after enrollment start date.");
+            showAlert("error", "Error", "Enrollment end date must be after enrollment start date.");
             return false;
         }
         if (formCourseType != "BIPCourse")  // BIP has dates for PC and VC
         {
             if (startDate && endEnrollDate > startDate) {
-                alert("Enrollment end date must not be after course start date.");
+                showAlert("error", "Error", "Enrollment end date must not be after course start date.");
                 return false;
             }
         }
     } else if (startEnrollDate || endEnrollDate) {
-        alert("Both enrollment start and end dates must be provided.");
+        showAlert("error", "Error", "Both enrollment start and end dates must be provided.");
         return false;
     }
 

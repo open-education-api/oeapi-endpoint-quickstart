@@ -25,30 +25,12 @@
                 opacity: 0.9;
             }
 
-            .delete-icon {
-                color: #e97883;
-				margin-left: 85%;
-                padding-bottom: .5em;
-            }
-
-            .delete-icon:hover {
-                color: #dc3545; #e97883
-                transform: scale(1.1);
-            }
-
-            .delete-icon:active {
-                transform: scale(0.95);
-            }
-
-
-
 
             @media (min-width: 991.98px) {
                 main {
                     padding-left: 240px;
                 }
             }
-
 
             /* Sidebar */
             .sidebar {
@@ -87,6 +69,50 @@
             }
             
             #results strong { color: #2f6edf; }
+            
+            .course-actions {
+                display: flex;
+                align-items: center;   /* vertical alignment */
+                gap: 65%;             /* space between items */
+                width: 90%;
+              }
+              
+            .edit-icon,
+            .delete-icon {
+              display: flex;              /* icon + text same line */
+              align-items: center;
+              gap: 0.5rem;
+              cursor: pointer;
+              white-space: nowrap;        /* prevents text wrapping */
+              padding-bottom: .5em;
+              font-weight: 600;
+            }
+          
+            .edit-icon {
+                color: darkcyan;
+            }
+            
+            .edit-icon:hover {
+                color: #033e3e; 
+                transform: scale(1.1);
+            }
+
+            .edit-icon:active {
+                transform: scale(0.95);
+            }
+                        
+            .delete-icon {
+                color: #e97883;
+            }
+                        
+            .delete-icon:hover {
+                color: #dc3545; 
+                transform: scale(1.1);
+            }
+
+            .delete-icon:active {
+                transform: scale(0.95);
+            }
             
         </style>
     </head>
@@ -198,10 +224,7 @@
                 localStorage.removeItem("jwt");
                 window.location.href = "./login.html";
             });			
-			
-
-			
-
+            
         </script>
 
         <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>
