@@ -45,11 +45,11 @@ public class OfferingService extends oeapiEndpointService<Offering, OfferingRepo
     private OrganizationService organizationService;
 
     @Autowired
-    private ProgramService programService;    
+    private ProgramService programService;
 
     @Autowired
-    private CourseService courseService;    
-    
+    private CourseService courseService;
+
     @Value("${ooapi.config.autoCreateOrgIfNotExists:false}")
     private boolean defaultAutoCreateOrgIfNotExists;
 
@@ -91,94 +91,38 @@ public class OfferingService extends oeapiEndpointService<Offering, OfferingRepo
     @Override
     public Offering create(Offering object) {
 
-    logger.debug("*>-Offering Create: Revising relations and normalizing attributes...");
-    logger.debug("*>--Offering Create: Organization at START: {}", 
-        (object.getOrganization() != null) ? object.getOrganization().getOrganizationId() : "None");
+        logger.debug("*>-Offering Create: Revising relations and normalizing attributes...");
+        Offering revisedOffering = validateOffering(object);
 
-    // Handle common logic for all types of offerings
-    Offering managedOffering = checkRelations(object, defaultAutoCreateOrgIfNotExists);
-    Offering revisedOffering = normalizeAttributes(managedOffering);
-
-    // --- Handle specific subtypes ---
-    if (revisedOffering instanceof CourseOffering) {
-        CourseOffering courseOffering = (CourseOffering) revisedOffering;
-        logger.debug("*>-- Detected CourseOffering, applying course-specific logic");
-
-        courseOffering.setOfferingType("course");
-        courseOffering.setCourse(((CourseOffering) object).getCourse()); 
-
-        boolean hasValidCourse = false;   
-        
-        // CourseOffering should have a parent course to belong to
-        if (courseOffering.getCourse() != null)
-          {  
-           logger.debug("+(Course) Offering service checkRelations: Course...");   
-           Optional<Course> courseExisting ;
-            try {
-                courseExisting = courseService.manageRelated(courseOffering.getCourse());
-                }
-               catch (Exception ex) {
-                   throw new oeapiException(HttpStatus.BAD_REQUEST, "(Offering create )Error revising course in CourseOffering", "Error: "+ex.getLocalizedMessage());
-                }
-           if (courseExisting.isPresent()) {
-                logger.debug("++(Course) Offering service checkRelations: courseExisting set to: id=" + courseExisting.get().getCourseId() + "Abbreviation: " + courseExisting.get().getAbbreviation());
-                courseOffering.setCourse(courseExisting.get());
-                hasValidCourse = true; 
-              }
-          }
-        
-        if (!hasValidCourse) {  
-             throw new oeapiException(HttpStatus.BAD_REQUEST, "(Course) Offering not created", "The parent course does not exists or invalid! Course :"+courseOffering.getCourse());
-        }
-        
-        revisedOffering = courseOffering;
-    } 
-    else if (revisedOffering instanceof ProgramOffering) {
-        ProgramOffering programOffering = (ProgramOffering) revisedOffering;
-        logger.debug("*>-- Detected ProgramOffering, applying program-specific logic");
-
-        programOffering.setOfferingType("program");
-        programOffering.setProgram(((ProgramOffering) object).getProgram());
-                
-        boolean hasValidProgram = false;   
-        
-        if (programOffering.getProgram() != null)
-          {  
-           logger.debug("+(Program) Offering service checkRelations: program...");   
-           Optional<Program> progExisting = programService.manageRelated(programOffering.getProgram()) ;
-           if (progExisting.isPresent()) {
-                logger.debug("++(Course) Offering service checkRelations: programOffering set to: id=" + progExisting.get().getProgramId() + "Name: " + progExisting.get().getName());
-                programOffering.setProgram(progExisting.get());
-                hasValidProgram = true;                                 
-            }
-          } 
-           
-        if (!hasValidProgram) {  
-             throw new oeapiException(HttpStatus.BAD_REQUEST, "(Program) Offering not created", "The parent program does not exists or invalid! Program :"+programOffering.getProgram());
-        } 
-        
-        revisedOffering = programOffering;
-    }
-
-    logger.debug("*>-Offering Create: Organization at END: {}", 
-        (revisedOffering.getOrganization() != null) ? revisedOffering.getOrganization().getOrganizationId() : "None");
-    logger.debug("*>--Offering Create: Checked and normalized offering {}", revisedOffering);
-
-    return super.create(revisedOffering);
+        return super.create(revisedOffering);
 
     }
 
-
+    @Deprecated
     @Override
     public Offering update(Offering object) {
-        return super.update(object);
+        logger.debug("*>-Offering Update: Revising relations and normalizing attributes...");
+        if (object.getOfferingId() == null) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error updating Offering: offeringId is missing");
+        }
+
+        Offering revisedOffering = validateOffering(object);
+
+        return super.update(revisedOffering);
     }
 
     @Override
     public Offering update(String id, Offering object) {
-        return super.update(id, object);
+        logger.debug("*>-Offering update: Revising relations and normalizing attributes...");
+        if ((object.getOfferingId() == null) || (!object.getOfferingId().equalsIgnoreCase(id))) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error updating Offering: offeringId on JSON does not match param id or is missing : [" + id + "," + object.getOfferingId() + "]");
+        }
+
+        Offering revisedOffering = validateOffering(object);
+
+        return super.update(id, revisedOffering);
     }
-      
+
     @Override
     public boolean delete(String id) {
 
@@ -188,20 +132,19 @@ public class OfferingService extends oeapiEndpointService<Offering, OfferingRepo
 
         }
         Offering offering = offeringExisting.get();
-        logger.debug("*>-Offering Service: Deleting Offering with ID:"+id); 
-               
+        logger.debug("*>-Offering Service: Deleting Offering with ID:" + id);
+
         // Clear all rest relatons
         offering = this.clearRelations(offering);
         super.delete(id);
         return true;
-    }    
-    
+    }
 
     public void deleteByCourse(Course course) {
         List<CourseOffering> offerings = repository.findByCourse_CourseId(course.getCourseId());
-        
+
         for (CourseOffering offering : offerings) {
-            logger.debug("*>-Offering deleteByCourse: Deleting Offering with ID"+offering.getOfferingId()); 
+            logger.debug("*>-Offering deleteByCourse: Deleting Offering with ID" + offering.getOfferingId());
             this.delete(offering.getOfferingId());
         }
     }
@@ -212,11 +155,11 @@ public class OfferingService extends oeapiEndpointService<Offering, OfferingRepo
         if (!(modeOfDelivery == null) && !modeOfDelivery.isEmpty()) {
             offering.getModeOfDelivery().clear();
         }
-        
+
         return offering;
 
     }
-           
+
     public Offering checkRelations(Offering offering, boolean mandatoryOrganization) {
 
         logger.debug("+(Course) Offering service checkRelations: Organization...");
@@ -228,7 +171,7 @@ public class OfferingService extends oeapiEndpointService<Offering, OfferingRepo
 
         return offering;
     }
-    
+
     /* Check relations with other entities and avoid duplicates on JPA automatic save or cascade */
     public Offering normalizeAttributes(Offering offering) {
 
@@ -259,6 +202,81 @@ public class OfferingService extends oeapiEndpointService<Offering, OfferingRepo
         }
 
         return offering;
+    }
+
+    public Offering validateOffering(Offering object) {
+
+        logger.debug("*>-Offering validate: Revising relations and normalizing attributes...");
+        logger.debug("*>--Offering validate: Organization at START: {}",
+                (object.getOrganization() != null) ? object.getOrganization().getOrganizationId() : "None");
+
+        // Handle common logic for all types of offerings
+        Offering managedOffering = checkRelations(object, defaultAutoCreateOrgIfNotExists);
+        Offering revisedOffering = normalizeAttributes(managedOffering);
+
+        // --- Handle specific subtypes ---
+        if (revisedOffering instanceof CourseOffering) {
+            CourseOffering courseOffering = (CourseOffering) revisedOffering;
+            logger.debug("*>-- Detected CourseOffering, applying course-specific logic");
+
+            courseOffering.setOfferingType("course");
+            courseOffering.setCourse(((CourseOffering) object).getCourse());
+
+            boolean hasValidCourse = false;
+
+            // CourseOffering should have a parent course to belong to
+            if (courseOffering.getCourse() != null) {
+                logger.debug("+(Course) Offering service checkRelations: Course...");
+                Optional<Course> courseExisting;
+                try {
+                    courseExisting = courseService.manageRelated(courseOffering.getCourse());
+                } catch (Exception ex) {
+                    throw new oeapiException(HttpStatus.BAD_REQUEST, "(Offering create )Error revising course in CourseOffering", "Error: " + ex.getLocalizedMessage());
+                }
+                if (courseExisting.isPresent()) {
+                    logger.debug("++(Course) Offering service checkRelations: courseExisting set to: id=" + courseExisting.get().getCourseId() + "Abbreviation: " + courseExisting.get().getAbbreviation());
+                    courseOffering.setCourse(courseExisting.get());
+                    hasValidCourse = true;
+                }
+            }
+
+            if (!hasValidCourse) {
+                throw new oeapiException(HttpStatus.BAD_REQUEST, "(Course) Offering not created", "The parent course does not exists or invalid! Course :" + courseOffering.getCourse());
+            }
+
+            revisedOffering = courseOffering;
+        } else if (revisedOffering instanceof ProgramOffering) {
+            ProgramOffering programOffering = (ProgramOffering) revisedOffering;
+            logger.debug("*>-- Detected ProgramOffering, applying program-specific logic");
+
+            programOffering.setOfferingType("program");
+            programOffering.setProgram(((ProgramOffering) object).getProgram());
+
+            boolean hasValidProgram = false;
+
+            if (programOffering.getProgram() != null) {
+                logger.debug("+(Program) Offering service checkRelations: program...");
+                Optional<Program> progExisting = programService.manageRelated(programOffering.getProgram());
+                if (progExisting.isPresent()) {
+                    logger.debug("++(Course) Offering service checkRelations: programOffering set to: id=" + progExisting.get().getProgramId() + "Name: " + progExisting.get().getName());
+                    programOffering.setProgram(progExisting.get());
+                    hasValidProgram = true;
+                }
+            }
+
+            if (!hasValidProgram) {
+                throw new oeapiException(HttpStatus.BAD_REQUEST, "(Program) Offering not created", "The parent program does not exists or invalid! Program :" + programOffering.getProgram());
+            }
+
+            revisedOffering = programOffering;
+        }
+
+        logger.debug("*>-Offering Create: Organization at END: {}",
+                (revisedOffering.getOrganization() != null) ? revisedOffering.getOrganization().getOrganizationId() : "None");
+        logger.debug("*>--Offering Create: Checked and normalized offering {}", revisedOffering);
+
+        return revisedOffering;
+
     }
 
     @Override
