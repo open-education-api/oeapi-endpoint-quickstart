@@ -1,4 +1,3 @@
-
 const languages = [
     {code: "en-GB", name: "English (UK)"},
     {code: "es-ES", name: "Spanish"},
@@ -29,20 +28,9 @@ const languagesISO639 = [
     {iso639_2: "mul", name: "Multiple Languages"}  // Special case 
 ];
 
-// Function to find language name using ISO639_2
-function getLanguageNameByCodeISO639_2(code) {
-    console.log("getLanguageNameByCodeISO639_2 Received : " + code);
-    const found = languagesISO639.find(u => u.iso639_2 === code.toLowerCase());
-    return found ? found.name : 'TBD';
-}
-
-/* Only ooapiDefaultEndpointURL is accessed, but here you
- could add code to merge data from other endpoints */
-
-
 // Extract name from OOAPI entity, use `language` list order as
 // preference.
-function extractName( {name}) {
+function extractName({name}) {
     return name && name.find(n => languages.map(({code}) => n.language == code).find(x => x)).value;
 }
 
@@ -87,33 +75,7 @@ function getCourseUniv(courseJson) {
     return ooapiDefaultShortUnivName;
 }
 
-/* Rendering of courses
- Some of the html rendering of the courses is based 
- on the code https://codepen.io/feri-irawan/pen/RwLQKpY 
- (By Feri Irawan - 29/12/2021)
- */
-
-
-/* Full list of courses */
-
-
-const getAllCoursesData = async (univOOAPI_URL) => {
-    console.log("getAllCoursesData-> Destiny URL: " + univOOAPI_URL + "/courses");
-    const response = await fetch(univOOAPI_URL + "/courses")
-            .then((res) => res.json())
-            .then(({ items }) => items);
-    //console.log("getAllCoursesData-> Response: " + response);
-    return response;
-};
-async function AllMergedCoursesRawData() {
-
-    const data = await getAndMergeAllCoursesData();
-    return data;
-}
-
 async function renderAllMergedCoursesData() {
-
-
     const data = await getAndMergeAllCoursesData();
     console.log("renderAllMergedCoursesData data:");
     console.log(data);
@@ -143,39 +105,6 @@ async function renderAllMergedCoursesData() {
         renderAllCoursesResults(results, q);
     };
 
-}
-
-
-async function renderAllCourses() {
-    const data = await getAllCoursesData(univOOAPI_URL);
-    console.log(data);
-    console.log("Filter by level: " + filterLevel);
-    let results = [];
-    if (filterLevel != "NONE")
-    {
-
-        renderAllCoursesResults(data.filter(({ level }) => level.toLowerCase().includes(filterLevel.toLowerCase())));
-    } else
-    {
-        renderAllCoursesResults(data);
-    }
-
-
-    // Watchout search box...
-    input.onkeyup = async (e) => {
-
-        const q = e.target.value;
-        if (filterLevel != "NONE")
-        {
-            results = data.filter(({ level }) => level.toLowerCase().includes(filterLevel.toLowerCase()))
-                    .filter(({ name }) => name[0].value.toLowerCase().includes(q.toLowerCase()));
-        } else
-        {
-            results = data.filter(({ name }) => name[0].value.toLowerCase().includes(q.toLowerCase()));
-        }
-
-        renderAllCoursesResults(results, q);
-    };
 }
 
 function renderAllCoursesResults(results, q = "") {
@@ -364,42 +293,6 @@ function deleteCourse(theCourse, needToConfirm)
                     console.error('deleteCourse Error:', error);
                 });
     }
-    ;
-}
-
-function deleteOffering(theOffering, needToConfirm)
-{
-
-    console.log("deleteOffering: endpointURL..." + ooapiDefaultEndpointURL);
-    console.log("deleteOffering: the Course..." + theOffering);
-    console.log("deleteOffering token", localStorage.getItem('jwt'));
-
-    if (!needToConfirm || (needToConfirm && confirm('Are you sure you want to delete this Offering?'))) {
-
-        console.log("deleteOffering Id: " + theOffering + " confirmed");
-        console.log("deleteOffering call to: " + ooapiDefaultEndpointURL + "/offerings/" + theOffering);
-
-        fetch(ooapiDefaultEndpointURL + "/offerings/" + theOffering, {method: "DELETE",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('jwt'),
-                'Content-length': 0
-            }
-        })
-                .then(async response => {
-                    if (!response.ok) {
-                        throw new Error('deleteOffering Failed to delete resource: ' + response.text());
-                    }
-                    return response.text(); // use `.json()` if server returns JSON
-                })
-                .then(data => {
-                    console.log('deleteOffering successful:', data);
-                    window.location.href = "./catalog.html";
-                })
-                .catch(error => {
-                    console.error('deleteOffering Error:', error);
-                });
-    }
-    ;
 }
 
 function editCourse(theCourse) {
@@ -542,29 +435,6 @@ async function isJwtSecurityEnabled() {
     return isEnabled;
 }
 
-async function loadAsyncOfferingData(ooapiEndPoint, courseID, which) {
-
-    try {
-        console.log("loadOfferingData: Get offering data...");
-        const response = await fetch(ooapiEndPoint + "/courses/" + courseID + "/offerings");
-
-        if (!response.ok) {
-            throw new Error('loadOfferingData HTTP error! Status: ${response.status}');
-            return;
-        }
-
-        const allOfferingData = await response.json();
-
-        console.log('All OfferingData:', allOfferingData);
-        whichOfferingData = allOfferingData.items[which];
-        console.log('OfferingData num ' + which + ' :', whichOfferingData);
-        return whichOfferingData;
-
-    } catch (error) {
-        console.error('Error during API call sequence on loadOfferingData :', error);
-        throw error;
-    }
-}
 
 async function getJwtSecurityStatus() {
 
