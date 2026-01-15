@@ -28,6 +28,106 @@ const languagesISO639 = [
     {iso639_2: "mul", name: "Multiple Languages"}  // Special case 
 ];
 
+const API = (function() {
+    let endpointURL = ooapiDefaultEndpointURL // from init.js
+
+    const getToken = () => window.localStorage.getItem('jwt')
+    const setToken = (token) => window.localStorage.setItem('jwt', token)
+
+    const getAuthorizationHeader = () => {
+        const token = getToken()
+        if (token) return `Bearer ${getToken()}`
+        else return null
+    }
+
+    const removeEmptyHeaders = (obj) => {
+        const nObj = {}
+        Object.keys(obj).forEach(k => {
+            const v = obj[k]
+            if (v !== null && v !== undefined && v !== '') nObj[k] = v
+        })
+        return nObj
+    }
+
+    const addHeaders = ({headers, ...options}, extra_headers) => (
+        {...options, headers: {...headers, ...removeEmptyHeaders(extra_headers)}}
+    )
+
+    const toQueryString = (params) => {
+        const ps = Object.keys(params ?? {})
+              .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
+              .join('&')
+        return ps.length ? `?${ps}` : ''
+    }
+
+    const request = async (path, {params, ...options}) => {
+        console.debug('API request', {path, params, method: options.method ?? 'GET'})
+
+        const url = `${endpointURL}/${path}${toQueryString(params)}`
+        const response = await fetch(
+            url,
+            addHeaders(options, {'Content-Type': 'application/json',
+                                 'Authorization': getAuthorizationHeader()})
+        )
+        if (!response.ok) {
+            throw new Error(`Failed to fetch ${url}, got status ${response.status}`);
+        }
+        return response
+    }
+
+    const get = async (path, params) => (await request(path, {params})).json()
+
+    const makeGetter = (path, sub) => async (id, params) => {
+        const p = `${path}/${encodeURIComponent(id)}`;
+        return get(sub ? `${p}/${sub}` : p, params)
+    }
+    const makeItemsGetter = (path) => async (params) => (await get(path, params)).items
+
+    // delete is a keyword in JS..
+    const destroy = async (path, params) => request(path, {params, method: 'DELETE'})
+
+    const makeDeleter = (path) => async (id, params) => {
+        const p = `${path}/${encodeURIComponent(id)}`;
+        return destroy(p, params);
+    }
+
+    const post = async (path, data) => request(path, {method: 'POST', body: JSON.stringify(data)})
+
+    const makeCreator = (path) => async (data) => post(path, data)
+
+    const put = async (path, id, data) => {
+        const p = `${path}/${encodeURIComponent(id)}`;
+        return request(p, {method: 'PUT', body: JSON.stringify(data)})
+    }
+
+    const makeUpdater = (path) => async (id, data) => put(path, id, data)
+
+    return {
+        endpointURL,
+        get,
+
+        getCourse: makeGetter('courses'),
+        getCourses: makeItemsGetter('courses'),
+        createCourse: makeCreator('courses'),
+        updateCourse: makeUpdater('courses'),
+        deleteCourse: makeDeleter('courses'),
+        getCourseOfferings: async (...args) => (await (makeGetter('courses', 'offerings'))(...args)).items,
+
+        getFieldsOfStudy: makeItemsGetter('fieldsofstudy'),
+
+        createOffering: makeCreator('offerings'),
+        updateOffering: makeUpdater('offerings'),
+
+        getOrganizations: makeItemsGetter('organizations'),
+
+        getPerson: makeGetter('persons'),
+        getPersons: makeItemsGetter('persons'),
+        createPerson: makeCreator('persons'),
+
+        getProgram: makeGetter('programs'),
+    }
+})()
+
 // Extract name from OOAPI entity, use `language` list order as
 // preference.
 function extractName({name}) {
@@ -43,29 +143,8 @@ async function sortAsyncItemsByName(asyncItems) {
     });
 }
 
-// Fetch JSON from path.
-async function fetchData(path) {
-    const response = await fetch(`${endpointURL}/${path}`, {
-        headers: {'Content-Type': 'application/json'}
-    });
-    if (!response.ok) {
-        throw new Error(`Failed to fetch ${path}, got status ${response.status}`);
-    }
-    return response.json();
-}
-
-// Fetch items from path.
-async function fetchItems(path) {
-    return (await fetchData(path)).items;
-}
-
 const getAndMergeAllCoursesData = async () => {
-
-    const response = await fetch(ooapiDefaultEndpointURL + "/courses");
-    const res = await response.json();
-    console.log("getAndMergeAllCoursesData res:", res)
-    return res.items;
-
+    return API.getCourses();
 }
 
 const input = document.getElementById("search");
@@ -109,7 +188,7 @@ async function renderAllMergedCoursesData() {
 
 function renderAllCoursesResults(results, q = "") {
 
-    console.log("Using OEAPI endpoint: " + ooapiDefaultEndpointURL);
+    console.log("Using OEAPI endpoint: " + API.endpointURL);
     console.log("Results: ", results);
 
     if (results.length === 0) {
@@ -159,7 +238,7 @@ async function loadFullCourseData(univShortName, courseID) {
 
 
     try {
-        let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(ooapiDefaultEndpointURL, courseID);
+        let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(courseID);
 
         courseJSONData = courseJSON;  // To have visibility of during HTML some async rendering
 
@@ -172,27 +251,27 @@ async function loadFullCourseData(univShortName, courseID) {
         let idNormOrPhy = 0;  // Normal courses normally would have only one offering. In case of BIP this will hold position of the physical one
 
         // Is it a BIP (two offerings; physical and virtual) or ordinary course/microdential)
-        if (offeringsJSON.items[1])  // has two offerings
+        if (offeringsJSON.length == 2)  // has two offerings
         {
             console.log("Displaying a BIP...");
             CourseType = "BIPCourse";
 
-            [mainOffering, virtualOffering] = offeringsJSON.items;  // Initial guess  
+            [mainOffering, virtualOffering] = offeringsJSON;  // Initial guess
 
             accBipVirtDisplay = "block";   //BIP
             firstOfferingTitle = "Physical Component";
 
             // Which is for virtualComponent?
-            let firstItemCode = offeringsJSON.items[0].primaryCode.code;
+            let firstItemCode = offeringsJSON[0].primaryCode.code;
             if (firstItemCode.includes("virtualComponent"))
             {
-                [virtualOffering, mainOffering] = offeringsJSON.items;
+                [virtualOffering, mainOffering] = offeringsJSON;
             }
         } else
         {
             CourseType = "OrdinaryCourse";
 
-            mainOffering = offeringsJSON.items[0];
+            mainOffering = offeringsJSON[0];
 
             accBipVirtDisplay = "none";
             firstOfferingTitle = "Additional Course Info";
@@ -261,37 +340,23 @@ async function loadFullCourseData(univShortName, courseID) {
 }
 
 
-function deleteCourse(theCourse, needToConfirm)
-{
-
-    console.log("deleteCourse: endpointURL..." + ooapiDefaultEndpointURL);
+async function deleteCourse(theCourse, needToConfirm) {
+    console.log("deleteCourse: endpointURL..." + API.endpointURL);
     console.log("deleteCourse: the Course..." + theCourse);
     console.log("deleteCourse token", localStorage.getItem('jwt'));
 
     if (!needToConfirm || (needToConfirm && confirm('Are you sure you want to delete this course?'))) {
-
         console.log("Delete course with Id: " + theCourse + " confirmed");
-        console.log("Delete call to: " + ooapiDefaultEndpointURL + "/courses/" + theCourse);
 
-        fetch(ooapiDefaultEndpointURL + "/courses/" + theCourse, {method: "DELETE",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('jwt'),
-                'Content-length': 0
-            }
-        })
-                .then(async response => {
-                    if (!response.ok) {
-                        throw new Error('deleteCourse Failed to delete resource: ' + response.text());
-                    }
-                    return response.text(); // use `.json()` if server returns JSON
-                })
-                .then(data => {
-                    console.log('Delete successful:', data);
-                    window.location.href = "./catalog.html";
-                })
-                .catch(error => {
-                    console.error('deleteCourse Error:', error);
-                });
+        const response = await API.deleteCourse(theCourse)
+
+        if (!response.ok) {
+            throw new Error('deleteCourse Failed to delete resource: ' + response.text())
+        }
+
+        const data = await response.text()  // use `.json()` if server returns JSON
+        console.log('Delete successful:', data)
+        window.location.href = "./catalog.html"
     }
 }
 
@@ -308,16 +373,14 @@ function editCourse(theCourse) {
 }
 
 
-async function loadAsyncCourseData(ooapiEndPoint, courseID) {
+async function loadAsyncCourseData(courseID) {
 
     try {
         console.log("loadCourseData: Get course main data...");
-        const courseData = await fetch(ooapiEndPoint + "/courses/" + courseID);
-        const courseJSON = await courseData.json();
+        const courseJSON = await API.getCourse(courseID)
 
         console.log("loadCourseData: Get course offerings...");
-        const offeringsData = await fetch(ooapiEndPoint + "/courses/" + courseID + "/offerings");
-        const offeringsJSON = await offeringsData.json();
+        const offeringsJSON = await API.getCourseOfferings(courseID)
 
         // Get other values/keys
         const coordinators = courseJSON.coordinators || [];
@@ -325,19 +388,14 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
         // Prepare requests
 
 
-        const getCoordinatorsArray = coordinators.map(personId =>
-            fetch(ooapiEndPoint + "/persons/" + encodeURIComponent(personId))
-                    .then(res => res.json())
-                    .then(json => ({
-                            ...json,
-                            personId // put LAST so it cannot be overwritten
-                        }))
-        );
+        const getCoordinatorsArray = coordinators.map(async personId => {
+            const person = await API.getPerson(personId)
+            return {...person, personId} // put LAST so it cannot be overwritten
+        });
 
 
-        const getProgramsArray = programs.map(p =>
-            fetch(ooapiEndPoint + "/programs/" + encodeURIComponent(p))
-        );
+        const getProgramsArray = programs.map(programId => API.getProgram(programId));
+
         // Await all fetch calls
         const [coordinatorResponses, programResponses] = await Promise.all([
             Promise.all(getCoordinatorsArray),
@@ -345,10 +403,7 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
         ]);
 
         const resultCoordinatorsList = coordinatorResponses;
-
-        const resultProgramsList = await Promise.all(
-                programResponses.map(res => res.json())
-                );
+        const resultProgramsList = programResponses;
 
         console.log('Course:', courseJSON);
         console.log('OfferingsJSON:', offeringsJSON);

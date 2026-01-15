@@ -146,40 +146,39 @@
 		});				
 
 		// Load courses for selected university
-		function loadCourses(endpoint) {
-
+		async function loadCourses(endpoint) {
 			console.log("Loading courses from endpoint: " + endpoint);
 
-			const coursesUrl = endpoint + '/courses';
-			$.getJSON(coursesUrl, function (data) {
-				const courses = Array.isArray(data) ? data : data.items || [];
+            try {
+                const courses = await API.getCourses();
 
-				// Update levels table
-				const levelCounts = {};
-				courses.forEach(course => {
-					const level = course.level || 'Unknown';
-					levelCounts[level] = (levelCounts[level] || 0) + 1;
-				});
+			    // Update levels table
+			    const levelCounts = {};
+			    courses.forEach(course => {
+				    const level = course.level || 'Unknown';
+				    levelCounts[level] = (levelCounts[level] || 0) + 1;
+			    });
 
-				const levelTable = $('#levels-table tbody').empty();
-				Object.entries(levelCounts).forEach(([level, count]) => {
-					levelTable.append("<tr><td>" + level + "</td><td>" + count + "</td></tr>");
-				});
+			    const levelTable = $('#levels-table tbody').empty();
+			    Object.entries(levelCounts).forEach(([level, count]) => {
+				    levelTable.append("<tr><td>" + level + "</td><td>" + count + "</td></tr>");
+			    });
 
-				// Update courses table
-				const courseTable = $('#courses-table tbody').empty();
-				courses.forEach(course => {
-					const name = (course.name && course.name[0] && course.name[0].value) || 'Unnamed';
-					const level = course.level || 'N/A';
-					const modes = (course.modeOfDelivery || []).join(', ') || 'N/A';
-					courseTable.append("<tr><td><a href='./course.html?courseId="+course.courseId+"&univ="+ooapiDefaultShortUnivName+"' >" + name + "</a></td><td>" + level + "</td><td>" + modes + "</td></tr>");
-				});
-			}).fail(function () {
-				$('#levels-table tbody, #courses-table tbody').html(
-						'<tr><td colspan="3" class="text-danger">Failed to load course data. (Revise Endpoint).</td></tr>'
-						);
-			});
-		}
+			    // Update courses table
+			    const courseTable = $('#courses-table tbody').empty();
+			    courses.forEach(course => {
+				    const name = (course.name && course.name[0] && course.name[0].value) || 'Unnamed';
+				    const level = course.level || 'N/A';
+				    const modes = (course.modeOfDelivery || []).join(', ') || 'N/A';
+				    courseTable.append("<tr><td><a href='./course.html?courseId="+course.courseId+"&univ="+ooapiDefaultShortUnivName+"' >" + name + "</a></td><td>" + level + "</td><td>" + modes + "</td></tr>");
+			    })
+            } catch (error) {
+                console.error('Failed to load course data', error)
+			    $('#levels-table tbody, #courses-table tbody').html(
+				    '<tr><td colspan="3" class="text-danger">Failed to load course data. (Revise Endpoint).</td></tr>'
+			    );
+		    }
+        }
 
 		// Initial load from default selected university
 		loadCourses(selectEl.val());
@@ -191,11 +190,10 @@
 
 		// Attach the event listener using event delegation
 		$(document).on('change', '#universitySelect', function () {
-			const selectedEndpoint = $(this).val();
+            API.endpointURL = $(this).val();
 			loadCourses(selectedEndpoint);
 		});
-
-	});
+    })
 
 	document.getElementById("logoutLink").addEventListener("click", function (e) {
 			e.preventDefault();

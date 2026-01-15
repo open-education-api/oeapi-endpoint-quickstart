@@ -488,10 +488,10 @@ function fillLanguageISO639Selectors() {
 // selected}`.
 async function asyncItemsToOptions(asyncItems, idAttribute, defaultValue) {
     return (await asyncItems).map(item => ({
-            label: extractName(item),
-            value: item[idAttribute],
-            selected: item[idAttribute] == defaultValue
-        }));
+        label: extractName(item),
+        value: item[idAttribute],
+        selected: item[idAttribute] == defaultValue
+    }));
 }
 
 // Populate <select> elements from `selector` with options.  The
@@ -524,13 +524,13 @@ async function populateSelect(selector, asyncOptions) {
 // Populate <select> elements from `selector` with OEAPI organizations.
 async function populateSelectOrganization(selector) {
     populateSelect(
-            selector,
-            asyncItemsToOptions(
-                    sortAsyncItemsByName(fetchItems('organizations')),
-                    'organizationId',
-                    ooapiDefaultOrganizationId
-                    )
-            );
+        selector,
+        asyncItemsToOptions(
+            sortAsyncItemsByName(API.getOrganizations()),
+            'organizationId',
+            ooapiDefaultOrganizationId
+        )
+    );
 }
 
 async function populateSelectFieldsOfStudy(selector) {
@@ -540,7 +540,7 @@ async function populateSelectFieldsOfStudy(selector) {
 
     populateSelect(
         selector,
-        asyncFieldsOfStudyOptions(fetchItems('fieldsofstudy?level=1'))
+        asyncFieldsOfStudyOptions(API.getFieldsOfStudy({level: 1}))
     );
 }
 
@@ -634,7 +634,6 @@ function buildAddressJSON() {
 }
 
 let editorInstance = null; // TODO unused?
-let endpointURL = ooapiDefaultEndpointURL; // from init.js
 let language = ooapiDefaultCountry; // from init.js
 
 /* Location of data for preload selectors */
@@ -642,17 +641,17 @@ let language = ooapiDefaultCountry; // from init.js
 const preLoadItems = [{
         name: "modeOfDeliveryType",
         elementId: "modeOfDelivery",
-        url: endpointURL + "/enumerator?enum=modeOfDeliveryType"
+        url: "enumerator?enum=modeOfDeliveryType"
     },
     {
         name: "levelType",
         elementId: "level",
-        url: endpointURL + "/enumerator?enum=levelType"
+        url: "enumerator?enum=levelType"
     },
     {
         name: "studyLoadType",
         elementId: "studyLoadType",
-        url: endpointURL + "/enumerator?enum=studyLoadType"
+        url: "enumerator?enum=studyLoadType"
     }
 ];
 
@@ -674,17 +673,14 @@ document.querySelectorAll(".general-tabs .tab-btn").forEach(button => {
 $(document).ready(function () {
 
     // Load enums and fill selects
-    $.each(preLoadItems, function (index, preLoadItems) {
-        $.ajax({
-            url: preLoadItems.url,
-            method: 'GET'
-        })
-                .done(function (data) {
-                    fillSelectOptions(preLoadItems.elementId, data);
-                })
-                .fail(function () {
-                    console.error("Failed to load enum:", preLoadItems.name);
-                });
+    $.each(preLoadItems, async (index, {name, elementId, url}) => {
+        const res = await API.get(url)
+        if (res.ok) {
+            const data = await res.json()
+            fillSelectOptions(elementId, data)
+        } else {
+            console.error('Failed to load enum', name)
+        }
     });
 });
 
@@ -776,45 +772,20 @@ $('#catalogForm').on('submit', async function (e) {
 
             let coordinatorsId = [];
             if (coordinatorsData.length > 0) {
-
                 console.log("On submit: Processing coordinators (obtaining ids) ...");
-                // 2. Process each coordinator to get their personId
-                let personRes1, personRes2, personJson1, personJson2, queryUrl
 
                 coordinatorsId = await Promise.all(coordinatorsData.map(async c => {
-                    console.log("mail: " + c.mail);
-                    // First: check if person already exists
-                    queryUrl = `${endpointURL}/persons?primaryCode=${encodeURIComponent(c.mail)}`; // Use query param
-                    personRes1 = await fetch(queryUrl, {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    });
-                    if (personRes1.ok) {
-                        // Doesn't exist: create
-                        personJson1 = await personRes1.json();
-                        if (personJson1.items.length == 0) {
-                            console.log("On submit: New coordinator: " + c.mail);
-                            personRes2 = await fetch(`${endpointURL}/persons`, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "Authorization": "Bearer " + localStorage.getItem('jwt')
-                                },
-                                body: JSON.stringify(c)
-                            });
-                            personJson2 = await personRes2.json();
-                            return personJson2.personId + "";
-                        } else {
-                            // Exists: use existing
-                            console.log("On submit: Coordinator already in OOAPI: " + c.mail);
-                            return personJson1.items[0].personId + "";
-                        }
+                    const persons = await API.getPersons({primaryCode: c.mail})
+                    if (persons.length) {
+                        console.debug('Person already exists for mail address', c);
+                        return persons[0].personId
                     }
-                }));
-            }
 
+                    console.debug('Person does not exist for mail address', c.mail);
+                    const person = await API.createPerson(c)
+                    return person.personId
+                }))
+            }
 
             // 3. coordinatorsId now contains all personIds
             console.log("On submit: Final list of coordinators ids:", coordinatorsId);
@@ -975,30 +946,19 @@ async function postCourse(listCoordinators) {
 
     courseData = cleanNullsOrEmpties(courseData);
 
-    console.log("postCourse: Ready to post course data to " + endpointURL + "/courses with " + safeToString(courseData), courseData);
+    console.log("postCourse: Ready to post course data to " + API.endpointURL + "/courses with " + safeToString(courseData), courseData);
 
     var univ = ooapiDefaultShortUnivName; // from init.js
 
     try {
+        const endpoint = isEditMode
+              ? (data) => API.updateCourse(courseData.courseId, data)
+              : API.createCourse
 
-        let whichEndpoint = isEditMode
-                ? ooapiDefaultEndpointURL + "/courses/" + courseIdEd
-                : ooapiDefaultEndpointURL + "/courses";
+        console.log("postCourse: isEditMode" , isEditMode);
+        console.log("postCourse: endpoint" , endpoint);
 
-        let methodToFollow = isEditMode ? "PUT" : "POST";
-
-        console.log("postCourse: isEditMode? : " , isEditMode);
-        console.log("postCourse: methodToFollow? : " , methodToFollow);
-        console.log("postCourse: whichEndpoint? : " , whichEndpoint);
-
-        const response = await fetch(whichEndpoint, {
-            method: methodToFollow,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem("jwt")
-            },
-            body: JSON.stringify(courseData)
-        });
+        const response = await endpoint(courseData)
 
         // Read the response body as text
         const text = await response.text();
@@ -1070,25 +1030,15 @@ async function postOffering(courseId) {
 
     console.log("Ready to post offering data: ", OfferingData);
 
-    let whichEndpoint = isEditMode
-            ? ooapiDefaultEndpointURL + "/offerings/" + offeringIdEd
-            : ooapiDefaultEndpointURL + "/offerings";
+    const endpoint = isEditMode
+          ? (data) => API.updateOffering(OfferingData.offeringId, data)
+          : API.createOffering
 
-    let methodToFollow = isEditMode ? "PUT" : "POST";
-
-    console.log("postOffering: isEditMode? : " , isEditMode);
-    console.log("postOffering: methodToFollow? : " , methodToFollow);
-    console.log("postOffering: whichEndpoint? : " , whichEndpoint);
+    console.log("postOffering: isEditMode" , isEditMode);
+    console.log("postOffering: endpoint" , endpoint);
 
     try {
-        response = await fetch(whichEndpoint, {
-            method: methodToFollow,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem("jwt")
-            },
-            body: JSON.stringify(OfferingData)
-        });
+        const response = await endpoint(OfferingData)
 
         // Read the response body as text
         const text = await response.text();
@@ -1164,26 +1114,15 @@ async function postPhysicalComponentOffering(courseId) {
 
     console.log("Ready to post Physical offering data: ", PhysicalComponentOfferingData);
 
+    const endpoint = isEditMode
+          ? (data) => API.updateOffering(PhysicalComponentOfferingData.offeringId, data)
+          : API.createOffering
 
-    let whichEndpoint = isEditMode
-            ? ooapiDefaultEndpointURL + "/offerings/" + physicalOfferingIdEd
-            : ooapiDefaultEndpointURL + "/offerings";
-
-    let methodToFollow = isEditMode ? "PUT" : "POST";
-
-    console.log("postPhysicalOffering: isEditMode? : " , isEditMode);
-    console.log("postPhysicalOffering: methodToFollow? : " , methodToFollow);
-    console.log("postPhysicalOffering: whichEndpoint? : " , whichEndpoint);
+    console.log("postPhysicalOffering: isEditMode", isEditMode);
+    console.log("postPhysicalOffering: endpoint", endpoint);
 
     try {
-        response = await fetch(whichEndpoint, {
-            method: methodToFollow,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem("jwt")
-            },
-            body: JSON.stringify(PhysicalComponentOfferingData)
-        });
+        const response = await endpoint(PhysicalComponentOfferingData);
 
         // Read the response body as text
         const text = await response.text();
@@ -1236,25 +1175,15 @@ async function postVirtualComponentOffering(courseId) {
 
     console.log("Ready to post Virtual offering data: ", VirtualComponentOfferingData);
 
-    let whichEndpoint = isEditMode
-            ? ooapiDefaultEndpointURL + "/offerings/" + virtualOfferingIdEd
-            : ooapiDefaultEndpointURL + "/offerings";
+    const endpoint = isEditMode
+          ? (data) => API.updateOffering(VirtualComponentOfferingData.offeringId, data)
+          : API.createOffering
 
-    let methodToFollow = isEditMode ? "PUT" : "POST";
-
-    console.log("postVirtualComponentOffering: isEditMode? : " , isEditMode);
-    console.log("postVirtualComponentOffering: methodToFollow? : " , methodToFollow);
-    console.log("postVirtualComponentOffering: whichEndpoint? : " , whichEndpoint);
+    console.log("postVirtualComponentOffering: isEditMode", isEditMode);
+    console.log("postVirtualComponentOffering: endpoint" , endpoint);
 
     try {
-        response = await fetch(whichEndpoint, {
-            method: methodToFollow,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + localStorage.getItem("jwt")
-            },
-            body: JSON.stringify(VirtualComponentOfferingData)
-        });
+        const response = await endpoint(VirtualComponentOfferingData);
 
         // Read the response body as text
         const text = await response.text();
@@ -1296,7 +1225,7 @@ function manageResponse(responseResult, textResult, messageHelper) {
     let parsed;
     try {
         parsed = JSON.parse(textResult);
-        console.log("Success" + messageHelper + ": submitted to " + endpointURL + "!");
+        console.log("Success" + messageHelper + ": submitted to " + API.endpointURL + "!");
         console.log(messageHelper + ": submitted successfully:", parsed);
     } catch (e)
     {
@@ -1312,7 +1241,7 @@ async function loadCourseForEdit(courseId) {
 
     resetAllMultilingualFields();
 
-    let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(ooapiDefaultEndpointURL, courseId);
+    let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(courseId);
 
     switch (formCourseType) {
 
@@ -1356,9 +1285,9 @@ async function populateCourseForm(course, offerings, courseCoordinators, program
     // Offering / dates
     console.log("populateCourseForm: Checking offerings...");
 
-    if (offerings.items?.length > 0) {
-        const offering = offerings.items[0];
-        console.log("populateCourseForm: Load offering.items[0]...");
+    if (offerings.length) {
+        const offering = offerings[0];
+        console.log("populateCourseForm: Load offering[0]...");
 
         offeringIdEd = offering.offeringId;
 
@@ -1434,21 +1363,21 @@ async function populateBIPCourseForm(course, offerings, courseCoordinators, prog
     // Offering / dates
     console.log("populateBIPCourseForm: Checking offerings...");
 
-    if (offerings.items?.length > 0) {
+    if (offerings.length) {
 
         // Locate which is physical o virtual
         let idNormOrPhy = 0; // Default: The first offering is normal or physical component
         let idVirt = 1;      // Default: The second offering is virtual component
 
         // Actualy?
-        let firstItemCode = offerings.items[0].primaryCode.code;
+        let firstItemCode = offerings[0].primaryCode.code;
         if (firstItemCode.includes("virtualComponent"))
         {
             idVirt = 0;      // The first offering is virtual component
             idNormOrPhy = 1; // The first offering is virtual component
         }
 
-        const physicalOffering = offerings.items[idNormOrPhy];
+        const physicalOffering = offerings[idNormOrPhy];
 
         physicalOfferingIdEd = physicalOffering.offeringId;
 
@@ -1478,7 +1407,7 @@ async function populateBIPCourseForm(course, offerings, courseCoordinators, prog
             setMultilingualEditorContent("addressAdditional", addr.additional);
         }
 
-        const virtualOffering = offerings.items[idVirt];
+        const virtualOffering = offerings[idVirt];
         virtualOfferingIdEd = virtualOffering.offeringId;
 
         document.getElementById("virtualStartDate").value = physicalOffering.startDate ?? "";
@@ -1620,6 +1549,6 @@ function validateDates() {
 
 function renderForm() {
 
-    document.getElementById("destEndpoint").textContent = "OEAPI Endpoint -> " + endpointURL + ")";
+    document.getElementById("destEndpoint").textContent = "OEAPI Endpoint -> " + API.endpointURL + ")";
     manageAdminItems();
 }
