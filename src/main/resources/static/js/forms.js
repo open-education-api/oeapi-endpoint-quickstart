@@ -1435,8 +1435,8 @@ async function populateCourseForm(course, offerings, courseCoordinators, program
     document.getElementById("validEndDate").value = course.validTo ?? "";
     document.getElementById("teachingLanguage").value = course.teachingLanguage ?? "";
     document.getElementById("level").value = course.level ?? "";
-    document.getElementById("studyLoadType").value = course.studyLoad.studyLoadUnit ?? "";
-    document.getElementById("studyLoad").value = course.studyLoad.value ?? "";
+    document.getElementById("studyLoadType").value = (course.studyLoad && course.studyLoad.studyLoadUnit) ?? "";
+    document.getElementById("studyLoad").value = (course.studyLoad && course.studyLoad.value) ?? "";
     document.getElementById("fieldsOfStudy").value = course.fieldsOfStudy ?? "";
 
     document.getElementById("link_to_more_info").value = course.link ?? "";
@@ -1513,8 +1513,8 @@ async function populateBIPCourseForm(course, offerings, courseCoordinators, prog
     document.getElementById("validEndDate").value = course.validTo ?? "";
     document.getElementById("teachingLanguage").value = course.teachingLanguage ?? "";
     document.getElementById("level").value = course.level ?? "";
-    document.getElementById("studyLoadType").value = course.studyLoad.studyLoadUnit ?? "";
-    document.getElementById("studyLoad").value = course.studyLoad.value ?? "";
+    document.getElementById("studyLoadType").value = (course.studyLoad && course.studyLoad.studyLoadUnit) ?? "";
+    document.getElementById("studyLoad").value = (course.studyLoad && course.studyLoad.value) ?? "";
     document.getElementById("fieldsOfStudy").value = course.fieldsOfStudy ?? "";
 
     document.getElementById("link_to_more_info").value = course.link ?? "";
@@ -1600,7 +1600,7 @@ function populateSelectMultiple(item, values) {
     const select = document.getElementById(item);
 
     Array.from(select.options).forEach(option => {
-        option.selected = values.includes(option.value);
+        option.selected = values && values.includes(option.value);
     });
 }
 
