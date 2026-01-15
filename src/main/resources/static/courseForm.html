@@ -3,251 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css" />
-<style>
-    .form button[type="button"] {
-        width: 100%;
-        background: #9c9b9b;
-        color: white;
-        border: none;
-        padding: 1rem;
-        font-size: 1.1rem;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-
-    #submit-button[type="submit"] {
-        width: 100%;
-        background: #28a745;
-        color: white;
-        border: none;
-        padding: 1rem;
-        font-size: 1.1rem;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-
-    #Add-coordinator-button {
-        width: 100%;
-        background: #a7283d;
-        color: white;
-        border: none;
-        padding: 1rem;
-        font-size: 1.1rem;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-
-    #coordinator-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    #coordinator-list li {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 12px;
-        border-bottom: 1px solid #ddd;
-        background-color: #f9f9f9;
-        font-family: Arial, sans-serif;
-    }
-
-    #coordinator-list li span {
-        flex: 1;
-        text-align: left;
-    }
-
-    #required {
-        font-size: 0.8rem
-    }
-
-    ul.custom-list li span:nth-child(1) {
-        text-align: left;
-    }
-
-    ul.custom-list li span:nth-child(2) {
-        text-align: center;
-    }
-
-    ul.custom-list li span:nth-child(3) {
-        text-align: right;
-    }
-
-    ul.custom-list li button {
-        margin-left: 1em;
-        flex-shrink: 0;
-    }
-
-    .tab-container {
-        max-width: 90%;
-        margin: 2rem auto;
-        margin-top: 6rem;        
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        font-family: 'Segoe UI', sans-serif;
-    }
-
-    .tab-buttons {
-        display: flex;
-        border-bottom: 2px solid #eee;
-    }
-
-    .tab-buttons button {
-        flex: 1;
-        padding: 1rem;
-        background: #f4f4f4;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: bold;
-        transition: background 0.3s;
-    }
-
-    .tab-buttons button.active {
-        background: #0077ff;
-        color: white;
-    }
-
-    .tab-content {
-        display: none;
-        padding: 2rem;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    .tab-content label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-    }
-
-    .tab-content input,
-    .tab-content textarea,
-    .tab-content select {
-        width: 100%;
-        padding: 0.75rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 1rem;
-    }
-
-    select[multiple] {
-        height: 120px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding: 0.5rem;
-        font-size: 1rem;
-        background: #fff;
-        color: #333;
-    }
-
-    select[multiple]:focus {
-        border-color: #0077ff;
-        outline: none;
-    }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        /* space between columns */
-        align-items: start;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .form-group.full-width {
-        grid-column: 1 / -1;
-        /* make this field span both columns */
-    }
-
-    .form-control {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-    }
-
-    /* Divider */
-    .section-divider {
-        display: flex;
-        align-items: center;
-        text-align: center;
-        margin: 1.5em 0;
-        grid-column: 1 / -1;
-        /* Forces full-width in grid layouts */
-        width: 100%;
-        /* Make sure it spans the entire container */
-    }
-
-    .section-divider::before,
-    .section-divider::after {
-        content: "";
-        flex: 1;
-        border-bottom: 2px solid #007bff;
-        /* blue line */
-    }
-
-    .divider-title {
-        padding: 0 10px;
-        font-weight: 600;
-        color: #007bff;
-        font-size: 1rem;
-        white-space: nowrap;
-    }
-
-    .section-divider.small {
-        margin: 0.8em 0;
-    }
-
-    .section-divider.small .divider-title {
-        font-size: 0.9rem;
-    }
-
-    .ck-editor__editable_inline {
-        min-height: 200px;
-        /* or whatever suits your layout */
-    }
-
-    .accordion-button {
-        background-color : #f1f1f1
-    }	
-
-    .accordion.full-width {
-        grid-column: 1 / -1;
-        /* make this field span both columns */
-    }
-
-    .navbar .nav-link#logoutLink,
-         .navbar .nav-link#changePasswordLink {
-                 font-weight: bold;
-                 color: #fff !important;
-         }
-
-     .dropdown-menu {
-             position: absolute;
-             z-index: 1000;
-             display: none;
-             /* min-width: 100rem; */
-             padding: .5rem 0;
-             margin: 0 0 0 -3rem;
-             font-size: 1rem;
-             color: #212529;
-             text-align: left;
-             list-style: none;
-             background-color: #fff;
-             background-clip: padding-box;
-             border: 1px solid rgba(0,0,0,.15);
-             border-radius: .25rem;
-     }            
-
-</style>
+<link rel="stylesheet" href="./css/td_oeapi.css" />
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -783,6 +539,27 @@
     </form>
 </div>
 
+
+<!-- Message popup -->
+<div class="modal fade" id="alertModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" id="alertModalHeader">
+        <h5 class="modal-title" id="alertModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="alertModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 <script src="js/init.js"></script>
 <script src="_quickdashboard_config.json?callback=init"></script>
 <script src="js/oeapi.js"></script>
@@ -792,13 +569,25 @@
 <script>
 
     const formCourseType = "stdCourse";
+    
+    // Check if we are editing or creating
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseIdEd = urlParams.get("courseId"); // null if creating new
+
+    const isEditMode = !!courseIdEd;
+
+    if (isEditMode) {
+        document.querySelector("h4").innerText = "Edit Course";
+        document.getElementById("submit-button").innerText = "Update Course";
+        offeringIdEd = null;  // Later will be use when recovering actual data from course
+    }
 
     document.getElementById("logoutLink").addEventListener("click", function (e) {
         e.preventDefault();
         localStorage.removeItem("jwt");
         window.location.href = "./login.html";
     });
-
 
     window.addEventListener("load", () => {
         populateSelectFieldsOfStudy('#fieldsOfStudy');
@@ -813,6 +602,10 @@
 
     renderForm();
 
+    if (isEditMode) {
+        loadCourseForEdit(courseIdEd);
+    }
+ 
 </script>
 
 <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>

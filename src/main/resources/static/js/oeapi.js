@@ -42,7 +42,7 @@ function getLanguageNameByCodeISO639_2(code) {
 
 // Extract name from OOAPI entity, use `language` list order as
 // preference.
-function extractName({name}) {
+function extractName( {name}) {
     return name && name.find(n => languages.map(({code}) => n.language == code).find(x => x)).value;
 }
 
@@ -60,7 +60,7 @@ async function fetchData(path) {
     const response = await fetch(`${endpointURL}/${path}`, {
         headers: {'Content-Type': 'application/json'}
     });
-    if (! response.ok) {
+    if (!response.ok) {
         throw new Error(`Failed to fetch ${path}, got status ${response.status}`);
     }
     return response.json();
@@ -224,6 +224,7 @@ function nombreFiltro(nombre, q) {
 
 /* For Single Course */
 
+let CourseType;  // Help to know which form use in case of edit
 
 async function loadFullCourseData(univShortName, courseID) {
 
@@ -235,27 +236,39 @@ async function loadFullCourseData(univShortName, courseID) {
 
         let accBipVirtDisplay = "none";
         let firstOfferingTitle = "Additional Course Info";
+
+        let mainOffering, virtualOffering;
+
         let idVirt = 1;  // In case of BIPs it has two offerings; physical and virtual. In case of BIP this will hold position of the virtual one
         let idNormOrPhy = 0;  // Normal courses normally would have only one offering. In case of BIP this will hold position of the physical one
 
         // Is it a BIP (two offerings; physical and virtual) or ordinary course/microdential)
         if (offeringsJSON.items[1])  // has two offerings
         {
+            console.log("Displaying a BIP...");
+            CourseType = "BIPCourse";
+
+            [mainOffering, virtualOffering] = offeringsJSON.items;  // Initial guess  
+
             accBipVirtDisplay = "block";   //BIP
             firstOfferingTitle = "Physical Component";
-            console.log("Displaying a BIP...");
-            // Which is for virtualComponent
+
+            // Which is for virtualComponent?
             let firstItemCode = offeringsJSON.items[0].primaryCode.code;
             if (firstItemCode.includes("virtualComponent"))
             {
-                idVirt = 0; // Virt is the first offering
-                idNormOrPhy = 1;
+                [virtualOffering, mainOffering] = offeringsJSON.items;
             }
         } else
         {
+            CourseType = "OrdinaryCourse";
+
+            mainOffering = offeringsJSON.items[0];
+
             accBipVirtDisplay = "none";
             firstOfferingTitle = "Additional Course Info";
             console.log("Displaying an ordinary or microdential course...");
+
         }
 
         console.log("Async call results:", courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList);
@@ -288,24 +301,24 @@ async function loadFullCourseData(univShortName, courseID) {
 
 
                 // from offering
-                .replace(/{costJson}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].priceInformation ? offeringsJSON.items[idNormOrPhy].priceInformation[0].amount + " Euros" : ""))
-                .replace(/{startDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].startDate ? offeringsJSON.items[idNormOrPhy].startDate : ""))
-                .replace(/{endDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].startDate ? offeringsJSON.items[idNormOrPhy].endDate : ""))
-                .replace(/{enrollStartDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].enrollStartDate ? offeringsJSON.items[idNormOrPhy].enrollStartDate : ""))
-                .replace(/{enrollEndDate}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].enrollEndDate ? offeringsJSON.items[idNormOrPhy].enrollEndDate : ""))
-                .replace(/{minNumberStudents}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].minNumberStudents ? offeringsJSON.items[idNormOrPhy].minNumberStudents : ""))
-                .replace(/{maxNumberStudents}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].maxNumberStudents ? offeringsJSON.items[idNormOrPhy].maxNumberStudents : ""))
+                .replace(/{costJson}/gi, (mainOffering && mainOffering.priceInformation ? mainOffering.priceInformation[0].amount + " Euros" : ""))
+                .replace(/{startDate}/gi, (mainOffering && mainOffering.startDate ? mainOffering.startDate : ""))
+                .replace(/{endDate}/gi, (mainOffering && mainOffering.startDate ? mainOffering.endDate : ""))
+                .replace(/{enrollStartDate}/gi, (mainOffering && mainOffering.enrollStartDate ? mainOffering.enrollStartDate : ""))
+                .replace(/{enrollEndDate}/gi, (mainOffering && mainOffering.enrollEndDate ? mainOffering.enrollEndDate : ""))
+                .replace(/{minNumberStudents}/gi, (mainOffering && mainOffering.minNumberStudents ? mainOffering.minNumberStudents : ""))
+                .replace(/{maxNumberStudents}/gi, (mainOffering && mainOffering.maxNumberStudents ? mainOffering.maxNumberStudents : ""))
 
 
-                .replace(/{enrollLink}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].link ? offeringsJSON.items[idNormOrPhy].link : "#"))
+                .replace(/{enrollLink}/gi, (mainOffering && mainOffering.link ? mainOffering.link : "#"))
 
-                .replace(/{offeringDescription}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].description[0] ? offeringsJSON.items[idNormOrPhy].description[0].value : "Not defined.."))
-                .replace(/{addresses}/gi, (offeringsJSON.items[idNormOrPhy] && offeringsJSON.items[idNormOrPhy].addresses ? htmltizeAddresses(offeringsJSON.items[idNormOrPhy].addresses) : "No additional address info."))
+                .replace(/{offeringDescription}/gi, (mainOffering && mainOffering.description[0] ? mainOffering.description[0].value : "Not defined.."))
+                .replace(/{addresses}/gi, (mainOffering && mainOffering.addresses ? htmltizeAddresses(mainOffering.addresses) : "No additional address info."))
 
                 // Beware, virtual component not always present
-                .replace(/{virtualDescription}/gi, (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].description[0] ? offeringsJSON.items[idVirt].description[0].value : "Not defined.."))
-                .replace(/{virtStartDate}/gi, (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].startDate ? offeringsJSON.items[idVirt].startDate : ""))
-                .replace(/{virtEndDate}/gi, (offeringsJSON.items[idVirt] && offeringsJSON.items[idVirt].endDate ? offeringsJSON.items[idVirt].endDate : ""));
+                .replace(/{virtualDescription}/gi, (virtualOffering && virtualOffering.description[0] ? virtualOffering.description[0].value : "Not defined.."))
+                .replace(/{virtStartDate}/gi, (virtualOffering && virtualOffering.startDate ? virtualOffering.startDate : ""))
+                .replace(/{virtEndDate}/gi, (virtualOffering && virtualOffering.endDate ? virtualOffering.endDate : ""));
 
 
         resultsContainer.innerHTML = oneCourseElement;
@@ -319,14 +332,14 @@ async function loadFullCourseData(univShortName, courseID) {
 }
 
 
-function deleteCourse()
+function deleteCourse(theCourse, needToConfirm)
 {
 
     console.log("deleteCourse: endpointURL..." + ooapiDefaultEndpointURL);
     console.log("deleteCourse: the Course..." + theCourse);
     console.log("deleteCourse token", localStorage.getItem('jwt'));
 
-    if (confirm('Are you sure you want to delete this course?')) {
+    if (!needToConfirm || (needToConfirm && confirm('Are you sure you want to delete this course?'))) {
 
         console.log("Delete course with Id: " + theCourse + " confirmed");
         console.log("Delete call to: " + ooapiDefaultEndpointURL + "/courses/" + theCourse);
@@ -354,6 +367,54 @@ function deleteCourse()
     ;
 }
 
+function deleteOffering(theOffering, needToConfirm)
+{
+
+    console.log("deleteOffering: endpointURL..." + ooapiDefaultEndpointURL);
+    console.log("deleteOffering: the Course..." + theOffering);
+    console.log("deleteOffering token", localStorage.getItem('jwt'));
+
+    if (!needToConfirm || (needToConfirm && confirm('Are you sure you want to delete this Offering?'))) {
+
+        console.log("deleteOffering Id: " + theOffering + " confirmed");
+        console.log("deleteOffering call to: " + ooapiDefaultEndpointURL + "/offerings/" + theOffering);
+
+        fetch(ooapiDefaultEndpointURL + "/offerings/" + theOffering, {method: "DELETE",
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt'),
+                'Content-length': 0
+            }
+        })
+                .then(async response => {
+                    if (!response.ok) {
+                        throw new Error('deleteOffering Failed to delete resource: ' + response.text());
+                    }
+                    return response.text(); // use `.json()` if server returns JSON
+                })
+                .then(data => {
+                    console.log('deleteOffering successful:', data);
+                    window.location.href = "./catalog.html";
+                })
+                .catch(error => {
+                    console.error('deleteOffering Error:', error);
+                });
+    }
+    ;
+}
+
+function editCourse(theCourse) {
+
+    let editPage = "./courseForm.html?courseId=" + theCourse + "&univ=dummy";  // Default for most course types
+
+    if (CourseType === "BIPCourse")  // then assume BIP Course, it has 2 Offerings
+    {
+        editPage = "./bipForm.html?courseId=" + theCourse + "&univ=dummy";
+    }
+
+    window.location.href = editPage;
+}
+
+
 async function loadAsyncCourseData(ooapiEndPoint, courseID) {
 
     try {
@@ -369,9 +430,18 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
         const coordinators = courseJSON.coordinators || [];
         const programs = courseJSON.programs || [];
         // Prepare requests
-        const getCoordinatorsArray = coordinators.map(c =>
-            fetch(ooapiEndPoint + "/persons/" + encodeURIComponent(c))
+
+
+        const getCoordinatorsArray = coordinators.map(personId =>
+            fetch(ooapiEndPoint + "/persons/" + encodeURIComponent(personId))
+                    .then(res => res.json())
+                    .then(json => ({
+                            ...json,
+                            personId // put LAST so it cannot be overwritten
+                        }))
         );
+
+
         const getProgramsArray = programs.map(p =>
             fetch(ooapiEndPoint + "/programs/" + encodeURIComponent(p))
         );
@@ -380,12 +450,13 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
             Promise.all(getCoordinatorsArray),
             Promise.all(getProgramsArray)
         ]);
-        const resultCoordinatorsList = await Promise.all(
-                coordinatorResponses.map(res => res.json())
-                );
+
+        const resultCoordinatorsList = coordinatorResponses;
+
         const resultProgramsList = await Promise.all(
                 programResponses.map(res => res.json())
                 );
+
         console.log('Course:', courseJSON);
         console.log('OfferingsJSON:', offeringsJSON);
         console.log('Coordinators:', resultCoordinatorsList);
@@ -519,7 +590,8 @@ async function getJwtSecurityStatus() {
         }
 
     } catch (error) {
-        console.error("Error checking JWT security:", err);
+        console.error("Error checking JWT security:", error);
+        showAlert("error", "Network Error", "Unable to check JWT security status. Is your endpoint active?");
         status = "Unknown, error checking JWT security ";
     }
 
@@ -590,6 +662,64 @@ function isAdmin() {
 }
 
 
+// Popup messages using Bootstrap
+
+const alertQueue = [];
+let alertShowing = false;
+
+function showAlert(type, title, message) {
+    alertQueue.push({type, title, message});
+    processAlertQueue();
+}
+
+function processAlertQueue() {
+    if (alertShowing)
+        return;
+    if (alertQueue.length === 0)
+        return;
+
+    const {type, title, message} = alertQueue.shift();
+    alertShowing = true;
+
+    showAlertModal(type, title, message);
+}
+
+
+function showAlertModal(type, title, message) {
+    const modalEl = document.getElementById("alertModal");
+
+    // Dispose any previous instance
+    const existing = bootstrap.Modal.getInstance(modalEl);
+    if (existing)
+        existing.dispose();
+
+    // Update content
+    document.getElementById("alertModalTitle").innerText = title;
+    document.getElementById("alertModalBody").innerText = message;
+
+    const header = document.getElementById("alertModalHeader");
+    header.classList.remove("bg-danger", "bg-success", "text-white");
+
+    if (type === "error")
+        header.classList.add("bg-danger", "text-white");
+    if (type === "success")
+        header.classList.add("bg-success", "text-white");
+
+    // Create fresh modal
+    const modal = new bootstrap.Modal(modalEl);
+
+    // When the modal closes, show the next alert
+    modalEl.addEventListener("hidden.bs.modal", () => {
+        alertShowing = false;
+        processAlertQueue();
+    }, {once: true});
+
+    modal.show();
+}
+
+
+
+
 /* HTML Templates for rendering */
 
 const allCoursesCards = `
@@ -613,9 +743,14 @@ let oneCourseCard = `
  
   <span style="height: 8%; width: 8%; margin: 0 0 .5em 0; "><img src="{imgSrc}"  style="height: 90%; padding: 0.2em;" alt="University Logo"></span>
 
-  <!-- Delete Icon (right) -->
-  <div class="delete-icon" id = "deleteIcon" onclick="deleteCourse()" style="cursor: pointer;"  >
-    Delete course <i class="fas fa-trash 4x"></i>
+  <div class="course-actions">
+    <div class="edit-icon" id="editIcon" onclick="editCourse(theCourse)" style="cursor: pointer;">
+        Edit this course <i class="fas fa-pencil fa-1x"></i>
+    </div>
+
+    <div class="delete-icon" id="deleteIcon" onclick="deleteCourse(theCourse,true)" style="cursor: pointer;">
+        Delete this course <i class="fas fa-trash fa-1x"></i>
+    </div>
   </div>
 
 

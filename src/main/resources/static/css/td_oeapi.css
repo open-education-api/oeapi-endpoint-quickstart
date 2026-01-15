@@ -1,0 +1,254 @@
+/* ===============================
+   GLOBAL VARIABLES
+   =============================== */
+:root {
+    --color-white: #ffffff;
+    --color-light: #f8f9fa;
+    --color-light-2: #f9f9f9;
+    --color-gray: #9c9b9b;
+    --color-gray-light: #f1f1f1;
+    --color-gray-border: #ddd;
+    --color-dark: #212529;
+
+    --color-primary: #0077ff;
+    --color-success: #28a745;
+    --color-danger: #a7283d;
+    --color-info: #007bff;
+
+    --text-primary: #222;
+    --text-secondary: #6c757d;
+    --text-inverse: #ffffff;
+
+    --border-default: 1px solid #ccc;
+    --border-dropdown: 1px solid rgba(0, 0, 0, 0.15);
+
+    --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ===============================
+   NAVBAR & DROPDOWN
+   =============================== */
+.navbar .nav-link#logoutLink,
+.navbar .nav-link#changePasswordLink {
+    font-weight: bold;
+    color: var(--text-inverse) !important;
+}
+
+.dropdown-menu {
+    position: absolute;
+    z-index: 1000;
+    display: none;
+    padding: 0.5rem 0;
+    margin-left: -3rem;
+    font-size: 1rem;
+    color: var(--color-dark);
+    list-style: none;
+    background-color: var(--color-white);
+    background-clip: padding-box;
+    border: var(--border-dropdown);
+    border-radius: 0.25rem;
+}
+
+/* ===============================
+   BUTTONS
+   =============================== */
+.form button[type="button"],
+#submit-button[type="submit"],
+#Add-coordinator-button {
+    width: 100%;
+    color: var(--text-inverse);
+    border: none;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.form button[type="button"] {
+    background: var(--color-gray);
+}
+
+#submit-button[type="submit"] {
+    background: var(--color-success);
+}
+
+#Add-coordinator-button {
+    background: var(--color-danger);
+}
+
+/* ===============================
+   LISTS
+   =============================== */
+#coordinator-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#coordinator-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--color-gray-border);
+    background-color: var(--color-light-2);
+    font-family: Arial, sans-serif;
+}
+
+#coordinator-list li span {
+    flex: 1;
+    text-align: left;
+}
+
+#required {
+    font-size: 0.8rem;
+}
+
+/* ===============================
+   TAB CONTAINER
+   =============================== */
+.tab-container {
+    max-width: 90%;
+    margin: 6rem auto 2rem;
+    background: var(--color-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 2px solid var(--color-light);
+}
+
+.tab-buttons button {
+    flex: 1;
+    padding: 1rem;
+    background: var(--color-light);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.tab-buttons button.active {
+    background: var(--color-primary);
+    color: var(--text-inverse);
+}
+
+/* ===============================
+   TAB CONTENT & FORMS
+   =============================== */
+.tab-content {
+    display: none;
+    padding: 2rem;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.tab-content input,
+.tab-content textarea,
+.tab-content select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: var(--border-default);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* ===============================
+   MULTISELECT
+   =============================== */
+select[multiple] {
+    height: 120px;
+    padding: 0.5rem;
+    border: var(--border-default);
+    border-radius: 8px;
+    background: var(--color-white);
+}
+
+select[multiple]:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+/* ===============================
+   FORM GRID
+   =============================== */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* ===============================
+   DIVIDERS
+   =============================== */
+.section-divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5em 0;
+    grid-column: 1 / -1;
+}
+
+.section-divider::before,
+.section-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 2px solid var(--color-info);
+}
+
+.divider-title {
+    padding: 0 10px;
+    font-weight: 600;
+    color: var(--color-info);
+    white-space: nowrap;
+}
+
+/* ===============================
+   EDITOR & ACCORDION
+   =============================== */
+.ck-editor__editable_inline {
+    min-height: 200px;
+}
+
+.accordion-button {
+    background-color: var(--color-gray-light);
+}
+
+.accordion.full-width {
+    grid-column: 1 / -1;
+}
+
+/* ===============================
+   Backup page
+   =============================== */ 
+pre {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.endpoint-block {
+    margin-top: 1.5rem;
+}

@@ -1,0 +1,154 @@
+/* ===============================
+   CSS VARIABLES
+   =============================== */
+:root {
+    /* Colors */
+    --color-bg-body: #fbfbfb;
+    --color-primary: #2f6edf;
+    --color-edit: darkcyan;
+    --color-edit-hover: #033e3e;
+    --color-delete: #e97883;
+    --color-delete-hover: #dc3545;
+
+    /* Shadows */
+    --shadow-sidebar:
+        0 2px 5px 0 rgb(0 0 0 / 5%),
+        0 2px 10px 0 rgb(0 0 0 / 5%);
+
+    --shadow-active:
+        0 2px 5px 0 rgb(0 0 0 / 16%),
+        0 2px 10px 0 rgb(0 0 0 / 12%);
+
+    /* Layout */
+    --sidebar-width: 240px;
+    --navbar-height: 58px;
+    --sidebar-z: 600;
+}
+
+/* ===============================
+   BASE
+   =============================== */
+body {
+    background-color: var(--color-bg-body);
+}
+
+/* ===============================
+   MAIN LAYOUT
+   =============================== */
+@media (min-width: 991.98px) {
+    main {
+        padding-left: var(--sidebar-width);
+    }
+}
+
+/* ===============================
+   SIDEBAR
+   =============================== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    padding: var(--navbar-height) 0 0;
+    box-shadow: var(--shadow-sidebar);
+    z-index: var(--sidebar-z);
+}
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        width: 100%;
+    }
+}
+
+.sidebar .active {
+    border-radius: 5px;
+    box-shadow: var(--shadow-active);
+}
+
+.sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: 0.5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* ===============================
+   RESULTS AREA
+   =============================== */
+#results {
+    padding-top: 3em;
+    padding-left: 2em;
+}
+
+#results strong {
+    color: var(--color-primary);
+}
+
+/* ===============================
+   LOGO
+   =============================== */
+.university-logo {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.university-logo:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* ===============================
+   COURSE ACTIONS
+   =============================== */
+.course-actions {
+    display: flex;
+    align-items: center;
+    gap: 65%;
+    width: 90%;
+}
+
+.edit-icon,
+.delete-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    white-space: nowrap;
+    padding-bottom: 0.5em;
+    font-weight: 600;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* ===============================
+   EDIT ICON
+   =============================== */
+.edit-icon {
+    color: var(--color-edit);
+}
+
+.edit-icon:hover {
+    color: var(--color-edit-hover);
+    transform: scale(1.1);
+}
+
+.edit-icon:active {
+    transform: scale(0.95);
+}
+
+/* ===============================
+   DELETE ICON
+   =============================== */
+.delete-icon {
+    color: var(--color-delete);
+}
+
+.delete-icon:hover {
+    color: var(--color-delete-hover);
+    transform: scale(1.1);
+}
+
+.delete-icon:active {
+    transform: scale(0.95);
+}
