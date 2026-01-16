@@ -97,33 +97,18 @@
         </div>
         <script src="js/init.js"></script>
         <script src="_quickdashboard_config.json?callback=init"></script>
+        <script src="js/oeapi.js"></script>
         <script>
             
             const form = document.getElementById('loginForm');
             const messageDiv = document.getElementById('message');
 
             form.addEventListener('submit', async (e) => {
-                                
                 e.preventDefault();
-                const email = form.username.value;
-                const password = form.password.value;
-                //const roles = [{name:"ROLE_USER"}];
 
-                const url = ooapiDefaultEndpointURL + "/auth/login";
-                const res = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({email, password})
-                });
+                const res = await API.login(form.username.value, form.password.value)
 
                 if (res.ok) {
-                    const data = await res.json();
-                    console.log(data);
-                    const token = data.token || data.access_token;
-                    console.log(token);
-                    localStorage.setItem('jwt', token);
                     messageDiv.style.color = 'green';
                     messageDiv.textContent = 'Login successful! Token stored in localStorage.';
 

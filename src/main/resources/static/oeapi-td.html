@@ -137,17 +137,12 @@
 	
 		const selectEl = $('#universitySelect');		
 		selectEl.append("<option value=" + ooapiDefaultEndpointURL + " selected >" + ooapiDefaultUnivName + "&nbsp;&nbsp; ( " + ooapiDefaultEndpointURL + " ) </option>");
-				
-		getJwtSecurityStatus().then(status => {
-		   
-			document.getElementById("epSecurity").innerHTML=status;
-			console.log("JWT security active:", status);
-			manageAdminItems();
-		});				
+
+		manageAdminItems();
 
 		// Load courses for selected university
-		async function loadCourses(endpoint) {
-			console.log("Loading courses from endpoint: " + endpoint);
+		async function loadCourses() {
+			console.log("Loading courses from endpoint: " + API.endpointURL);
 
             try {
                 const courses = await API.getCourses();
@@ -181,7 +176,7 @@
         }
 
 		// Initial load from default selected university
-		loadCourses(selectEl.val());
+		loadCourses()
 
 		// On change, reload
 		selectEl.on('change', function () {
@@ -195,12 +190,7 @@
 		});
     })
 
-	document.getElementById("logoutLink").addEventListener("click", function (e) {
-			e.preventDefault();
-			localStorage.removeItem("jwt");
-			window.location.href = "login.html";
-		});
-
+    API.addDOMEventListeners()
     </script>
 
     <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>

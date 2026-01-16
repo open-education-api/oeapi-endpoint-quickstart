@@ -743,7 +743,7 @@ $('#catalogForm').on('submit', async function (e) {
     }
 
     // Can really do an update (am i logged or no JWT?)
-    let updatesArePermited = await canDoUpdates();
+    let updatesArePermited = API.canDoUpdates();
 
     if (updatesArePermited) {
         console.log("On submit: User is validated to perform updates...");

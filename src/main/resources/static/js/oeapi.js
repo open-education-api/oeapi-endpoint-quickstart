@@ -31,15 +31,39 @@ const languagesISO639 = [
 const API = (function() {
     let endpointURL = ooapiDefaultEndpointURL // from init.js
 
+    ////////// tokens
     const getToken = () => window.localStorage.getItem('jwt')
     const setToken = (token) => window.localStorage.setItem('jwt', token)
+    const parseToken = token => token && JSON.parse(atob(token.split('.')[1]))
 
+    ////////// security
+    const getRoles = (token = getToken()) => {
+        const payload = parseToken(token)
+        return payload && (payload.roles ?? []).concat(payload.authorities ?? [])
+    }
+    const isAdmin = (token = getToken()) => (
+        getRoles(token)?.includes('ROLE_ADMIN')
+    )
+    const securityEnbled = async () => (
+        (window.API_securityEnbled ??=
+         (await (await get('auth/secStatus')).text()).includes('Enabled'))
+    )
+    const tokenValid = (token = getToken()) => {
+        if (!token) return false
+        const payload = pk('payload', parseToken(pk('token', token)))
+        const now = Date.now()
+        const exp = payload.exp * 1000
+        return exp > now
+    }
+    const canDoUpdates = async () => (
+        !(await securityEnbled()) || (tokenValid() && isAdmin())
+    )
+
+    ////////// HTTP helpers
     const getAuthorizationHeader = () => {
         const token = getToken()
-        if (token) return `Bearer ${getToken()}`
-        else return null
+        return token ? `Bearer ${token}` : null
     }
-
     const removeEmptyHeaders = (obj) => {
         const nObj = {}
         Object.keys(obj).forEach(k => {
@@ -48,11 +72,25 @@ const API = (function() {
         })
         return nObj
     }
+    const addHeaders = (opts, extra_headers) => {
+        const {headers, ...options} = opts || {}
+        return {...options, headers: {...headers, ...removeEmptyHeaders(extra_headers)}}
+    }
+    const request = async (path, {params, ...options}) => {
+        console.debug('API request', {path, params, method: options.method ?? 'GET'})
 
-    const addHeaders = ({headers, ...options}, extra_headers) => (
-        {...options, headers: {...headers, ...removeEmptyHeaders(extra_headers)}}
-    )
+        const url = `${endpointURL}/${path}${toQueryString(params)}`
+        const res = await window.fetch(
+            url,
+            addHeaders(options, {'Content-Type': 'application/json',
+                                 'Authorization': getAuthorizationHeader()})
+        )
 
+        if (!res.ok) {
+            throw new Error(`Failed to fetch ${url}, got status ${res.status}`);
+        }
+        return res
+    }
     const toQueryString = (params) => {
         const ps = Object.keys(params ?? {})
               .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
@@ -60,48 +98,85 @@ const API = (function() {
         return ps.length ? `?${ps}` : ''
     }
 
-    const request = async (path, {params, ...options}) => {
-        console.debug('API request', {path, params, method: options.method ?? 'GET'})
+    const get = async (path, params) => (
+        (await request(path, {params}))
+    )
+    const post = async (path, data) => (
+        request(path, {method: 'POST', body: JSON.stringify(data)})
+    )
+    const put = async (path, data) => (
+        request(path, {method: 'PUT', body: JSON.stringify(data)})
+    )
+    const destroy = async (path, params) => ( // `delete` is a JS keyword
+        request(path, {params, method: 'DELETE'})
+    )
 
-        const url = `${endpointURL}/${path}${toQueryString(params)}`
-        const response = await fetch(
-            url,
-            addHeaders(options, {'Content-Type': 'application/json',
-                                 'Authorization': getAuthorizationHeader()})
-        )
-        if (!response.ok) {
-            throw new Error(`Failed to fetch ${url}, got status ${response.status}`);
+    ////////// talking to auth endpoints
+    const logout = () => {
+        window.localStorage.removeItem('jwt')
+    }
+    const login = async (email, password) => {
+        const res = await post(`auth/login`, {email, password})
+
+        if (res.ok) {
+            const {token} = pk('login', await res.json())
+            setToken(token)
+        } else {
+            console.error('API login failed', res)
         }
-        return response
+
+        return res
+    }
+    const changePassword = (oldPassword, newPassword) => (
+        post('auth/change-password', {oldPassword, newPassword})
+    )
+    const signUp = ({email, password, roles}) => (
+        post('auth/signup', {email, password, roles})
+    )
+
+    ////////// setup UI
+    const addDOMEventListeners = () => (
+        document.addEventListener('DOMContentLoaded', async () => {
+            addLogoutLinkListeners()
+            initSecurityNotice()
+        })
+    )
+    const addLogoutLinkListeners = () => (
+        document.querySelectorAll('#logoutLink').forEach(el =>
+            el.addEventListener('click', e => {
+                e.preventDefault()
+                logout()
+                window.location.href = 'login.html'
+            })
+        )
+    )
+    const initSecurityNotice = () => {
+        document.querySelectorAll('#epSecurity').forEach(async el => {
+            el.innerHTML = (await securityEnbled())
+                ? 'Enabled, you must be logged in to do updates'
+                : "Disabled, updates are allowed without login"
+        })
     }
 
-    const get = async (path, params) => (await request(path, {params})).json()
-
+    ////////// endpoint method builds
     const makeGetter = (path, sub) => async (id, params) => {
         const p = `${path}/${encodeURIComponent(id)}`;
-        return get(sub ? `${p}/${sub}` : p, params)
+        return (await get(sub ? `${p}/${sub}` : p, params)).json()
     }
-    const makeItemsGetter = (path) => async (params) => (await get(path, params)).items
+    const makeItemsGetter = (path) => async (params) => (
+        (await (await get(path, params)).json()).items
+    )
+    const makeDeleter = (path) => (id, params) => (
+        destroy(`${path}/${encodeURIComponent(id)}`, params)
+    )
+    const makeCreator = (path) => (data) => (
+        post(path, data)
+    )
+    const makeUpdater = (path) => (id, data) => (
+        put(`${path}/${encodeURIComponent(id)}`, data)
+    )
 
-    // delete is a keyword in JS..
-    const destroy = async (path, params) => request(path, {params, method: 'DELETE'})
-
-    const makeDeleter = (path) => async (id, params) => {
-        const p = `${path}/${encodeURIComponent(id)}`;
-        return destroy(p, params);
-    }
-
-    const post = async (path, data) => request(path, {method: 'POST', body: JSON.stringify(data)})
-
-    const makeCreator = (path) => async (data) => post(path, data)
-
-    const put = async (path, id, data) => {
-        const p = `${path}/${encodeURIComponent(id)}`;
-        return request(p, {method: 'PUT', body: JSON.stringify(data)})
-    }
-
-    const makeUpdater = (path) => async (id, data) => put(path, id, data)
-
+    // exports
     return {
         endpointURL,
         get,
@@ -125,6 +200,18 @@ const API = (function() {
         createPerson: makeCreator('persons'),
 
         getProgram: makeGetter('programs'),
+
+        addDOMEventListeners,
+        isAdmin,
+        logout,
+        login,
+        changePassword,
+        signUp,
+
+        securityEnbled,
+        canDoUpdates, // TODO same as isAdmin?
+        tokenValid,
+        getToken
     }
 })()
 
@@ -343,7 +430,6 @@ async function loadFullCourseData(univShortName, courseID) {
 async function deleteCourse(theCourse, needToConfirm) {
     console.log("deleteCourse: endpointURL..." + API.endpointURL);
     console.log("deleteCourse: the Course..." + theCourse);
-    console.log("deleteCourse token", localStorage.getItem('jwt'));
 
     if (!needToConfirm || (needToConfirm && confirm('Are you sure you want to delete this course?'))) {
         console.log("Delete course with Id: " + theCourse + " confirmed");
@@ -421,111 +507,9 @@ async function loadAsyncCourseData(courseID) {
 
 /* 	Security JWT  */
 
-
-const token = localStorage.getItem("jwt");
-
-async function canDoUpdates()
-{
-    let updatesArePossible = false
-
-    let JTWSecurityEnabled = await isJwtSecurityEnabled();
-
-    if (!JTWSecurityEnabled)
-    {
-        console.log("canDoUpdates? " + "Yes, JWT is disabled. Be sure this is what you want. See doc.");
-        updatesArePossible = true;
-    } else
-    {
-        if (!isJwtValid())
-        {
-            console.log("canDoUpdates? " + "No, JWT is enabled and no valid token found");
-            updatesArePossible = false;
-        } else
-        {
-            console.log("canDoUpdates? " + "Yes, JWT is enabled and valid token found");
-            updatesArePossible = true;
-        }
-    }
-
-    return  updatesArePossible;
-
-}
-
-function isJwtValid() {
-
-    const token = localStorage.getItem("jwt");
-
-    console.log("Token is: " + token);
-
-    if (!token) {
-        return false;
-    }
-
-    try {
-        const payloadBase64 = token.split('.')[1];
-        const payloadJson = atob(payloadBase64);
-        const payload = JSON.parse(payloadJson);
-
-        // exp is in seconds since epoch
-        const now = Math.floor(Date.now() / 1000);
-        console.log("jwt expires in: ", new Date(payload.exp * 1000));
-        return payload.exp && payload.exp > now;
-    } catch (e) {
-        console.error("Invalid JWT format", e);
-        return false;
-    }
-}
-
-async function isJwtSecurityEnabled() {
-    let isEnabled = false;
-
-    let textResponse = await getJwtSecurityStatus();
-    isEnabled = textResponse.toLowerCase().includes("enabled");
-
-// getJwtSecurityStatus().then(textResponse => {
-//	 isEnabled = textResponse.toLowerCase().includes("enabled")
-//     console.log("isJwtSecurityEnabled :", isEnabled);
-//	 });
-
-    return isEnabled;
-}
-
-
-async function getJwtSecurityStatus() {
-
-    let status = "Unknown";
-
-    try {
-        const response = await fetch('./auth/secStatus');
-        if (!response.ok) {
-            console.error("Error checking JWT security: no valid response");
-            return status + ": no valid response";
-        }
-
-        const statusText = await response.text();
-        console.log("Security Status:", statusText);
-
-        const enabled = statusText.toLowerCase().includes("enabled");
-
-        if (enabled)
-        {
-            status = "Enabled, you must login before updates";
-        } else {
-            status = " Disabled. (Updates are allowed without login. Check that's what you want. See doc.) ";
-        }
-
-    } catch (error) {
-        console.error("Error checking JWT security:", error);
-        showAlert("error", "Network Error", "Unable to check JWT security status. Is your endpoint active?");
-        status = "Unknown, error checking JWT security ";
-    }
-
-    return status;
-}
-
 async function manageAdminItems()
 {
-    let JTWSecurityEnabled = await isJwtSecurityEnabled();
+    let JTWSecurityEnabled = await API.securityEnbled()
 
     if (!JTWSecurityEnabled) {
         console.log("manageAdminItems: No JWT activated, updates are allowed");
@@ -541,7 +525,7 @@ async function manageAdminItems()
         document.getElementById("loginLink").style = "display : none";
         document.getElementById("administration").style = "display : none";
     } else
-    if (isJwtValid()) {
+    if (API.tokenValid()) {
         console.log("manageAdminItems: JWT activated and valid JWT token, can admin");
         document.getElementById("avatar").style = "cursor: pointer;";
         // addCourse is not ever present 
@@ -553,7 +537,7 @@ async function manageAdminItems()
             document.getElementById("deleteIcon").style = "display:block;";
         }
         document.getElementById("loginLink").style = "display : none";
-        if (isAdmin()) {
+        if (API.isAdmin()) {
             document.getElementById("administration").style = "cursor: pointer;";
         }
     } else
@@ -573,19 +557,6 @@ async function manageAdminItems()
     }
 
 }
-
-
-function isAdmin() {
-    const token = localStorage.getItem('jwt');
-    if (!token)
-        return false;
-
-    // If you decode the token, check for 'roles' or 'authorities'
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    console.log(payload);
-    return payload.roles?.includes('ROLE_ADMIN') || payload.authorities?.includes('ROLE_ADMIN');
-}
-
 
 // Popup messages using Bootstrap
 
