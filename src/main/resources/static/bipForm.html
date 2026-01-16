@@ -629,10 +629,8 @@
         document.querySelector("h4").innerText = "Edit BIP Course";
         document.getElementById("submit-button").innerText = "Update BIP Course";
     }
-    
-    const formCourseType = "BIPCourse";
 
-    API.addDOMEventListeners();
+    const formCourseType = "BIPCourse";
 
     window.addEventListener("load", () => {
         populateSelectFieldsOfStudy('#fieldsOfStudy');
@@ -644,15 +642,11 @@
         initMultilingualTextFields();
     });
 
-
-    renderForm();
-    
-
     if (isEditMode) {
         loadCourseForEdit(courseIdEd);
-    }    
-    
+    }
 
+    API.addDOMEventListeners();
 </script>
 
 <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>

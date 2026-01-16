@@ -1548,7 +1548,5 @@ function validateDates() {
 }
 
 function renderForm() {
-
     document.getElementById("destEndpoint").textContent = "OEAPI Endpoint -> " + API.endpointURL + ")";
-    manageAdminItems();
 }

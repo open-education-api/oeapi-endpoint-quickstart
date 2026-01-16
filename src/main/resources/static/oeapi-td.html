@@ -131,14 +131,10 @@
 	</div>
 </div>
 
-    <script>
-	
+<script>
 	$(document).ready(function () {
-	
-		const selectEl = $('#universitySelect');		
+		const selectEl = $('#universitySelect');
 		selectEl.append("<option value=" + ooapiDefaultEndpointURL + " selected >" + ooapiDefaultUnivName + "&nbsp;&nbsp; ( " + ooapiDefaultEndpointURL + " ) </option>");
-
-		manageAdminItems();
 
 		// Load courses for selected university
 		async function loadCourses() {
@@ -191,9 +187,6 @@
     })
 
     API.addDOMEventListeners()
-    </script>
-
-    <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>
-</body>
-
-</html>
+</script>
+<script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>
+</body></html>

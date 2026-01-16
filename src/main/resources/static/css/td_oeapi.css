@@ -252,3 +252,20 @@ pre {
 .endpoint-block {
     margin-top: 1.5rem;
 }
+
+/* ===============================
+   Security away components
+   =============================== */
+
+body[data-security-enabled=false] #avatar { display: none; }
+body[data-security-enabled=false] #addCourse { cursor: pointer; }
+body[data-security-enabled=false] #deleteIcon { display: block; }
+body[data-security-enabled=false] #loginLink { display: none; }
+body[data-security-enabled=false] #administration { display: none; }
+
+body[data-security-enabled=true][data-security-token-valid=true] #avatar { cursor: pointer; }
+body[data-security-enabled=true][data-security-token-valid=true] #addCourse { cursor: pointer; }
+body[data-security-enabled=true][data-security-token-valid=true] #deleteIcon { display: block; }
+body[data-security-enabled=true][data-security-token-valid=true] #loginLink { display: none; }
+body[data-security-enabled=true][data-security-token-valid=true][data-security-admin=false] #administration { display: none; }
+body[data-security-enabled=true][data-security-token-valid=true][data-security-admin=true] #administration { cursor: pointer; }

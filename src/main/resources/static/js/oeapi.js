@@ -150,9 +150,14 @@ const API = (function() {
             })
         )
     )
-    const initSecurityNotice = () => {
-        document.querySelectorAll('#epSecurity').forEach(async el => {
-            el.innerHTML = (await securityEnbled())
+    const initSecurityNotice = async () => {
+        const enabled = await securityEnbled()
+        document.body.setAttribute('data-security-enabled', enabled)
+        document.body.setAttribute('data-security-admin', isAdmin())
+        document.body.setAttribute('data-security-token-valid', tokenValid())
+
+        document.querySelectorAll('#epSecurity').forEach(el => {
+            el.innerHTML = enabled
                 ? 'Enabled, you must be logged in to do updates'
                 : "Disabled, updates are allowed without login"
         })
@@ -274,21 +279,17 @@ async function renderAllMergedCoursesData() {
 }
 
 function renderAllCoursesResults(results, q = "") {
-
     console.log("Using OEAPI endpoint: " + API.endpointURL);
     console.log("Results: ", results);
 
     if (results.length === 0) {
         resultsContainer.innerHTML = `
-    <div class="col-12 text-center">
-      No items found with level '${q}'.
-    </div>
-    `;
-        manageAdminItems(); // if there is no course here we manage admin opts
+          <div class="col-12 text-center">
+            No items found with level '${q}'.
+          </div>
+        `
         return;
     }
-
-    console.log(results);
 
     const allCoursesElements = results
             .map((course) => {
@@ -303,8 +304,6 @@ function renderAllCoursesResults(results, q = "") {
             .join("");
 
     resultsContainer.innerHTML = allCoursesElements;
-    manageAdminItems();
-
 }
 
 
@@ -417,9 +416,6 @@ async function loadFullCourseData(univShortName, courseID) {
 
 
         resultsContainer.innerHTML = oneCourseElement;
-        // Enable or disable admin options, like add, delete, etc. if logged or not
-        manageAdminItems();
-
     } catch (error) {
         resultsContainer.innerHTML = "<h3>Oops, something went wrong reading course data</h3>";
         console.error("Something went wrong reading course data:", error);
@@ -501,59 +497,6 @@ async function loadAsyncCourseData(courseID) {
     } catch (error) {
         console.error('Error during API call sequence:', error);
         throw error;
-    }
-
-}
-
-/* 	Security JWT  */
-
-async function manageAdminItems()
-{
-    let JTWSecurityEnabled = await API.securityEnbled()
-
-    if (!JTWSecurityEnabled) {
-        console.log("manageAdminItems: No JWT activated, updates are allowed");
-        document.getElementById("avatar").style = "display: none;";
-        // addCourse is not ever present 
-        if (document.getElementById("addCourse")) {
-            document.getElementById("addCourse").style = "cursor: pointer;";
-        }
-        // Delete is only in single course view, 
-        if (document.getElementById("deleteIcon")) {
-            document.getElementById("deleteIcon").style = "display:block;";
-        }
-        document.getElementById("loginLink").style = "display : none";
-        document.getElementById("administration").style = "display : none";
-    } else
-    if (API.tokenValid()) {
-        console.log("manageAdminItems: JWT activated and valid JWT token, can admin");
-        document.getElementById("avatar").style = "cursor: pointer;";
-        // addCourse is not ever present 
-        if (document.getElementById("addCourse")) {
-            document.getElementById("addCourse").style = "cursor: pointer;";
-        }
-        // Delete is only in single course view, 
-        if (document.getElementById("deleteIcon")) {
-            document.getElementById("deleteIcon").style = "display:block;";
-        }
-        document.getElementById("loginLink").style = "display : none";
-        if (API.isAdmin()) {
-            document.getElementById("administration").style = "cursor: pointer;";
-        }
-    } else
-    {
-        console.log("manageAdminItems: No valid JWT token, must login");
-        document.getElementById("avatar").style = "display: none;";
-        // addCourse is not ever present 
-        if (document.getElementById("addCourse")) {
-            document.getElementById("addCourse").style = "display : none";
-        }
-        // Delete is only in single course view, 
-        if (document.getElementById("deleteIcon")) {
-            document.getElementById("deleteIcon").style = "display:block;";
-        }
-        document.getElementById("loginLink").style = "cursor: pointer;";
-        document.getElementById("administration").style = "display : none";
     }
 
 }
