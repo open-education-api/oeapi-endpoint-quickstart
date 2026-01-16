@@ -192,7 +192,7 @@ public class oeapiController<T> {
 
     public ResponseEntity<?> create(@RequestBody @Valid T requestBody, oeapiServiceInterface<T> service) {
 
-        ResponseEntity finalResponse = null;
+        ResponseEntity<T> finalResponse = null;
         Errors errors = new BeanPropertyBindingResult(requestBody, requestBody.getClass().getName().toLowerCase());
         T created;
         //validator.validate(program,errors)

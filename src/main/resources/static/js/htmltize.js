@@ -89,8 +89,6 @@ function htmltizeMultiLingualText(courseJson, item) {
     return htmlRes;
 }
 
-function htmltizeCoordinatorsList(coordinatorsJson) {}
-
 function htmltizeStudyLoad(courseJson) {
     htmlRes = "<p><strong>Study Load :</strong> ND";
 

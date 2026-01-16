@@ -110,12 +110,7 @@
         <script src="js/htmltize.js"></script>
         <script src="js/oeapi.js"></script>
         <script>
-            document.getElementById("logoutLink").addEventListener("click", function (e) {
-                e.preventDefault();
-                localStorage.removeItem("jwt");
-                window.location.href = "./login.html";
-            });
-
+            API.addDOMEventListeners();
             renderAllMergedCoursesData();
         </script>
     </body>

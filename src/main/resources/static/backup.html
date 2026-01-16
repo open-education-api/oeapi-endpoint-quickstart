@@ -171,21 +171,7 @@
                 }
             });
 
-            $(document).ready(function () {
-                const selectEl = $('#universitySelect');
-
-                getJwtSecurityStatus().then(status => {
-                    document.getElementById("epSecurity").innerHTML = status;
-                    console.log("JWT security active:", status);
-                    manageAdminItems();
-                });
-
-                document.getElementById("logoutLink").addEventListener("click", function (e) {
-                    e.preventDefault();
-                    localStorage.removeItem("jwt");
-                    window.location.href = "login.html";
-                });
-            });
+            API.addDOMEventListeners();
         </script>
 
         <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>

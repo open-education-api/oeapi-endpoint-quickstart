@@ -1,4 +1,3 @@
-
 const languages = [
     {code: "en-GB", name: "English (UK)"},
     {code: "es-ES", name: "Spanish"},
@@ -29,20 +28,201 @@ const languagesISO639 = [
     {iso639_2: "mul", name: "Multiple Languages"}  // Special case 
 ];
 
-// Function to find language name using ISO639_2
-function getLanguageNameByCodeISO639_2(code) {
-    console.log("getLanguageNameByCodeISO639_2 Received : " + code);
-    const found = languagesISO639.find(u => u.iso639_2 === code.toLowerCase());
-    return found ? found.name : 'TBD';
-}
+const API = (function() {
+    let endpointURL = ooapiDefaultEndpointURL // from init.js
 
-/* Only ooapiDefaultEndpointURL is accessed, but here you
- could add code to merge data from other endpoints */
+    ////////// tokens
+    const getToken = () => window.localStorage.getItem('jwt')
+    const setToken = (token) => window.localStorage.setItem('jwt', token)
+    const parseToken = token => token && JSON.parse(atob(token.split('.')[1]))
 
+    ////////// security
+    const getRoles = (token = getToken()) => {
+        const payload = parseToken(token)
+        return payload && (payload.roles ?? []).concat(payload.authorities ?? [])
+    }
+    const isAdmin = (token = getToken()) => (
+        getRoles(token)?.includes('ROLE_ADMIN')
+    )
+    const securityEnbled = async () => (
+        (window.API_securityEnbled ??=
+         (await (await get('auth/secStatus')).text()).includes('Enabled'))
+    )
+    const tokenValid = (token = getToken()) => {
+        if (!token) return false
+        const payload = pk('payload', parseToken(pk('token', token)))
+        const now = Date.now()
+        const exp = payload.exp * 1000
+        return exp > now
+    }
+    const canDoUpdates = async () => (
+        !(await securityEnbled()) || (tokenValid() && isAdmin())
+    )
+
+    ////////// HTTP helpers
+    const getAuthorizationHeader = () => {
+        const token = getToken()
+        return token ? `Bearer ${token}` : null
+    }
+    const removeEmptyHeaders = (obj) => {
+        const nObj = {}
+        Object.keys(obj).forEach(k => {
+            const v = obj[k]
+            if (v !== null && v !== undefined && v !== '') nObj[k] = v
+        })
+        return nObj
+    }
+    const addHeaders = (opts, extra_headers) => {
+        const {headers, ...options} = opts || {}
+        return {...options, headers: {...headers, ...removeEmptyHeaders(extra_headers)}}
+    }
+    const request = async (path, {params, ...options}) => {
+        console.debug('API request', {path, params, method: options.method ?? 'GET'})
+
+        const url = `${endpointURL}/${path}${toQueryString(params)}`
+        const res = await window.fetch(
+            url,
+            addHeaders(options, {'Content-Type': 'application/json',
+                                 'Authorization': getAuthorizationHeader()})
+        )
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch ${url}, got status ${res.status}`);
+        }
+        return res
+    }
+    const toQueryString = (params) => {
+        const ps = Object.keys(params ?? {})
+              .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
+              .join('&')
+        return ps.length ? `?${ps}` : ''
+    }
+
+    const get = async (path, params) => (
+        (await request(path, {params}))
+    )
+    const post = async (path, data) => (
+        request(path, {method: 'POST', body: JSON.stringify(data)})
+    )
+    const put = async (path, data) => (
+        request(path, {method: 'PUT', body: JSON.stringify(data)})
+    )
+    const destroy = async (path, params) => ( // `delete` is a JS keyword
+        request(path, {params, method: 'DELETE'})
+    )
+
+    ////////// talking to auth endpoints
+    const logout = () => {
+        window.localStorage.removeItem('jwt')
+    }
+    const login = async (email, password) => {
+        const res = await post(`auth/login`, {email, password})
+
+        if (res.ok) {
+            const {token} = pk('login', await res.json())
+            setToken(token)
+        } else {
+            console.error('API login failed', res)
+        }
+
+        return res
+    }
+    const changePassword = (oldPassword, newPassword) => (
+        post('auth/change-password', {oldPassword, newPassword})
+    )
+    const signUp = ({email, password, roles}) => (
+        post('auth/signup', {email, password, roles})
+    )
+
+    ////////// setup UI
+    const addDOMEventListeners = () => (
+        document.addEventListener('DOMContentLoaded', async () => {
+            addLogoutLinkListeners()
+            initSecurityNotice()
+        })
+    )
+    const addLogoutLinkListeners = () => (
+        document.querySelectorAll('#logoutLink').forEach(el =>
+            el.addEventListener('click', e => {
+                e.preventDefault()
+                logout()
+                window.location.href = 'login.html'
+            })
+        )
+    )
+    const initSecurityNotice = async () => {
+        const enabled = await securityEnbled()
+        document.body.setAttribute('data-security-enabled', enabled)
+        document.body.setAttribute('data-security-admin', isAdmin())
+        document.body.setAttribute('data-security-token-valid', tokenValid())
+
+        document.querySelectorAll('#epSecurity').forEach(el => {
+            el.innerHTML = enabled
+                ? 'Enabled, you must be logged in to do updates'
+                : "Disabled, updates are allowed without login"
+        })
+    }
+
+    ////////// endpoint method builds
+    const makeGetter = (path, sub) => async (id, params) => {
+        const p = `${path}/${encodeURIComponent(id)}`;
+        return (await get(sub ? `${p}/${sub}` : p, params)).json()
+    }
+    const makeItemsGetter = (path) => async (params) => (
+        (await (await get(path, params)).json()).items
+    )
+    const makeDeleter = (path) => (id, params) => (
+        destroy(`${path}/${encodeURIComponent(id)}`, params)
+    )
+    const makeCreator = (path) => (data) => (
+        post(path, data)
+    )
+    const makeUpdater = (path) => (id, data) => (
+        put(`${path}/${encodeURIComponent(id)}`, data)
+    )
+
+    // exports
+    return {
+        endpointURL,
+        get,
+
+        getCourse: makeGetter('courses'),
+        getCourses: makeItemsGetter('courses'),
+        createCourse: makeCreator('courses'),
+        updateCourse: makeUpdater('courses'),
+        deleteCourse: makeDeleter('courses'),
+        getCourseOfferings: async (...args) => (await (makeGetter('courses', 'offerings'))(...args)).items,
+
+        getFieldsOfStudy: makeItemsGetter('fieldsofstudy'),
+
+        createOffering: makeCreator('offerings'),
+        updateOffering: makeUpdater('offerings'),
+
+        getOrganizations: makeItemsGetter('organizations'),
+
+        getPerson: makeGetter('persons'),
+        getPersons: makeItemsGetter('persons'),
+        createPerson: makeCreator('persons'),
+
+        getProgram: makeGetter('programs'),
+
+        addDOMEventListeners,
+        isAdmin,
+        logout,
+        login,
+        changePassword,
+        signUp,
+
+        securityEnbled,
+        canDoUpdates, // TODO same as isAdmin?
+        tokenValid,
+        getToken
+    }
+})()
 
 // Extract name from OOAPI entity, use `language` list order as
 // preference.
-function extractName( {name}) {
+function extractName({name}) {
     return name && name.find(n => languages.map(({code}) => n.language == code).find(x => x)).value;
 }
 
@@ -55,29 +235,8 @@ async function sortAsyncItemsByName(asyncItems) {
     });
 }
 
-// Fetch JSON from path.
-async function fetchData(path) {
-    const response = await fetch(`${endpointURL}/${path}`, {
-        headers: {'Content-Type': 'application/json'}
-    });
-    if (!response.ok) {
-        throw new Error(`Failed to fetch ${path}, got status ${response.status}`);
-    }
-    return response.json();
-}
-
-// Fetch items from path.
-async function fetchItems(path) {
-    return (await fetchData(path)).items;
-}
-
 const getAndMergeAllCoursesData = async () => {
-
-    const response = await fetch(ooapiDefaultEndpointURL + "/courses");
-    const res = await response.json();
-    console.log("getAndMergeAllCoursesData res:", res)
-    return res.items;
-
+    return API.getCourses();
 }
 
 const input = document.getElementById("search");
@@ -87,33 +246,7 @@ function getCourseUniv(courseJson) {
     return ooapiDefaultShortUnivName;
 }
 
-/* Rendering of courses
- Some of the html rendering of the courses is based 
- on the code https://codepen.io/feri-irawan/pen/RwLQKpY 
- (By Feri Irawan - 29/12/2021)
- */
-
-
-/* Full list of courses */
-
-
-const getAllCoursesData = async (univOOAPI_URL) => {
-    console.log("getAllCoursesData-> Destiny URL: " + univOOAPI_URL + "/courses");
-    const response = await fetch(univOOAPI_URL + "/courses")
-            .then((res) => res.json())
-            .then(({ items }) => items);
-    //console.log("getAllCoursesData-> Response: " + response);
-    return response;
-};
-async function AllMergedCoursesRawData() {
-
-    const data = await getAndMergeAllCoursesData();
-    return data;
-}
-
 async function renderAllMergedCoursesData() {
-
-
     const data = await getAndMergeAllCoursesData();
     console.log("renderAllMergedCoursesData data:");
     console.log(data);
@@ -145,55 +278,18 @@ async function renderAllMergedCoursesData() {
 
 }
 
-
-async function renderAllCourses() {
-    const data = await getAllCoursesData(univOOAPI_URL);
-    console.log(data);
-    console.log("Filter by level: " + filterLevel);
-    let results = [];
-    if (filterLevel != "NONE")
-    {
-
-        renderAllCoursesResults(data.filter(({ level }) => level.toLowerCase().includes(filterLevel.toLowerCase())));
-    } else
-    {
-        renderAllCoursesResults(data);
-    }
-
-
-    // Watchout search box...
-    input.onkeyup = async (e) => {
-
-        const q = e.target.value;
-        if (filterLevel != "NONE")
-        {
-            results = data.filter(({ level }) => level.toLowerCase().includes(filterLevel.toLowerCase()))
-                    .filter(({ name }) => name[0].value.toLowerCase().includes(q.toLowerCase()));
-        } else
-        {
-            results = data.filter(({ name }) => name[0].value.toLowerCase().includes(q.toLowerCase()));
-        }
-
-        renderAllCoursesResults(results, q);
-    };
-}
-
 function renderAllCoursesResults(results, q = "") {
-
-    console.log("Using OEAPI endpoint: " + ooapiDefaultEndpointURL);
+    console.log("Using OEAPI endpoint: " + API.endpointURL);
     console.log("Results: ", results);
 
     if (results.length === 0) {
         resultsContainer.innerHTML = `
-    <div class="col-12 text-center">
-      No items found with level '${q}'.
-    </div>
-    `;
-        manageAdminItems(); // if there is no course here we manage admin opts
+          <div class="col-12 text-center">
+            No items found with level '${q}'.
+          </div>
+        `
         return;
     }
-
-    console.log(results);
 
     const allCoursesElements = results
             .map((course) => {
@@ -208,8 +304,6 @@ function renderAllCoursesResults(results, q = "") {
             .join("");
 
     resultsContainer.innerHTML = allCoursesElements;
-    manageAdminItems();
-
 }
 
 
@@ -230,7 +324,7 @@ async function loadFullCourseData(univShortName, courseID) {
 
 
     try {
-        let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(ooapiDefaultEndpointURL, courseID);
+        let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(courseID);
 
         courseJSONData = courseJSON;  // To have visibility of during HTML some async rendering
 
@@ -243,27 +337,27 @@ async function loadFullCourseData(univShortName, courseID) {
         let idNormOrPhy = 0;  // Normal courses normally would have only one offering. In case of BIP this will hold position of the physical one
 
         // Is it a BIP (two offerings; physical and virtual) or ordinary course/microdential)
-        if (offeringsJSON.items[1])  // has two offerings
+        if (offeringsJSON.length == 2)  // has two offerings
         {
             console.log("Displaying a BIP...");
             CourseType = "BIPCourse";
 
-            [mainOffering, virtualOffering] = offeringsJSON.items;  // Initial guess  
+            [mainOffering, virtualOffering] = offeringsJSON;  // Initial guess
 
             accBipVirtDisplay = "block";   //BIP
             firstOfferingTitle = "Physical Component";
 
             // Which is for virtualComponent?
-            let firstItemCode = offeringsJSON.items[0].primaryCode.code;
+            let firstItemCode = offeringsJSON[0].primaryCode.code;
             if (firstItemCode.includes("virtualComponent"))
             {
-                [virtualOffering, mainOffering] = offeringsJSON.items;
+                [virtualOffering, mainOffering] = offeringsJSON;
             }
         } else
         {
             CourseType = "OrdinaryCourse";
 
-            mainOffering = offeringsJSON.items[0];
+            mainOffering = offeringsJSON[0];
 
             accBipVirtDisplay = "none";
             firstOfferingTitle = "Additional Course Info";
@@ -322,9 +416,6 @@ async function loadFullCourseData(univShortName, courseID) {
 
 
         resultsContainer.innerHTML = oneCourseElement;
-        // Enable or disable admin options, like add, delete, etc. if logged or not
-        manageAdminItems();
-
     } catch (error) {
         resultsContainer.innerHTML = "<h3>Oops, something went wrong reading course data</h3>";
         console.error("Something went wrong reading course data:", error);
@@ -332,74 +423,23 @@ async function loadFullCourseData(univShortName, courseID) {
 }
 
 
-function deleteCourse(theCourse, needToConfirm)
-{
-
-    console.log("deleteCourse: endpointURL..." + ooapiDefaultEndpointURL);
+async function deleteCourse(theCourse, needToConfirm) {
+    console.log("deleteCourse: endpointURL..." + API.endpointURL);
     console.log("deleteCourse: the Course..." + theCourse);
-    console.log("deleteCourse token", localStorage.getItem('jwt'));
 
     if (!needToConfirm || (needToConfirm && confirm('Are you sure you want to delete this course?'))) {
-
         console.log("Delete course with Id: " + theCourse + " confirmed");
-        console.log("Delete call to: " + ooapiDefaultEndpointURL + "/courses/" + theCourse);
 
-        fetch(ooapiDefaultEndpointURL + "/courses/" + theCourse, {method: "DELETE",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('jwt'),
-                'Content-length': 0
-            }
-        })
-                .then(async response => {
-                    if (!response.ok) {
-                        throw new Error('deleteCourse Failed to delete resource: ' + response.text());
-                    }
-                    return response.text(); // use `.json()` if server returns JSON
-                })
-                .then(data => {
-                    console.log('Delete successful:', data);
-                    window.location.href = "./catalog.html";
-                })
-                .catch(error => {
-                    console.error('deleteCourse Error:', error);
-                });
+        const response = await API.deleteCourse(theCourse)
+
+        if (!response.ok) {
+            throw new Error('deleteCourse Failed to delete resource: ' + response.text())
+        }
+
+        const data = await response.text()  // use `.json()` if server returns JSON
+        console.log('Delete successful:', data)
+        window.location.href = "./catalog.html"
     }
-    ;
-}
-
-function deleteOffering(theOffering, needToConfirm)
-{
-
-    console.log("deleteOffering: endpointURL..." + ooapiDefaultEndpointURL);
-    console.log("deleteOffering: the Course..." + theOffering);
-    console.log("deleteOffering token", localStorage.getItem('jwt'));
-
-    if (!needToConfirm || (needToConfirm && confirm('Are you sure you want to delete this Offering?'))) {
-
-        console.log("deleteOffering Id: " + theOffering + " confirmed");
-        console.log("deleteOffering call to: " + ooapiDefaultEndpointURL + "/offerings/" + theOffering);
-
-        fetch(ooapiDefaultEndpointURL + "/offerings/" + theOffering, {method: "DELETE",
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('jwt'),
-                'Content-length': 0
-            }
-        })
-                .then(async response => {
-                    if (!response.ok) {
-                        throw new Error('deleteOffering Failed to delete resource: ' + response.text());
-                    }
-                    return response.text(); // use `.json()` if server returns JSON
-                })
-                .then(data => {
-                    console.log('deleteOffering successful:', data);
-                    window.location.href = "./catalog.html";
-                })
-                .catch(error => {
-                    console.error('deleteOffering Error:', error);
-                });
-    }
-    ;
 }
 
 function editCourse(theCourse) {
@@ -415,16 +455,14 @@ function editCourse(theCourse) {
 }
 
 
-async function loadAsyncCourseData(ooapiEndPoint, courseID) {
+async function loadAsyncCourseData(courseID) {
 
     try {
         console.log("loadCourseData: Get course main data...");
-        const courseData = await fetch(ooapiEndPoint + "/courses/" + courseID);
-        const courseJSON = await courseData.json();
+        const courseJSON = await API.getCourse(courseID)
 
         console.log("loadCourseData: Get course offerings...");
-        const offeringsData = await fetch(ooapiEndPoint + "/courses/" + courseID + "/offerings");
-        const offeringsJSON = await offeringsData.json();
+        const offeringsJSON = await API.getCourseOfferings(courseID)
 
         // Get other values/keys
         const coordinators = courseJSON.coordinators || [];
@@ -432,19 +470,14 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
         // Prepare requests
 
 
-        const getCoordinatorsArray = coordinators.map(personId =>
-            fetch(ooapiEndPoint + "/persons/" + encodeURIComponent(personId))
-                    .then(res => res.json())
-                    .then(json => ({
-                            ...json,
-                            personId // put LAST so it cannot be overwritten
-                        }))
-        );
+        const getCoordinatorsArray = coordinators.map(async personId => {
+            const person = await API.getPerson(personId)
+            return {...person, personId} // put LAST so it cannot be overwritten
+        });
 
 
-        const getProgramsArray = programs.map(p =>
-            fetch(ooapiEndPoint + "/programs/" + encodeURIComponent(p))
-        );
+        const getProgramsArray = programs.map(programId => API.getProgram(programId));
+
         // Await all fetch calls
         const [coordinatorResponses, programResponses] = await Promise.all([
             Promise.all(getCoordinatorsArray),
@@ -452,10 +485,7 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
         ]);
 
         const resultCoordinatorsList = coordinatorResponses;
-
-        const resultProgramsList = await Promise.all(
-                programResponses.map(res => res.json())
-                );
+        const resultProgramsList = programResponses;
 
         console.log('Course:', courseJSON);
         console.log('OfferingsJSON:', offeringsJSON);
@@ -470,197 +500,6 @@ async function loadAsyncCourseData(ooapiEndPoint, courseID) {
     }
 
 }
-
-/* 	Security JWT  */
-
-
-const token = localStorage.getItem("jwt");
-
-async function canDoUpdates()
-{
-    let updatesArePossible = false
-
-    let JTWSecurityEnabled = await isJwtSecurityEnabled();
-
-    if (!JTWSecurityEnabled)
-    {
-        console.log("canDoUpdates? " + "Yes, JWT is disabled. Be sure this is what you want. See doc.");
-        updatesArePossible = true;
-    } else
-    {
-        if (!isJwtValid())
-        {
-            console.log("canDoUpdates? " + "No, JWT is enabled and no valid token found");
-            updatesArePossible = false;
-        } else
-        {
-            console.log("canDoUpdates? " + "Yes, JWT is enabled and valid token found");
-            updatesArePossible = true;
-        }
-    }
-
-    return  updatesArePossible;
-
-}
-
-function isJwtValid() {
-
-    const token = localStorage.getItem("jwt");
-
-    console.log("Token is: " + token);
-
-    if (!token) {
-        return false;
-    }
-
-    try {
-        const payloadBase64 = token.split('.')[1];
-        const payloadJson = atob(payloadBase64);
-        const payload = JSON.parse(payloadJson);
-
-        // exp is in seconds since epoch
-        const now = Math.floor(Date.now() / 1000);
-        console.log("jwt expires in: ", new Date(payload.exp * 1000));
-        return payload.exp && payload.exp > now;
-    } catch (e) {
-        console.error("Invalid JWT format", e);
-        return false;
-    }
-}
-
-async function isJwtSecurityEnabled() {
-    let isEnabled = false;
-
-    let textResponse = await getJwtSecurityStatus();
-    isEnabled = textResponse.toLowerCase().includes("enabled");
-
-// getJwtSecurityStatus().then(textResponse => {
-//	 isEnabled = textResponse.toLowerCase().includes("enabled")
-//     console.log("isJwtSecurityEnabled :", isEnabled);
-//	 });
-
-    return isEnabled;
-}
-
-async function loadAsyncOfferingData(ooapiEndPoint, courseID, which) {
-
-    try {
-        console.log("loadOfferingData: Get offering data...");
-        const response = await fetch(ooapiEndPoint + "/courses/" + courseID + "/offerings");
-
-        if (!response.ok) {
-            throw new Error('loadOfferingData HTTP error! Status: ${response.status}');
-            return;
-        }
-
-        const allOfferingData = await response.json();
-
-        console.log('All OfferingData:', allOfferingData);
-        whichOfferingData = allOfferingData.items[which];
-        console.log('OfferingData num ' + which + ' :', whichOfferingData);
-        return whichOfferingData;
-
-    } catch (error) {
-        console.error('Error during API call sequence on loadOfferingData :', error);
-        throw error;
-    }
-}
-
-async function getJwtSecurityStatus() {
-
-    let status = "Unknown";
-
-    try {
-        const response = await fetch('./auth/secStatus');
-        if (!response.ok) {
-            console.error("Error checking JWT security: no valid response");
-            return status + ": no valid response";
-        }
-
-        const statusText = await response.text();
-        console.log("Security Status:", statusText);
-
-        const enabled = statusText.toLowerCase().includes("enabled");
-
-        if (enabled)
-        {
-            status = "Enabled, you must login before updates";
-        } else {
-            status = " Disabled. (Updates are allowed without login. Check that's what you want. See doc.) ";
-        }
-
-    } catch (error) {
-        console.error("Error checking JWT security:", error);
-        showAlert("error", "Network Error", "Unable to check JWT security status. Is your endpoint active?");
-        status = "Unknown, error checking JWT security ";
-    }
-
-    return status;
-}
-
-async function manageAdminItems()
-{
-    let JTWSecurityEnabled = await isJwtSecurityEnabled();
-
-    if (!JTWSecurityEnabled) {
-        console.log("manageAdminItems: No JWT activated, updates are allowed");
-        document.getElementById("avatar").style = "display: none;";
-        // addCourse is not ever present 
-        if (document.getElementById("addCourse")) {
-            document.getElementById("addCourse").style = "cursor: pointer;";
-        }
-        // Delete is only in single course view, 
-        if (document.getElementById("deleteIcon")) {
-            document.getElementById("deleteIcon").style = "display:block;";
-        }
-        document.getElementById("loginLink").style = "display : none";
-        document.getElementById("administration").style = "display : none";
-    } else
-    if (isJwtValid()) {
-        console.log("manageAdminItems: JWT activated and valid JWT token, can admin");
-        document.getElementById("avatar").style = "cursor: pointer;";
-        // addCourse is not ever present 
-        if (document.getElementById("addCourse")) {
-            document.getElementById("addCourse").style = "cursor: pointer;";
-        }
-        // Delete is only in single course view, 
-        if (document.getElementById("deleteIcon")) {
-            document.getElementById("deleteIcon").style = "display:block;";
-        }
-        document.getElementById("loginLink").style = "display : none";
-        if (isAdmin()) {
-            document.getElementById("administration").style = "cursor: pointer;";
-        }
-    } else
-    {
-        console.log("manageAdminItems: No valid JWT token, must login");
-        document.getElementById("avatar").style = "display: none;";
-        // addCourse is not ever present 
-        if (document.getElementById("addCourse")) {
-            document.getElementById("addCourse").style = "display : none";
-        }
-        // Delete is only in single course view, 
-        if (document.getElementById("deleteIcon")) {
-            document.getElementById("deleteIcon").style = "display:block;";
-        }
-        document.getElementById("loginLink").style = "cursor: pointer;";
-        document.getElementById("administration").style = "display : none";
-    }
-
-}
-
-
-function isAdmin() {
-    const token = localStorage.getItem('jwt');
-    if (!token)
-        return false;
-
-    // If you decode the token, check for 'roles' or 'authorities'
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    console.log(payload);
-    return payload.roles?.includes('ROLE_ADMIN') || payload.authorities?.includes('ROLE_ADMIN');
-}
-
 
 // Popup messages using Bootstrap
 
