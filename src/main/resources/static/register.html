@@ -123,20 +123,12 @@
                 };
                 const userJSON = JSON.stringify(user);
                 console.log("New user: " + userJSON);
-                //const token = localStorage.getItem('jwt');
-                if (!isAdmin()) {
+                if (!API.isAdmin()) {
                     alert("Access denied. Admins only.");
                     return;
                 }
                 try {
-                    const res = await fetch(ooapiDefaultEndpointURL + '/auth/signup', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + localStorage.getItem('jwt') // Must be from an ADMIN user
-                        },
-                        body: userJSON
-                    });
+                    const res = await API.signUp(user);
 
                     if (!res.ok) {
                         throw new Error(`Error ${res.status}: ${await res.text()}`);
@@ -151,26 +143,15 @@
                     messageDiv.className = 'error';
                 }
             });
-            function isAdmin() {
-                const token = localStorage.getItem('jwt');
-                if (!token)
-                    return false;
 
-                // If you decode the token, check for 'roles' or 'authorities'
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                console.log(payload);
-                return payload.roles?.includes('ROLE_ADMIN') || payload.authorities?.includes('ROLE_ADMIN');
-            }
-
-// Redirect if not admin
-            if (!isAdmin()) {
+            // Redirect if not admin
+            if (!API.isAdmin()) {
                 alert("Access denied. Admins only.");
                 window.location.href = "./catalog.html"; // Or login
             }
-			
-			
+
             document.getElementById('bckdb').addEventListener('click', () => {
-            window.location.href = './oeapi-td.html';
+                window.location.href = './oeapi-td.html';
             });
         </script>
 

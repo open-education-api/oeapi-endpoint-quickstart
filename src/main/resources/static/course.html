@@ -107,22 +107,10 @@
         <script src="js/htmltize.js"></script>
         <script src="js/oeapi.js"></script>
         <script>
-
-            // renderSingleCourse();
-
-            // Async
-            // in catalog.js --> let theCourse = (urlParams.get('courseId')) ? urlParams.get('courseId') : "NONE";
-            // in catalog.js --> let formOOAPIEndPoint = "http://localhost:57075";
-
             let univShortName = (urlParams.get('univ')) ? urlParams.get('univ') : "Localhost";
             loadFullCourseData(univShortName, theCourse);
-						
-            document.getElementById("logoutLink").addEventListener("click", function (e) {
-                e.preventDefault();
-                localStorage.removeItem("jwt");
-                window.location.href = "./login.html";
-            });			
-            
+
+            API.addDOMEventListeners();
         </script>
 
         <script type="text/javascript" src="https://mdbootstrap.com/api/snippets/static/download/MDB5-Free_7.3.1/js/mdb.umd.min.js"></script>

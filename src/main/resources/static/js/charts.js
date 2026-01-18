@@ -5,17 +5,6 @@
  
  ******************************************/
 
-
-const getData = async (univOOAPI_URL) => {
-
-    console.log("Destiny URL: " + univOOAPI_URL);
-    const response = await fetch(univOOAPI_URL)
-        .then((res) => res.json());
-
-    //console.log("Response: "+response);
-    return response;
-};
-
 upnaCoursesSummary = {
     "university": "UPNA",
     "degrees": 0,
@@ -49,12 +38,9 @@ LocalhostCoursesSummary = {
 };
 
 function calculateTypeCourses(courses, univJsonSummary) {
+    console.log("Courses to be examined: ", courses);
 
-    console.log("Courses to be examined: ",courses);
-    
-    for (var i in courses.items) {
-
-        course = courses.items[i];
+    courses.forEach(course => {
         console.log("Reading course ("+course.courseId+")");
 
         switch (course.level.toLowerCase()) {
@@ -74,7 +60,7 @@ function calculateTypeCourses(courses, univJsonSummary) {
                 univJsonSummary["Others or ND"]++;
                 console.log("This course (" + course.courseId + ") has no level specified");
         }
-    };
+    });
 
     console.log('calculateTypeCourses of ' + univJsonSummary["university"] + " :" +
         ' Degrees: ' + univJsonSummary["degrees"] +
@@ -88,8 +74,8 @@ function calculateTypeCourses(courses, univJsonSummary) {
 
 
 async function showCharts() {
-    const dataLocalhost = await getData(ooapiDefaultEndpointURL+"/courses");    
-    calculateTypeCourses(dataLocalhost  , LocalhostCoursesSummary);    
+    const courses = await API.getCourses()
+    calculateTypeCourses(courses, LocalhostCoursesSummary);
     renderChart();
 }
 
