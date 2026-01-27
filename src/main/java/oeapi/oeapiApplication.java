@@ -1,5 +1,6 @@
 package oeapi;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -102,7 +103,7 @@ public class oeapiApplication {
         }
     }
 
-    @Value("${ooapi.security.default.users.pass:unset}")
+    @Value("${ooapi.security.default.users.pass:}")
     private String adminPassword;
 
     @Value("${ooapi.security.default.users.emails:test@example.com}")
@@ -120,7 +121,7 @@ public class oeapiApplication {
         user.setRoles(roles);
 
         String generatedPassword = null;
-        if (password.equals("unset")) {
+        if (password.isEmpty()) {
             generatedPassword = oeapiUtils.generatePassword();
             user.setPassword(generatedPassword);
         } else {
@@ -153,13 +154,19 @@ public class oeapiApplication {
         };
     }
 
+
+    @Value("${quickdashboard.auto-create-file.organizations:}")
+    private String createOrganizationsFile;
+
     @Bean
     public CommandLineRunner createOrganizations(OrganizationService orgService) {
         return (args) -> {
-            logger.info("-->Inserting/Updating organizations from /orgs.json");
+            if (createOrganizationsFile.isEmpty()) return;
+
+            logger.info("-->Inserting/Updating organizations from: {}", createOrganizationsFile);
 
             ObjectMapper mapper = new ObjectMapper();
-            InputStream inputStream = getClass().getResourceAsStream("/orgs.json");
+            InputStream inputStream = new FileInputStream(createOrganizationsFile);
             List<OrganizationDTO> organizations = mapper.readValue(
                     inputStream,
                     new TypeReference<List< OrganizationDTO>>() {

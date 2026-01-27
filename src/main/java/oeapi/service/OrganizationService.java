@@ -79,34 +79,16 @@ public class OrganizationService extends oeapiEndpointDTOService<Organization, O
 
     }
 
-
     public OrganizationService() {
         super();
         super.initializeMapper(Organization.class, OrganizationDTO.class, enumService, Arrays.asList("organizationType"));
     }
 
-    public Optional<Organization> getDefault(boolean createIfNotExists) {
-
-        logger.debug("Organization getDefault is called. Searching for Org with default code [" + autoCreateOrg_Code + "]...");
-
-        List<Organization> existingDefault = super.getObjectByPrimaryCode(autoCreateOrg_Code);
-
-        if (!existingDefault.isEmpty()) {
-            logger.debug("Organization getDefault is called. Returning Org with default code [" + autoCreateOrg_Code + "] ("+existingDefault.get(0).getShortName()+")");
-            return Optional.of(existingDefault.get(0));
-        }
-        if (createIfNotExists) {
-            logger.debug("Organization getDefault is called. No previous default Org, creating one...");
-            return Optional.of(this.autoGenerateBasicItem());
-        }
-        
-        // Normally this point should be not reached. Either a default or autocreate one should be returned
-        return Optional.empty();
-    }
-
     public Optional<Organization> getDefault() {
-        return this.getDefault(autoCreateIfNotExists);
-    }    
+        // Return whatever is the first organization in the DB.
+        List<Organization> orgs = this.getAll();
+        return orgs.isEmpty() ? Optional.empty() : Optional.of(orgs.get(0));
+    }
 
     @Override
     public Organization autoGenerateBasicItem(String organizationId) {
