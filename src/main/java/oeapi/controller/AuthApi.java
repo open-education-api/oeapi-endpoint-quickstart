@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +37,7 @@ import oeapi.repository.UserRepository;
 
 @RestController
 public class AuthApi {
+    private static final Logger logger = LoggerFactory.getLogger(AuthApi.class);
 
     @Autowired
     AuthenticationManager authManager;
@@ -54,6 +59,7 @@ public class AuthApi {
 
             CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
             String token = jwtUtil.generateAccessToken(userDetails);
+            logger.error("got token: {}", token);
 
             return ResponseEntity.ok(Collections.singletonMap("token", token));
 
@@ -63,7 +69,6 @@ public class AuthApi {
     }
 
     @PostMapping("auth/signup")
-    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserDTO dto) {
 
         // checking for username exists in a database
