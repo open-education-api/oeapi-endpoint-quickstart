@@ -23,6 +23,10 @@ function init(config) {
   ooapiDefaultUnivName = config.ooapiDefaultUnivName;
   ooapiDefaultOrganizationId = config.ooapiDefaultOrganizationId;
   ooapiDefaultEndpointURL = config.ooapiDefaultEndpointURL || window.location.origin;
+
+  if (!ooapiDefaultOrganizationId) {
+    alert('No organizations loaded!');
+  }
 }
 
 // Peek function for debugging.
