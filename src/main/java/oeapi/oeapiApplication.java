@@ -143,7 +143,7 @@ public class oeapiApplication {
         return (args) -> {
             logger.info("-->Inserting/Updating users and roles from application properties");
 
-            for (String roleName : Arrays.asList("ROLE_ADMIN", "ROLE_USER")) {
+            for (String roleName : Arrays.asList("ROLE_ADMIN", "ROLE_USER", "ROLE_GUEST")) {
                 roleRepo.findByName(roleName).orElseGet(() -> roleRepo.save(new Role(roleName)));
             }
 

@@ -28,9 +28,9 @@ class JwtTokenServiceTest {
         assertFalse(jwt2.validateAccessToken(token));
     }
 
-    @Test void extractUsername() {
+    @Test void extractSubject() {
         JwtTokenService jwt = new JwtTokenService();
         String token = jwt.generateAccessToken(user);
-        assertEquals(user.getUsername(), jwt.extractUsername(token));
+        assertEquals(user.getUsername(), jwt.extractSubject(token));
     }
 }
