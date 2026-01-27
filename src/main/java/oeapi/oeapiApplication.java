@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import oeapi.model.Organization;
 import oeapi.model.Role;
@@ -122,10 +123,9 @@ public class oeapiApplication {
         String generatedPassword = null;
         if (password.equals("unset")) {
             generatedPassword = oeapiUtils.generatePassword();
-            user.setPassword(generatedPassword);
-        } else {
-            user.setPassword(password);
+            password = generatedPassword;
         }
+        user.setPassword(new BCryptPasswordEncoder().encode(password));
 
         userRepo.save(user);
 
