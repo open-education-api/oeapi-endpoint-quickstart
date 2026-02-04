@@ -216,8 +216,13 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateOrganization(@RequestBody OrganizationDTO o) {
+    @PutMapping (value = "/{organizationId}")
+    public ResponseEntity<?> updateOrganization(@PathVariable String organizationId, @RequestBody OrganizationDTO o) {
+        // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 
+        if ((o.getOrganizationId() == null) || (!o.getOrganizationId().equalsIgnoreCase(organizationId))) {            
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Organization: organizationId on JSON does not match URL request or is missing : [" + organizationId + "," + o.getOrganizationId() + "]");
+        }
+
         Errors errors = new BeanPropertyBindingResult(o, "organization");
         validator.validate(o, errors);
         if (errors.hasErrors()) {
@@ -228,8 +233,14 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
         //return ResponseEntity.ok("Organization updated successfully");
     }
 
+    @Deprecated
     @PostMapping("/{organizationId}/update")
     public ResponseEntity<?> updateOrganization(@PathVariable String organizationId, @RequestBody Organization o) {
+        // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 
+        if ((o.getOrganizationId() == null) || (!o.getOrganizationId().equalsIgnoreCase(organizationId))) {            
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Organization: organizationId on JSON does not match URL request or is missing : [" + organizationId + "," + o.getOrganizationId() + "]");
+        }
+        
         Errors errors = new BeanPropertyBindingResult(o, "organization");
         validator.validate(o, errors);
         if (errors.hasErrors()) {
