@@ -73,6 +73,7 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiOrganizationRequestParam requestParam) {
+ 
         Map.Entry<String, String> filter = requestParam.getFilter();
         return this.getAll(filter, requestParam.toPageable(), organizationService);
     }
@@ -84,6 +85,7 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
     @GetMapping(value = "/{id}/groups", produces = "application/json")
     public ResponseEntity<?> getGroups(@PathVariable String id, oeapiGroupRequestParam requestParam) {
+
         Map.Entry<String, String> filter = requestParam.getFilter();
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
@@ -93,69 +95,51 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
         List<Group> groups = groupService.getByOrganizationId(id);
         return super.getResponse(requestParam.toPageable(), groups);
-
     }
 
     @GetMapping(value = "/{id}/course-offerings", produces = "application/json")
     public ResponseEntity<?> getCourseOfferings(@PathVariable String id, oeapiRequestParam requestParam) {
-        //public ResponseEntity<?> getCourses(@PathVariable String id, @RequestParam oeapiRequestParam requestParam) {
 
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
-
-            //return ResponseEntity.notFound().build();
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organization with Id: " + id);
         }
-
         throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering for Organization with Id " + id);
-        //return ResponseEntity.notFound().build();
     }
 
     //V6
     @GetMapping(value = "/{id}/program-offerings", produces = "application/json")
     public ResponseEntity<?> getProgramOfferings(@PathVariable String id, oeapiRequestParam requestParam) {
-        //public ResponseEntity<?> getCourses(@PathVariable String id, @RequestParam oeapiRequestParam requestParam) {
 
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
-
-            //return ResponseEntity.notFound().build();
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organization with Id: " + id);
         }
-
         throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering for Organization with Id " + id);
-        //return ResponseEntity.notFound().build();
     }
 
     //V6
     @GetMapping(value = "/{id}/learning-component-offerings", produces = "application/json")
     public ResponseEntity<?> getComponentOfferings(@PathVariable String id, oeapiRequestParam requestParam) {
-        //public ResponseEntity<?> getCourses(@PathVariable String id, @RequestParam oeapiRequestParam requestParam) {
 
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
-
-            //return ResponseEntity.notFound().build();
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organization with Id: " + id);
         }
-
         throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering for Organization with Id " + id);
-        //return ResponseEntity.notFound().build();
     }
 
     @GetMapping(value = "/{id}/courses", produces = "application/json")
     public ResponseEntity<?> getCourses(@PathVariable String id, @ModelAttribute oeapiCourseRequestParam requestParam) {
+ 
         Map.Entry<String, String> filter = requestParam.getFilter();
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
-            // return ResponseEntity.notFound().build();
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organization with Id: " + id);
-
         }
         Pageable pageable = requestParam.toPageable();
         Page<CourseDTO> courses = courseService.getByOrganizationId(existing.get().getOrganizationId(), filter, pageable);
         return super.getResponse(courses);
-
     }
 
     @GetMapping(value = "/{id}/programs", produces = "application/json")
@@ -165,13 +149,10 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
         Pageable pageable = requestParam.toPageable();
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
-
-            // return ResponseEntity.notFound().build();
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organization with Id: " + id);
         }
         Page<Program> programs = programService.getByOrganizationId(existing.get().getOrganizationId(), filter, pageable);
         return super.getResponse(programs);
-
     }
 
     @GetMapping(value = "/{id}/education-specifications", produces = "application/json")
@@ -179,13 +160,11 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
-            // return ResponseEntity.notFound().build();
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organization with Id: " + id);
         }
 
         List<EducationSpecification> educationSpecifications = educationSpecificationService.getByOrganizationId(id);
         return super.getResponse(requestParam.toPageable(), educationSpecifications);
-
     }
 
     @GetMapping(value = "/{id}/components", produces = "application/json")
@@ -193,14 +172,12 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
-            // return ResponseEntity.notFound().build();
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organization with Id: " + id);
         }
         Pageable pageable = requestParam.toPageable();
         Map.Entry<String, String> filter = requestParam.getFilter();
         Page<Component> components = componentService.getByOrganizationId(id, filter, pageable);
         return super.getResponse(components);
-
     }
 
     @PostMapping
@@ -209,31 +186,38 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
         Errors errors = new BeanPropertyBindingResult(o, "organization");
         validator.validate(o, errors);
         if (errors.hasErrors()) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "Error creating Organization at validate: " + errors.getAllErrors());
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error creating Organization at validate: " + errors.getAllErrors());
         }
-
         return super.createDTO(o, organizationService);
-
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateOrganization(@RequestBody OrganizationDTO o) {
+    @PutMapping(value = "/{organizationId}")
+    public ResponseEntity<?> updateOrganization(@PathVariable String organizationId, @RequestBody OrganizationDTO o) {
+        // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 
+        if ((o.getOrganizationId() == null) || (!o.getOrganizationId().equalsIgnoreCase(organizationId))) {
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organization: organizationId on JSON does not match URL request or is missing : [" + organizationId + "," + o.getOrganizationId() + "]");
+        }
+
         Errors errors = new BeanPropertyBindingResult(o, "organization");
         validator.validate(o, errors);
         if (errors.hasErrors()) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "Error updating Organization at validate: " + errors.getAllErrors());
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error updating Organization at validate: " + errors.getAllErrors());
         }
         return super.updateDTO(o, organizationService);
-        //Organization updated = organizationService.update(o);
-        //return ResponseEntity.ok("Organization updated successfully");
     }
 
+    @Deprecated
     @PostMapping("/{organizationId}/update")
     public ResponseEntity<?> updateOrganization(@PathVariable String organizationId, @RequestBody Organization o) {
+        // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 
+        if ((o.getOrganizationId() == null) || (!o.getOrganizationId().equalsIgnoreCase(organizationId))) {
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organization: organizationId on JSON does not match URL request or is missing : [" + organizationId + "," + o.getOrganizationId() + "]");
+        }
+
         Errors errors = new BeanPropertyBindingResult(o, "organization");
         validator.validate(o, errors);
         if (errors.hasErrors()) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "Error updating Organization at validate: " + errors.getAllErrors());
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error updating Organization at validate: " + errors.getAllErrors());
         }
         organizationService.update(organizationId, o);
 
@@ -246,7 +230,7 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
         boolean isRemoved;
         isRemoved = organizationService.delete(organizationId);
         if (!isRemoved) {
-            return ResponseEntity.badRequest().body("Organization " + organizationId + " not found");
+            throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organization with Id: " + organizationId);
         } else {
             return ResponseEntity.ok("Organization " + organizationId + "delete successfully");
         }
@@ -259,14 +243,13 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
             Errors errors = new BeanPropertyBindingResult(dto, "organization");
             validator.validate(dto, errors);
             if (errors.hasErrors()) {
-                throw new oeapiException(HttpStatus.NOT_FOUND, "Error creating Organization at validate: " + errors.getAllErrors());
+                throw new oeapiException(HttpStatus.BAD_REQUEST, "Error creating Organization at validate: " + errors.getAllErrors());
             }
 
             super.createDTO(dto, organizationService);
 
         }
         return ResponseEntity.ok("Organizations created successfully");
-
     }
 
 }
