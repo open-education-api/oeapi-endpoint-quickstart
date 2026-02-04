@@ -892,6 +892,10 @@ $('#catalogForm').on('submit', async function (e) {
                     break;
 
             } // end switch
+            
+            // At this point the course is saved or updated, so we can go to preview course
+            window.location.href = "./course.html?courseId="+postCourseResponse.courseId;
+
 
         } // end if-else validate dates
 
