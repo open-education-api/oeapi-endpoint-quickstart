@@ -19,6 +19,7 @@ import oeapi.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersonController extends oeapiController<Person> {
 
     @Autowired
-    private PersonService service;
+    private PersonService personService;
 
     @Autowired
     private GroupService groupService;
@@ -56,19 +57,19 @@ public class PersonController extends oeapiController<Person> {
     public ResponseEntity<?> getAll(@ModelAttribute oeapiPersonRequestParam requestParam) {
 
         Map.Entry<String, String> filter = requestParam.getFilter();
-        return this.getAll(filter, requestParam.toPageable(), service);
+        return this.getAll(filter, requestParam.toPageable(), personService);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> get(@PathVariable String id) {
-        return super.get(id, service);
+        return super.get(id, personService);
 
     }
 
     @GetMapping(value = "/{id}/groups", produces = "application/json")
     public ResponseEntity<?> getGroups(@PathVariable String id, @ModelAttribute oeapiGroupRequestParam requestParam) {
 
-        Optional<Person> existing = service.getById(id);
+        Optional<Person> existing = personService.getById(id);
         if (!existing.isPresent()) {
             //return super.NotFound(id);
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Person with Id: " + id);
@@ -81,7 +82,7 @@ public class PersonController extends oeapiController<Person> {
     @GetMapping(value = "/{id}/associations", produces = "application/json")
     public ResponseEntity<?> getAssociations(@PathVariable String id, @ModelAttribute oeapiAssociationRequestParam requestParam) {
 
-        Optional<Person> existing = service.getById(id);
+        Optional<Person> existing = personService.getById(id);
         if (existing.isPresent()) {
 
             List<Association> associations = new ArrayList<>();
@@ -98,9 +99,25 @@ public class PersonController extends oeapiController<Person> {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Person person) {
-        return super.create(person, service);
+        return super.create(person, personService);
     }
 
+    @DeleteMapping("/{personId}")
+    public ResponseEntity<?> deletePerson(@PathVariable String personId) {
+
+        Optional<Person> existing = personService.getById(personId);
+
+        if (existing.isPresent()) {
+            personService.delete(personId);  
+            return ResponseEntity.ok().build();
+        } else {
+            // return super.NotFound(courseId);
+           throw new oeapiException(HttpStatus.NOT_FOUND, "Error deletePerson with Id: " + personId+ ". Check id");
+
+        }
+
+    }
+           
     @PostMapping(value = {"/loadbyjson"}, produces = "application/json")
     public ResponseEntity<String> createByJSON(@RequestBody List<Person> items) {
 
@@ -111,7 +128,7 @@ public class PersonController extends oeapiController<Person> {
         }
 
          */
-        return super.createByJSON(items, service);
+        return super.createByJSON(items, personService);
 
     }
 
