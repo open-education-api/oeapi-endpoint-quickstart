@@ -822,21 +822,19 @@ $('#catalogForm').on('submit', async function (e) {
                         console.log("On submit (stdCourse): postOffering response: ", postCourseOfferResponse);
                         if (postCourseOfferResponse !== null)
                         {
-                            showAlert("success", "Course sent!", "Course " + sendMode);
-                        }
+                           showAlert("success", "Course sent!", "Course " + sendMode);
+                        }  else {                        
+                                if (!isEditMode)
+                                 { rollbackCourse(postCourseResponse.courseId,"Offering"); }   
+                                return;                                                   
+                        }    
 
                     } catch (err) {
-                        // Stop the function immediately
-                        console.log("postOffering course exiting due to errors: ", err);
-
-                        // if course is new, it is not completed if it has no offering, then delete it
+                        // Unhandled error, stop the function immediately
+                        console.error("POST course Offering exiting due to errors: ", err);
                         if (!isEditMode)
-                        {
-                            console.error("postOffering deleting uncomplete course: ", postCourseResponse.courseId);
-                            deleteCourse(postCourseResponse.courseId, false);
-                        }
-                        showAlert("error", "Error", "Submission of Course failed, problem submitting offering!");
-                        return;
+                         { rollbackCourse(postCourseResponse.courseId,"Offering"); }   
+                        return;                                                   
                     }
 
                     break;
@@ -851,20 +849,19 @@ $('#catalogForm').on('submit', async function (e) {
                         if (postPhysicalComponentCourseOfferResponse !== null)
                         {
                             console.log("On submit (Physical Component): Success !");
-                        }
+                        } else {                        
+                                if (!isEditMode)
+                                 { rollbackCourse(postCourseResponse.courseId,"(Physical Component)"); }   
+                                return;
+                        }                                                                        
                     } catch (err) {
-                        // Stop the function immediately
-                        console.error("On submit (Physical Component): postOffering: ", err);
-                        // if course is new, it is not completed if it has no offering, then delete it
+                        // Unhandled error, stop the function immediately
+                        console.error("POST course (Physical Component) exiting due to errors: ", err);
                         if (!isEditMode)
-                        {
-                            console.log("On submit (Physical Component) deleting uncomplete course: ", postCourseResponse.courseId);
-                            deleteCourse(postCourseResponse.courseId, false);
-                        }
-                        showAlert("error", "Error", "Submission of Course failed, problem submitting offering (Physical Component) ");
+                         { rollbackCourse(postCourseResponse.courseId,"(Physical Component)"); }   
                         return;
+                   
                     }
-
 
                     // Virtual Component
                     let postVirtualComponentCourseOfferResponse;
@@ -875,17 +872,16 @@ $('#catalogForm').on('submit', async function (e) {
                         {
                             console.log("On submit (Virtual Component): Success !");
                             showAlert("success", "BIP Course sent!", "Course " + sendMode);
-                        }
+                        } else {                        
+                                if (!isEditMode)
+                                 { rollbackCourse(postCourseResponse.courseId,"(Virtual Component)"); }   
+                                return;                   
+                        }                           
                     } catch (err) {
-                        // Stop the function immediately
-                        console.log("On submit (Virtual Component): postOffering: ", err);
-                        // if course is new, it is not completed if it has no offering, then delete it
+                        // Unhandled error, stop the function immediately
+                        console.error("POST course (Virtual Component) exiting due to errors: ", err);
                         if (!isEditMode)
-                        {
-                            console.log("On submit (Virtual Component) deleting uncomplete course: ", postCourseResponse.courseId);
-                            deleteCourse(postCourseResponse.courseId, false);
-                        }
-                        showAlert("error", "Error", "Submission of Course failed, problem submitting offering (Virtual Component) ");
+                         { rollbackCourse(postCourseResponse.courseId,"(Virtual Component)"); }   
                         return;
                     }
 
@@ -1205,7 +1201,16 @@ async function postVirtualComponentOffering(courseId) {
         return null;
     }
 
+}
 
+function rollbackCourse(courseId,itemFailed)
+{
+    // if course is new, it is not completed if it has no offering, then delete it
+    console.error("On submit "+itemFailed+" failed, deleting orphan course: ", courseId);
+    deleteCourse(courseId, false);
+
+    showAlert("error", "Error", "Submission of Course failed, Please, check "+itemFailed+" Details.");
+    return;
 }
 
 function manageResponse(responseResult, textResult, messageHelper) {

@@ -438,7 +438,8 @@ async function deleteCourse(theCourse, needToConfirm) {
 
         const data = await response.text()  // use `.json()` if server returns JSON
         console.log('Delete successful:', data)
-        window.location.href = "./catalog.html"
+        // Changed, now caller decides where to redirect
+        // window.location.href = "./catalog.html"   
     }
 }
 
@@ -587,7 +588,7 @@ let oneCourseCard = `
         Edit this course <i class="fas fa-pencil fa-1x"></i>
     </div>
 
-    <div class="delete-icon" id="deleteIcon" onclick="deleteCourse(theCourse,true)" style="cursor: pointer;">
+    <div class="delete-icon" id="deleteIcon" onclick="deleteCourse(theCourse,true);window.location.href = './catalog.html'" style="cursor: pointer;">
         Delete this course <i class="fas fa-trash fa-1x"></i>
     </div>
   </div>
