@@ -111,9 +111,7 @@ public class PersonController extends oeapiController<Person> {
             personService.delete(personId);  
             return ResponseEntity.ok().build();
         } else {
-            // return super.NotFound(courseId);
            throw new oeapiException(HttpStatus.NOT_FOUND, "Error deletePerson with Id: " + personId+ ". Check id");
-
         }
 
     }
