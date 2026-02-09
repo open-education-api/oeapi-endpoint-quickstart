@@ -797,6 +797,9 @@ $('#catalogForm').on('submit', async function (e) {
             try {
                 postCourseResponse = await postCourse(coordinatorsId);
                 console.log("Posting course response: ", postCourseResponse);
+                // If later submissions of offerings, etc, fail we would remain
+                // in the same form, but on edit mode as main course data is already saved
+                courseIdEd = postCourseResponse.courseId;  
 
             } catch (err) {
                 // Stop the function immediately
@@ -823,19 +826,23 @@ $('#catalogForm').on('submit', async function (e) {
                         if (postCourseOfferResponse !== null)
                         {
                            showAlert("success", "Course sent!", "Course " + sendMode);
-                        }  else {                        
-                                if (!isEditMode)
-                                 { rollbackCourse(postCourseResponse.courseId,"Offering"); }   
-                                return;                                                   
-                        }    
-
+                        }  else {                       
+                                console.error("POST course Offering. postCourseOfferResponse is null - not processed");
+                                showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Application Info or Offering Details tabs need revision");
+                                // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
+                                switchToEditMode(); 
+                                return;
+                                
+                             }    
                     } catch (err) {
                         // Unhandled error, stop the function immediately
-                        console.error("POST course Offering exiting due to errors: ", err);
-                        if (!isEditMode)
-                         { rollbackCourse(postCourseResponse.courseId,"Offering"); }   
-                        return;                                                   
-                    }
+                        console.error("POST course Offering. Revise dates and required fields.", err);                        
+                        showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Application Info or Offering Details tabs need revision");
+                        // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
+                        switchToEditMode(); 
+                        return;
+
+                    }   
 
                     break;
 
@@ -849,18 +856,23 @@ $('#catalogForm').on('submit', async function (e) {
                         if (postPhysicalComponentCourseOfferResponse !== null)
                         {
                             console.log("On submit (Physical Component): Success !");
-                        } else {                        
-                                if (!isEditMode)
-                                 { rollbackCourse(postCourseResponse.courseId,"(Physical Component)"); }   
+                            // If later submissions of other offerings, etc, fail we would remain
+                            // in the same form, but on edit mode as main course data and this offering are already saved
+                            physicalOfferingIdEd = postPhysicalComponentCourseOfferResponse.offeringId;                             
+                        } else {
+                                console.error("POST (Physical Component). postPhysicalComponentCourseOfferResponse is null - not processed");                        
+                                showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Physical Component tab need revision");                            
+                                // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
+                                switchToEditMode(); 
                                 return;
-                        }                                                                        
+                        }                                                                    
                     } catch (err) {
                         // Unhandled error, stop the function immediately
                         console.error("POST course (Physical Component) exiting due to errors: ", err);
-                        if (!isEditMode)
-                         { rollbackCourse(postCourseResponse.courseId,"(Physical Component)"); }   
-                        return;
-                   
+                        showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Physical Component tab need revision");
+                        // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
+                        switchToEditMode();        
+                        return;                        
                     }
 
                     // Virtual Component
@@ -872,16 +884,20 @@ $('#catalogForm').on('submit', async function (e) {
                         {
                             console.log("On submit (Virtual Component): Success !");
                             showAlert("success", "BIP Course sent!", "Course " + sendMode);
-                        } else {                        
-                                if (!isEditMode)
-                                 { rollbackCourse(postCourseResponse.courseId,"(Virtual Component)"); }   
-                                return;                   
-                        }                           
+                        } else {
+                                console.error("POST (Virtual Component). postVirtualComponentCourseOfferResponse is null - not processed");                        
+                                showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Virtual Component tab need revision");                            
+                                // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
+                                switchToEditMode(); 
+                                return;
+
+                        }                             
                     } catch (err) {
                         // Unhandled error, stop the function immediately
                         console.error("POST course (Virtual Component) exiting due to errors: ", err);
-                        if (!isEditMode)
-                         { rollbackCourse(postCourseResponse.courseId,"(Virtual Component)"); }   
+                        showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Virtual Component tab need revision");                            
+                        // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
+                        switchToEditMode();          
                         return;
                     }
 
@@ -1023,18 +1039,18 @@ async function postOffering(courseId) {
     // Remove empty values
     OfferingData = cleanNullsOrEmpties(OfferingData);
 
-    if (isEditMode)
+    if (isEditMode && offeringIdEd)  // if offeringIdEd is null, we are in edit mode but no previous offering yet
     {
         OfferingData.offeringId = offeringIdEd;
     } // Ensure no new Id 
 
     console.log("Ready to post offering data: ", OfferingData);
 
-    const endpoint = isEditMode
+    const endpoint = (isEditMode && offeringIdEd)
           ? (data) => API.updateOffering(OfferingData.offeringId, data)
           : API.createOffering
 
-    console.log("postOffering: isEditMode" , isEditMode);
+    console.log("postOffering: isEditMode,offeringIdEd " , isEditMode, offeringIdEd);
     console.log("postOffering: endpoint" , endpoint);
 
     try {
@@ -1107,14 +1123,14 @@ async function postPhysicalComponentOffering(courseId) {
     // Remove empty values
     PhysicalComponentOfferingData = cleanNullsOrEmpties(PhysicalComponentOfferingData);
 
-    if (isEditMode)
+    if (isEditMode && physicalOfferingIdEd) 
     {
         PhysicalComponentOfferingData.offeringId = physicalOfferingIdEd;
     } // Ensure no new Id 
 
     console.log("Ready to post Physical offering data: ", PhysicalComponentOfferingData);
 
-    const endpoint = isEditMode
+    const endpoint = (isEditMode && physicalOfferingIdEd) 
           ? (data) => API.updateOffering(PhysicalComponentOfferingData.offeringId, data)
           : API.createOffering
 
@@ -1168,14 +1184,14 @@ async function postVirtualComponentOffering(courseId) {
     // Remove empty values
     VirtualComponentOfferingData = cleanNullsOrEmpties(VirtualComponentOfferingData);
 
-    if (isEditMode)
+    if (isEditMode && virtualOfferingIdEd) 
     {
         VirtualComponentOfferingData.offeringId = virtualOfferingIdEd;
     } // Ensure no new Id 
 
     console.log("Ready to post Virtual offering data: ", VirtualComponentOfferingData);
 
-    const endpoint = isEditMode
+    const endpoint = (isEditMode && virtualOfferingIdEd) 
           ? (data) => API.updateOffering(VirtualComponentOfferingData.offeringId, data)
           : API.createOffering
 
@@ -1201,16 +1217,6 @@ async function postVirtualComponentOffering(courseId) {
         return null;
     }
 
-}
-
-function rollbackCourse(courseId,itemFailed)
-{
-    // if course is new, it is not completed if it has no offering, then delete it
-    console.error("On submit "+itemFailed+" failed, deleting orphan course: ", courseId);
-    deleteCourse(courseId, false);
-
-    showAlert("error", "Error", "Submission of Course failed, Please, check "+itemFailed+" Details.");
-    return;
 }
 
 function manageResponse(responseResult, textResult, messageHelper) {
@@ -1434,6 +1440,15 @@ function populateSelectMultiple(item, values) {
     Array.from(select.options).forEach(option => {
         option.selected = values && values.includes(option.value);
     });
+}
+
+function switchToEditMode () {
+    // If some components (offering, etc)  create/update fail, 
+    // remain in form but switch update mode 
+    isEditMode = true;
+    sendMode = "Updated!";  // For final message;
+    document.querySelector("h4").innerText = "Edit Course";
+    document.getElementById("submit-button").innerText = "Update Course";
 }
 
 

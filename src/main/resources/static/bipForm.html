@@ -621,9 +621,9 @@
     // Check if we are editing or creating
 
     const urlParams = new URLSearchParams(window.location.search);
-    const courseIdEd = urlParams.get("courseId"); // null if creating new
+    var courseIdEd = urlParams.get("courseId"); // null if creating new
 
-    const isEditMode = !!courseIdEd;
+    var isEditMode = !!courseIdEd;  // isEditMode and courseIdEd may change when switching internally from create to edit mode.
 
     if (isEditMode) {
         document.querySelector("h4").innerText = "Edit BIP Course";
