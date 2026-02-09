@@ -89,7 +89,6 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
         Map.Entry<String, String> filter = requestParam.getFilter();
         Optional<Organization> existing = organizationService.getById(id);
         if (!existing.isPresent()) {
-            //return super.NotFound(id);
             throw new oeapiException(HttpStatus.NOT_FOUND, "There are not groups for Id: " + id);
         }
 
@@ -193,6 +192,7 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
     @PutMapping(value = "/{organizationId}")
     public ResponseEntity<?> updateOrganization(@PathVariable String organizationId, @RequestBody OrganizationDTO o) {
+ 
         // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 
         if ((o.getOrganizationId() == null) || (!o.getOrganizationId().equalsIgnoreCase(organizationId))) {
             throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organization: organizationId on JSON does not match URL request or is missing : [" + organizationId + "," + o.getOrganizationId() + "]");
@@ -209,6 +209,7 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
     @Deprecated
     @PostMapping("/{organizationId}/update")
     public ResponseEntity<?> updateOrganization(@PathVariable String organizationId, @RequestBody Organization o) {
+
         // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 
         if ((o.getOrganizationId() == null) || (!o.getOrganizationId().equalsIgnoreCase(organizationId))) {
             throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organization: organizationId on JSON does not match URL request or is missing : [" + organizationId + "," + o.getOrganizationId() + "]");
