@@ -750,8 +750,40 @@ $('#catalogForm').on('submit', async function (e) {
         
         if (validateDates()) {
             console.log("On submit: Required dates are valid...");
-
+            
             let messageIfFails;   // For later use, contextual tips
+            
+            // Multilingual fields captured with CKEditor that are mandatory, 
+            // like description, cannot be checked with HTML native "required" option.
+            // So, let's check them before posting any data
+            let CKEMandatoriesOk = true;
+            
+            if (getMultilingualEditorJSON("description").length == 0) {
+                messageIfFails = "Field 'Description' in course main data cannot be blank. <br><br>&nbsp; Please supply that information";
+                CKEMandatoriesOk = false;
+            } else {
+                if (formCourseType == "stdCourse" && (getMultilingualEditorJSON("offeringDescription").length == 0)) {
+                    messageIfFails = "Field 'Description' in Offering main data cannot be blank. <br><br>&nbsp; Please supply that information";
+                    CKEMandatoriesOk = false;
+                } else {
+                    if (formCourseType == "BIPCourse") {
+                        if (getMultilingualEditorJSON("physicalDescription").length == 0) {
+                            messageIfFails = "Field 'Description' in Physical Component cannot be blank. <br><br>&nbsp; Please supply that information";
+                            CKEMandatoriesOk = false; 
+                        }
+                        if (getMultilingualEditorJSON("virtualDescription").length == 0) {
+                            messageIfFails = "Field 'Description' in Virtual Component cannot be blank. <br><br>&nbsp; Please supply that information";
+                            CKEMandatoriesOk = false; 
+                        }
+                    }
+                }
+            }
+                
+            if (!CKEMandatoriesOk) {
+                    showAlert("error","Some data is missing",messageIfFails); 
+                    return;
+            }       
+
 
             /* Manage coordinators... */
 
