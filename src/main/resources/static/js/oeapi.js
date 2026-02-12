@@ -86,9 +86,11 @@ const API = (function() {
                                  'Authorization': getAuthorizationHeader()})
         )
 
-        if (!res.ok) {
-            throw new Error(`Failed to fetch ${url}, got status ${res.status}`);
+        if (!res.ok) {            
+            const responseText = await res.clone().text();
+            throw { status: res.status, responseText } ;
         }
+        
         return res
     }
     const toQueryString = (params) => {
@@ -535,7 +537,7 @@ function showAlertModal(type, title, message) {
 
     // Update content
     document.getElementById("alertModalTitle").innerText = title;
-    document.getElementById("alertModalBody").innerText = message;
+    document.getElementById("alertModalBody").innerHTML = "<p>"+message+"</p>";
 
     const header = document.getElementById("alertModalHeader");
     header.classList.remove("bg-danger", "bg-success", "text-white");

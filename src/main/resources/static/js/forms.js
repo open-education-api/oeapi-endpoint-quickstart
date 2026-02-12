@@ -747,8 +747,11 @@ $('#catalogForm').on('submit', async function (e) {
 
     if (updatesArePermited) {
         console.log("On submit: User is validated to perform updates...");
+        
         if (validateDates()) {
             console.log("On submit: Required dates are valid...");
+
+            let messageIfFails;   // For later use, contextual tips
 
             /* Manage coordinators... */
 
@@ -795,16 +798,21 @@ $('#catalogForm').on('submit', async function (e) {
             let postCourseResponse;
 
             try {
+                messageIfFails = "Some values on Course Data tab are incomplete or invalid. Please revise them."; 
                 postCourseResponse = await postCourse(coordinatorsId);
                 console.log("Posting course response: ", postCourseResponse);
                 // If later submissions of offerings, etc, fail we would remain
                 // in the same form, but on edit mode as main course data is already saved
                 courseIdEd = postCourseResponse.courseId;  
 
-            } catch (err) {
+            } catch (errResponse) {
                 // Stop the function immediately
-                console.error("Posting course exiting due to errors: ", postCourseResponse);
-                showAlert("error", "Error", "Submission of Course failed!");
+                console.error("Posting course exiting due to errors: ", errResponse);
+                if (errResponse.responseText) { 
+                    showAlert("error","Some details of the course need revision", messageIfFails+ "   <br><br>    ( "+ errResponse.responseText +" )"); 
+                } else {    
+                    showAlert("error","Communitacions Problem", "No internet connection or cannot establish connection with the Endpoint");
+                }                   
                 return;
             }
 
@@ -815,99 +823,52 @@ $('#catalogForm').on('submit', async function (e) {
 
 
             let sendMode = isEditMode ? "Updated!" : "Created!";
+            let errorOnPostOffering = false;
 
-            switch (formCourseType) {
+            try {
+                switch (formCourseType) {
 
-                case "stdCourse":
-                    let postCourseOfferResponse;
-                    try {
-                        postCourseOfferResponse = await postOffering(postCourseResponse.courseId);
-                        console.log("On submit (stdCourse): postOffering response: ", postCourseOfferResponse);
-                        if (postCourseOfferResponse !== null)
-                        {
-                           showAlert("success", "Course sent!", "Course " + sendMode);
-                        }  else {                       
-                                console.error("POST course Offering. postCourseOfferResponse is null - not processed");
-                                showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Application Info or Offering Details tabs need revision");
-                                // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
-                                switchToEditMode(); 
-                                return;
-                                
-                             }    
-                    } catch (err) {
-                        // Unhandled error, stop the function immediately
-                        console.error("POST course Offering. Revise dates and required fields.", err);                        
-                        showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Application Info or Offering Details tabs need revision");
-                        // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
-                        switchToEditMode(); 
-                        return;
+                    case "stdCourse":
+                            messageIfFails = "Some values are incomplete or invalid. While main course data is valid and saved, some values on Application Info or Offering Details tabs need revision";
+                            let postCourseOfferResponse = await postOffering(postCourseResponse.courseId);
+                            console.log("On submit (stdCourse): postOffering response: ", postCourseOfferResponse);
 
-                    }   
+                            showAlert("success", "Course sent!", "Course " + sendMode);
 
-                    break;
+                        break;
 
-                case "BIPCourse":
+                    case "BIPCourse":
 
-                    // Physical Component
-                    let postPhysicalComponentCourseOfferResponse;
-                    try {
-                        postPhysicalComponentCourseOfferResponse = await postPhysicalComponentOffering(postCourseResponse.courseId);
-                        console.log("On submit (Physical Component): postOffering response: ", postPhysicalComponentCourseOfferResponse);
-                        if (postPhysicalComponentCourseOfferResponse !== null)
-                        {
-                            console.log("On submit (Physical Component): Success !");
-                            // If later submissions of other offerings, etc, fail we would remain
-                            // in the same form, but on edit mode as main course data and this offering are already saved
-                            physicalOfferingIdEd = postPhysicalComponentCourseOfferResponse.offeringId;                             
-                        } else {
-                                console.error("POST (Physical Component). postPhysicalComponentCourseOfferResponse is null - not processed");                        
-                                showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Physical Component tab need revision");                            
-                                // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
-                                switchToEditMode(); 
-                                return;
-                        }                                                                    
-                    } catch (err) {
-                        // Unhandled error, stop the function immediately
-                        console.error("POST course (Physical Component) exiting due to errors: ", err);
-                        showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Physical Component tab need revision");
-                        // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
-                        switchToEditMode();        
-                        return;                        
-                    }
+                        // Physical Component
+                            messageIfFails = "Some values are incomplete or invalid. While main course data is valid and saved, some values on Physical Component tab need revision";
+                            let postPhysicalComponentCourseOfferResponse = await postPhysicalComponentOffering(postCourseResponse.courseId);
+                            console.log("On submit (Physical Component) success: postOffering response: ", postPhysicalComponentCourseOfferResponse);
 
-                    // Virtual Component
-                    let postVirtualComponentCourseOfferResponse;
-                    try {
-                        postVirtualComponentCourseOfferResponse = await postVirtualComponentOffering(postCourseResponse.courseId);
-                        console.log("On submit (Virtual Component): postOffering response: ", postVirtualComponentCourseOfferResponse);
-                        if (postVirtualComponentCourseOfferResponse !== null)
-                        {
-                            console.log("On submit (Virtual Component): Success !");
+                        // Virtual Component
+                            messageIfFails = "Some values are incomplete or invalid. While main course data is valid and saved, some values on Virtual Component tab need revision";
+                            let postVirtualComponentCourseOfferResponse = await postVirtualComponentOffering(postCourseResponse.courseId);
+                            console.log("On submit (Virtual Component) success: postOffering response: ", postVirtualComponentCourseOfferResponse);
+
                             showAlert("success", "BIP Course sent!", "Course " + sendMode);
-                        } else {
-                                console.error("POST (Virtual Component). postVirtualComponentCourseOfferResponse is null - not processed");                        
-                                showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Virtual Component tab need revision");                            
-                                // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
-                                switchToEditMode(); 
-                                return;
 
-                        }                             
-                    } catch (err) {
-                        // Unhandled error, stop the function immediately
-                        console.error("POST course (Virtual Component) exiting due to errors: ", err);
-                        showAlert("error", "Some values are incomplete or invalid", "While main course data is valid and saved, some values on Virtual Component tab need revision");                            
-                        // If Offering create/update fails, remain in form but switch to update mode (the course is already created) 
-                        switchToEditMode();          
-                        return;
-                    }
-
-                    break;
-
-            } // end switch
-            
-            // At this point the course is saved or updated, so we can go to preview course
-            window.location.href = "./course.html?courseId="+postCourseResponse.courseId;
-
+                        break;
+                        
+                } // end switch
+            } catch (errResponse) {
+                console.error("postOffering has failed..", errResponse);
+                if (errResponse.responseText) { 
+                    showAlert("error","Some details of the course need revision", messageIfFails+ "    <br><br>    ( "+ errResponse.responseText +" )"); 
+                } else {    
+                    showAlert("error","Communitacions Problem", "No internet connection or cannot establish connection with the Endpoint");
+                }   
+                errorOnPostOffering = true;
+                switchToEditMode(); 
+              }
+              
+            if (!errorOnPostOffering) {          
+                // If offerings are saved ok, we can go to preview course
+                window.location.href = "./course.html?courseId="+postCourseResponse.courseId;
+            }         
 
         } // end if-else validate dates
 
@@ -952,7 +913,7 @@ async function postCourse(listCoordinators) {
     };
 
     // Remove empty values
-
+    
     console.log("postCourse: Json previous cleaning of empty values.. " + safeToString(courseData));
 
     if (isEditMode)
@@ -966,7 +927,7 @@ async function postCourse(listCoordinators) {
 
     var univ = ooapiDefaultShortUnivName; // from init.js
 
-    try {
+//    try {
         const endpoint = isEditMode
               ? (data) => API.updateCourse(courseData.courseId, data)
               : API.createCourse
@@ -974,6 +935,7 @@ async function postCourse(listCoordinators) {
         console.log("postCourse: isEditMode" , isEditMode);
         console.log("postCourse: endpoint" , endpoint);
 
+        // try-catch handled on caller, so messages to user can be more contextual
         const response = await endpoint(courseData)
 
         // Read the response body as text
@@ -982,14 +944,7 @@ async function postCourse(listCoordinators) {
         let parsedResponse = manageResponse(response, text, "postCourse");
         console.log("parsedResponse: ", parsedResponse);
 
-        return parsedResponse;
-
-    } catch (err)
-    {
-        console.error("postCourse: Network or unexpected error:", err);
-        showAlert("error", "Error", "Network or unexpected error:\n" + err.message);
-        return null;
-    }
+        return parsedResponse;     
 }
 
 async function postOffering(courseId) {
@@ -1010,7 +965,6 @@ async function postOffering(courseId) {
             costType: "total costs"
         };
     }
-
 
     OfferingData = {
         primaryCode: {
@@ -1053,27 +1007,18 @@ async function postOffering(courseId) {
     console.log("postOffering: isEditMode,offeringIdEd " , isEditMode, offeringIdEd);
     console.log("postOffering: endpoint" , endpoint);
 
-    try {
-        const response = await endpoint(OfferingData)
+    // try-catch handled on caller, so messages to user can be more contextual
+    const response = await endpoint(OfferingData)
 
-        // Read the response body as text
-        const text = await response.text();
+    // Read the response body as text
+    const text = await response.text();
 
-        let parsedResponse = manageResponse(response, text, "postOfferingData");
+    let parsedResponse = manageResponse(response, text, "postOfferingData");
 
-        console.log("parsedResponse: ", parsedResponse);
+    console.log("parsedResponse: ", parsedResponse);
 
-        return parsedResponse;
-
-    } catch (err)
-    {
-        console.error("Network or unexpected error:", err);
-        showAlert("error", "Error", "Network or unexpected error:\n" + err.message);
-        return null;
-    }
-
+    return parsedResponse;
 }
-
 
 async function postPhysicalComponentOffering(courseId) {
 
@@ -1091,7 +1036,6 @@ async function postPhysicalComponentOffering(courseId) {
             costType: "total costs"
         };
     }
-
 
     const courseAddress = buildAddressJSON();
 
@@ -1137,27 +1081,18 @@ async function postPhysicalComponentOffering(courseId) {
     console.log("postPhysicalOffering: isEditMode", isEditMode);
     console.log("postPhysicalOffering: endpoint", endpoint);
 
-    try {
-        const response = await endpoint(PhysicalComponentOfferingData);
+    // try-catch handled on caller, so messages to user can be more contextual
+    const response = await endpoint(PhysicalComponentOfferingData);
 
-        // Read the response body as text
-        const text = await response.text();
+    // Read the response body as text
+    const text = await response.text();
 
-        let parsedResponse = manageResponse(response, text, "postPhysicalComponentOffering");
+    let parsedResponse = manageResponse(response, text, "postPhysicalComponentOffering");
 
-        console.log("parsedResponse: ", parsedResponse);
+    console.log("parsedResponse: ", parsedResponse);
 
-        return parsedResponse;
-
-    } catch (err)
-    {
-        console.error("Network or unexpected error:", err);
-        showAlert("error", "Error", "Network or unexpected error:\n" + err.message);
-        return null;
-    }
-
+    return parsedResponse;
 }
-
 
 async function postVirtualComponentOffering(courseId) {
 
@@ -1198,24 +1133,18 @@ async function postVirtualComponentOffering(courseId) {
     console.log("postVirtualComponentOffering: isEditMode", isEditMode);
     console.log("postVirtualComponentOffering: endpoint" , endpoint);
 
-    try {
-        const response = await endpoint(VirtualComponentOfferingData);
+    // try-catch handled on caller, so messages to user can be more contextual
+    const response = await endpoint(VirtualComponentOfferingData);
 
-        // Read the response body as text
-        const text = await response.text();
+    // Read the response body as text
+    const text = await response.text();
 
-        let parsedResponse = manageResponse(response, text, "postVirtualComponentOffering");
+    let parsedResponse = manageResponse(response, text, "postVirtualComponentOffering");
 
-        console.log("parsedResponse: ", parsedResponse);
+    console.log("parsedResponse: ", parsedResponse);
 
-        return parsedResponse;
+    return parsedResponse;
 
-    } catch (err)
-    {
-        console.error("Network or unexpected error:", err);
-        showAlert("error", "Error", "Network or unexpected error:\n" + err.message);
-        return null;
-    }
 
 }
 
@@ -1226,16 +1155,9 @@ function manageResponse(responseResult, textResult, messageHelper) {
         console.error("Submission failed with status:", responseResult.status, responseResult.statusText);
         console.error("Server response:", textResult);
 
-        // Try to show something meaningful to the user
-        let message = `Submission failed (${responseResult.status} ${responseResult.statusText})`;
-        if (textResult)
-            message += `\n\nServer response:\n${textResult}`;
-
-        showAlert("error", "Error at " + messageHelper, message);
-
-        return null;
+        throw { status: responseResult.status, responseText: textResult } ;
     }
-
+                     
     // Try to parse JSON if possible
     let parsed;
     try {
