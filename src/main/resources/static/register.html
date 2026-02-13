@@ -139,7 +139,22 @@
                     form.reset();
                     document.getElementById('login').style.display = "block";
                 } catch (err) {
-                    messageDiv.textContent = err.message;
+                    // FIXME: auth/signup responds for plain text error when email take but json when password too short
+                    // TODO: generalize this in forms.js
+                    if (err.responseText) {
+                        messageDiv.textContent = err.responseText
+                    } else if (err.responseJSON) {
+                        const e = document.createElement("p")
+                        e.textContent = err.responseJSON.error
+                        const ul = document.createElement("ul")
+                        err.responseJSON.messages?.forEach(m => {
+                            const li = document.createElement("li")
+                            li.textContent = m;
+                            ul.appendChild(li);
+                       });
+                       e.appendChild(ul);
+                       messageDiv.appendChild(e);
+                    }
                     messageDiv.className = 'error';
                 }
             });
