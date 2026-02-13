@@ -440,8 +440,6 @@ async function deleteCourse(theCourse, needToConfirm) {
 
         const data = await response.text()  // use `.json()` if server returns JSON
         console.log('Delete successful:', data)
-        // Changed, now caller decides where to redirect
-        // window.location.href = "./catalog.html"   
     }
 }
 

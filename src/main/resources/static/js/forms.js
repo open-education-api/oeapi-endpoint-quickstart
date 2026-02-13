@@ -959,24 +959,23 @@ async function postCourse(listCoordinators) {
 
     var univ = ooapiDefaultShortUnivName; // from init.js
 
-//    try {
-        const endpoint = isEditMode
-              ? (data) => API.updateCourse(courseData.courseId, data)
-              : API.createCourse
+    const endpoint = isEditMode
+          ? (data) => API.updateCourse(courseData.courseId, data)
+          : API.createCourse
 
-        console.log("postCourse: isEditMode" , isEditMode);
-        console.log("postCourse: endpoint" , endpoint);
+    console.log("postCourse: isEditMode" , isEditMode);
+    console.log("postCourse: endpoint" , endpoint);
 
-        // try-catch handled on caller, so messages to user can be more contextual
-        const response = await endpoint(courseData)
+    // try-catch handled on caller, so messages to user can be more contextual
+    const response = await endpoint(courseData)
 
-        // Read the response body as text
-        const text = await response.text();
+    // Read the response body as text
+    const text = await response.text();
 
-        let parsedResponse = manageResponse(response, text, "postCourse");
-        console.log("parsedResponse: ", parsedResponse);
+    let parsedResponse = manageResponse(response, text, "postCourse");
+    console.log("parsedResponse: ", parsedResponse);
 
-        return parsedResponse;     
+    return parsedResponse;     
 }
 
 async function postOffering(courseId) {
