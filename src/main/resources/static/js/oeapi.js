@@ -86,11 +86,19 @@ const API = (function() {
                                  'Authorization': getAuthorizationHeader()})
         )
 
-        if (!res.ok) {            
-            const responseText = await res.clone().text();
-            throw { status: res.status, responseText } ;
+        if (!res.ok) {
+            const err = {status: res.status}
+
+            const ct = res.headers.get('content-type')
+            if (ct && ct.match(/^application\/.*json/)) {
+                err.responseJSON = await res.json()
+            } else if (ct && ct.match(/^text\//)) {
+                err.responseText = await res.text()
+            }
+
+            throw err
         }
-        
+
         return res
     }
     const toQueryString = (params) => {
@@ -121,7 +129,7 @@ const API = (function() {
         const res = await post(`auth/login`, {email, password})
 
         if (res.ok) {
-            const {token} = pk('login', await res.json())
+            const {token} = await res.json()
             setToken(token)
         } else {
             console.error('API login failed', res)
