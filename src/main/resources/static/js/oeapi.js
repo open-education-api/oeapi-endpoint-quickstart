@@ -86,9 +86,11 @@ const API = (function() {
                                  'Authorization': getAuthorizationHeader()})
         )
 
-        if (!res.ok) {
-            throw new Error(`Failed to fetch ${url}, got status ${res.status}`);
+        if (!res.ok) {            
+            const responseText = await res.clone().text();
+            throw { status: res.status, responseText } ;
         }
+        
         return res
     }
     const toQueryString = (params) => {
@@ -438,7 +440,6 @@ async function deleteCourse(theCourse, needToConfirm) {
 
         const data = await response.text()  // use `.json()` if server returns JSON
         console.log('Delete successful:', data)
-        window.location.href = "./catalog.html"
     }
 }
 
@@ -534,7 +535,7 @@ function showAlertModal(type, title, message) {
 
     // Update content
     document.getElementById("alertModalTitle").innerText = title;
-    document.getElementById("alertModalBody").innerText = message;
+    document.getElementById("alertModalBody").innerHTML = "<p>"+message+"</p>";
 
     const header = document.getElementById("alertModalHeader");
     header.classList.remove("bg-danger", "bg-success", "text-white");
@@ -587,7 +588,7 @@ let oneCourseCard = `
         Edit this course <i class="fas fa-pencil fa-1x"></i>
     </div>
 
-    <div class="delete-icon" id="deleteIcon" onclick="deleteCourse(theCourse,true)" style="cursor: pointer;">
+    <div class="delete-icon" id="deleteIcon" onclick="deleteCourse(theCourse,true);window.location.href = './catalog.html'" style="cursor: pointer;">
         Delete this course <i class="fas fa-trash fa-1x"></i>
     </div>
   </div>
