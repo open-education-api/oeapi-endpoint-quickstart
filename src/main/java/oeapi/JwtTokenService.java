@@ -13,6 +13,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -48,12 +50,17 @@ public class JwtTokenService {
                 .compact();
     }
 
+    private Claims parseVerifyClaims(String token) {
+        return Jwts.parser()
+            .verifyWith(getSecretKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
+    }
+
     public boolean validateAccessToken(String token) {
         try {
-            Jwts.parser()
-                    .verifyWith(getSecretKey())
-                    .build()
-                    .parseSignedClaims(token);
+            parseVerifyClaims(token);
             return true;
         } catch (ExpiredJwtException ex) {
             LOGGER.error("JWT expired", ex.getMessage());
@@ -70,13 +77,8 @@ public class JwtTokenService {
         return false;
     }
 
-    public String extractUsername(String token) {
-        return Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+    public String extractSubject(String token) {
+        return parseVerifyClaims(token).getSubject();
     }
 
     private volatile SecretKey _secretKey = null;
