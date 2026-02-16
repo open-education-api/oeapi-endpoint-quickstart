@@ -871,14 +871,16 @@ $('#catalogForm').on('submit', async function (e) {
 
                     case "BIPCourse":
 
+                            let offeringGroupId = generateUUID();  //UUID to assign these offerings as a group
+
                         // Physical Component
                             messageIfFails = "Some values are incomplete or invalid. While main course data is valid and saved, some values on Physical Component tab need revision";
-                            let postPhysicalComponentCourseOfferResponse = await postPhysicalComponentOffering(postCourseResponse.courseId);
+                            let postPhysicalComponentCourseOfferResponse = await postPhysicalComponentOffering(postCourseResponse.courseId,offeringGroupId);
                             console.log("On submit (Physical Component) success: postOffering response: ", postPhysicalComponentCourseOfferResponse);
 
                         // Virtual Component
                             messageIfFails = "Some values are incomplete or invalid. While main course data is valid and saved, some values on Virtual Component tab need revision";
-                            let postVirtualComponentCourseOfferResponse = await postVirtualComponentOffering(postCourseResponse.courseId);
+                            let postVirtualComponentCourseOfferResponse = await postVirtualComponentOffering(postCourseResponse.courseId,offeringGroupId);
                             console.log("On submit (Virtual Component) success: postOffering response: ", postVirtualComponentCourseOfferResponse);
 
                             showAlert("success", "BIP Course sent!", "Course " + sendMode);
@@ -1051,7 +1053,7 @@ async function postOffering(courseId) {
     return parsedResponse;
 }
 
-async function postPhysicalComponentOffering(courseId) {
+async function postPhysicalComponentOffering(courseId, offeringGroupId) {
 
     const startDate = $('#physicalStartDate').val() ? $('#physicalStartDate').val() : null;
     const endDate = $('#physicalEndDate').val() ? $('#physicalEndDate').val() : null;
@@ -1067,7 +1069,17 @@ async function postPhysicalComponentOffering(courseId) {
             costType: "total costs"
         };
     }
-
+    
+    // In BIPs, offerings (Physical and Virtual) are always a pair
+    // These codes help to manage them and identify each type   
+    let otherCodesOffering = [
+                        {   codeType:   "x-bip-component",
+                            code:       "PHYSICAL" 
+                        },
+                        {   codeType:   "x-bip-group",
+                            code:       offeringGroupId
+                        }];
+                        
     const courseAddress = buildAddressJSON();
 
     PhysicalComponentOfferingData = {
@@ -1092,8 +1104,9 @@ async function postPhysicalComponentOffering(courseId) {
         modeOfDelivery: ["on campus"],
         addresses: [courseAddress],
         organization: $('#physicalUniversity').val(),
-        course: courseId
-    }
+        course: courseId,
+        otherCodes:  otherCodesOffering
+    };
 
     // Remove empty values
     PhysicalComponentOfferingData = cleanNullsOrEmpties(PhysicalComponentOfferingData);
@@ -1125,11 +1138,21 @@ async function postPhysicalComponentOffering(courseId) {
     return parsedResponse;
 }
 
-async function postVirtualComponentOffering(courseId) {
+async function postVirtualComponentOffering(courseId,offeringGroupId) {
 
     const startDate = $('#virtualStartDate').val() ? $('#virtualStartDate').val() : null;
     const endDate = $('#virtualEndDate').val() ? $('#virtualEndDate').val() : null;
-
+    
+    // In BIPs, offerings (Physical and Virtual) are always a pair
+    // These codes help to manage them and identify each type    
+    let otherCodesOffering = [
+                        {   codeType:   "x-bip-component",
+                            code:       "VIRTUAL" 
+                        },
+                        {   codeType:   "x-bip-group",
+                            code:       offeringGroupId
+                        }] ;
+                            
     VirtualComponentOfferingData = {
         primaryCode: {
             code: $('#code').val() + " (virtualComponent)",
@@ -1144,8 +1167,9 @@ async function postVirtualComponentOffering(courseId) {
         startDate: $('#virtualStartDate').val(),
         endDate: $('#virtualEndDate').val(),
         modeOfDelivery: ["online"],
-        course: courseId
-    }
+        course: courseId,
+        otherCodes:  otherCodesOffering
+    };
 
     // Remove empty values
     VirtualComponentOfferingData = cleanNullsOrEmpties(VirtualComponentOfferingData);
@@ -1334,15 +1358,17 @@ async function populateBIPCourseForm(course, offerings, courseCoordinators, prog
     if (offerings.length) {
 
         // Locate which is physical o virtual
-        let idNormOrPhy = 0; // Default: The first offering is normal or physical component
-        let idVirt = 1;      // Default: The second offering is virtual component
+        let idNormOrPhy = 0; // Default: The first offering is normal or a physical component
+        let idVirt = 1;      // Default: The second offering is a virtual component
 
-        // Actualy?
-        let firstItemCode = offerings[0].primaryCode.code;
-        if (firstItemCode.includes("virtualComponent"))
+        // Is the first offering actualy physical?
+        let firstItemCode = offerings[0].primaryCode.code;       
+        const isfirstItemVirtual = firstItemCode.otherCodes.some( item => item.codeType === "x-bip-component" && item.code === "VIRTUAL" );
+        
+        if (isfirstItemVirtual)
         {
-            idVirt = 0;      // The first offering is virtual component
-            idNormOrPhy = 1; // The first offering is virtual component
+            idVirt = 0;      // The first offering is a virtual component
+            idNormOrPhy = 1; // The second offering is a physical component
         }
 
         const physicalOffering = offerings[idNormOrPhy];
