@@ -53,10 +53,13 @@ public class ApplicationSecurity {
                                    // anybody can login
                                    .requestMatchers("/auth/login").permitAll()
 
-                                   // admin can add users
+                                   // anybody can check if security is enabled
+                                   .requestMatchers(HttpMethod.GET, "/auth/secStatus").permitAll()
+
+                                   // only admin can add users
                                    .requestMatchers("/auth/signup").hasRole("ADMIN")
 
-                                   // edits for users and admins
+                                   // only users and admins can do edits
                                    .requestMatchers(HttpMethod.POST).hasAnyRole("ADMIN", "USER")
                                    .requestMatchers(HttpMethod.PUT).hasAnyRole("ADMIN", "USER")
                                    .requestMatchers(HttpMethod.DELETE).hasAnyRole("ADMIN", "USER"));

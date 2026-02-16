@@ -55,6 +55,11 @@ public class ApplicationSecurityTest {
         void anonymousApiOk() throws Exception {
             mockMvc.perform(get("/")).andExpect(status().isOk());
         }
+
+        @Test
+        void anonymousSecurityStatusOk() throws Exception {
+            mockMvc.perform(get("/auth/secStatus")).andExpect(status().isOk());
+        }
     }
 
     @Nested
@@ -86,6 +91,11 @@ public class ApplicationSecurityTest {
         void anonymousApiOk() throws Exception {
             mockMvc.perform(get("/")).andExpect(status().isOk());
         }
+
+        @Test
+        void anonymousSecurityStatusOk() throws Exception {
+            mockMvc.perform(get("/auth/secStatus")).andExpect(status().isOk());
+        }
     }
 
     @Nested
@@ -116,6 +126,11 @@ public class ApplicationSecurityTest {
         @Test
         void anonymousApiForbidden() throws Exception {
             mockMvc.perform(get("/")).andExpect(status().isForbidden());
+        }
+
+        @Test
+        void anonymousSecurityStatusOk() throws Exception {
+            mockMvc.perform(get("/auth/secStatus")).andExpect(status().isOk());
         }
 
         @Nested
