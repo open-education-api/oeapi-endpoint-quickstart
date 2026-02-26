@@ -1,11 +1,10 @@
-version: '2.4'
 
 services:
   
   oeapi_qs:
     image: oeapi_qs
     container_name: oeapi_qs
-    hostname: oeapi_qs
+    hostname: oeapi-qs
     build:
       dockerfile:  ./Dockerfile
       context: .
