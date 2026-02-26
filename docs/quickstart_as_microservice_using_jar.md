@@ -9,38 +9,54 @@ Installing the quickstart endpoint this way also provides additional flexibility
 * Using an external application.properties file, making it easier to change configuration options or behavior without rebuilding the application.
 * Using customized static resources (for example, modifying or replacing the tiny dashboard).
 
-### Using an external application.properties
+## Building the JAR
 
-To use an external application.properties, you need to build the application so that the default application.properties file is not included in the generated JAR.
+You can build the JAR file from the source code using the IDE of your choice (e.g., NetBeans, Eclipse, etc.) or on the command line.
 
-To do this, simply uncomment the following lines in the pom.xml file:
+Before building the JAR, make sure to review the file located at _src/main/resources/application.properties_ and configure the datasource settings to point to your desired DBMS.
 
-       <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>*/**</include>
-                </includes>
-                **<!-- To use an external application.properties uncomment these lines
-                <excludes>
-                    <exclude>**/*.properties</exclude>
-                </excludes>     
-                -->**                       
-            </resource>
-        </resources>
+Building using the command line goes as follows:
 
-Additionally, a clean build is recommended to ensure that any application.properties files from previous builds are not inadvertently included in the generated JAR.
+```sh
+mvn package
+```
 
-When launching the application like 
+If the above fails with the following error:
 
-java -jar oeapi_qs.jar 
+```
+[ERROR] Error executing Maven.
+[ERROR] java.lang.IllegalStateException: Unable to load cache item
+[ERROR] Caused by: Unable to load cache item
+[ERROR] Caused by: Could not initialize class net.sf.cglib.core.MethodWrapper
+[ERROR] Caused by: Exception net.sf.cglib.core.CodeGenerationException: java.lang.reflect.InaccessibleObjectException-->Unable to make protected final java.lang.Class java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain) throws java.lang.ClassFormatError accessible: module java.base does not "opens java.lang" to unnamed module @13a5fe33 [in thread "main"]
+```
 
-Spring Boot will automatically look for an application.properties file in a subdirectory named config under the current working directory.
-Simply place your customized application.properties file there.
+add the following environment variable and try again:
 
-All configuration values can be customized to fit your needs (language, security settings, etc.). In particular, if you are not using Docker, the database backend configuration must be explicitly defined.
+```sh
+export JDK_JAVA_OPTIONS='--add-opens java.base/java.lang=ALL-UNNAMED --enable-native-access=ALL-UNNAMED'
+```
 
-##### Managing Database (DBMS) in application.properties
+Once you've built the JAR file, and assuming your Java environment is properly set up, you can start the application with the following command (note that the JAR file name may vary):
+
+```bash
+
+nohup java -jar oeapi-qs.jar &
+
+# (if jar is tagged with version, change accordingly)
+
+```
+
+Alternatively, you can provide a single external configuration file that overrides the internal _application.properties_. Do not name your file application.properties unless you want the internal file to be used as a fallback when yours is not found
+
+```bash
+
+export SPRING_CONFIG_LOCATION=./myOrg.properties
+nohup java -jar oeapi_qs.jar > myOrg.log 2>&1 &
+
+```
+
+##### Managing Database (DBMS) in application.properties 
 
 If the application is not deployed using Docker, you must configure a database management system (DBMS) to store the endpoint data.
 

@@ -28,9 +28,8 @@ It is as simple as this:
 
 git clone https://github.com/open-education-api/oeapi-endpoint-quickstart.git
 
-cd oeapi-endpoint-quickstart
+./start_oeapi.sh   # And select option 1)  (try and test) 
 
-docker compose up
 
 # Depending on your platform the command could be "docker-compose up"
 
@@ -39,13 +38,7 @@ docker compose up
 
 Using the default configuration the service is accesible at http://localhost:57075
 
-To customize different parameters have a look at
-
-- src/main/resources/application.properties
-
-- docker-compose.yml
-
-File src/main/resources/application.properties comes with default values to get started. There you can customize the options for your organization.
+File `src/main/resources/application.properties` comes with default (testing) values to get started. In this file you can customize the options for your organization. Do not worry, the installer does it for you. You can see the process in the section [customize your installation for development or production](./docs/customize_your_installation_for_development_or_production),
 
 ### Docker with devel version of OEAPI
 
@@ -74,35 +67,23 @@ In this case, you should build the JAR file from the source code using the IDE o
 
 Before building the JAR, make sure to review the file located at _src/main/resources/application.properties_ and configure the datasource settings to point to your desired DBMS.
 
-Building using the command line goes as follows:
-
-```sh
-mvn package
-```
-
-If the above fails with the following error:
-
-```
-[ERROR] Error executing Maven.
-[ERROR] java.lang.IllegalStateException: Unable to load cache item
-[ERROR] Caused by: Unable to load cache item
-[ERROR] Caused by: Could not initialize class net.sf.cglib.core.MethodWrapper
-[ERROR] Caused by: Exception net.sf.cglib.core.CodeGenerationException: java.lang.reflect.InaccessibleObjectException-->Unable to make protected final java.lang.Class java.lang.ClassLoader.defineClass(java.lang.String,byte[],int,int,java.security.ProtectionDomain) throws java.lang.ClassFormatError accessible: module java.base does not "opens java.lang" to unnamed module @13a5fe33 [in thread "main"]
-```
-
-add the following environment variable and try again:
-
-```sh
-export JDK_JAVA_OPTIONS='--add-opens java.base/java.lang=ALL-UNNAMED --enable-native-access=ALL-UNNAMED'
-```
-
-Once you've built the JAR file, and assuming your Java environment is properly set up, you can start the application with the following command (note that the JAR file name may vary):
+Once you have the JAR file, you can start your endpoint as 
 
 ```bash
 
 nohup java -jar oeapi-qs.jar &
 
 # (if jar is tagged with version, change accordingly)
+
+```
+
+Alternatively, you can provide a single external configuration file that overrides the internal _application.properties_. Do not name your file application.properties unless you want the internal file to be used as a fallback when yours is not found
+
+```bash
+
+export SPRING_CONFIG_LOCATION=./myOrg.properties
+nohup java -jar oeapi_qs.jar > myOrg.log 2>&1 &
+
 ```
 
 More details can be found here ["Installing the Quickstart as a Microservice Using the JAR File (Without Docker)"](docs/quickstart_as_microservice_using_jar.md)
@@ -342,7 +323,8 @@ Regardless of the approach, all options ultimately come down to one simple actio
 
 The "right way" should be using a tool for testing APIs like HTTPie, Postman, etc. and follow the spec to interact with it.
 
-Also, for seeing and checking the data in your OEAPI a tiny frontend is included (not for production!)  You can reach it at http://localhost:57075/oeapi-td.html
+A small built‑in frontend is included to help you view and check the data in your OEAPI instance. You can access it at:
+http://localhost:57075/oeapi-td.html
 
 
 # Configuration
