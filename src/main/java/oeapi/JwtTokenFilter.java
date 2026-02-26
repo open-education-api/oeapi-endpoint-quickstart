@@ -31,7 +31,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenFilter.class);
 
-    @Value("${ooapi.security.enabled:false}")
+    @Value("${ooapi.security.enabled:true}")
     private boolean securityEnabled;
     
     @Value("${app.jwt.static.token.allow:false}")

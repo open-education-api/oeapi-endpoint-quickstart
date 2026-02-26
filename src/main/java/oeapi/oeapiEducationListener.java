@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class oeapiEducationListener {
 
-    @Value("${ooapi.config.defaultTeachingLanguage}")
+    @Value("${ooapi.config.defaultTeachingLanguage:eng}")
     private String defaultTeachingLanguage;
 
     @PrePersist

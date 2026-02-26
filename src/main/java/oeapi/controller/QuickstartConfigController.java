@@ -19,22 +19,22 @@ import oeapi.service.OrganizationService;
 
 @RestController
 public class QuickstartConfigController {
-    @Value("${quickdashboard.config.ooapiDefaultCountry}")
+    @Value("${quickdashboard.config.ooapiDefaultCountry:EN}")
     private String ooapiDefaultCountry;
 
-    @Value("${quickdashboard.config.ooapiDefaultLogo}")
+    @Value("${quickdashboard.config.ooapiDefaultLogo:./img/OpenEducationApi_Logo.png}")
     private String ooapiDefaultLogo;
 
-    @Value("${quickdashboard.config.ooapiDefaultShortUnivName}")
+    @Value("${quickdashboard.config.ooapiDefaultShortUnivName:dummy}")
     private String ooapiDefaultShortUnivName;
 
-    @Value("${quickdashboard.config.ooapiDefaultUnivName}")
+    @Value("${quickdashboard.config.ooapiDefaultUnivName:DUMMY}")
     private String ooapiDefaultUnivName;
 
-    @Value("${quickdashboard.config.ooapiDefaultOrganizationId:}")
+    @Value("${quickdashboard.config.ooapiDefaultOrganizationId:78ca90e6-7257-4721-aae3-94addbed42fc}")
     private String ooapiDefaultOrganizationId;
 
-    @Value("${quickdashboard.config.ooapiDefaultEndpointURL}")
+    @Value("${quickdashboard.config.ooapiDefaultEndpointURL:http://localhost:57075}")
     private String ooapiDefaultEndpointURL;
 
     @Autowired
