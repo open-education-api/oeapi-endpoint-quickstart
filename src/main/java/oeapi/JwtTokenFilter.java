@@ -34,16 +34,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Value("${ooapi.security.enabled:true}")
     private boolean securityEnabled;
     
-    @Value("${app.jwt.static.token.allow:false}")
+    @Value("${app.static.token.allow:false}")
     private boolean staticTokenAllowed;
 
-    @Value("${app.jwt.static.token.value:9018313!!!038_13291jsdaujtexsksdh}")
+    @Value("${app.static.token.value:9018313!!!038_13291jsdaujtexsksdh}")
     private String staticTokenValue;
 
-    @Value("${app.jwt.static.token.user:token_user}")
+    @Value("${app.static.token.user:token_user}")
     private String staticTokenUser;
     
-    @Value("${app.jwt.static.token.role:ROLE_USER}")
+    @Value("${app.static.token.role:ROLE_USER}")
     private String staticTokenRole;    
     
     
