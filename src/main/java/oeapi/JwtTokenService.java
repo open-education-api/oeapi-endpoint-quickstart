@@ -29,7 +29,7 @@ public class JwtTokenService {
 
     private static final long EXPIRE_DURATION = 24 * 60 * 60 * 1000; // 24 hour
 
-    @Value("${app.jwt.secret}")
+    @Value("${app.jwt.secret:abcccfghijklmnOOORSTUVWABC123456}")
     private String SECRET_KEY;
 
     public String generateAccessToken(UserDetails user) {

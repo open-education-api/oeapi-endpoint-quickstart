@@ -112,7 +112,7 @@ public class AuthApi {
         return ResponseEntity.ok().build();
     }
 
-    @Value("${ooapi.security.enabled}")
+    @Value("${ooapi.security.enabled:true}")
     private boolean ENDPOINT_SECURITY_STATUS_ENABLED;
 
     @GetMapping("/auth/secStatus")
