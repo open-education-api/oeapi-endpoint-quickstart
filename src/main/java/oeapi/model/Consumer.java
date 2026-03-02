@@ -1,11 +1,15 @@
 package oeapi.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+import java.util.HashMap;
+import java.util.Map;
 import oeapi.converter.oeapiUnitaListAllianceConverter;
 import oeapi.converter.oeapiUnitaListEnrollmentConverter;
 
@@ -17,9 +21,22 @@ import oeapi.converter.oeapiUnitaListEnrollmentConverter;
 
 public class Consumer {
 
+    private Map<String, Object> otherAttributes = new HashMap<>();
+      
     private String consumerKey;
 
-    private String additional;
+    // Allow any attributes, the ones not explicity specified go into the map
+
+    @JsonAnySetter
+    public void set(String name, Object value) {
+        otherAttributes.put(name, value);
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> get() {
+        return otherAttributes;
+    }
+
 
     @JsonProperty("alliances")
     @Column(columnDefinition = "text")
@@ -45,19 +62,7 @@ public class Consumer {
         this.consumerKey = consumerKey;
     }
 
-    /**
-     * @return the additional
-     */
-    public String getAdditional() {
-        return additional;
-    }
 
-    /**
-     * @param additional the additional to set
-     */
-    public void setAdditional(String additional) {
-        this.additional = additional;
-    }
 
     /**
      * @return the alliances
