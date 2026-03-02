@@ -38,7 +38,7 @@ git clone https://github.com/open-education-api/oeapi-endpoint-quickstart.git
 
 Using the default configuration the service is accesible at http://localhost:57075
 
-File `src/main/resources/application.properties` comes with default (testing) values to get started. In this file you can customize the options for your organization. Do not worry, the installer does it for you. You can see the process in the section [customize your installation for development or production](./docs/customize_your_installation_for_development_or_production),
+File `src/main/resources/application.properties` comes with default (testing) values to get started. In this file you can customize the options for your organization. Do not worry, the installer does it for you. You can see the process in the section [customize your installation for development or production](./docs/customize_your_installation_for_development_or_production.md),
 
 ### Docker with devel version of OEAPI
 
