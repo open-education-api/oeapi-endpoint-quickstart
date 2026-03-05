@@ -2,8 +2,8 @@
 services:
   oeapi_qs:
     volumes:
-      - ./config/${ENV_TARGET:-test}/application-custom.properties:/config/application-custom.properties:ro
-      - ./config/${ENV_TARGET:-test}/initial_org.json:/config/initial_org.json:ro
+      - ./config/${ENV_TARGET:-test}/application-custom.properties:/config/application-custom.properties:rw
+      - ./config/${ENV_TARGET:-test}/initial_org.json:/config/initial_org.json:rw
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
 
