@@ -40,7 +40,9 @@ echo -e "${BOLD}${WHITE}2${RESET}) Customize it for DEVEL"
 echo
 echo -e "${BOLD}${WHITE}3${RESET}) Customize it for PRODUCTION"
 echo
-echo -ne "${RESET}${BOLD}${YELLOW}Your choice (1, 2 or 3): ${RESET}"
+echo -e "${BOLD}${WHITE}4${RESET}) Start my LAST CONFIGURED Endpoint"
+echo
+echo -ne "${RESET}${BOLD}${YELLOW}Your choice (1, 2, 3 or 4): ${RESET}"
 read choice
 
 
@@ -52,20 +54,32 @@ case $choice in
     TARGET_DIR="$CONFIG_TARGET_DIR/test" 
     mkdir -p "$TARGET_DIR" 
     cp "$CONF_SRC/application.properties" "$TARGET_DIR/application-custom.properties"
-    echo "ENV_TARGET=test" > .env
-    echo "SERVER_PORT=57075" >> .env 
+    ENV_TARGET=test
+    SERVER_PORT=57075
+    echo "ENV_TARGET=$ENV_TARGET" > .env
+    echo "SERVER_PORT=$SERVER_PORT" >> .env 
     docker compose up -d
     ;;
 
   2)
     echo -e "\n${BOLD}${CYAN}Let's customize Development mode...${RESET}"
     ./prepare_params.sh dev    
-    docker compose up -d
+    docker compose up -d --force-recreate
     ;;
   3)
-    echo -e "\n$${BOLD}{CYAN}Let's customize Production mode...${RESET}"
-    ./prepare_params.sh pro
-    docker compose up -d
+    echo -e "\n${BOLD}${CYAN}Let's customize Production mode...${RESET}"
+    ./prepare_params.sh prod
+    docker compose up -d --force-recreate
+    #docker compose build --no-cache && docker compose up -d
+    ;;
+
+  4)
+    echo -e "\n${BOLD}${CYAN}Restating your last configured Endpoint...${RESET}"
+    echo
+    echo -e "Environment is: "
+    cat .env
+    echo
+    docker compose up -d 
     ;;
 
   *)

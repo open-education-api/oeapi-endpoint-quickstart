@@ -2,104 +2,152 @@
 
 # --- Styles ---
 BOLD=$(tput bold)
-DIM=$(tput dim)
-UNDERLINE=$(tput smul)
-REVERSE=$(tput rev)
-
 RESET=$(tput sgr0)
-
-# Standard 8 colors
-BLACK=$(tput setaf 0)
 RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
 BLUE=$(tput setaf 4)
-MAGENTA=$(tput setaf 5)
 CYAN=$(tput setaf 6)
 WHITE=$(tput setaf 7)
 
+# -------------------------------
+# Sanitize (remove CR + control chars, keep UTF-8)
+# -------------------------------
+sanitize() {
+    printf '%s' "$1" | tr -d '\r' | sed 's/[[:cntrl:]]//g'
+}
+
+# -------------------------------
+# Generic validated prompt
+# usage: prompt_validate "message" "default" "regex" "error message"
+# -------------------------------
+prompt_validate() {
+    local message="$1"
+    local default="$2"
+    local regex="$3"
+    local error="$4"
+    local input
+
+    while true; do
+        read -r -p "$message" input
+        input=$(sanitize "$input")
+
+        [[ -z "$input" ]] && input="$default"
+
+        if [[ "$input" =~ $regex ]]; then
+            printf '%s' "$input"
+            return
+        else
+            echo -e "${RED}$error${RESET}" >&2
+        fi
+    done
+}
+
 echo
-echo
-echo -e "${RESET}${BOLD}${BLUE}___ Customizing your OEAPI Environment ___${RESET}"
+echo -e "${BOLD}${BLUE}___ Customizing your OEAPI Environment ___${RESET}"
 echo
 
 # ============================
 # ENVIRONMENT SELECTION
 # ============================
 
-# Allow passing dev/prod as first argument
 if [[ -n "$1" ]]; then
-    ENV_TARGET=$(echo "$1" | tr '[:upper:]' '[:lower:]')
-else
-    # Fallback to interactive mode only if no argument is provided
-    read -p "Choose environment to generate (dev/prod): " ENV_TARGET
+    ENV_TARGET=$(sanitize "$1")
     ENV_TARGET=$(echo "$ENV_TARGET" | tr '[:upper:]' '[:lower:]')
+else
+    ENV_TARGET=$(prompt_validate \
+        "Choose environment to generate (dev/prod/test): " \
+        "" \
+        "^(dev|prod|test)$" \
+        "Invalid option. Allowed: dev, prod, test")
 fi
 
-# Validate
-if [[ "$ENV_TARGET" != "dev" && "$ENV_TARGET" != "prod" ]]; then
-    echo -e "${RESET}${BOLD}${RED}Invalid option. Use: dev or prod${RESET}"
-    exit 1
-fi
-
-echo -e "${RESET}${BOLD}${GREEN}Environment selected: $ENV_TARGET${RESET}"
+echo -e "${GREEN}Environment selected: $ENV_TARGET${RESET}"
 
 CONFIG_TARGET_DIR="config"
 mkdir -p "$CONFIG_TARGET_DIR"
+
+TARGET_DIR="$CONFIG_TARGET_DIR/$ENV_TARGET"
+mkdir -p "$TARGET_DIR"
+
 
 # -------------------------------
 # Main Values
 # -------------------------------
 echo
-echo -e "${RESET}${BOLD}${WHITE}Main Values${RESET}"
+echo -e "${BOLD}${WHITE}Main Values${RESET}"
+echo
 echo
 echo "This section is dedicated to configuring the institution that will use the endpoint. Here you can specify the name of your institution, your primary language, the institution’s UUID, and other related details."
 echo
 echo "The UUID of your organization or institution must be unique among all institutions that may use the OEAPI specification. You can generate a random UUID for this purpose, or it may be provided externally—for example, by an alliance or consortium you belong to."
 echo
 
-read -p "---> University/Organization organization name (default: 'OEAPI Test Organization'): " ORG_NAME
-ORG_NAME=${ORG_NAME:-"OEAPI Test Organization"}
+ORG_NAME=$(prompt_validate \
+    "---> Organization name (default OEAPI Test Organization): " \
+    "OEAPI Test Organization" \
+    "^.{1,200}$" \
+    "Name cannot be empty.")
 
-read -p "---> University/Organization short name (default: 'OEAPI_TEST'): " ORG_SHORT
-ORG_SHORT=${ORG_SHORT:-"OEAPI_Test"}
+ORG_SHORT=$(prompt_validate \
+    "---> Organization short name (default OEAPI_TEST): " \
+    "OEAPI_TEST" \
+    "^[A-Za-z0-9_-]{2,50}$" \
+    "Short name: letters, numbers, _ or - only.")
 
-read -p "---> Organization UUID code (default 0): " ORG_CODE
-ORG_CODE=${ORG_CODE:-0}
+ORG_CODE=$(prompt_validate \
+    "---> Organization UUID code (default 0): " \
+    "0" \
+    "^[A-Za-z0-9._-]+$" \
+    "Invalid code format.")
 
-read -p "---> Organization URL (default https://example.com ): " ORG_URL
-ORG_URL=${ORG_URL:-"https://example.com"}
+ORG_URL=$(prompt_validate \
+    "---> Organization URL (default https://example.com): " \
+    "https://example.com" \
+    "^https?://.+$" \
+    "URL must start with http:// or https://")
 
-read -p "---> Default country [NL, IT, FR, ES,... Default: EN]: " INPUT_COUNTRY 
-COUNTRY="${INPUT_COUNTRY:-EN}"
+COUNTRY=$(prompt_validate \
+    "---> Default country [NL, CH, IT, FR, ES,...] (default EN): " \
+    "EN" \
+    "^[A-Z]{2}$" \
+    "Country must be 2 letters (uppercase).")
 
-read -p "---> Default teaching language - ISO 639-2, 3 Char code (nld, eng, spa, fra, ita,...default eng): " TEACH_LANG
-TEACH_LANG=${TEACH_LANG:-eng}
-
+TEACH_LANG=$(prompt_validate \
+    "---> Teaching language ISO 639-2 [nld, eng, spa, fra, ita,... ](default eng): " \
+    "eng" \
+    "^[a-z]{3}$" \
+    "Language must be 3-letter ISO code. (lowercase)")
 
 # -------------------------------
 # Server settings
 # -------------------------------
 echo
-echo -e "${RESET}${BOLD}${WHITE}Server settings${RESET}"
+echo -e "${BOLD}${WHITE}Server settings${RESET}"
 echo
 echo "This values will configure how the endpoint will be accessed or viewed from internet. Default is port 57075 and its URL will be http://localhost:57075"
 echo
-echo "If endpoint is proxied to be seen on internet as https://miOrganization/oeapi this should be the value for endpoint URL.  "
-echo
 
-read -p "---> Server port (default 57075): " SERVER_PORT
-SERVER_PORT=${SERVER_PORT:-57075}
 
-read -p "---> Default endpoint URL [http://localhost:57075]  (If proxied, put proxied URL): " INPUT_ENDPOINT
-ENDPOINT="${INPUT_ENDPOINT:-http://localhost:57075}"
+SERVER_PORT=$(prompt_validate \
+    "---> Server port on container, not proxied (default 57075): " \
+    "57075" \
+    "^[0-9]{2,5}$" \
+    "Port must be numeric (2-5 digits).")
+
+echo "${CYAN}(If the endpoint is proxied to be seen on internet as something like 'https://miOrganization/oeapi' that URL should be the value for endpoint URL.) ${RESET} "
+
+ENDPOINT=$(prompt_validate \
+    "---> Endpoint URL (default http://localhost:57075): " \
+    "http://localhost:57075" \
+    "^https?://.+$" \
+    "Invalid URL format.")
 
 
 # -------------------------------
 # Database settings
 # -------------------------------
 echo
-echo -e "${RESET}${BOLD}${WHITE}Database settings${RESET}"
+echo -e "${BOLD}${WHITE}Database settings${RESET}"
 echo
 echo "The endpoint manages the tables and handles all data operations. It only needs to know the location of the database that will store the data."
 echo
@@ -108,123 +156,155 @@ echo
 echo "If you plan to switch between development and production within the same container, you can use different schemas within the same database (for example, the same database URL but different users)"
 echo
 
-read -p "---> Database URL (default is use MySQL in Docker: jdbc:mysql://mysqldb/oeapi_qs...): " DB_URL
-DB_URL=${DB_URL:-jdbc:mysql://mysqldb/oeapi_qs?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC}
+DB_URL=$(prompt_validate \
+    "---> Database URL (default is use MySQL in Docker: jdbc:mysql://mysqldb/oeapi_qs...): " \
+    "jdbc:mysql://mysqldb/oeapi_qs_${ENV_TARGET:-test}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC" \
+    "^jdbc:.*$" \
+    "Must start with jdbc:")
 
-read -p "---> Database username (default use Docker: oeapi_qs): " DB_USER
-DB_USER=${DB_USER:-oeapi_qs}
+DB_USER=$(prompt_validate \
+    "---> Database username (default oeapi_qs_${ENV_TARGET:-test}): " \
+    "oeapi_qs_${ENV_TARGET:-test}" \
+    "^[A-Za-z0-9._-]+$" \
+    "Invalid username.")
 
-read -p "---> Database password (default use Docker: oeapi_qs): " DB_PASS
-DB_PASS=${DB_PASS:-oeapi_qs}
+DB_PASS=$(prompt_validate \
+    "---> Database password (default oeapi_qs_${ENV_TARGET:-test}): " \
+    "oeapi_qs_${ENV_TARGET:-test}" \
+    "^.{1,100}$" \
+    "Password cannot be empty.")
+
+DB_DRIVER=$(prompt_validate \
+    "---> DBMS Driver (default MySql 'com.mysql.cj.jdbc.Driver' ): " \
+    "com.mysql.cj.jdbc.Driver" \
+    "^.{1,100}$" \
+    "Driver cannot be empty.")
+
 
 # -------------------------------
-# OEAPI metadata
+# Metadata
 # -------------------------------
 echo
-echo -e "${RESET}${BOLD}${WHITE}OEAPI metadata${RESET}"
+echo -e "${BOLD}${WHITE}OEAPI metadata${RESET}"
 echo
 echo "This property could be used as the email to contact with the people responsible of the endpoint on your university. It is safe to leave the default value if you do not know what could be that email in your case."
 echo 
 
-read -p "---> Contact email (default ooapiAdmin-spec5-1.0_qs@myUniv.edu): " CONTACT_EMAIL
-CONTACT_EMAIL=${CONTACT_EMAIL:-ooapiAdmin-spec5-1.0_qs@myUniv.edu}
-
+CONTACT_EMAIL=$(prompt_validate \
+    "---> Contact email (default ooapiAdmin-spec5-1.0_qs@myUniv.edu): " \
+    "ooapiAdmin-spec5-1.0_qs@myUniv.edu" \
+    "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" \
+    "Invalid email format.")
 
 # -------------------------------
 # CORS
 # -------------------------------
 echo
-echo -e "${RESET}${BOLD}${WHITE}CORS Config${RESET}"
+echo -e "${BOLD}${WHITE}CORS Config${RESET}"
 echo
 echo "The CORS (Cross-Origin Resource Sharing) configuration specifies which sites or domains are allowed to interact with the endpoint. It can be used to enhance security by allowing requests only from trusted domains such as myuniversity.edu or myalliance.edu."
 echo
-echo "If you do not know all the possible sources or clients in advance, you can leave it set to . However, restricting access to trusted origins is considered good practice (a list of sites or domains separated by “,” is admitted)"
+echo "If you do not know all the possible sources or clients in advance, you can leave it set to *. However, restricting access to trusted origins is considered good practice (a list of sites or domains separated by “,” is admitted)"
 echo
 
-read -p "---> Allowed CORS origins (default *): " CORS_ORIGINS
-CORS_ORIGINS=${CORS_ORIGINS:-*}
-
+CORS_ORIGINS=$(prompt_validate \
+    "---> Allowed CORS origins (comma separeted values) (default *): " \
+    "*" \
+    "^.*$" \
+    "Invalid value.")
 
 # -------------------------------
 # Security
 # -------------------------------
 echo
-echo -e "${RESET}${BOLD}${WHITE}Security${RESET}"
+echo -e "${BOLD}${WHITE}Security${RESET}"
 echo
 echo "The endpoint includes security based on JWT. A static token can also be used as an additional method to authorize operations."
 echo
 
-read -p "---> Enable security? (true/false, default: true) : " SECURITY_ENABLED
-SECURITY_ENABLED=$(echo "${SECURITY_ENABLED:-true}" | tr '[:upper:]' '[:lower:]')
+SECURITY_ENABLED=$(prompt_validate \
+    "---> Enable security? (true/false, default true): " \
+    "true" \
+    "^(true|false)$" \
+    "Must be true or false.")
+
+echo
 
 if [[ "$SECURITY_ENABLED" == "true" ]]; then
 
-    read -p "---> Static JWT token value [default: '74_yJhbGciOi81jn123901nn32788eyJzdWIiOiJ0ZXN0QHVuaXYtdW5pdGEuZXUiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzcyI6IkNvZGVKYXZhIiwia']: " INPUT_TOKEN
-    TOKEN="${INPUT_TOKEN:-'74_yJhbGciOi81jn123901nn32788eyJzdWIiOiJ0ZXN0QHVuaXYtdW5pdGEuZXUiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzcyI6IkNvZGVKYXZhIiwia'}"
+    TOKEN=$(prompt_validate \
+        "---> Static App Token value [default: '74_yJhbGciOi81jn123901nn32788eyJzdWIiOiJ0ZXN0QHVuaXYtdW5pdGEuZXUiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzcyI6IkNvZGVKYXZhIiwia']: " \
+        "74_yJhbGciOi81jn123901nn32788eyJzdWIiOiJ0ZXN0QHVuaXYtdW5pdGEuZXUiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzcyI6IkNvZGVKYXZhIiwia" \
+        "^.{10,}$" \
+        "Token too short.")
 
-    read -p "---> Default user emails (comma-separated) [default: test@example.com,it.support@example.com]: " INPUT_EMAILS
-    EMAILS="${INPUT_EMAILS:-'test@example.com,it.support@example.com'}"
+    EMAILS=$(prompt_validate \
+        "---> Default user emails (comma-separated) [default: test@example.com,it.support@example.com]: " \
+        "test@example.com,it.support@example.com" \
+        "^.+$" \
+        "Invalid email list.")
 
-    read -p "---> Default user password [92k2k233c]: " INPUT_PASS
-    PASS="${INPUT_PASS:-'92k2k233c'}"
+    EMAILPASS=$(prompt_validate \
+        "---> Default user password (default 92k2k233c): " \
+        "92k2k233c" \
+        "^.{6,}$" \
+        "Password must be at least 6 chars.")
 fi
 
-read -p "---> Even if security is off, assign a JWT secret (default abcccfghijklmnOOORSTUVWABC123456): " JWT_SECRET
-JWT_SECRET=${JWT_SECRET:-abcccfghijklmnOOORSTUVWABC123456}
+JWT_SECRET=$(prompt_validate \
+    "---> JWT secret (default abcccfghijklmnOOORSTUVWABC123456): " \
+    "abcccfghijklmnOOORSTUVWABC123456" \
+    "^.{16,}$" \
+    "Secret must be at least 16 chars.")
 
 # -------------------------------
 # Tiny Dashboard
 # -------------------------------
 echo
-echo -e "${RESET}${BOLD}${WHITE}Tiny Dashboard${RESET}"
+echo -e "${BOLD}${WHITE}Tiny Dashboard${RESET}"
 echo
 echo "A small built‑in frontend is included to help you view and check the data in your OEAPI instance. (You can access it at (default): http://localhost:57075/oeapi-td.html )"
 echo
 echo "Many of the values required for the endpoint to operate are gathered in other sections; the only optional value you may provide here is the location of an alternate logo."
 echo 
 
-read -p "---> Default logo path [./img/OpenEducationApi_Logo.png]: " INPUT_LOGO
-LOGO="${INPUT_LOGO:-./img/OpenEducationApi_Logo.png}"
-
-
-# -------------------------------
-# Write .env file
-# -------------------------------
-echo
-echo
-echo -e "${RESET}${BOLD}${CYAN}Writing .env file...${RESET}"
-echo "SERVER_PORT=$SERVER_PORT" > .env
-echo "ENV_TARGET=$ENV_TARGET" >> .env
-echo
-cat .env
-echo
-echo ".env file created."
+LOGO=$(prompt_validate \
+    "---> Logo path (default ./img/OpenEducationApi_Logo.png): " \
+    "./img/OpenEducationApi_Logo.png" \
+    "^.+$" \
+    "Invalid path.")
 
 # -------------------------------
-# Create timestamped backup
+# Write .env
 # -------------------------------
-#
 echo
-mkdir -p env-history
+echo -e "${CYAN}Writing .env file...${RESET}"
+
+cat <<EOF > .env
+SERVER_PORT=$SERVER_PORT
+ENV_TARGET=$ENV_TARGET
+EOF
+
+mkdir -p config-history
 TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
-cp .env "env-history/env-$TIMESTAMP"
-echo "Backup created: env-history/env-$TIMESTAMP"
+cp .env "config-history/env-$ENV_TARGET-$TIMESTAMP"
+
 
 # -------------------------------
-# Generate application-custom.properties
+# Generate config
 # -------------------------------
+
 generate_properties() {
-    TARGET_DIR="$CONFIG_TARGET_DIR/$1"
-    mkdir -p "$TARGET_DIR"
 
-    cat <<EOF > "$TARGET_DIR/application-custom.properties"
+cat <<EOF > "$TARGET_DIR/application-custom.properties"
+
 server.port=$SERVER_PORT
 server.servlet.encoding.charset=UTF-8
 
 spring.datasource.url=$DB_URL
 spring.datasource.username=$DB_USER
 spring.datasource.password=$DB_PASS
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.driver-class-name=$DB_DRIVER
 
 spring.jpa.hibernate.ddl-auto=update
 spring.sql.init.mode=always
@@ -252,13 +332,13 @@ ooapi.cors.allowed.origins=$CORS_ORIGINS
 logging.level.ooapi.unita.eu=INFO
 
 ooapi.security.enabled=$SECURITY_ENABLED
-app.static.token.allow=true
+app.static.token.allow=$SECURITY_ENABLED
 app.static.token.value=$TOKEN
 app.static.token.user=token_user
 app.static.token.role=ROLE_USER
 
-ooapi.security.default.users.emails=test@univ-unita.eu,it.support@univ-unita.eu
-ooapi.security.default.users.pass=92k2k233c
+ooapi.security.default.users.emails=$EMAILS
+ooapi.security.default.users.pass=$EMAILPASS
 
 quickdashboard.config.ooapiDefaultCountry=$COUNTRY
 quickdashboard.config.ooapiDefaultLogo=$LOGO
@@ -271,19 +351,18 @@ quickdashboard.config.ooapiDefaultOrganizationId=$ORG_CODE
 quickdashboard.auto-create-file.organizations=config/initial_org.json
 
 app.jwt.secret=$JWT_SECRET
+
 EOF
 
-    echo "Generated: $TARGET_DIR/application-custom.properties"
+echo "Generated: $TARGET_DIR/application-custom.properties"
+
 }
 
-
+# Initial Org -----------------
 
 generate_initial_org_json() {
 
-    TARGET_DIR="$CONFIG_TARGET_DIR/$1"
-    mkdir -p "$TARGET_DIR"
-
-    cat <<EOF > "$TARGET_DIR/initial_org.json"
+cat <<EOF > "$TARGET_DIR/initial_org.json"
 [{
     "organizationId": "$ORG_CODE",
     "primaryCode": {
@@ -302,27 +381,18 @@ generate_initial_org_json() {
 }]
 EOF
 
-    echo "Generated: $TARGET_DIR/org_initial.json"
+echo "Generated: $TARGET_DIR/org_initial.json"
+
 }
 
 
+generate_properties $ENV_TARGET
+cp "$TARGET_DIR/application-custom.properties" "config-history/application-custom-$ENV_TARGET-$TIMESTAMP.properties"
 
-if [[ "$ENV_TARGET" == "dev" ]]; then
-    generate_properties "dev"
-    generate_initial_org_json "dev"
-fi
+generate_initial_org_json $ENV_TARGET
+cp "$TARGET_DIR/initial_org.json" "config-history/initial_org-$ENV_TARGET-$TIMESTAMP.json"
 
-if [[ "$ENV_TARGET" == "prod" ]]; then
-    generate_properties "prod"
-    generate_initial_org_json "prod"
-fi
-
-if [[ "$ENV_TARGET" == "test"  ]]; then
-    generate_properties "test"
-    generate_initial_org_json "test"
-fi
-
-echo "Done."
-
-
-
+echo
+echo -e "${BOLD}${GREEN}Configuration complete! ${RESET}"
+echo
+echo

@@ -23,14 +23,21 @@ services:
     - 3306:3306
     expose:
       - 53307
+    volumes:
+      - mysql_data_${ENV_TARGET:-test}:/var/lib/mysql 
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: oeapi_qs
-      MYSQL_USER: oeapi_qs
-      MYSQL_PASSWORD: oeapi_qs
+      MYSQL_ROOT_PASSWORD: password_3217h2
+      MYSQL_DATABASE: oeapi_qs_${ENV_TARGET:-test}
+      MYSQL_USER: oeapi_qs_${ENV_TARGET:-test}
+      MYSQL_PASSWORD: oeapi_qs_${ENV_TARGET:-test}
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_0900_ai_ci']
     healthcheck:
      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
      interval: 10s
      timeout: 5s
      retries: 5
+     
+volumes:
+  mysql_data_test:
+  mysql_data_prod:
+  mysql_data_dev:      
