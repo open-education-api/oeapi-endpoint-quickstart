@@ -28,6 +28,8 @@ It is as simple as this:
 
 git clone https://github.com/open-education-api/oeapi-endpoint-quickstart.git
 
+cd oeapi-endpoint-quickstart 
+
 ./start_oeapi.sh   # And select option 1)  (try and test) 
 
 
