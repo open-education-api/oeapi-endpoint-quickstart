@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import oeapi.model.Course;
 import oeapi.model.Program;
 import oeapi.oeapiException;
 import oeapi.service.CourseService;
@@ -14,6 +15,7 @@ import oeapi.service.ProgramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -116,6 +118,21 @@ public class ProgramController extends oeapiController<Program> {
 
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProgram(@PathVariable String id) {
+
+        Optional<Program> existing = service.getById(id);
+
+        if (existing.isPresent()) {
+            service.delete(id);  
+            return ResponseEntity.ok().build();
+        } else {
+            // return super.NotFound(courseId);
+           throw new oeapiException(HttpStatus.NOT_FOUND, "Error delete program with Id: " + id);
+
+        }
+    }        
+    
     @PostMapping(value = {"/loadbyjson"}, produces = "application/json")
     public ResponseEntity<String> createByJSON(@RequestBody List<Program> items) {
 
@@ -127,5 +144,5 @@ public class ProgramController extends oeapiController<Program> {
          */
         return super.createByJSON(items, service);
 
-    }
+    }    
 }
