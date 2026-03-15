@@ -28,12 +28,21 @@ class OrganizationTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private TestUtil TU;
+    
+    @Autowired    
+    private TestUtilCUDRest TUCudRest;    
+    
+    @Autowired    
+    private TestUtilGetRest TUGetRest;      
+     
     @Test
     void CreateOrganization() throws IOException {
 
         logStep("Create Organization");
 
-        TestUtilCUDRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
+        TUCudRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
     }
 
     @Test
@@ -41,8 +50,8 @@ class OrganizationTest {
 
         logStep("Filter Organization by PrimaryCode");
 
-        String randomCode = TestUtilCUDRest.whenPost_testCode(restResource, entity, templateAbrev, webTestClient);
-        TestUtilGetRest.get_primaryCode(restResource, randomCode, webTestClient);
+        String randomCode = TUCudRest.whenPost_testCode(restResource, entity, templateAbrev, webTestClient);
+        TUGetRest.get_primaryCode(restResource, randomCode, webTestClient);
 
     }
 
@@ -51,15 +60,15 @@ class OrganizationTest {
 
         logStep("Filter Organization");
 
-        String organizationTypeRandom = TestUtil.genRandomValue("organizationType");
+        String organizationTypeRandom = TU.genRandomValue("organizationType");
         logger.info("Organization Type [" + organizationTypeRandom + "] filter...");
-        String randomCode = TestUtilCUDRest.whenPost_testCode(restResource, entity, templateAbrev, webTestClient);
+        String randomCode = TUCudRest.whenPost_testCode(restResource, entity, templateAbrev, webTestClient);
 
         logger.info("Organization [" + randomCode + "] filter...");
         // Testing other filters
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("organizationType", organizationTypeRandom);
-        TestUtilGetRest.get_filter(restResource, filterMap, webTestClient);
+        TUGetRest.get_filter(restResource, filterMap, webTestClient);
 
     }
 

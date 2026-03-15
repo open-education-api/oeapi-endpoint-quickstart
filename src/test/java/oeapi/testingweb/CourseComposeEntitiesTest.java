@@ -20,34 +20,47 @@ class CourseComposeEntitiesTest {
 
     @Autowired
     private WebTestClient webTestClient;
-
+    
+    @Autowired    
+    private TestUtilCUDRest TUCudRest;    
+    
+    @Autowired    
+    private TestUtilGetRest TUGetRest;      
+    
     String restResource = "courses";
     String templateAbrev = "COURSE";
     String entity = "course";
-
+    
     @Test
     void whenCreateCourse_CheckComponents() throws IOException {
 
-        String randomId = TestUtilCUDRest.whenPost_testOk(restResource, entity, templateAbrev, webTestClient);
+        String randomId = TUCudRest.whenPost_testOk(restResource, entity, templateAbrev, webTestClient);
         // Testing Components
         logger.info("Course [" + randomId + "] load...");
       // Spec v6  String uri = "/" + restResource + "/" + randomId + "/learning-components";
         String uri = "/" + restResource + "/" + randomId + "/components";
         logger.info("Testing components ..." + uri);
-        TestUtilGetRest.getPages_testTotalPages(uri, webTestClient);
+        TUGetRest.getPages_testTotalPages(uri, webTestClient);
+        
+        // Deleting course created for test                
+        TUCudRest.delete_test(restResource, randomId, webTestClient);
+
 
     }
 
     @Test
     void whenCreateCourse_CheckOfferings() throws IOException {
 
-        String randomId = TestUtilCUDRest.whenPost_testOk(restResource, entity, templateAbrev, webTestClient);
+        String randomId = TUCudRest.whenPost_testOk(restResource, entity, templateAbrev, webTestClient);
         logger.info("Course [" + randomId + "] load...");
         // Spec v6   String uri = "/" + restResource + "/" + randomId + "/course-offerings";
         String uri = "/" + restResource + "/" + randomId + "/offerings";
         logger.info("Testing offerings ..." + uri);
-        TestUtilGetRest.getPages_testTotalPages(uri, webTestClient);
+        TUGetRest.getPages_testTotalPages(uri, webTestClient);
 
+        // Deleting course created for test                
+        TUCudRest.delete_test(restResource, randomId, webTestClient);
+        
     }
 
 }

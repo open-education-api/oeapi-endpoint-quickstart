@@ -29,13 +29,23 @@ class ProgramTest {
 
     @Autowired
     private WebTestClient webTestClient;
+    
+    @Autowired
+    private TestUtil TU;
+    
+    @Autowired    
+    private TestUtilCUDRest TUCudRest;    
+    
+    @Autowired    
+    private TestUtilGetRest TUGetRest;      
+
 
     @Test
     void CreateProgram() throws IOException {
 
         logStep("Create Program"); 
         
-        TestUtilCUDRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
+        TUCudRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
 
     }
 
@@ -44,12 +54,12 @@ class ProgramTest {
 
         logStep("Filter Program"); 
         
-        String randomCode = TestUtil.genRandomCode();
-        String levelRandom = TestUtil.genRandomValue("levelType");
-        String programTypeRandom = TestUtil.genRandomValue("programType");
-        String sectorRandom = TestUtil.genRandomValue("sectorType");
-        String qualificationAwardedRandom = TestUtil.genRandomValue("qualificationAwardedType");
-        String levelOfQualificationRandom = TestUtil.genRandomValue("levelOfQualificationType");
+        String randomCode = TU.genRandomCode();
+        String levelRandom = TU.genRandomValue("levelType");
+        String programTypeRandom = TU.genRandomValue("programType");
+        String sectorRandom = TU.genRandomValue("sectorType");
+        String qualificationAwardedRandom = TU.genRandomValue("qualificationAwardedType");
+        String levelOfQualificationRandom = TU.genRandomValue("levelOfQualificationType");
         String teachingLanguage = "spa";
 
         logStep("Program [" + randomCode + "] load...");
@@ -64,7 +74,7 @@ class ProgramTest {
                 .replace("--" + templateAbrev + "_levelOfQualification--", levelOfQualificationRandom)
                 .replace("--" + templateAbrev + "_qualificationAwarded--", qualificationAwardedRandom);
 
-        TestUtilCUDRest.post_testCode(restResource, payload, randomCode, webTestClient);
+        TUCudRest.post_testCode(restResource, payload, randomCode, webTestClient);
 
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("programType", programTypeRandom);
@@ -73,7 +83,7 @@ class ProgramTest {
         filterMap.put("qualificationAwarded", qualificationAwardedRandom);
         filterMap.put("levelOfQualification", levelOfQualificationRandom);
 
-        TestUtilGetRest.get_filter("programs", filterMap, webTestClient);
+        TUGetRest.get_filter("programs", filterMap, webTestClient);
 
     }
 
@@ -82,12 +92,12 @@ class ProgramTest {
 
         logStep("Filter Program Code");        
         
-        String randomCode = TestUtil.genRandomCode();
-        String levelRandom = TestUtil.genRandomValue("levelType");
-        String programTypeRandom = TestUtil.genRandomValue("programType");
-        String sectorRandom = TestUtil.genRandomValue("sectorType");
-        String qualificationAwardedRandom = TestUtil.genRandomValue("qualificationAwardedType");
-        String levelOfQualificationRandom = TestUtil.genRandomValue("levelOfQualificationType");
+        String randomCode = TU.genRandomCode();
+        String levelRandom = TU.genRandomValue("levelType");
+        String programTypeRandom = TU.genRandomValue("programType");
+        String sectorRandom = TU.genRandomValue("sectorType");
+        String qualificationAwardedRandom = TU.genRandomValue("qualificationAwardedType");
+        String levelOfQualificationRandom = TU.genRandomValue("levelOfQualificationType");
         String teachingLanguage = "spa";
 
         logStep("Program [" + randomCode + "] load...");
@@ -102,8 +112,8 @@ class ProgramTest {
                 .replace("--" + templateAbrev + "_levelOfQualification--", levelOfQualificationRandom)
                 .replace("--" + templateAbrev + "_qualificationAwarded--", qualificationAwardedRandom);
 
-        TestUtilCUDRest.post_testCode(restResource, payload, randomCode, webTestClient);
-        TestUtilGetRest.get_primaryCode(restResource, randomCode, webTestClient);
+        TUCudRest.post_testCode(restResource, payload, randomCode, webTestClient);
+        TUGetRest.get_primaryCode(restResource, randomCode, webTestClient);
     }
 
     private void logStep(String title) {

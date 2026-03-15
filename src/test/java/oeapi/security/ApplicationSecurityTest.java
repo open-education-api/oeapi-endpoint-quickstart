@@ -63,7 +63,7 @@ public class ApplicationSecurityTest {
     }
 
     @Nested
-    @TestPropertySource(properties = {"ooapi.security.enabled=true", "ooapi.security.public-access=true"})
+    @TestPropertySource(properties = {"ooapi.security.enabled=true", "ooapi.security.mode=guest"})
     class WithSecurityAndPublicAccess {
 
         @Autowired
@@ -99,7 +99,7 @@ public class ApplicationSecurityTest {
     }
 
     @Nested
-    @TestPropertySource(properties = {"ooapi.security.enabled=true", "ooapi.security.public-access=false"})
+    @TestPropertySource(properties = {"ooapi.security.enabled=true", "ooapi.security.mode=private"})
     class WithSecurityWithoutPublicAccess {
 
         @Autowired

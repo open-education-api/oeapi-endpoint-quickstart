@@ -29,13 +29,23 @@ class PersonTest {
 
     @Autowired
     private WebTestClient webTestClient;
-
+    
+    @Autowired
+    private TestUtil TU;
+    
+    @Autowired    
+    private TestUtilCUDRest TUCudRest;    
+    
+    @Autowired    
+    private TestUtilGetRest TUGetRest;      
+    
+    
     @Test
     void CreatePerson() throws IOException {
 
         logStep("Create Person");        
         
-        TestUtilCUDRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
+        TUCudRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
 
     }
 
@@ -44,9 +54,9 @@ class PersonTest {
         
         logStep("Filter Person"); 
 
-        String randomCode = TestUtil.genRandomCode();
-        String affiliationRandom1 = TestUtil.genRandomValue("personAffiliations");
-        String affiliationRandom2 = TestUtil.genRandomValue("personAffiliations");
+        String randomCode = TU.genRandomCode();
+        String affiliationRandom1 = TU.genRandomValue("personAffiliations");
+        String affiliationRandom2 = TU.genRandomValue("personAffiliations");
 
         logStep("Person [" + randomCode + "] load...");
 
@@ -56,11 +66,11 @@ class PersonTest {
                 .replace("--" + templateAbrev + "_affiliation1--", affiliationRandom1)
                 .replace("--" + templateAbrev + "_affiliation2--", affiliationRandom2);
 
-        TestUtilCUDRest.post_testCode(restResource, payload, randomCode, webTestClient);
+        TUCudRest.post_testCode(restResource, payload, randomCode, webTestClient);
 
         Map<String, String> filterMap = new HashMap<>();
 
-        TestUtilGetRest.get_filter(restResource, filterMap, webTestClient);
+        TUGetRest.get_filter(restResource, filterMap, webTestClient);
 
     }
 
@@ -69,8 +79,8 @@ class PersonTest {
 
         logStep("Filter Person Code"); 
 
-        String randomCode = TestUtilCUDRest.whenPost_testCode(restResource, entity, templateAbrev, webTestClient);
-        TestUtilGetRest.get_primaryCode(restResource, randomCode, webTestClient);
+        String randomCode = TUCudRest.whenPost_testCode(restResource, entity, templateAbrev, webTestClient);
+        TUGetRest.get_primaryCode(restResource, randomCode, webTestClient);
 
     }
     
