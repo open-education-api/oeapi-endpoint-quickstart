@@ -107,13 +107,13 @@ ORG_URL=$(prompt_validate \
     "URL must start with http:// or https://")
 
 COUNTRY=$(prompt_validate \
-    "---> Default country [NL, CH, IT, FR, ES,...] (default EN): " \
+    "---> Default country [NL, EN, CH, IT, FR, PT, ES, RO...] (default EN): " \
     "EN" \
     "^[A-Z]{2}$" \
     "Country must be 2 letters (uppercase).")
 
 TEACH_LANG=$(prompt_validate \
-    "---> Teaching language ISO 639-2 [nld, eng, spa, fra, ita,... ](default eng): " \
+    "---> Teaching language ISO 639-2 [nld, eng, spa, fra, ita, por, ron... ](default eng): " \
     "eng" \
     "^[a-z]{3}$" \
     "Language must be 3-letter ISO code. (lowercase)")
@@ -232,6 +232,12 @@ echo
 
 if [[ "$SECURITY_ENABLED" == "true" ]]; then
 
+    SEC_MODE=$(prompt_validate \
+        "---> Security mode  (guest | restricted | private) [default is restricted] : " \
+        "restricted" \
+        "^(guest|restricted|private)$" \
+        "Invalid security mode.")
+
     TOKEN=$(prompt_validate \
         "---> Static App Token value [default: '74_yJhbGciOi81jn123901nn32788eyJzdWIiOiJ0ZXN0QHVuaXYtdW5pdGEuZXUiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzcyI6IkNvZGVKYXZhIiwia']: " \
         "74_yJhbGciOi81jn123901nn32788eyJzdWIiOiJ0ZXN0QHVuaXYtdW5pdGEuZXUiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzcyI6IkNvZGVKYXZhIiwia" \
@@ -329,9 +335,10 @@ ooapi.config.autoCreateOrg_Type=root
 
 ooapi.cors.allowed.origins=$CORS_ORIGINS
 
-logging.level.ooapi.unita.eu=INFO
+logging.level.oeapi=INFO
 
 ooapi.security.enabled=$SECURITY_ENABLED
+ooapi.security.mode=$SEC_MODE
 app.static.token.allow=$SECURITY_ENABLED
 app.static.token.value=$TOKEN
 app.static.token.user=token_user
