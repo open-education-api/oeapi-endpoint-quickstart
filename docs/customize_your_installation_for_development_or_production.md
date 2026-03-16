@@ -50,8 +50,8 @@ The UUID of your organization or institution must be unique among all institutio
 ---> University/Organization organization name (default: 'OEAPI Test Organization'):
 ---> University/Organization short name (default: 'OEAPI_TEST'):
 ---> Organization UUID code (default 0):
----> Default country [Default: EN]:
----> Default teaching language -3 Char code- (default eng):
+---> Default country [NL, EN, CH, IT, FR, PT, ES, RO...] (default EN):
+---> Teaching language ISO 639-2 [nld, eng, spa, fra, ita, por, ron... ](default eng)::
 ```
 
 **2 - Configuring Server settings**
@@ -103,6 +103,7 @@ The endpoint includes security based on JWT. A static token can also be used as 
 
 ```console
 ---> Enable security? (true/false, default: true) :
+---> Security mode  (guest | restricted | private) [default is restricted] : 
 ---> Static JWT token value [default: '74_yJhbGciOi81jn123901nn32788eyJzdWIiOiJ0ZXN0QHVuaXYtdW5pdGEuZXUiLCJyb2xlcyI6WyJST0xFX0FETUlOIl0sImlzcyI6IkNvZGVKYXZhIiwia']:
 ---> Default user emails (comma-separated) [default: test@example.com,it.support@example.com]:
 ---> Default user password [92424233c]:
