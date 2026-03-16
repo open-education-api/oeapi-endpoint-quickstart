@@ -42,10 +42,10 @@ const API = (function() {
         return payload && (payload.roles ?? []).concat(payload.authorities ?? [])
     }
     const isAdmin = (token = getToken()) => (
-        getRoles(token)?.includes('ROLE_ADMIN')
-    )
-    const securityEnbled = async () => (
-        (window.API_securityEnbled ??=
+         tokenValid() && getRoles(token)?.includes('ROLE_ADMIN') 
+    )    
+    const securityEnabled = async () => (
+        (window.API_securityEnabled ??=
          (await (await get('auth/secStatus')).text()).includes('Enabled'))
     )
     const tokenValid = (token = getToken()) => {
@@ -56,7 +56,7 @@ const API = (function() {
         return exp > now
     }
     const canDoUpdates = async () => (
-        !(await securityEnbled()) || (tokenValid() && isAdmin())
+        !(await securityEnabled()) || (tokenValid() && isAdmin())
     )
 
     ////////// HTTP helpers
@@ -161,10 +161,12 @@ const API = (function() {
         )
     )
     const initSecurityNotice = async () => {
-        const enabled = await securityEnbled()
+        const enabled = await securityEnabled()
         document.body.setAttribute('data-security-enabled', enabled)
         document.body.setAttribute('data-security-admin', isAdmin())
         document.body.setAttribute('data-security-token-valid', tokenValid())
+
+        console.log("Sec Status: isEnabled,isAdmin,tokenValid:",enabled,isAdmin(),tokenValid())
 
         document.querySelectorAll('#epSecurity').forEach(el => {
             el.innerHTML = enabled
@@ -223,7 +225,7 @@ const API = (function() {
         changePassword,
         signUp,
 
-        securityEnbled,
+        securityEnabled,
         canDoUpdates, // TODO same as isAdmin?
         tokenValid,
         getToken
