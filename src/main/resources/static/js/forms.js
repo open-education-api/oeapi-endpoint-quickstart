@@ -838,14 +838,16 @@ $('#catalogForm').on('submit', async function (e) {
                 courseIdEd = postCourseResponse.courseId;  
 
             } catch (errResponse) {
-                // Stop the function immediately
-                console.error("Posting course exiting due to errors: ", errResponse);
-                if (errResponse.responseText) { 
-                    showAlert("error","Some details of the course need revision", messageIfFails+ "   <br><br>    ( "+ errResponse.responseText +" )"); 
-                } else {    
-                    showAlert("error","Communitacions Problem", "No internet connection or cannot establish connection with the Endpoint");
-                }                   
-                return;
+                    // We can get a simple message or more elaborated depending on the issue
+                    if (errResponse.responseText || errResponse.responseJSON) { 
+                            let message = errResponse.responseText ? errResponse.responseText : errResponse.responseJSON;
+                            message = errResponse.responseJSON.detail ? errResponse.responseJSON.detail : errResponse.responseJSON.messages[0];
+                            showAlert("error","Some details of the course need revision", "Cause: "+message); 
+
+                    } else {    
+                            showAlert("error","Communitacions Problem", "Posibly no internet connection or cannot establish proper connection with the Endpoint");                                    
+                    }                
+                    return;
             }
 
 
@@ -890,11 +892,16 @@ $('#catalogForm').on('submit', async function (e) {
                 } // end switch
             } catch (errResponse) {
                 console.error("postOffering has failed..", errResponse);
-                if (errResponse.responseText) { 
-                    showAlert("error","Some details of the course need revision", messageIfFails+ "    <br><br>    ( "+ errResponse.responseText +" )"); 
+                // We can get a simple message or more elaborated depending on the issue
+                if (errResponse.responseText || errResponse.responseJSON) { 
+                        let message = errResponse.responseText ? errResponse.responseText : errResponse.responseJSON;
+                        message = errResponse.responseJSON.detail ? errResponse.responseJSON.detail : errResponse.responseJSON.messages[0];
+                        showAlert("error","Some details of the course need revision",  messageIfFails+ "    <br><br>    ( "+ message +" )");
+
                 } else {    
-                    showAlert("error","Communitacions Problem", "No internet connection or cannot establish connection with the Endpoint");
-                }   
+                        showAlert("error","Communitacions Problem", "Posibly no internet connection or cannot establish proper connection with the Endpoint");                                    
+                } 
+                
                 errorOnPostOffering = true;
                 switchToEditMode(); 
               }
@@ -920,6 +927,8 @@ async function postCourse(listCoordinators) {
         value: $('#studyLoad').val()
     } : null;
 
+    orgToBePosted = $('#orgUniversity').val() ? $('#orgUniversity').val() : ooapiDefaultOrganizationId;
+
 
     // Build the courseData JSON
     var courseData = {
@@ -935,7 +944,7 @@ async function postCourse(listCoordinators) {
         abbreviation: $('#abbreviation').val(),
         link: $('#link_to_more_info').val(),
         teachingLanguage: $('#teachingLanguage').val(),
-        organization: ooapiDefaultOrganizationId,
+        organization: orgToBePosted,
         level: $('#level').val(),
         coordinators: listCoordinators,
         validFrom: $('#validStartDate').val(),

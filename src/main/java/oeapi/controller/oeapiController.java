@@ -148,7 +148,7 @@ public class oeapiController<T> {
     public ResponseEntity<?> get(String id, oeapiServiceInterface<T> service) {
         Optional<T> p = service.getById(id);
         if (!p.isPresent()) {
-            return ResponseEntity.badRequest().body("Error: " + id + " not found");
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Item with: " + id + " not found" , "Item with: " + id + " not found");
         } else {
             T obj = p.get();
 

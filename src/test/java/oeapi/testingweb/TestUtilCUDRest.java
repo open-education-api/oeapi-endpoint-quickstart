@@ -1,44 +1,52 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package oeapi.testingweb;
 
 import java.io.IOException;
 
 import java.util.UUID;
-import oeapi.model.Course;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
  *
  * @author itziar.urrutia
  */
-public class TestUtilCUDRest {
 
-    public static String whenPost_testOk(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
+@Component
+public class TestUtilCUDRest {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestUtilCUDRest.class); 
+
+    @Autowired
+    private TestUtil TU;
+
+    
+    public  String whenPost_testOk(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
         String randomId = UUID.randomUUID().toString();
-        String randomCode = TestUtil.genRandomCode();
-        String payload = TestUtil.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
+        String randomCode = TU.genRandomCode();
+        String payload = TU.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
         post_testOk(restResource, payload, webTestClient);
         return randomId;
     }
 
-    public static void whenPost_test(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
+    public  void whenPost_test(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
         String randomId = UUID.randomUUID().toString();
-        String randomCode = TestUtil.genRandomCode();
-        String payload = TestUtil.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
+        String randomCode = TU.genRandomCode();
+        String payload = TU.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
 
         post_test(restResource, entity, payload, randomId, randomCode, webTestClient);
 
     }
 
-    public static String whenPost_testId(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
+    public  String whenPost_testId(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
         String randomId = UUID.randomUUID().toString();
-        String randomCode = TestUtil.genRandomCode();
+        String randomCode = TU.genRandomCode();
 
-        String payload = TestUtil.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
+        String payload = TU.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
 
         post_testId(restResource, entity, payload, randomId, webTestClient);
 
@@ -46,11 +54,11 @@ public class TestUtilCUDRest {
 
     }
 
-    public static String whenPost_testCode(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
+    public  String whenPost_testCode(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
         String randomId = UUID.randomUUID().toString();
-        String randomCode = TestUtil.genRandomCode();
+        String randomCode = TU.genRandomCode();
 
-        String payload = TestUtil.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
+        String payload = TU.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
 
         post_testCode(restResource, payload, randomCode, webTestClient);
 
@@ -58,11 +66,11 @@ public class TestUtilCUDRest {
 
     }
 
-    public static void whenPut_testUpdateCode(String restResource, String entity, String templateAbrev, String randomId, WebTestClient webTestClient) throws IOException {
+    public  void whenPut_testUpdateCode(String restResource, String entity, String templateAbrev, String randomId, WebTestClient webTestClient) throws IOException {
 
-        String newCode = TestUtil.genRandomCode();
+        String newCode = TU.genRandomCode();
 
-        String payload = TestUtil.getPayload(entity + "update" + entity + "_template", templateAbrev, randomId, newCode);
+        String payload = TU.getPayload(entity + "update" + entity + "_template", templateAbrev, randomId, newCode);
 
         String uri = "/" + restResource + "/" + randomId;
 
@@ -70,9 +78,10 @@ public class TestUtilCUDRest {
 
     }
 
-    public static void post_testCode(String restResource, String payload, String code, WebTestClient webTestClient) {
+    public void post_testCode(String restResource, String payload, String code, WebTestClient webTestClient) {
         webTestClient.post()
                 .uri("/" + restResource)
+                .header("Authorization",TU.authHeaderForTest())                
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .exchange()
@@ -81,9 +90,10 @@ public class TestUtilCUDRest {
                 .jsonPath("$.primaryCode.code").isEqualTo(code);
     }
 
-    public static void put_testCode(String uri, String payload, String newCode, WebTestClient webTestClient) {
+    public void put_testCode(String uri, String payload, String newCode, WebTestClient webTestClient) {
         webTestClient.put()
                 .uri(uri)
+                .header("Authorization",TU.authHeaderForTest())                
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .exchange()
@@ -92,9 +102,10 @@ public class TestUtilCUDRest {
                 .jsonPath("$.primaryCode.code").isEqualTo(newCode);
     }
 
-    public static void post_testOk(String restResource, String payload, WebTestClient webTestClient) {
+    public void post_testOk(String restResource, String payload, WebTestClient webTestClient) {
         webTestClient.post()
                 .uri("/" + restResource)
+                .header("Authorization",TU.authHeaderForTest())                
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .exchange()
@@ -102,9 +113,10 @@ public class TestUtilCUDRest {
 
     }
 
-    public static void post_testId(String restResource, String entity, String payload, String id, WebTestClient webTestClient) {
+    public void post_testId(String restResource, String entity, String payload, String id, WebTestClient webTestClient) {
         webTestClient.post()
                 .uri("/" + restResource)
+                .header("Authorization",TU.authHeaderForTest())                
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .exchange()
@@ -113,9 +125,10 @@ public class TestUtilCUDRest {
                 .jsonPath("$." + entity + "Id").isEqualTo(id);
     }
 
-    public static void post_test(String restResource, String entity, String payload, String id, String code, WebTestClient webTestClient) {
+    public void post_test(String restResource, String entity, String payload, String id, String code, WebTestClient webTestClient) {
         webTestClient.post()
                 .uri("/" + restResource)
+                .header("Authorization",TU.authHeaderForTest())                
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .exchange()
@@ -125,17 +138,25 @@ public class TestUtilCUDRest {
                 .jsonPath("$.primaryCode.code").isEqualTo(code);
     }
 
-    public static void delete_test(String restResource, String id, WebTestClient webTestClient) {
+    public void delete_test(String restResource, String id, WebTestClient webTestClient) {
+        
+        LOGGER.debug("delete_test deleting... (DELETE) params: "+restResource+", "+id+" ,"+webTestClient);
+        
         webTestClient.delete()
                 .uri("/" + restResource + "/" + id)
+                .header("Authorization",TU.authHeaderForTest())                
                 .exchange()
                 .expectStatus().isOk();
 
+        LOGGER.debug("delete_test check if is actualy deleted (GET)... params: "+restResource+", "+id+" ,"+webTestClient);
+
         webTestClient.get()
-                .uri("/courses/" + id)
+                .uri("/" + restResource + "/" + id)
+                .header("Authorization",TU.authHeaderForTest())                
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody();
 
     }
+           
 }

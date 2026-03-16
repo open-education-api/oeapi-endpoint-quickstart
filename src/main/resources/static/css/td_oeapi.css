@@ -9,6 +9,8 @@
     --color-gray-light: #f1f1f1;
     --color-gray-border: #ddd;
     --color-dark: #212529;
+    --color-blue-light: #74a2f3;    
+    
 
     --color-primary: #0077ff;
     --color-success: #28a745;
@@ -254,6 +256,66 @@ pre {
 }
 
 /* ===============================
+   Login/change password components
+   =============================== */
+
+.login-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--color-blue-light);
+}
+
+.login-container {
+    background: var(--color-white);
+    padding: 35px 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+}
+
+.login-container h2 {
+    margin-bottom: 25px;
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+.login-container input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--color-gray-border);
+    transition: border-color 0.2s;
+}
+
+.login-container input:focus {
+    border-color: var(--color-gray-border);
+    outline: none;
+}
+
+.login-container button {
+    width: 100%;
+    padding: 0.7em;
+    margin-top: 0.3em;
+    border: 1px solid var(--color-gray-border);
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+    font-weight: 500;
+}
+
+#login-resultMsg {
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+
+/* ===============================
    Security away components
    =============================== */
 
@@ -263,9 +325,18 @@ body[data-security-enabled=false] #deleteIcon { display: block; }
 body[data-security-enabled=false] #loginLink { display: none; }
 body[data-security-enabled=false] #administration { display: none; }
 
+body[data-security-enabled=true][data-security-token-valid=false] #avatar { display: none; }
+body[data-security-enabled=true][data-security-token-valid=false] #addCourse { display: none; }
+body[data-security-enabled=true][data-security-token-valid=false] #addCoursesLink { display: none; }
+body[data-security-enabled=true][data-security-token-valid=false] #deleteIcon { display: none; }
+body[data-security-enabled=true][data-security-token-valid=false] #administration { display: none; }
+body[data-security-enabled=true][data-security-token-valid=false] #loginLink { cursor: pointer; }
+
 body[data-security-enabled=true][data-security-token-valid=true] #avatar { cursor: pointer; }
 body[data-security-enabled=true][data-security-token-valid=true] #addCourse { cursor: pointer; }
+body[data-security-enabled=true][data-security-token-valid=true] #addCoursesLink { cursor: pointer; }
 body[data-security-enabled=true][data-security-token-valid=true] #deleteIcon { display: block; }
 body[data-security-enabled=true][data-security-token-valid=true] #loginLink { display: none; }
+
 body[data-security-enabled=true][data-security-token-valid=true][data-security-admin=false] #administration { display: none; }
 body[data-security-enabled=true][data-security-token-valid=true][data-security-admin=true] #administration { cursor: pointer; }

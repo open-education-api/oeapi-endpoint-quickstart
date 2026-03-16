@@ -7,8 +7,11 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CourseTest {
 
     Logger logger = LoggerFactory.getLogger(CourseTest.class);
@@ -32,12 +36,23 @@ class CourseTest {
 
     @Autowired
     private WebTestClient webTestClient;
+    
+    @Autowired
+    private TestUtil TU;
+    
+    @Autowired    
+    private TestUtilCUDRest TUCudRest;    
+    
+    @Autowired    
+    private TestUtilGetRest TUGetRest;      
+
 
     @Test
+    @Order(1)
     void testCreateCourse() throws IOException {
 
         String randomId = UUID.randomUUID().toString();
-        String randomCode = TestUtil.genRandomCode();
+        String randomCode = TU.genRandomCode();
 
         logStep("CourseTest Create Course: with ID: "+randomId+" Code: "+randomCode);
      
@@ -48,15 +63,16 @@ class CourseTest {
         String payload = coursePayload.replace("--" + templateAbrev + "_ID_TOBEINFORMED--", randomId)
                                       .replace("--" + templateAbrev + "_CODE_TOBEINFORMED--", randomCode);
         
-        TestUtilCUDRest.post_test(restResource, entity, payload, randomId, randomCode, webTestClient);
+        TUCudRest.post_test(restResource, entity, payload, randomId, randomCode, webTestClient);
 
     }
 
     @Test
+    @Order(2)           
     void testUpdateCourseCode() throws IOException {
 
-        String randomId = TestUtil.genRandomCode();
-        String randomCode = TestUtil.genRandomCode();
+        String randomId = TU.genRandomCode();
+        String randomCode = TU.genRandomCode();
 
         logStep("CourseTest testUpdateCourseCode: with ID: "+randomId+" Code: "+randomCode);
         logger.info("CourseTest testUpdateCourseCode: with ID: "+randomId+" Code: "+randomCode);
@@ -65,14 +81,15 @@ class CourseTest {
         String payload = coursePayload.replace("--" + templateAbrev + "_ID_TOBEINFORMED--", randomId)
                                       .replace("--" + templateAbrev + "_CODE_TOBEINFORMED--", randomCode);
         
-        TestUtilCUDRest.post_testOk(restResource, payload, webTestClient);
-        String newCode = TestUtil.genRandomCode();
+        TUCudRest.post_testOk(restResource, payload, webTestClient);
+        String newCode = TU.genRandomCode();
         
         coursePayload = new String(Files.readAllBytes(Paths.get("src/test/resources/updatecourse_template.json")),StandardCharsets.UTF_8);
         payload = coursePayload.replace("--" + templateAbrev + "_CODE_TOBEINFORMED--", newCode);
 
         webTestClient.put()
                 .uri("/courses/" + randomId)
+                .header("Authorization",TU.authHeaderForTest())                
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .exchange()
@@ -84,10 +101,11 @@ class CourseTest {
     }
 
     @Test
+    @Order(3)            
     void testFilterCourse() throws IOException {
 
-        String randomCode = TestUtil.genRandomCode();
-        String levelRandom = TestUtil.genRandomValue("levelType");
+        String randomCode = TU.genRandomCode();
+        String levelRandom = TU.genRandomValue("levelType");
         String teachingLanguage = "spa";
 
         logStep("CourseTest testFilterCourse: with Code: "+randomCode+" level: "+levelRandom+ " teachingLanguage: "+teachingLanguage);
@@ -100,21 +118,22 @@ class CourseTest {
                                       .replace("--" + templateAbrev + "_level--", levelRandom)
                                       .replace("--" + templateAbrev + "_teachingLanguage--", teachingLanguage);
 
-        TestUtilCUDRest.post_testCode(restResource, payload, randomCode, webTestClient);
+        TUCudRest.post_testCode(restResource, payload, randomCode, webTestClient);
         Map<String, String> filterMap = new HashMap<>();
         
         filterMap.put("level", levelRandom);
         filterMap.put("teachingLanguage", teachingLanguage);
         
-        TestUtilGetRest.get_filter(restResource, filterMap, webTestClient);
+        TUGetRest.get_filter(restResource, filterMap, webTestClient);
 
     }
 
     @Test
+    @Order(4)            
     void testFilterCourseByCode() throws IOException {
 
-        String randomCode = TestUtil.genRandomCode();
-        String levelRandom = TestUtil.genRandomValue("levelType");
+        String randomCode = TU.genRandomCode();
+        String levelRandom = TU.genRandomValue("levelType");
         String teachingLanguage = "spa";
 
         logger.info("Course [" + randomCode + "] load...");
@@ -125,11 +144,11 @@ class CourseTest {
                                       .replace("--" + templateAbrev + "_level--", levelRandom)
                                       .replace("--" + templateAbrev + "_teachingLanguage--", teachingLanguage);
 
-        TestUtilCUDRest.post_testCode(restResource, payload, randomCode, webTestClient);
-        TestUtilGetRest.get_primaryCode(restResource, randomCode, webTestClient);
-
+        TUCudRest.post_testCode(restResource, payload, randomCode, webTestClient);
+        TUGetRest.get_primaryCode(restResource, randomCode, webTestClient);
+                                        
     }
-
+       
     private void logStep(String title) {
         logger.info("\n\n"
                 + "############################################################\n"

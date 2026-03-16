@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -34,6 +37,8 @@ import oeapi.repository.UserRepository;
 @RestController
 public class AuthApi {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthApi.class);
+
     @Autowired
     AuthenticationManager authManager;
     @Autowired
@@ -54,6 +59,7 @@ public class AuthApi {
 
             CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
             String token = jwtUtil.generateAccessToken(userDetails);
+            logger.error("got token: {}", token);
 
             return ResponseEntity.ok(Collections.singletonMap("token", token));
 
@@ -63,7 +69,6 @@ public class AuthApi {
     }
 
     @PostMapping("auth/signup")
-    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserDTO dto) {
 
         // checking for username exists in a database
@@ -118,10 +123,26 @@ public class AuthApi {
     @GetMapping("/auth/secStatus")
     public ResponseEntity<?> secStatus() {
 
-      String status = "Disabled by conf. (Updates are allowed without login. Check that's what you want. See doc.) ";
-      if (ENDPOINT_SECURITY_STATUS_ENABLED) {
+        String status = "Disabled by conf. (Updates are allowed without login. Check that's what you want. See doc.) ";
+        if (ENDPOINT_SECURITY_STATUS_ENABLED) {
             status = "Enabled by conf, you must login before updates";
         }
-      return ResponseEntity.ok(status);
+        return ResponseEntity.ok(status);
     }
+    
+    @Value("${ooapi.security.mode:restricted}")
+    private String endpointSecMode;
+
+    @GetMapping("/auth/secMode")
+    public ResponseEntity<?> secMode() {
+
+        String status = "None";
+        
+        if (ENDPOINT_SECURITY_STATUS_ENABLED) {
+            status = endpointSecMode;
+        }
+
+        return ResponseEntity.ok(status);
+    }
+
 }

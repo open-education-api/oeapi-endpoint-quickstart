@@ -79,6 +79,11 @@ public class ProgramService extends oeapiEndpointService<Program, ProgramReposit
             return super.getByField(capitalizedMethodName, value, pageable); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
         }
     }
+    
+    @Override
+    public Optional<Program> getById(String id) {
+        return super.getById(id);
+    }
 
     @Override
     public List<Program> manageRelated(List<Program> relateList) {
@@ -144,6 +149,19 @@ public class ProgramService extends oeapiEndpointService<Program, ProgramReposit
         
     }  
     
+    public Program clearRelations(Program program) {
+
+        List<ModeOfDelivery> modeOfDelivery = program.getModeOfDelivery();
+        if (!(modeOfDelivery == null) && !modeOfDelivery.isEmpty()) {
+            program.getModeOfDelivery().clear();
+        }
+ 
+        program.getCoordinators().clear();
+        program.setStudyLoad(null);
+
+        return program;
+
+    }
     
     public Program checkRelations(Program program, boolean autoCreateOrgIfNotExists) {
 
@@ -241,6 +259,25 @@ public class ProgramService extends oeapiEndpointService<Program, ProgramReposit
         return super.create(normalizedProgram);
     }
 
+    @Override
+    public boolean delete(String id) {
+
+        Optional<Program> programExisting = this.getById(id);
+        if (!programExisting.isPresent()) {
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Program not found", "Program [" + id + "] not found");
+
+        }
+        Program program = programExisting.get();
+ 
+        //ToDo program child offerings and components deletion (not implmented yet)
+        
+        // Clear all rest relatons
+        logger.debug("*>-ProgramService delete:  Clear program relations for Program with ID:"+program.getProgramId()); 
+        this.clearRelations(program);
+        super.delete(program);
+        return true;
+    }    
+    
     public Page<Program> getByOrganizationId(String id, Pageable pageable) {
 
         return repository.findByOrganization_OrganizationId(id, pageable);
