@@ -24,8 +24,8 @@ import oeapi.service.CustomUserDetailsService;
 
 @Component
 public class BearerTokenFilter extends OncePerRequestFilter {
-    private static final Logger logger =
-        LoggerFactory.getLogger(BearerTokenFilter.class);
+    
+    private static final Logger logger = LoggerFactory.getLogger(BearerTokenFilter.class);
 
     @Autowired
     private JwtTokenService jwtUtil;
@@ -33,6 +33,9 @@ public class BearerTokenFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Value("${ooapi.security.enabled:true}")
+    private boolean securityEnabled;
+    
     @Value("${app.static.token.value}")
     private String staticTokenValue;
 
@@ -46,6 +49,23 @@ public class BearerTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        // If security is disabled, skip everything
+        if (!securityEnabled) {
+            filterChain.doFilter(request, response);
+            logger.debug("Security is disabled, skip checks at BearerTokenFilter");
+            return;
+        }
+
+        // Allow public endpoints (login, GET requests)
+        String uri = request.getRequestURI().toLowerCase();
+        if (uri.contains("auth/login") || request.getMethod().equalsIgnoreCase("GET")) {
+            filterChain.doFilter(request, response);
+            logger.debug("Login or GETs allowed, skip token checks at BearerTokenFilter");            
+            return;
+        }        
+        
+        logger.debug("Token checks at BearerTokenFilter...");
 
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
@@ -82,6 +102,8 @@ public class BearerTokenFilter extends OncePerRequestFilter {
             }
         }
 
+        // Authentication succeeded
+        logger.debug("Authentication succeeded at BearerTokenFilter");
         filterChain.doFilter(request, response);
     }
 }

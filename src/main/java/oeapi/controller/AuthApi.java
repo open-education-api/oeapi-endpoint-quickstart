@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +36,7 @@ import oeapi.repository.UserRepository;
 
 @RestController
 public class AuthApi {
+
     private static final Logger logger = LoggerFactory.getLogger(AuthApi.class);
 
     @Autowired
@@ -123,10 +123,26 @@ public class AuthApi {
     @GetMapping("/auth/secStatus")
     public ResponseEntity<?> secStatus() {
 
-      String status = "Disabled by conf. (Updates are allowed without login. Check that's what you want. See doc.) ";
-      if (ENDPOINT_SECURITY_STATUS_ENABLED) {
+        String status = "Disabled by conf. (Updates are allowed without login. Check that's what you want. See doc.) ";
+        if (ENDPOINT_SECURITY_STATUS_ENABLED) {
             status = "Enabled by conf, you must login before updates";
         }
-      return ResponseEntity.ok(status);
+        return ResponseEntity.ok(status);
     }
+    
+    @Value("${ooapi.security.mode:restricted}")
+    private String endpointSecMode;
+
+    @GetMapping("/auth/secMode")
+    public ResponseEntity<?> secMode() {
+
+        String status = "None";
+        
+        if (ENDPOINT_SECURITY_STATUS_ENABLED) {
+            status = endpointSecMode;
+        }
+
+        return ResponseEntity.ok(status);
+    }
+
 }

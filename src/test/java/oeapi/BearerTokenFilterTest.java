@@ -32,8 +32,14 @@ import oeapi.model.Role;
 import oeapi.model.User;
 import oeapi.repository.RoleRepository;
 import oeapi.repository.UserRepository;
+import org.junit.jupiter.api.Nested;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
+@TestPropertySource(properties = {
+                                    "ooapi.security.enabled=true",
+                                    "ooapi.security.mode=restricted"})  
 public class BearerTokenFilterTest {
     @Autowired
     BearerTokenFilter filter;
@@ -69,7 +75,7 @@ public class BearerTokenFilterTest {
         assertContinueFilterChain();
     }
 
-    @Test
+    @Test               
     public void staticBearerToken() throws Exception {
         ((MockHttpServletRequest) request).addHeader("Authorization", "Bearer " + staticTokenValue);
         filter.doFilterInternal(request, response, filterChain);
