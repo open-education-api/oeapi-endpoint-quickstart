@@ -817,7 +817,9 @@ $('#catalogForm').on('submit', async function (e) {
                     }
 
                     console.debug('Person does not exist for mail address', c.mail);
-                    const person = await API.createPerson(c)
+                    const person = await (await API.createPerson(c)).json()
+                    console.debug('Created person', person)
+
                     return person.personId
                 }))
             }
