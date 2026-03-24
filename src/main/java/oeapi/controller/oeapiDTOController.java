@@ -1,6 +1,8 @@
 package oeapi.controller;
 
 import oeapi.controller.requestparameters.oeapiRequestParam;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.ObjectError;
 import oeapi.service.oeapiDTOServiceInterface;
@@ -132,31 +135,21 @@ public class oeapiDTOController<T, S> {
 
     }
 
-    public ResponseEntity<?> get(String id, oeapiDTOServiceInterface<T, S> service) {
+    public ResponseEntity<?> get(String id, @RequestParam(required = false) String expand, oeapiDTOServiceInterface<T, S> service) throws JsonProcessingException {
         Optional<T> p = service.getById(id);
-        if (!p.isPresent()) {
-             throw new oeapiException(HttpStatus.NOT_FOUND, "There is not such info for Id: " + id);
-        } else {
-            T obj = p.get();
-            return ResponseEntity.ok(service.toDTO(obj));
-        }
+        if (!p.isPresent()) return NotFound(id);
 
+        T obj = p.get();
+        return ResponseEntity.ok(service.getMapper().toJSON(obj, expand));
     }
 
-    public ResponseEntity<?> get(String id, String expand, oeapiDTOServiceInterface<T, S> service) {
-        Optional<T> p = service.getById(id);
-        if (!p.isPresent()) {
-             throw new oeapiException(HttpStatus.NOT_FOUND, "There is not such info for Id: " + id);
-        } else {
-            T obj = p.get();
-            return ResponseEntity.ok(service.toDTOString(obj, expand));
-        }
-
+    public ResponseEntity<?> get(String id, oeapiDTOServiceInterface<T, S> service) throws JsonProcessingException {
+        return get(id, null, service);
     }
 
     public ResponseEntity<?> update(@RequestBody @Valid T requestBody, oeapiDTOServiceInterface<T, S> service) {
-
         ResponseEntity finalResponse = null;
+
         Errors errors = new BeanPropertyBindingResult(requestBody, requestBody.getClass().getName().toLowerCase());
         T updated;
         //validator.validate(program,errors)
@@ -174,7 +167,7 @@ public class oeapiDTOController<T, S> {
         try {
             logger.debug("ooapiDTOController (super): Validated and ready to call service to update BD");
             updated = service.update(requestBody);
-            finalResponse = ResponseEntity.ok(service.toDTO(updated));
+            finalResponse = ResponseEntity.ok(service.getMapper().toJSON(updated, null));
         } catch (oeapiException ooapiEx) {
             logger.error("ooapiDTOController (super): " + ooapiEx.getTitle());
             finalResponse = createErrorResponse(HttpStatus.NOT_FOUND, ooapiEx.getTitle(), ooapiEx.getDetail());  // TDB Fine tune status
@@ -211,7 +204,7 @@ public class oeapiDTOController<T, S> {
         try {
             logger.debug("ooapiDTOController (super): Validated and ready to call service to update BD");
             updated = service.update(service.toEntity(requestBody));
-            finalResponse = ResponseEntity.ok(service.toDTO(updated));
+            finalResponse = ResponseEntity.ok(service.toJSON(updated));
         } catch (oeapiException ooapiEx) {
             logger.error("ooapiDTOController (super): " + ooapiEx.getTitle());
             finalResponse = createErrorResponse(HttpStatus.NOT_FOUND, ooapiEx.getTitle(), ooapiEx.getDetail());  // TDB Fine tune status
@@ -240,7 +233,7 @@ public class oeapiDTOController<T, S> {
         }
         try {
             created = service.create(requestBody);
-            finalResponse = ResponseEntity.ok(service.toDTO(created));
+            finalResponse = ResponseEntity.ok(service.toJSON(created));
         } catch (oeapiException ooapiEx) {
             logger.error("ooapiDTOController ooapiException: " + ooapiEx.getTitle());
             finalResponse = createErrorResponse(ooapiEx.getStatus(), ooapiEx.getTitle(), ooapiEx.getDetail());  // TDB Fine tune status
@@ -266,7 +259,7 @@ public class oeapiDTOController<T, S> {
         }
         try {
             created = service.create(service.toEntity(requestBody));
-            finalResponse = ResponseEntity.ok(service.toDTO(created));
+            finalResponse = ResponseEntity.ok(service.toJSON(created));
         } catch (oeapiException ooapiEx) {
             logger.error("ooapiController: " + ooapiEx.getTitle());
             finalResponse = createErrorResponse(ooapiEx.getStatus(), ooapiEx.getTitle(), ooapiEx.getDetail());  // TDB Fine tune status

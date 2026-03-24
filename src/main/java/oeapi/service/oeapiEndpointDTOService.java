@@ -1,5 +1,6 @@
 package oeapi.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -40,8 +41,6 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
     public void setMapper(oeapiDTOMapper<T, S> mapper) {
         this.mapper = mapper;
     }
-
-    private ObjectMapper objectMapper = ooapiObjectMapper();
 
     /*
     @Value("${ooapi.config.autoCreateCoordinatorIfNotExists:false}")
@@ -116,21 +115,13 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
         //return mapper.Clean(dtoPages);
     }
 
-    @Override
-    public S toDTO(T item) {
-        // This method is used with
-        // get courses
+    public String toJSON(T item) throws JsonProcessingException {
         initializeMapper();
-        S dto = getMapper().toDTO(item);
-        return dto;
-        //return mapper.CleanObject(dto);
+        return getMapper().toJSON(item, null);
     }
 
-    @Override
-    public String toDTOString(T item, String expand) {
-
-        //initializeMapper();
-        //    return mapper.toDTO(item, expand);
-        return "";
+    public String toJSON(T item, String expand) throws JsonProcessingException {
+        initializeMapper();
+        return getMapper().toJSON(item, expand);
     }
 }

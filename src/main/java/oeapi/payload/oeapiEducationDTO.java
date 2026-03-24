@@ -28,7 +28,6 @@ import oeapi.validation.ValidLanguageTypedString;
  */
 @EntityListeners(oeapiEducationListener.class)
 public abstract class oeapiEducationDTO extends PrimaryCode {
-//public abstract class oeapiEducationDTO extends ooapiDTO {
 
     @JsonProperty("otherCodes")
     @Column(columnDefinition = "text")
