@@ -83,7 +83,6 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
     public CourseService() {
         super();
         this.initializeMapper();
-
     }
 
     @Override
@@ -253,7 +252,7 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
 
     }
 
-    // Method related to RequestDTOtoEntity
+    // Method related to RequestDTOtoEntity TODO used? => remove it
     public List<Program> getPrograms(List<String> programs) {
         List<Program> newProgramList = new ArrayList<>();
 

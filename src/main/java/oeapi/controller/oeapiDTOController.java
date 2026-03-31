@@ -235,10 +235,10 @@ public class oeapiDTOController<T, S> {
             created = service.create(requestBody);
             finalResponse = ResponseEntity.ok(service.toJSON(created));
         } catch (oeapiException ooapiEx) {
-            logger.error("ooapiDTOController ooapiException: " + ooapiEx.getTitle());
+            logger.error("create failed", ooapiEx);
             finalResponse = createErrorResponse(ooapiEx.getStatus(), ooapiEx.getTitle(), ooapiEx.getDetail());  // TDB Fine tune status
         } catch (Exception ex) {
-            logger.error("ooapiDTOController Exception: " + ex);
+            logger.error("create error", ex);
             finalResponse = createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Not handled Exception", ex.getLocalizedMessage());   // TDB Fine tune status
         }
         return finalResponse;
@@ -261,10 +261,10 @@ public class oeapiDTOController<T, S> {
             created = service.create(service.toEntity(requestBody));
             finalResponse = ResponseEntity.ok(service.toJSON(created));
         } catch (oeapiException ooapiEx) {
-            logger.error("ooapiController: " + ooapiEx.getTitle());
+            logger.error("create failed", ooapiEx);
             finalResponse = createErrorResponse(ooapiEx.getStatus(), ooapiEx.getTitle(), ooapiEx.getDetail());  // TDB Fine tune status
         } catch (Exception ex) {
-            logger.error("ooapiController: " + ex);
+            logger.error("create error", ex);
             finalResponse = createErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Not handled Exception", ex.getLocalizedMessage());   // TDB Fine tune status
         }
         return finalResponse;

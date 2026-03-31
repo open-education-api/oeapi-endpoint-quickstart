@@ -1,5 +1,11 @@
 package oeapi.model;
 
+import static oeapi.oeapiUtils.ooapiObjectMapper;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,10 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import java.time.LocalDate;
-
-import java.util.List;
-import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -21,16 +25,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
-import static oeapi.oeapiUtils.ooapiObjectMapper;
 import oeapi.validation.ValidLanguageTypedString;
 import oeapi.validation.ValidObjectYaml;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_EMPTY) // TODO can Json mapping be removed because we have a DTO?
 @Entity(name = "course")
 //@JsonPropertyOrder({"courseId", "primaryCode", "name", "abbreviation", "description", "teachingLanguage", "level"})
 public class Course extends oeapiEducation {
@@ -39,7 +38,6 @@ public class Course extends oeapiEducation {
 
     @Id
     @Column(name = "course_id", updatable = false, nullable = false)
-    //@JsonProperty("courseId")
     private String courseId = UUID.randomUUID().toString();
 
     //@ValidEnumYaml(yamlfile = "levelType.yml")
@@ -77,6 +75,7 @@ public class Course extends oeapiEducation {
     private List<Person> coordinators;
 
     @JsonProperty("programs")
+    @JsonBackReference("coursePrograms")
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable
     private List<Program> programs;

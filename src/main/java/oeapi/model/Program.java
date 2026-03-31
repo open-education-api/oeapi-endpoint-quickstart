@@ -1,19 +1,17 @@
 package oeapi.model;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.time.LocalDate;
-import java.util.List;
 
-import java.util.UUID;
 import jakarta.persistence.CascadeType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -26,12 +24,11 @@ import oeapi.validation.ValidLanguageTypedString;
 import oeapi.validation.ValidObjectYaml;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@Entity
-@JsonPropertyOrder({"programId", "primaryCode", "name", "abbreviation", "description", "programType", "teachingLanguage", "level"})
+@Entity(name = "program")
 public class Program extends oeapiEducation {
 
     @Id
-    @Column(name = "program_id")
+    @Column(name = "program_id", updatable = false, nullable = false)
     private String programId = UUID.randomUUID().toString();
 
     @JsonProperty("programType")
@@ -81,10 +78,15 @@ public class Program extends oeapiEducation {
     @JoinTable
     private List<Person> coordinators;
 
+    @JsonProperty("courses")
+    @JsonBackReference("programCourses")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable
+    private List<Course> courses;
+
     @JsonProperty("educationSpecification")
     @ManyToOne
     @JoinColumn(name = "education_specification_id", nullable = true)
-    //@JsonBackReference
     private EducationSpecification educationSpecification;
 
     @JsonProperty("organization")
@@ -93,8 +95,7 @@ public class Program extends oeapiEducation {
     @JsonBackReference("programOrganization")
     private Organization organization;
 
-    public Program() {
-    }
+    public Program() { }
 
     @JsonCreator
     public Program(String id) {
@@ -311,4 +312,11 @@ public class Program extends oeapiEducation {
         this.qualificationAwarded = qualificationAwarded;
     }
 
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
 }
