@@ -11,14 +11,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.persistence.Convert;
-import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.model.Course;
 import oeapi.model.EducationSpecification;
-import oeapi.model.Organization;
 import oeapi.model.Person;
 import oeapi.model.StudyLoad;
 import oeapi.model.oeapiLanguageTypedString;
@@ -27,13 +21,172 @@ import oeapi.model.oeapiLanguageTypedString;
 @JsonPropertyOrder({"programId", "primaryCode", "name", "abbreviation", "description", "programType", "teachingLanguage", "level"})
 
 public class ProgramDTO extends oeapiEducationDTO {
-    static Logger logger = LoggerFactory.getLogger(ProgramDTO.class);
+
+    // program id
 
     @JsonProperty("programId")
     private String programId = UUID.randomUUID().toString();
 
+    public String getProgramId() {
+        return programId;
+    }
+
+    public void setProgramId(String programId) {
+        this.programId = programId;
+    }
+
+    // program type
+
     @JsonProperty("programType")
     private String programType;
+
+    public String getProgramType() {
+        return programType;
+    }
+
+    public void setProgramType(String programType) {
+        this.programType = programType;
+    }
+
+    @JsonProperty("studyLoad")
+    private StudyLoad studyLoad;
+
+    public StudyLoad getStudyLoad() {
+        return studyLoad;
+    }
+
+    public void setStudyLoad(StudyLoad studyLoad) {
+        this.studyLoad = studyLoad;
+    }
+
+    // mode of study
+
+    @JsonProperty("modeOfStudy")
+    private String modeOfStudy;
+
+    public String getModeOfStudy() {
+        return modeOfStudy;
+    }
+
+    public void setModeOfStudy(String modeOfStudy) {
+        this.modeOfStudy = modeOfStudy;
+    }
+
+    // first start date
+
+    @JsonProperty("firstStartDate")
+    private LocalDate firstStartDate;
+
+    public LocalDate getFirstStartDate() {
+        return firstStartDate;
+    }
+
+    public void setFirstStartDate(LocalDate firstStartDate) {
+        this.firstStartDate = firstStartDate;
+    }
+
+    // level
+
+    @JsonProperty("level")
+    private String level;
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    // sector
+
+    @JsonProperty("sector")
+    private String sector;
+
+    public String getSector() {
+        return sector;
+    }
+
+    public void setSector(String sector) {
+        this.sector = sector;
+    }
+
+    // fields of study
+
+    @JsonProperty("fieldsOfStudy")
+    private String fieldsOfStudyId;
+
+    public String getFieldsOfStudyId() { return fieldsOfStudyId; }
+
+    public void setFieldsOfStudyId(String fieldsOfStudyId) {
+        this.fieldsOfStudyId = fieldsOfStudyId;
+    }
+
+    // admission requirements
+
+    @JsonProperty("admissionRequirements")
+    private List<oeapiLanguageTypedString> admissionRequirements;
+
+    public List<oeapiLanguageTypedString> getAdmissionRequirements() {
+        return admissionRequirements;
+    }
+
+    public void setAdmissionRequirements(List<oeapiLanguageTypedString> admissionRequirements) {
+        this.admissionRequirements = admissionRequirements;
+    }
+
+    // qualifations requirements
+
+    @JsonProperty("qualificationRequirements")
+    private List<oeapiLanguageTypedString> qualificationRequirements;
+
+    public List<oeapiLanguageTypedString> getQualificationRequirements() {
+        return qualificationRequirements;
+    }
+
+    public void setQualificationRequirements(List<oeapiLanguageTypedString> qualificationRequirements) {
+        this.qualificationRequirements = qualificationRequirements;
+    }
+
+    // link
+
+    @JsonProperty("link")
+    private String link;
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    // education specification
+
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public EducationSpecification educationSpecification;
+
+    public EducationSpecification getEducationSpecification() {
+        return educationSpecification;
+    }
+
+    public void setEducationSpecification(EducationSpecification educationSpecification) {
+        this.educationSpecification = educationSpecification;
+    }
+
+    @JsonProperty("educationSpecification")
+    private EducationSpecification educationSpecificationId;
+
+    public EducationSpecification getEducationSpecificationId() {
+        return educationSpecificationId;
+    }
+
+    public void setEducationSpecificationId(EducationSpecification educationSpecificationId) {
+        this.educationSpecificationId = educationSpecificationId;
+    }
+
+    // courses
 
     @JsonProperty("courses")
     private List<String> courseIds;
@@ -42,79 +195,7 @@ public class ProgramDTO extends oeapiEducationDTO {
     @oeapiDTOExpandable
     public List<Course> courses;
 
-    @JsonProperty("admissionRequirements")
-    @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
-    private List<oeapiLanguageTypedString> admissionRequirements;
-
-    @JsonProperty("qualificationRequirements")
-    @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
-    private List<oeapiLanguageTypedString> qualificationRequirements;
-
-    @JsonProperty("studyLoad")
-    private StudyLoad studyLoad;
-
-    @JsonProperty("coordinators")
-    private List<String> coordinatorIds;
-
-    @JsonIgnore
-    @oeapiDTOExpandable
-    public List<Person> coordinators;
-
-    @JsonIgnore
-    @oeapiDTOExpandable
-    private EducationSpecification educationSpecification;
-
-    @JsonProperty("educationSpecification")
-    private EducationSpecification educationSpecificationId;
-
-    @JsonProperty("organization")
-    private String organizationId;
-
-    @JsonIgnore
-    @oeapiDTOExpandable
-    public Organization organization;
-
-    @JsonProperty("level")
-    private String level;
-
-    @JsonProperty("sector")
-    private String sector;
-
-    @JsonProperty("firstStartDate")
-    private LocalDate firstStartDate;
-
-    @JsonProperty("fieldsOfStudy")
-    private String fieldsOfStudyId;
-
-    public String getFieldsOfStudyId() {
-        return fieldsOfStudyId;
-    }
-
-    public void setFieldsOfStudyId(String fieldsOfStudyId) {
-        this.fieldsOfStudyId = fieldsOfStudyId;
-    }
-
-    /**
-     * @return the programId
-     */
-    public String getProgramId() {
-        return programId;
-    }
-
-    /**
-     * @param programId the programId to set
-     */
-    public void setProgramId(String programId) {
-        this.programId = programId;
-    }
-
-    public void setProgramId() {
-        this.setProgramId(UUID.randomUUID().toString());
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
+    public List<Course> getCourses() { return courses; }
 
     public void setCourses(List<Course> courses) {
         if (courses == null) courses = Collections.emptyList();
@@ -127,9 +208,7 @@ public class ProgramDTO extends oeapiEducationDTO {
         this.courseIds = courseIds;
     }
 
-    public List<String> getCourseIds() {
-        return courseIds;
-    }
+    public List<String> getCourseIds() { return courseIds;    }
 
     public void setCourseIds(List<String> courseIds) {
         this.courseIds = courseIds;
@@ -139,4 +218,45 @@ public class ProgramDTO extends oeapiEducationDTO {
         }
         this.courses = courses;
     }
+
+    // coordinators
+
+    @JsonProperty("coordinators")
+    private List<String> coordinatorIds;
+
+    public List<String> getCoordinatorIds() {
+        return coordinatorIds;
+    }
+
+    public void setCoordinatorIds(List<String> coordinatorIds) {
+        this.coordinatorIds = coordinatorIds;
+        List<Person> coordinators = new ArrayList<Person>();
+        for (String id : coordinatorIds) {
+            coordinators.add(new Person(id));
+        }
+        this.coordinators = coordinators;
+    }
+
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public List<Person> coordinators;
+
+    public List<Person> getCoordinators() {
+        return coordinators;
+    }
+
+    public void setCoordinators(List<Person> coordinators) {
+        if (coordinators == null) coordinators = Collections.emptyList();
+
+        this.coordinators = coordinators;
+        List<String> coordinatorIds = new ArrayList<String>();
+        for (Person person : coordinators) {
+            coordinatorIds.add(person.getPersonId());
+        }
+        this.coordinatorIds = coordinatorIds;
+    }
+
+    // TODO parent
+
+    // TODO children
 }

@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 
 /**
- * Mark DTO field as expandable.  This field should be declared public.
+ * Mark DTO field as expandable.  This field should be declared public
+ * and a setting should be declared.
  */
 public @interface oeapiDTOExpandable { }

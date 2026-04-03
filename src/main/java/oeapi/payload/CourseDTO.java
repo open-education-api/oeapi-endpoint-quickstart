@@ -16,9 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.Convert;
 
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
-import oeapi.model.Consumer;
 import oeapi.model.EducationSpecification;
-import oeapi.model.Organization;
 import oeapi.model.Person;
 import oeapi.model.Program;
 import oeapi.model.StudyLoad;
@@ -47,19 +45,6 @@ public class CourseDTO extends oeapiEducationDTO {
     @JsonIgnore
     @oeapiDTOExpandable
     public EducationSpecification educationSpecification;
-
-    @JsonProperty("organization")
-    private String organizationId;
-
-    @JsonIgnore
-    @oeapiDTOExpandable
-    public Organization organization;
-
-    @JsonProperty("consumers")
-    private List<Consumer> consumers;
-
-    @JsonProperty("learningOutcomes")
-    private List<List<oeapiLanguageTypedString>> learningOutcomes;
 
     @JsonProperty("level")
     @ValidEnumYaml(yamlfile = "levelType.yml")
@@ -98,37 +83,6 @@ public class CourseDTO extends oeapiEducationDTO {
      */
     public String getEducationSpecificationId() {
         return educationSpecificationId;
-    }
-
-    /**
-     * @return the organization
-     */
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    /**
-     * @param organization the organization to set
-     */
-    public void setOrganization(Organization organization) {
-       if (organization != null) {
-           this.organization = organization;
-           this.organizationId = organization.getOrganizationId();
-       }
-    }
-
-     /**
-     * @param organization the organization to set
-     */
-    public void setOrganizationId(String organizationId) {
-       if (organizationId != null) {
-        this.organizationId = organizationId;
-        this.organization = new Organization(organizationId);
-       }
-    }
-
-    public String getOrganizationId() {
-        return organizationId;
     }
 
     /**
@@ -191,34 +145,6 @@ public class CourseDTO extends oeapiEducationDTO {
             programs.add(new Program(id));
         }
         this.programs = programs;
-    }
-
-    /**
-     * @return the consumers
-     */
-    public List<Consumer> getConsumers() {
-        return consumers;
-    }
-
-    /**
-     * @param consumers the consumers to set
-     */
-    public void setConsumers(List<Consumer> consumers) {
-        this.consumers = consumers;
-    }
-
-    /**
-     * @return the learningOutcomes
-     */
-    public List<List<oeapiLanguageTypedString>> getLearningOutcomes() {
-        return learningOutcomes;
-    }
-
-    /**
-     * @param learningOutcomes the learningOutcomes to set
-     */
-    public void setLearningOutcomes(List<List<oeapiLanguageTypedString>> learningOutcomes) {
-        this.learningOutcomes = learningOutcomes;
     }
 
     /**

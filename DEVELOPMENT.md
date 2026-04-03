@@ -24,11 +24,18 @@ podman run -p 3306:3306 \
     docker.io/mysql
 ```
 
+Open MySQL CLI:
+
+```sh
+podman exec -it oeapi-endpoint-quickstart-mysql mysql -u oeapi_qs -p oeapi_qs
+```
+
 Setup sprint database URL:
 
 ```sh
 export SPRING_DATABASE_URL='jdbc:mysql://localhost/oeapi_qs'
 ```
+
 
 ## Running the application
 
