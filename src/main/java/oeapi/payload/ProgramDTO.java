@@ -14,11 +14,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import oeapi.model.Course;
 import oeapi.model.EducationSpecification;
 import oeapi.model.Person;
+import oeapi.model.Program;
 import oeapi.model.StudyLoad;
 import oeapi.model.oeapiLanguageTypedString;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder({"programId", "primaryCode", "name", "abbreviation", "description", "programType", "teachingLanguage", "level"})
+@JsonPropertyOrder({"programId", "primaryCode", "name", "abbreviation", "description", "programType", "teachingLanguage", "level", "parent", "children"})
 
 public class ProgramDTO extends oeapiEducationDTO {
 
@@ -256,7 +257,56 @@ public class ProgramDTO extends oeapiEducationDTO {
         this.coordinatorIds = coordinatorIds;
     }
 
-    // TODO parent
+    // parent and children
 
-    // TODO children
+    @JsonProperty("parent")
+    private String parentId;
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public Program parent;
+
+    public Program getParent() {
+        return parent;
+    }
+
+    public void setParent(Program parent) {
+        this.parent = parent;
+    }
+
+    @JsonProperty("children")
+    private List<String> childrenIds;
+
+    public List<String> getChildrenIds() {
+        return childrenIds;
+    }
+
+    public void setChildrenIds(List<String> childrenIds) {
+        this.childrenIds = childrenIds;
+        List<Program> children = new ArrayList<Program>();
+        for (String id : childrenIds) {
+            children.add(new Program(id));
+        }
+        this.children = children;
+    }
+
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public List<Program> children;
+
+    public List<Program> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Program> children) {
+        this.children = children;
+    }
 }

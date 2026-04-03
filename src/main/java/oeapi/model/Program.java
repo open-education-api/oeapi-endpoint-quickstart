@@ -329,4 +329,30 @@ public class Program extends oeapiEducation {
     public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
+
+    // parent and children
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id", nullable = true)
+    private Program parent;
+
+    public Program getParent() {
+        return parent;
+    }
+
+    public void setParent(Program parent) {
+        this.parent = parent;
+    }
+
+    @JsonBackReference("programParent")
+    @ManyToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<Program> children;
+
+    public List<Program> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Program> children) {
+        this.children = children;
+    }
 }
