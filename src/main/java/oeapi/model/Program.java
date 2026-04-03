@@ -32,7 +32,6 @@ public class Program extends oeapiEducation {
     private String programId = UUID.randomUUID().toString();
 
     @JsonProperty("programType")
-    //@EnumType(name = "programEnum")
     @ValidEnumYaml(yamlfile = "programType.yml")
     private String programType;
 
@@ -72,6 +71,9 @@ public class Program extends oeapiEducation {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "studyload_id")
     private StudyLoad studyLoad;
+
+    @JsonProperty("modeOfStudy")
+    private String modeOfStudy;
 
     @JsonProperty("coordinators")
     @ManyToMany(cascade = CascadeType.ALL)
@@ -254,6 +256,14 @@ public class Program extends oeapiEducation {
      */
     public void setStudyLoad(StudyLoad studyLoad) {
         this.studyLoad = studyLoad;
+    }
+
+    public String getModeOfStudy() {
+        return modeOfStudy;
+    }
+
+    public void setModeOfStudy(String modeOfStudy) {
+        this.modeOfStudy = modeOfStudy;
     }
 
     /**
