@@ -209,7 +209,7 @@ public class oeapiDTOMapper<T, S> {
                                     dto.getClass().getCanonicalName(), fieldName);
                     }
                 } catch (NoSuchFieldException ex) {
-                    logger.error("Expandable field not found: {}#{}",
+                    logger.error("Expandable field not found or not public: {}#{}",
                                  dto.getClass().getCanonicalName(), fieldName);
                 } catch (IllegalAccessException ex) {
                     logger.error("Expandable field not accessible {}#{}",

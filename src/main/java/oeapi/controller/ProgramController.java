@@ -47,7 +47,6 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiProgramRequestParam requestParam) {
-
         Map.Entry<String, String> filter = requestParam.getFilter();
 
         if (filter == null) {
@@ -55,9 +54,9 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
         }
         if (filter.getKey().equalsIgnoreCase("primaryCode")) {
             return super.getAllByPrimaryCode(filter.getValue(), requestParam.toPageable(), service);
-        } else {
-            return super.getAllByFieldValue(filter.getKey(), filter.getValue(), requestParam.toPageable(), service);
         }
+
+        return super.getAllByFieldValue(filter.getKey(), filter.getValue(), requestParam.toPageable(), service);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")

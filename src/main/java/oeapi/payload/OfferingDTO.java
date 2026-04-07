@@ -54,24 +54,6 @@ import org.slf4j.LoggerFactory;
 
 
 public class OfferingDTO extends PrimaryCode {
-
-    /**
-     * @return the academicSessionJSON
-     */
-    public String getAcademicSessionJSON() {
-        return (academicSession == null) ? null : academicSession.getAcademicSessionId();
-    }
-
-    /**
-     * @return the organizationJSON
-     */
-    public String getOrganizationJSON() {
-        return (organization == null) ? null : organization.getOrganizationId();
-    }
-
-    /**
-     * @param organizationJSON the organizationJSON to set
-     */
     static Logger logger = LoggerFactory.getLogger(OfferingDTO.class);
 
     @JsonProperty(value = "offeringId")
@@ -123,18 +105,6 @@ public class OfferingDTO extends PrimaryCode {
     @JsonProperty("consumers")
     @Convert(converter = oeapiUnitaListConsumerConverter.class)
     private List<Consumer> consumers;
-
-    @JsonProperty("academicSession")
-    private String academicSessionJSON;
-
-    @JsonIgnore
-    private AcademicSession academicSession;
-
-    @JsonProperty("organization")
-    private String organizationJSON;
-
-    @JsonIgnore
-    private Organization organization;
 
     @JsonProperty("abbreviation")
     private String abbreviation;
@@ -465,34 +435,6 @@ public class OfferingDTO extends PrimaryCode {
     }
 
     /**
-     * @return the academicSession
-     */
-    public AcademicSession getAcademicSession() {
-        return academicSession;
-    }
-
-    /**
-     * @param academicSession the academicSession to set
-     */
-    public void setAcademicSession(AcademicSession academicSession) {
-        this.academicSession = academicSession;
-    }
-
-    /**
-     * @return the organization
-     */
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    /**
-     * @param organization the organization to set
-     */
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    /**
      * @return the otherCodes
      */
     public List<oeapiIdentifierEntry> getOtherCodes() {
@@ -530,5 +472,56 @@ public class OfferingDTO extends PrimaryCode {
         logger.warn("offeringType is determined automatically and cannot be set manually.");
     }
 
+    // organization
 
+    @JsonProperty("organization")
+    private String organizationId;
+
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public Organization organization;
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+        this.organizationId = organization == null ? null : organization.getOrganizationId();
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
+        this.organization = organizationId == null ? null : new Organization(organizationId);
+    }
+
+    // academic session
+
+    @JsonProperty("academicSession")
+    private String academicSessionId;
+
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public AcademicSession academicSession;
+
+    public AcademicSession getAcademicSession() {
+        return academicSession;
+    }
+
+    public void setAcademicSession(AcademicSession academicSession) {
+        this.academicSession = academicSession;
+    }
+
+    public String getAcademicSessionId() {
+        return academicSessionId;
+    }
+
+    public void setAcademicSessionId(String academicSessionId) {
+        this.academicSessionId = academicSessionId;
+        this.academicSession = academicSessionId == null ? null : new AcademicSession(academicSessionId);
+    }
 }

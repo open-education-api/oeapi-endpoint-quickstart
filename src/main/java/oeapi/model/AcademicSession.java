@@ -1,5 +1,6 @@
 package oeapi.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
@@ -50,6 +51,11 @@ public class AcademicSession extends PrimaryCode {
 
     @JsonProperty("parent")
     private AcademicSession parent;
+
+    @JsonCreator
+    public AcademicSession(String id) {
+        this.academicSessionId = id;
+    }
 
     // Children are managed at service from parent field, 
     // as it easier than managing a self reference(potentially recursive if wrong)    
