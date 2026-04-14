@@ -134,7 +134,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
     //V6
     //@GetMapping(value = "/{id}/learning-components")
     //V5
-    @GetMapping(value = "/{id}/c")
+    @GetMapping(value = "/{id}/components")
     public ResponseEntity<?> getComponents(@PathVariable String id, @ModelAttribute oeapiComponentRequestParam requestParam) {
 
         Map.Entry<String, String> filter = requestParam.getFilter();
