@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import jakarta.validation.Valid;
+import java.util.Objects;
 
 import oeapi.model.Component;
 import oeapi.model.CourseOffering;
@@ -83,26 +84,19 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiCourseRequestParam requestParam) {
-        Map.Entry<String, String> filter = requestParam.getFilter();
-        return super.getAll(filter, requestParam.toPageable(), courseService);
+        Map.Entry<String, String> filter = requestParam.getFilter();                  
+
+        Pageable pageable = requestParam.toPageable();
+        logger.debug("Using toPageable on courses getAll. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");
+        
+        return super.getAll(filter, pageable, courseService);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand) {
-        /*
-        Optional<Course> o = courseService.getById(id);
-        if (!o.isPresent()) {
-            return super.NotFound(id);
-        } else {
-            String dtoOutput = courseService.toDTO(o.get(), expand);
-            return ResponseEntity.ok(dtoOutput);
 
-        }
-         */
         return super.get(id, courseService);
-
-        //return super.get(id, expand, courseService);
-    }
+   }
 
     //V6
     //@GetMapping(value = "/{id}/course-offerings")
@@ -128,9 +122,11 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         mapper = new oeapiDTOMapper(CourseOffering.class, CourseOfferingDTO.class, enumService, Arrays.asList());
 
         List<CourseOfferingDTO> dtos = mapper.toDTOList(courseOfferings);
-        Pageable pageable = PageRequest.of(0, 100);
-
+       
+        Pageable pageable = requestParam.toPageable();
+        logger.debug("Using toPageable on course/{id}/offering. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");
         oeapiResponse response = new oeapiResponse(dtos, pageable);
+        
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
@@ -138,7 +134,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
     //V6
     //@GetMapping(value = "/{id}/learning-components")
     //V5
-    @GetMapping(value = "/{id}/components")
+    @GetMapping(value = "/{id}/c")
     public ResponseEntity<?> getComponents(@PathVariable String id, @ModelAttribute oeapiComponentRequestParam requestParam) {
 
         Map.Entry<String, String> filter = requestParam.getFilter();
@@ -147,7 +143,10 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
             // return super.NotFound(id);
            throw new oeapiException(HttpStatus.NOT_FOUND, "There are no learning-components for Id: " + id);            
         }
+        
         Pageable pageable = requestParam.toPageable();
+        logger.debug("Using toPageable on course/{id}/Components. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");        
+        
         Page<ComponentDTO> components = componentService.toDTOPages(componentService.getByCourseId(id, filter, pageable));
         // Temporal
         //
@@ -169,9 +168,6 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
 
     }
 
-    //public ResponseEntity<?> create(@RequestBody CourseDTO o) {
-    //    return super.create(o, courseService);
-    //}
     @PutMapping(value = "/{courseId}")
     @Override
     public ResponseEntity<?> updateFromDTO(@PathVariable String courseId, @Valid @RequestBody CourseDTO dto) {
@@ -186,35 +182,16 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         return super.createOrUpdate(courseId, dto, courseService);
     }
 
-    /*
-    public ResponseEntity<?> updateCourse(@PathVariable String courseId, @RequestBody CourseDTO course) {
-
-        course.setCourseId(courseId);
-        try {
-            Optional<Course> existing = courseService.getById(courseId);
-            if (existing.isPresent()) {
-                return super.update(course, courseService);
-            } else {
-                return super.create(course, courseService);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-     */
     // Igual no es necesario
     @PostMapping(value = "/{courseId}/update", produces = "application/json")
     public ResponseEntity<?> postCourse(@PathVariable String courseId, @Valid
-            @RequestBody Course course
-    ) {
+            @RequestBody Course course ) {
 
         Errors errors = new BeanPropertyBindingResult(course, "course");
         super.Validate(course, errors);
 
         if (errors.hasErrors()) {
-            //return ResponseEntity.badRequest().body(errors.getAllErrors());
             throw new oeapiException(HttpStatus.NOT_FOUND, errors.getAllErrors().toString());
-
         }
 
         logger.debug("Update by post: Course is valid");
@@ -259,9 +236,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
             courseService.delete(courseId);  // delete course in service will take care of deleting all related objects
             return ResponseEntity.ok().build();
         } else {
-            // return super.NotFound(courseId);
            throw new oeapiException(HttpStatus.NOT_FOUND, "Error deleteCourse with Id: " + courseId);
-
         }
 
     }
