@@ -9,12 +9,10 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.validation.Valid;
-import oeapi.model.Course;
 import oeapi.oeapiException;
 import oeapi.oeapiObjectsValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,9 +48,9 @@ public class oeapiDTOController<T, S> {
     }
 
     protected ResponseEntity<?> getResponse(oeapiRequestParam requestParam, List<?> items) {
-        // Convert pageNumber (1-based index) to 0-based index for Pageable
-        //            Pageable pageable = PageRequest.of(requestParam.getPageNumber() - 1, requestParam.getPageSize());
-        Pageable pageable = PageRequest.of(0, 100);
+        
+        Pageable pageable = requestParam.toPageable();
+        logger.debug("Using pageable on getResponse in oeapDToController. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");        
 
         oeapiResponse response = new oeapiResponse(items, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -60,8 +58,6 @@ public class oeapiDTOController<T, S> {
     }
 
     protected ResponseEntity<?> getResponse(Pageable pageable, List<?> items) {
-        // Convert pageNumber (1-based index) to 0-based index for Pageable
-        //            Pageable pageable = PageRequest.of(requestParam.getPageNumber() - 1, requestParam.getPageSize());
 
         oeapiResponse response = new oeapiResponse(items, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -90,34 +86,31 @@ public class oeapiDTOController<T, S> {
 
     public ResponseEntity<?> getAll(Pageable pageable, oeapiDTOServiceInterface<T, S> service) {
 
-        // Convert pageNumber (1-based index) to 0-based index for Pageable
-        //Pageable pageable = PageRequest.of(requestParam.getPageNumber() - 1, requestParam.getPageSize());
         Page<T> pages = service.getAll(pageable);
-        //pages = service.getAll(pageable);
         return this.getResponse(service.toDTOPages(pages));
 
     }
 
     public ResponseEntity<?> getAll(oeapiRequestParam requestParam, oeapiDTOServiceInterface<T, S> service) {
 
-        Pageable pageable = PageRequest.of(0, 100);
+        Pageable pageable = requestParam.toPageable();             
+        logger.debug("Using pageable on getAll in oeapDToController. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");        
+
         return this.getAll(pageable, service);
 
     }
 
     protected ResponseEntity<?> getAllByPrimaryCode(String primaryCode, oeapiRequestParam requestParam, oeapiDTOServiceInterface<T, S> service) {
 
-        Pageable pageable = PageRequest.of(0, 100);
+        Pageable pageable = requestParam.toPageable();
+        logger.debug("Using pageable on getAllByPrimaryCode in oeapDToController. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");        
+
         return this.getAllByPrimaryCode(primaryCode, pageable, service);
 
     }
 
     protected ResponseEntity<?> getAllByPrimaryCode(String primaryCode, Pageable pageable, oeapiDTOServiceInterface<T, S> service) {
 
-        // Convert pageNumber (1-based index) to 0-based index for Pageable
-        //Pageable pageable = PageRequest.of(requestParam.getPageNumber() - 1, requestParam.getPageSize());
-        //Page<T> pages = service.getAll(pageable);
-        //pages = service.getAll(pageable);
         Page<T> pages = service.getByPrimaryCode(primaryCode, pageable);
         return this.getResponse(service.toDTOPages(pages));
 
@@ -125,7 +118,9 @@ public class oeapiDTOController<T, S> {
 
     protected ResponseEntity<?> getAllByFieldValue(String field, String value, oeapiRequestParam requestParam, oeapiDTOServiceInterface<T, S> service) {
 
-        Pageable pageable = PageRequest.of(0, 100);
+        Pageable pageable = requestParam.toPageable();
+        logger.debug("Using pageable on getAllByFieldValue in oeapDToController. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");        
+
         return this.getAllByFieldValue(field, value, pageable, service);
 
     }
@@ -140,11 +135,9 @@ public class oeapiDTOController<T, S> {
     public ResponseEntity<?> get(String id, oeapiDTOServiceInterface<T, S> service) {
         Optional<T> p = service.getById(id);
         if (!p.isPresent()) {
-            //return ResponseEntity.badRequest().body("Error: " + id + " not found");
              throw new oeapiException(HttpStatus.NOT_FOUND, "There is not such info for Id: " + id);
         } else {
             T obj = p.get();
-            //return ResponseEntity.ok("Program created successfully: " + id);
             return ResponseEntity.ok(service.toDTO(obj));
         }
 
@@ -153,11 +146,9 @@ public class oeapiDTOController<T, S> {
     public ResponseEntity<?> get(String id, String expand, oeapiDTOServiceInterface<T, S> service) {
         Optional<T> p = service.getById(id);
         if (!p.isPresent()) {
-            //return ResponseEntity.badRequest().body("Error: " + id + " not found");
              throw new oeapiException(HttpStatus.NOT_FOUND, "There is not such info for Id: " + id);
         } else {
             T obj = p.get();
-            //return ResponseEntity.ok("Program created successfully: " + id);
             return ResponseEntity.ok(service.toDTOString(obj, expand));
         }
 
@@ -184,7 +175,6 @@ public class oeapiDTOController<T, S> {
             logger.debug("ooapiDTOController (super): Validated and ready to call service to update BD");
             updated = service.update(requestBody);
             finalResponse = ResponseEntity.ok(service.toDTO(updated));
-            //finalResponse = ResponseEntity.ok(updated);
         } catch (oeapiException ooapiEx) {
             logger.error("ooapiDTOController (super): " + ooapiEx.getTitle());
             finalResponse = createErrorResponse(HttpStatus.NOT_FOUND, ooapiEx.getTitle(), ooapiEx.getDetail());  // TDB Fine tune status
@@ -222,7 +212,6 @@ public class oeapiDTOController<T, S> {
             logger.debug("ooapiDTOController (super): Validated and ready to call service to update BD");
             updated = service.update(service.toEntity(requestBody));
             finalResponse = ResponseEntity.ok(service.toDTO(updated));
-            //finalResponse = ResponseEntity.ok(updated);
         } catch (oeapiException ooapiEx) {
             logger.error("ooapiDTOController (super): " + ooapiEx.getTitle());
             finalResponse = createErrorResponse(HttpStatus.NOT_FOUND, ooapiEx.getTitle(), ooapiEx.getDetail());  // TDB Fine tune status
@@ -237,7 +226,6 @@ public class oeapiDTOController<T, S> {
     }
 
     public ResponseEntity<?> create(@RequestBody @Valid T requestBody, oeapiDTOServiceInterface<T, S> service) {
-        //public ResponseEntity<Program> create(@RequestBody Map<String, Object> program) {
 
         ResponseEntity finalResponse = null;
         Errors errors = new BeanPropertyBindingResult(requestBody, requestBody.getClass().getName().toLowerCase());
@@ -249,7 +237,6 @@ public class oeapiDTOController<T, S> {
         this.Validate(requestBody, errors);
         if (errors.hasErrors()) {
             finalResponse = createErrorResponse(HttpStatus.BAD_REQUEST, "Error JSON validation", errors.getAllErrors());  // TDB Fine tune status
-            //return ResponseEntity.badRequest().body(errors.getAllErrors());
         }
         try {
             created = service.create(requestBody);
@@ -265,7 +252,6 @@ public class oeapiDTOController<T, S> {
     }
 
     public ResponseEntity<?> createDTO(@RequestBody @Valid S requestBody, oeapiDTOServiceInterface<T, S> service) {
-        //public ResponseEntity<Program> create(@RequestBody Map<String, Object> program) {
 
         ResponseEntity finalResponse = null;
         Errors errors = new BeanPropertyBindingResult(requestBody, requestBody.getClass().getName().toLowerCase());
@@ -277,7 +263,6 @@ public class oeapiDTOController<T, S> {
         this.ValidateDTO(requestBody, errors);
         if (errors.hasErrors()) {
             finalResponse = createErrorResponse(HttpStatus.BAD_REQUEST, "Error JSON validation", errors.getAllErrors());  // TDB Fine tune status
-            //return ResponseEntity.badRequest().body(errors.getAllErrors());
         }
         try {
             created = service.create(service.toEntity(requestBody));
@@ -292,45 +277,8 @@ public class oeapiDTOController<T, S> {
         return finalResponse;
     }
 
-    /*
-    public ResponseEntity<String> createByJSON(List<T> items, oeapiDTOServiceInterface<T, S> service) {
-
-        // Check if this entry point allows updates using REST or is it read-only
-        //if (!allowRestToModify) {
-        //    throw new oeapiException(HttpStatus.NOT_FOUND, "This OOAPI entry point does not allow updates using REST");
-        //}
-
-        ResponseEntity itemResponse;
-        StringBuilder textResult = new StringBuilder();
-
-        int countProcessed = 0;
-        int countWithError = 0;
-
-        for (T item : items) {
-            itemResponse = this.create(item, service);
-
-            textResult.append("\n" + itemResponse.getBody());
-
-            countProcessed++;
-
-            if (itemResponse.getStatusCodeValue() > 299) {
-                countWithError++;
-            }
-        }
-
-        textResult.insert(0, "Objects processed: " + countProcessed + ", Courses with error: " + countWithError + ", Full log: ");
-
-        return new ResponseEntity<>(textResult.toString(), HttpStatus.ACCEPTED);
-
-    }
-     */
     public ResponseEntity<String> createByJSON(List<S> items, oeapiDTOServiceInterface<T, S> service) {
 
-        /* Check if this entry point allows updates using REST or is it read-only
-        if (!allowRestToModify) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "This OOAPI entry point does not allow updates using REST");
-        }
-         */
         ResponseEntity itemResponse;
         StringBuilder textResult = new StringBuilder();
 

@@ -50,7 +50,6 @@ public class oeapiController<T> {
     protected ResponseEntity<?> NotFound(String id) {
 
         return ResponseEntity.notFound().build();
-
     }
 
     protected ResponseEntity<?> NotFound(String id, oeapiServiceInterface<T> service) {
@@ -70,15 +69,15 @@ public class oeapiController<T> {
 
     protected ResponseEntity<?> getResponse(List<?> items) {
         // Convert pageNumber (1-based index) to 0-based index for Pageable
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+        logger.debug("getResponse(List<?> items using default page settings (no request info of them)");
+        
         oeapiResponse response = new oeapiResponse(items, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     protected ResponseEntity<?> getResponse(Pageable pageable, List<?> items) {
-        // Convert pageNumber (1-based index) to 0-based index for Pageable
-        //            Pageable pageable = PageRequest.of(requestParam.getPageNumber() - 1, requestParam.getPageSize());
 
         oeapiResponse response = new oeapiResponse(items, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -86,8 +85,6 @@ public class oeapiController<T> {
     }
 
     protected ResponseEntity<?> getResponse(Page<?> items) {
-        // Convert pageNumber (1-based index) to 0-based index for Pageable
-        //            Pageable pageable = PageRequest.of(requestParam.getPageNumber() - 1, requestParam.getPageSize());
 
         oeapiResponse response = new oeapiResponse(items);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -97,7 +94,6 @@ public class oeapiController<T> {
     protected ResponseEntity<?> getAll(Pageable pageable, oeapiServiceInterface<T> service) {
 
         Page<T> pages = service.getAll(pageable);
-
         return this.getResponse(pages);
 
     }
@@ -119,20 +115,21 @@ public class oeapiController<T> {
     protected ResponseEntity<?> getAllByPrimaryCode(String primaryCode, Pageable pageable, oeapiServiceInterface<T> service) {
 
         Page<T> pages = service.getByPrimaryCode(primaryCode, pageable);
-
         return this.getResponse(pages);
     }
 
     protected ResponseEntity<?> getAllByPrimaryCode(String primaryCode, oeapiRequestParam requestParam, oeapiServiceInterface<T> service) {
 
-        Pageable pageable = PageRequest.of(0, 100);
-        return this.getAllByPrimaryCode(primaryCode, pageable, service);
+        Pageable pageable = requestParam.toPageable();
+        logger.debug("Using toPageable on getAllByPrimaryCode. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");        
 
+        return this.getAllByPrimaryCode(primaryCode, pageable, service);
     }
 
     protected ResponseEntity<?> getAllByFieldValue(String field, String value, oeapiRequestParam requestParam, oeapiServiceInterface<T> service) {
 
-        Pageable pageable = PageRequest.of(0, 100);
+        Pageable pageable = requestParam.toPageable();
+        logger.debug("Using toPageable on getAllByFieldValue. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");        
         return this.getAllByFieldValue(field, value, pageable, service);
 
     }
@@ -140,7 +137,6 @@ public class oeapiController<T> {
     public ResponseEntity<?> getAllByFieldValue(String field, String value, Pageable pageable, oeapiServiceInterface<T> service) {
 
         Page<T> pages = service.getByField(field, value, pageable);
-
         return this.getResponse(pages);
 
     }

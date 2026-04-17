@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import oeapi.model.Course;
 import oeapi.model.Program;
 import oeapi.oeapiException;
 import oeapi.service.CourseService;
@@ -32,10 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/programs")
 public class ProgramController extends oeapiController<Program> {
 
-    /*
-    @Autowired
-    private ooapiObjectsValidator validator;
-     */
     @Autowired
     private ProgramService service;
 
@@ -49,9 +44,8 @@ public class ProgramController extends oeapiController<Program> {
 
         if (filter == null) {
             return super.getAll(requestParam.toPageable(), service);
-            //return super.getAllByPrimaryCode(requestParam.getPrimaryCode(), requestParam, service)
         }
-        if (filter.getKey() == "primaryCode") {
+        if (filter.getKey().equalsIgnoreCase("primaryCode")) {
             return super.getAllByPrimaryCode(filter.getValue(), requestParam.toPageable(), service);
         } else {
             return super.getAllByFieldValue(filter.getKey(), filter.getValue(), requestParam.toPageable(), service);
@@ -94,21 +88,13 @@ public class ProgramController extends oeapiController<Program> {
 
     @GetMapping(value = "/{id}/courses", produces = "application/json")
     public ResponseEntity<?> getCourses(@PathVariable String id, @ModelAttribute oeapiCourseRequestParam requestParam) {
-        //public ResponseEntity<?> getCourses(@PathVariable String id, @RequestParam ooapiRequestParam requestParam) {
 
-        //public ResponseEntity<?> getCourses(@PathVariable String id, @RequestParam ooapiRequestParam requestParam) {
-        //Pageable pageable = PageRequest.of(requestParam.getPageNumber(), requestParam.getPageSize());
         Map.Entry<String, String> filter = requestParam.getFilter(false);
         Optional<Program> existing = service.getById(id);
         if (existing.isPresent()) {
-
             return super.getResponse(requestParam.toPageable(), courseService.getCoursesByProgramId(id));
-
         }
-        //return super.NotFound(id);
-        throw new oeapiException(HttpStatus.NOT_FOUND, "There are not courses for Id: " + id);
-
-        
+        throw new oeapiException(HttpStatus.NOT_FOUND, "There are not courses for Id: " + id);        
     }
 
     @PostMapping
@@ -127,22 +113,13 @@ public class ProgramController extends oeapiController<Program> {
             service.delete(id);  
             return ResponseEntity.ok().build();
         } else {
-            // return super.NotFound(courseId);
            throw new oeapiException(HttpStatus.NOT_FOUND, "Error delete program with Id: " + id);
-
         }
     }        
     
     @PostMapping(value = {"/loadbyjson"}, produces = "application/json")
     public ResponseEntity<String> createByJSON(@RequestBody List<Program> items) {
 
-        /*
-        /* Check if this entry point allows updates using REST or is it read-only
-        if (!allowRestToModify) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "This OOAPI entry point does not allow updates using REST");
-        }
-         */
         return super.createByJSON(items, service);
-
     }    
 }
