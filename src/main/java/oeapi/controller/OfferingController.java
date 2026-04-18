@@ -70,14 +70,12 @@ public class OfferingController extends oeapiDTOController<Offering, OfferingDTO
 
     @GetMapping(value = "/{id}/associations", produces = "application/json")
     public ResponseEntity<?> getAssociations(@PathVariable String id) {
-        // TODO implement this
-        throw new UnsupportedOperationException("Unimplemented /{id}/associations");
+        throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'getAssociations' is not yet implemented");
     }
 
     @GetMapping(value = "/{id}/groups", produces = "application/json")
     public ResponseEntity<?> getGroups(@PathVariable String id, @ModelAttribute oeapiGroupRequestParam requestParam) {
-        // TODO implement this
-        throw new UnsupportedOperationException("Unimplemented /{id}/groups");
+        throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'getGroups' is not yet implemented");
     }
 
     @PostMapping

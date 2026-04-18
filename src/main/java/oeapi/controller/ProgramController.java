@@ -100,13 +100,11 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
 
     @Override
     public ResponseEntity<?> createFromDTO(ProgramDTO dto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createFromDTO'");
+        throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'updateFromDTO' is not yet implemented");
     }
 
     @Override
     public ResponseEntity<?> updateFromDTO(String courseId, ProgramDTO dto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateFromDTO'");
+        throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'updateFromDTO' is not yet implemented");
     }
 }
