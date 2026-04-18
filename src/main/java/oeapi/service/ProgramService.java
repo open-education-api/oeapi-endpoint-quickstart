@@ -331,7 +331,6 @@ public class ProgramService extends oeapiEndpointDTOService<Program, ProgramRepo
 
     @Override
     public Program checkRelations(Program obj) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkRelations'");
+        return this.checkRelations(obj, false);
     }
 }
