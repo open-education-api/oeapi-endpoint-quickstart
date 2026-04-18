@@ -15,7 +15,6 @@ import oeapi.model.Program;
 import oeapi.oeapiException;
 import oeapi.service.CourseService;
 import oeapi.service.ProgramService;
-import oeapi.service.oeapiDTOServiceInterface;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -16,7 +16,9 @@ Install OpenJDK version 18 or higher.
 Run a database using docker (or podman):
 
 ```sh
-podman run -p 3306:3306 \
+podman run -d \
+    --name oeapi-endpoint-quickstart-mysql \
+    -p 3306:3306 \
     -e MYSQL_ROOT_PASSWORD=x \
     -e MYSQL_DATABASE=oeapi_qs \
     -e MYSQL_USER=oeapi_qs \
@@ -27,7 +29,8 @@ podman run -p 3306:3306 \
 Open MySQL CLI:
 
 ```sh
-podman exec -it oeapi-endpoint-quickstart-mysql mysql -u oeapi_qs -p oeapi_qs
+podman exec -it oeapi-endpoint-quickstart-mysql \
+    mysql -u oeapi_qs -p oeapi_qs
 ```
 
 Setup sprint database URL:

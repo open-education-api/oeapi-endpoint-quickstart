@@ -80,12 +80,6 @@ public class Program extends oeapiEducation {
     @JoinTable
     private List<Person> coordinators;
 
-    @JsonProperty("courses")
-    @JsonBackReference("programCourses")
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable
-    private List<Course> courses;
-
     @JsonProperty("educationSpecification")
     @ManyToOne
     @JoinColumn(name = "education_specification_id", nullable = true)
@@ -320,14 +314,6 @@ public class Program extends oeapiEducation {
      */
     public void setQualificationAwarded(String qualificationAwarded) {
         this.qualificationAwarded = qualificationAwarded;
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
     }
 
     // parent and children

@@ -75,7 +75,6 @@ public class Course extends oeapiEducation {
     private List<Person> coordinators;
 
     @JsonProperty("programs")
-    @JsonBackReference("coursePrograms")
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable
     private List<Program> programs;

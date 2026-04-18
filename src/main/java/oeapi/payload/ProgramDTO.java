@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import oeapi.model.Course;
 import oeapi.model.EducationSpecification;
 import oeapi.model.Person;
 import oeapi.model.Program;
@@ -185,39 +184,6 @@ public class ProgramDTO extends oeapiEducationDTO {
 
     public void setEducationSpecificationId(EducationSpecification educationSpecificationId) {
         this.educationSpecificationId = educationSpecificationId;
-    }
-
-    // courses
-
-    @JsonProperty("courses")
-    private List<String> courseIds;
-
-    @JsonIgnore
-    @oeapiDTOExpandable
-    public List<Course> courses;
-
-    public List<Course> getCourses() { return courses; }
-
-    public void setCourses(List<Course> courses) {
-        if (courses == null) courses = Collections.emptyList();
-
-        this.courses = courses;
-        List<String> courseIds = new ArrayList<String>();
-        for (Course course : this.courses) {
-            courseIds.add(course.getCourseId());
-        }
-        this.courseIds = courseIds;
-    }
-
-    public List<String> getCourseIds() { return courseIds;    }
-
-    public void setCourseIds(List<String> courseIds) {
-        this.courseIds = courseIds;
-        List<Course> courses = new ArrayList<Course>();
-        for (String id : courseIds) {
-            courses.add(new Course(id));
-        }
-        this.courses = courses;
     }
 
     // coordinators
