@@ -798,7 +798,8 @@ $('#catalogForm').on('submit', async function (e) {
                     primaryCode: {
                         code: coordinator.mail,
                         codeType: "identifier"
-                    }
+                    },
+                    consumers: ooapiDefaultOfferingConsumers
                 };
             }));
 
@@ -921,7 +922,6 @@ $('#catalogForm').on('submit', async function (e) {
     }
 });
 
-
 async function postCourse(listCoordinators) {
 
     const studyLoad = $('#studyLoad').val() ? {
@@ -954,7 +954,8 @@ async function postCourse(listCoordinators) {
         primaryCode: {
             codeType: "identifier",
             code: $('#code').val()
-        }
+        },
+        consumers: ooapiDefaultCourseConsumers
     };
 
     // Remove empty values
@@ -1031,7 +1032,8 @@ async function postOffering(courseId) {
         enrollEndDate: $('#endEnrollDate').val(),
         modeOfDelivery: $('#modeOfDelivery').val(),
         addresses: [courseAddress],
-        course: courseId
+        course: courseId,
+        consumers: ooapiDefaultOfferingConsumers
     }
 
     // Remove empty values
@@ -1116,7 +1118,8 @@ async function postPhysicalComponentOffering(courseId, offeringGroupId) {
         addresses: [courseAddress],
         organization: $('#physicalUniversity').val(),
         course: courseId,
-        otherCodes:  otherCodesOffering
+        otherCodes:  otherCodesOffering,
+        consumers: ooapiDefaultOfferingConsumers
     };
 
     // Remove empty values
@@ -1179,7 +1182,8 @@ async function postVirtualComponentOffering(courseId,offeringGroupId) {
         endDate: $('#virtualEndDate').val(),
         modeOfDelivery: ["online"],
         course: courseId,
-        otherCodes:  otherCodesOffering
+        otherCodes:  otherCodesOffering,
+        consumers: ooapiDefaultOfferingConsumers
     };
 
     // Remove empty values
