@@ -7,15 +7,12 @@ package oeapi.payload;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import oeapi.model.Course;
-import oeapi.model.Organization;
 
 /**
  *
  * @author itziar.urrutia
  */
 public class CourseOfferingDTO extends OfferingDTO {
-
-
 
     @JsonProperty("course")
     private String courseJSON;
@@ -55,16 +52,6 @@ public class CourseOfferingDTO extends OfferingDTO {
     @Override
     public String getOfferingType() {
         return "course";
-    }
-
-    @Override
-    public String getOrganizationJSON() {
-
-        if (super.getOrganizationJSON() == null) {
-            return (course == null || course.getOrganization() == null) ? null : course.getOrganization().getOrganizationId();
-        }
-        return super.getOrganizationJSON();
-
     }
 
     @Override

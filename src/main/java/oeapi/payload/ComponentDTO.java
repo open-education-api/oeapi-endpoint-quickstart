@@ -1,5 +1,11 @@
 package oeapi.payload;
 
+import static oeapi.oeapiUtils.ooapiObjectMapper;
+
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,13 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import oeapi.model.Course;
-import oeapi.model.Organization;
-import static oeapi.oeapiUtils.ooapiObjectMapper;
 import oeapi.validation.ValidEnumYaml;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -27,12 +27,6 @@ public class ComponentDTO extends oeapiEducationDTO {
     @ValidEnumYaml(yamlfile = "componentType.yml")
     private String componentType;
 
-    @JsonProperty("organization")
-    private String organizationJSON;
-
-    @JsonIgnore
-    private OrganizationDTO organization;
-
     @JsonProperty("course")
     //@JsonIgnore
     private Course course;
@@ -40,26 +34,6 @@ public class ComponentDTO extends oeapiEducationDTO {
     //@JsonProperty("course")
     @JsonIgnore
     private String courseJSON;
-
-    /**
-     * @return the organization
-     */
-    public OrganizationDTO getOrganization() {
-        return organization;
-    }
-
-    /**
-     * @param organization the organization to set
-     */
-    public void setOrganization(OrganizationDTO organization) {
-        this.organization = organization;
-        this.organizationJSON = organization.getOrganizationId();
-
-        //
-        //if (organization != null) {
-        //    this.organizationId = organization.getOrganizationId();
-        //}
-    }
 
     /**
      * @return the course
@@ -122,20 +96,6 @@ public class ComponentDTO extends oeapiEducationDTO {
         }
 
         return jsonCourse;
-    }
-
-    /**
-     * @return the organizationJSON
-     */
-    public String getOrganizationJSON() {
-        return organizationJSON;
-    }
-
-    /**
-     * @param organizationJSON the organizationJSON to set
-     */
-    public void setOrganizationJSON(String organizationJSON) {
-        this.organizationJSON = organizationJSON;
     }
 
     /**

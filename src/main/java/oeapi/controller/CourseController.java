@@ -1,28 +1,42 @@
 package oeapi.controller;
 
-import oeapi.controller.requestparameters.oeapiCourseRequestParam;
-import oeapi.controller.requestparameters.oeapiComponentRequestParam;
-import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
 import java.util.ArrayList;
 import java.util.Arrays;
-import oeapi.model.Course;
-import oeapi.service.CourseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import jakarta.validation.Valid;
 import java.util.Objects;
 
+import oeapi.controller.requestparameters.oeapiComponentRequestParam;
+import oeapi.controller.requestparameters.oeapiCourseRequestParam;
+import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
 import oeapi.model.Component;
+import oeapi.model.Course;
 import oeapi.model.CourseOffering;
 import oeapi.model.Offering;
 import oeapi.oeapiException;
@@ -30,26 +44,12 @@ import oeapi.oeapiObjectsValidator;
 import oeapi.payload.ComponentDTO;
 import oeapi.payload.CourseDTO;
 import oeapi.payload.CourseOfferingDTO;
-
 import oeapi.service.ComponentService;
+import oeapi.service.CourseService;
 import oeapi.service.OfferingService;
 import oeapi.service.oeapiEnumConversionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
-import org.springframework.http.HttpStatus;
-
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * The type Courses controller.
@@ -68,8 +68,6 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
     @Autowired
     private CourseService courseService;
 
-    private oeapiDTOMapper<CourseOffering, CourseOfferingDTO> mapper;
-
     @Autowired
     private oeapiEnumConversionService enumService;
 
@@ -78,7 +76,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
 
     @Autowired
     private ComponentService componentService;
-    
+
     @Value("${ooapi.config.autoCreateOfferIfNotExists:false}")
     private boolean defaultAutoCreateOfferIfNotExists;
 
@@ -93,10 +91,11 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand) {
 
-        return super.get(id, courseService);
-   }
+    public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand)
+            throws JsonProcessingException {
+        return super.get(id, expand, courseService);
+    }
 
     //V6
     //@GetMapping(value = "/{id}/course-offerings")
@@ -115,18 +114,21 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         if (courseOfferings.isEmpty()) {
             List<Offering> offerings = new ArrayList<>();
             if (defaultAutoCreateOfferIfNotExists) {
-               offerings.add(offeringService.autoGenerateBasicItem(id));
-             }
+                offerings.add(offeringService.autoGenerateBasicItem(id));
+            }
             return super.getResponse(requestParam, offerings);
         }
-        mapper = new oeapiDTOMapper(CourseOffering.class, CourseOfferingDTO.class, enumService, Arrays.asList());
+        oeapiDTOMapper<CourseOffering, CourseOfferingDTO> mapper =
+                new oeapiDTOMapper<CourseOffering, CourseOfferingDTO>(CourseOffering.class,
+                        CourseOfferingDTO.class,
+                        enumService,
+                        Arrays.asList());
 
         List<CourseOfferingDTO> dtos = mapper.toDTOList(courseOfferings);
-       
         Pageable pageable = requestParam.toPageable();
         logger.debug("Using toPageable on course/{id}/offering. (page,size): ("+pageable.getPageNumber()+","+pageable.getPageSize()+")");
-        oeapiResponse response = new oeapiResponse(dtos, pageable);
-        
+        oeapiResponse<CourseOfferingDTO> response = new oeapiResponse<CourseOfferingDTO>(dtos, pageable);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
@@ -222,8 +224,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
     }
 
     @PostMapping(value = {"/loadbyjson"}, produces = "application/json")
-    public ResponseEntity<String> createByCoursesJSON(@RequestBody List<CourseDTO> items
-    ) {
+    public ResponseEntity<String> createByCoursesJSON(@RequestBody List<CourseDTO> items) {
         return super.createByJSON(items, courseService);
     }
 
@@ -238,7 +239,5 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         } else {
            throw new oeapiException(HttpStatus.NOT_FOUND, "Error deleteCourse with Id: " + courseId);
         }
-
     }
-
 }

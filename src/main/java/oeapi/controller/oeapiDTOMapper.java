@@ -12,18 +12,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import oeapi.service.oeapiEnumConversionService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+
+import oeapi.oeapiUtils;
+import oeapi.payload.oeapiDTOExpandable;
+import oeapi.service.oeapiEnumConversionService;
 
 /**
  *
  * @author itziar.urrutia
  */
 public class oeapiDTOMapper<T, S> {
+    static Logger logger = LoggerFactory.getLogger(oeapiDTOMapper.class);
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -177,4 +188,36 @@ public class oeapiDTOMapper<T, S> {
         this.enumService = enumService;
     }
 
+    private ObjectMapper objectMapper = oeapiUtils.ooapiObjectMapper();
+
+    public String toJSON(T e, String expand) throws JsonProcessingException {
+        S dto = this.toDTO(e);
+
+        ObjectNode node = objectMapper.valueToTree(dto);
+
+        // promote requested expansions
+        if (expand != null && !expand.isEmpty()) {
+            String[] expandFields = expand.split(",");
+            for (String fieldName : expandFields) {
+                try {
+                    Field field = dto.getClass().getField(fieldName);
+                    if (field.isAnnotationPresent(oeapiDTOExpandable.class)) {
+                        Object value = field.get(dto);
+                        node.set(fieldName, objectMapper.valueToTree(value));
+                    } else {
+                        logger.warn("Non-expandable field requested: {}#{}",
+                                    dto.getClass().getCanonicalName(), fieldName);
+                    }
+                } catch (NoSuchFieldException ex) {
+                    logger.error("Expandable field not found or not public: {}#{}",
+                                 dto.getClass().getCanonicalName(), fieldName);
+                } catch (IllegalAccessException ex) {
+                    logger.error("Expandable field not accessible {}#{}",
+                                 dto.getClass().getCanonicalName(), fieldName);
+                }
+            }
+        }
+
+        return objectMapper.writeValueAsString(node);
+    }
 }

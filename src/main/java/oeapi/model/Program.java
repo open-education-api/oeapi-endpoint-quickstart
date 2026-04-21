@@ -1,41 +1,40 @@
 package oeapi.model;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.time.LocalDate;
-import java.util.List;
 
-import java.util.UUID;
 import jakarta.persistence.CascadeType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.validation.ValidEnumYaml;
 import oeapi.validation.ValidLanguageTypedString;
 import oeapi.validation.ValidObjectYaml;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@Entity
-@JsonPropertyOrder({"programId", "primaryCode", "name", "abbreviation", "description", "programType", "teachingLanguage", "level"})
+@Entity(name = "program")
 public class Program extends oeapiEducation {
 
     @Id
-    @Column(name = "program_id")
+    @Column(name = "program_id", updatable = false, nullable = false)
     private String programId = UUID.randomUUID().toString();
 
     @JsonProperty("programType")
-    //@EnumType(name = "programEnum")
     @ValidEnumYaml(yamlfile = "programType.yml")
     private String programType;
 
@@ -76,6 +75,9 @@ public class Program extends oeapiEducation {
     @JoinColumn(name = "studyload_id")
     private StudyLoad studyLoad;
 
+    @JsonProperty("modeOfStudy")
+    private String modeOfStudy;
+
     @JsonProperty("coordinators")
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable
@@ -84,7 +86,6 @@ public class Program extends oeapiEducation {
     @JsonProperty("educationSpecification")
     @ManyToOne
     @JoinColumn(name = "education_specification_id", nullable = true)
-    //@JsonBackReference
     private EducationSpecification educationSpecification;
 
     @JsonProperty("organization")
@@ -93,8 +94,7 @@ public class Program extends oeapiEducation {
     @JsonBackReference("programOrganization")
     private Organization organization;
 
-    public Program() {
-    }
+    public Program() { }
 
     @JsonCreator
     public Program(String id) {
@@ -255,6 +255,14 @@ public class Program extends oeapiEducation {
         this.studyLoad = studyLoad;
     }
 
+    public String getModeOfStudy() {
+        return modeOfStudy;
+    }
+
+    public void setModeOfStudy(String modeOfStudy) {
+        this.modeOfStudy = modeOfStudy;
+    }
+
     /**
      * @return the coordinators
      */
@@ -311,4 +319,29 @@ public class Program extends oeapiEducation {
         this.qualificationAwarded = qualificationAwarded;
     }
 
+    // parent and children
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private Program parent;
+
+    public Program getParent() {
+        return parent;
+    }
+
+    public void setParent(Program parent) {
+        this.parent = parent;
+    }
+
+    @JsonBackReference("programParent")
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Program> children;
+
+    public List<Program> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Program> children) {
+        this.children = children;
+    }
 }

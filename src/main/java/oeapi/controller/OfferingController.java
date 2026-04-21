@@ -1,21 +1,12 @@
 package oeapi.controller;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
-import oeapi.controller.requestparameters.oeapiGroupRequestParam;
-import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
-import oeapi.model.Course;
-import oeapi.model.CourseOffering;
-import oeapi.model.Offering;
-import oeapi.oeapiException;
-import oeapi.oeapiObjectsValidator;
-import oeapi.service.CourseService;
-import oeapi.service.OfferingService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +18,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import oeapi.oeapiException;
+import oeapi.controller.requestparameters.oeapiGroupRequestParam;
+import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
+import oeapi.model.Course;
+import oeapi.model.CourseOffering;
+import oeapi.model.Offering;
+import oeapi.payload.OfferingDTO;
+import oeapi.service.CourseService;
+import oeapi.service.OfferingService;
 
 /**
  *
@@ -35,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/offerings")
-public class OfferingController extends oeapiController<Offering> {
+public class OfferingController extends oeapiDTOController<Offering, OfferingDTO> {
 
     static Logger logger = LoggerFactory.getLogger(OfferingController.class);
 
@@ -45,9 +47,6 @@ public class OfferingController extends oeapiController<Offering> {
     @Autowired
     private CourseService courseService;
 
-    @Autowired
-    private oeapiObjectsValidator validator;
-
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiOfferingRequestParam requestParam) {
 
@@ -56,50 +55,27 @@ public class OfferingController extends oeapiController<Offering> {
 
         if (filter == null) {
             return super.getAll(requestParam.toPageable(), offeringService);
-            //return super.getAllByPrimaryCode(requestParam.getPrimaryCode(), requestParam, service)
         }
         if (filter.getKey() == "primaryCode") {
             return super.getAllByPrimaryCode(filter.getValue(), requestParam.toPageable(), offeringService);
-        } else {
-            return super.getAllByFieldValue(filter.getKey(), filter.getValue(), requestParam.toPageable(), offeringService);
         }
+
+        return super.getAllByFieldValue(filter.getKey(), filter.getValue(), requestParam.toPageable(), offeringService);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<?> get(@PathVariable String id) {
-
-        Optional<Offering> o = offeringService.getById(id);
-        if (!o.isPresent()) {
-            //return this.NotFound(id, offeringService);
-            throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering with Id: " + id);
-        }
-        return super.get(id, offeringService);
-
+    public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand) throws JsonProcessingException {
+        return super.get(id, expand, offeringService);
     }
 
     @GetMapping(value = "/{id}/associations", produces = "application/json")
     public ResponseEntity<?> getAssociations(@PathVariable String id) {
-        Optional<Offering> o = offeringService.getById(id);
-        //if (!o.isPresent()) {
-        //return super.NotFound(id);
-        //throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering with Id: " + id);
-        //}
-        return super.getResponse(new ArrayList());
-        //return super.getResponse(requestParam.toPageable(), new ArrayList());
+        throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'getAssociations' is not yet implemented");
     }
 
     @GetMapping(value = "/{id}/groups", produces = "application/json")
     public ResponseEntity<?> getGroups(@PathVariable String id, @ModelAttribute oeapiGroupRequestParam requestParam) {
-
-        Optional<Offering> o = offeringService.getById(id);
-        //if (!o.isPresent()) {
-        //    return super.NotFound(id);
-        //    //throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering with Id: " + id);
-        //}
-        Map.Entry<String, String> filter = requestParam.getFilter();
-
-        return super.getResponse(requestParam.toPageable(), new ArrayList());
-
+        throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'getGroups' is not yet implemented");
     }
 
     @PostMapping

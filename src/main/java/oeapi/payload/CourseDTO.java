@@ -1,72 +1,50 @@
 package oeapi.payload;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import java.time.LocalDate;
-import java.util.ArrayList;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import jakarta.persistence.Convert;
-import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 
-import oeapi.model.Consumer;
+import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.model.EducationSpecification;
-import oeapi.model.Organization;
 import oeapi.model.Person;
 import oeapi.model.Program;
 import oeapi.model.StudyLoad;
 import oeapi.model.oeapiLanguageTypedString;
-import static oeapi.oeapiUtils.ooapiObjectMapper;
 import oeapi.validation.ValidEnumYaml;
-import oeapi.validation.ValidFieldsOfStudy;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonPropertyOrder({"courseId", "primaryCode", "name", "abbreviation", "description", "teachingLanguage", "level", "fieldsOfStudy"})
 
 public class CourseDTO extends oeapiEducationDTO {
-
     static Logger logger = LoggerFactory.getLogger(CourseDTO.class);
 
     @JsonProperty(value = "courseId")
     private String courseId = UUID.randomUUID().toString();
 
     @JsonProperty("programs")
-    private List<String> programsJSON;
+    private List<String> programIds;
 
     @JsonIgnore
-    private List<Program> programs;
+    @oeapiDTOExpandable
+    public List<Program> programs;
 
     @JsonProperty("educationSpecification")
-    private String educationSpecificationJSON;
+    private String educationSpecificationId;
 
     @JsonIgnore
-    private EducationSpecification educationSpecification;
-
-    // Aproach to expandable
-    //@JsonProperty("organization")
-    //private String organizationId;
-    //@JsonProperty("organizationObject")
-    //private Organization organization;
-    @JsonProperty("organization")
-    private String organizationJSON;
-
-    @JsonIgnore
-    private Organization organization;
-
-    @JsonProperty("consumers")
-    private List<Consumer> consumers;
-
-    @JsonProperty("learningOutcomes")
-    private List<List<oeapiLanguageTypedString>> learningOutcomes;
+    @oeapiDTOExpandable
+    public EducationSpecification educationSpecification;
 
     @JsonProperty("level")
     @ValidEnumYaml(yamlfile = "levelType.yml")
@@ -78,8 +56,7 @@ public class CourseDTO extends oeapiEducationDTO {
     @ValidEnumYaml(yamlfile = "sectorType.yml")
     private String sector;
     private String link;
-    @JsonIgnore
-    private String firstStartDateJSON;
+
     @JsonProperty("firstStartDate")
     private LocalDate firstStartDate;
 
@@ -95,56 +72,19 @@ public class CourseDTO extends oeapiEducationDTO {
     private StudyLoad studyLoad;
 
     @JsonProperty("coordinators")
-    private List<String> coordinatorsJSON;
+    private List<String> coordinatorIds;
 
-    //@JsonProperty("coordinatorsObject")
     @JsonIgnore
-    private List<Person> coordinators;
+    @oeapiDTOExpandable
+    public List<Person> coordinators;
 
     /**
-     * @return the educationSpecificationJSON
+     * @return the educationSpecificationId
      */
-    public String getEducationSpecificationJSON() {
-        return educationSpecificationJSON;
+    public String getEducationSpecificationId() {
+        return educationSpecificationId;
     }
 
-    /**
-     * @return the organization
-     */
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    /**
-     * @param organization the organization to set
-     */
-    public void setOrganization(Organization organization) {
-       if (organization != null)
-       {    
-        this.organization = organization;            
-        this.organizationJSON = organization.getOrganizationId();
-       }
-    }
-    
-     /**
-     * @param organization the organization to set
-     */
-    public void setOrganizationJSON(String organizationId) {
-       if (organizationId != null)
-       {    
-        this.organizationJSON = organizationId;    
-        this.organization = new Organization(organizationId);
-       } 
-    }   
-    
-    /**
-     * @return the organizationJSON
-     */
-    public String getOrganizationJSON() {
-        return organizationJSON;
-    }
-
-   
     /**
      * @return the educationSpecification
      */
@@ -168,13 +108,11 @@ public class CourseDTO extends oeapiEducationDTO {
 
     public void setPrograms(List<Program> programs) {
         this.programs = programs;
-        List<String> programsJSON = new ArrayList<String>();
-        for (Program currProgram : programs) 
-        {
-            String progID = currProgram.getProgramId();
-            programsJSON.add(progID);
+        List<String> programIds = new ArrayList<String>();
+        for (Program program : programs) {
+            programIds.add(program.getProgramId());
         }
-        this.programsJSON = programsJSON;
+        this.programIds = programIds;
 
     }
 
@@ -196,53 +134,17 @@ public class CourseDTO extends oeapiEducationDTO {
         this.setCourseId(UUID.randomUUID().toString());
     }
 
-    /**
-     * @return the programsJSON
-     */
-    public List<String> getProgramsJSON() {
-        return programsJSON;
+    public List<String> getProgramIds() {
+        return programIds;
     }
 
-    /**
-     * @param programsJSON the programsJSON to set
-     */
-    public void setProgramsJSON(List<String> programsJSON) {
-        this.programsJSON = programsJSON;
+    public void setProgramIds(List<String> programIds) {
+        this.programIds = programIds;
         List<Program> programs = new ArrayList<Program>();
-        for (String currProgram : programsJSON) 
-         { 
-            Program aProgram = new Program(currProgram);
-            programs.add(aProgram);
-         } 
+        for (String id : programIds) {
+            programs.add(new Program(id));
+        }
         this.programs = programs;
-    }
-
-    /**
-     * @return the consumers
-     */
-    public List<Consumer> getConsumers() {
-        return consumers;
-    }
-
-    /**
-     * @param consumers the consumers to set
-     */
-    public void setConsumers(List<Consumer> consumers) {
-        this.consumers = consumers;
-    }
-
-    /**
-     * @return the learningOutcomes
-     */
-    public List<List<oeapiLanguageTypedString>> getLearningOutcomes() {
-        return learningOutcomes;
-    }
-
-    /**
-     * @param learningOutcomes the learningOutcomes to set
-     */
-    public void setLearningOutcomes(List<List<oeapiLanguageTypedString>> learningOutcomes) {
-        this.learningOutcomes = learningOutcomes;
     }
 
     /**
@@ -257,20 +159,6 @@ public class CourseDTO extends oeapiEducationDTO {
      */
     public void setStudyLoad(StudyLoad studyLoad) {
         this.studyLoad = studyLoad;
-    }
-
-    /**
-     * @return the firstStartDateJSON
-     */
-    public String getFirstStartDateJSON() {
-        return firstStartDateJSON;
-    }
-
-    /**
-     * @param firstStartDateJSON the firstStartDateJSON to set
-     */
-    public void setFirstStartDateJSON(String firstStartDateJSON) {
-        this.firstStartDateJSON = firstStartDateJSON;
     }
 
     /**
@@ -364,36 +252,25 @@ public class CourseDTO extends oeapiEducationDTO {
 
     public void setCoordinators(List<Person> coordinators) {
         this.coordinators = coordinators;
-        List<String> coordinatorsJSON = new ArrayList<>();
+        List<String> coordinatorIds = new ArrayList<>();
         for (Person p : coordinators) {
-            coordinatorsJSON.add(p.getPersonId());
+            coordinatorIds.add(p.getPersonId());
         }
-        this.coordinatorsJSON = coordinatorsJSON;
-
-//        this.setCoordinatorsJSON(coordinators.stream()
-//                .map(Person::getPersonId)
-//                .collect(Collectors.toList()));
-
+        this.coordinatorIds = coordinatorIds;
     }
 
-    /**
-     * @param coordinatorsJSON the programsJSON to set
-     */
-    public void setCoordinatorsJSON(List<String> coordinatorsJSON) {
-        this.coordinatorsJSON = coordinatorsJSON;
+    public void setCoordinatorIds(List<String> coordinatorIds) {
+        this.coordinatorIds = coordinatorIds;
         List<Person> coordinators = new ArrayList<Person>();
-        for (String currPersonId : coordinatorsJSON) 
-         { 
+        for (String currPersonId : coordinatorIds) {
             Person aPerson = new Person(currPersonId);
             coordinators.add(aPerson);
-         } 
-        this.coordinators = coordinators;        
+        }
+        this.coordinators = coordinators;
     }
 
-    public List<String> getCoordinatorsJSON() {
-
-        return coordinatorsJSON;
-
+    public List<String> getCoordinatorIds() {
+        return coordinatorIds;
     }
 
     /**
@@ -409,20 +286,4 @@ public class CourseDTO extends oeapiEducationDTO {
     public void setFieldsOfStudyId(String fieldsOfStudyId) {
         this.fieldsOfStudyId = fieldsOfStudyId;
     }
-    
-    @Override
-    public String toString() {
-        String jsonCourse = "{}";
-
-        ObjectWriter ow = ooapiObjectMapper().writer().withDefaultPrettyPrinter();
-
-        try {
-            jsonCourse = ow.writeValueAsString(this);
-        } catch (JsonProcessingException ex) {
-            logger.error("Course toString Error: " + ex);
-        }
-
-        return jsonCourse;
-    }  
-
 }

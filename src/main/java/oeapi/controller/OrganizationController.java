@@ -1,32 +1,12 @@
 package oeapi.controller;
 
-import oeapi.controller.requestparameters.oeapiCourseRequestParam;
-import oeapi.controller.requestparameters.oeapiComponentRequestParam;
-import oeapi.controller.requestparameters.oeapiEducationSpecificationRequestParam;
-import oeapi.controller.requestparameters.oeapiGroupRequestParam;
-import oeapi.controller.requestparameters.oeapiProgramRequestParam;
-import oeapi.controller.requestparameters.oeapiOrganizationRequestParam;
-import oeapi.controller.requestparameters.oeapiRequestParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import oeapi.model.Component;
-import oeapi.model.EducationSpecification;
-import oeapi.model.Group;
-import oeapi.model.Organization;
-import oeapi.payload.OrganizationDTO;
-import oeapi.model.Program;
-import oeapi.oeapiException;
-import oeapi.oeapiObjectsValidator;
-import oeapi.payload.CourseDTO;
-import oeapi.service.ComponentService;
-import oeapi.service.CourseService;
-import oeapi.service.EducationSpecificationService;
-import oeapi.service.GroupService;
-import oeapi.service.OrganizationService;
-import oeapi.service.ProgramService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,6 +21,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import oeapi.oeapiException;
+import oeapi.oeapiObjectsValidator;
+import oeapi.controller.requestparameters.oeapiComponentRequestParam;
+import oeapi.controller.requestparameters.oeapiCourseRequestParam;
+import oeapi.controller.requestparameters.oeapiEducationSpecificationRequestParam;
+import oeapi.controller.requestparameters.oeapiGroupRequestParam;
+import oeapi.controller.requestparameters.oeapiOrganizationRequestParam;
+import oeapi.controller.requestparameters.oeapiProgramRequestParam;
+import oeapi.controller.requestparameters.oeapiRequestParam;
+import oeapi.model.Component;
+import oeapi.model.EducationSpecification;
+import oeapi.model.Group;
+import oeapi.model.Organization;
+import oeapi.model.Program;
+import oeapi.payload.CourseDTO;
+import oeapi.payload.OrganizationDTO;
+import oeapi.service.ComponentService;
+import oeapi.service.CourseService;
+import oeapi.service.EducationSpecificationService;
+import oeapi.service.GroupService;
+import oeapi.service.OrganizationService;
+import oeapi.service.ProgramService;
 
 /**
  *
@@ -73,13 +77,12 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiOrganizationRequestParam requestParam) {
- 
         Map.Entry<String, String> filter = requestParam.getFilter();
         return this.getAll(filter, requestParam.toPageable(), organizationService);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<?> getOrganization(@PathVariable String id) {
+    public ResponseEntity<?> getOrganization(@PathVariable String id) throws JsonProcessingException {
         return super.get(id, organizationService);
     }
 
