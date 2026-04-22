@@ -321,6 +321,15 @@ For degrees and master's programs, the most likely way would be using option 3. 
   
 Regardless of the approach, all options ultimately come down to one simple action: sending a standardized JSON to your OEAPI. This allows us to share our tools for loading courses with other universities, even if we don't have the same infrastructure (servers, databases, etc.).
 
+### 6. Default consumers
+
+Add default consumers lists to the course and offering entities add to following to application properties:
+
+- `quickdashboard.config.ooapiDefaultCourseConsumersJsonFile`
+- `quickdashboard.config.ooapiDefaultOfferingConsumersJsonFile`
+
+For examples see [course-consumers.json](./examples/course-consumers.json) and [offering-consumers.json](./examples/offering-consumers.json).
+
 # How to see what your Endpoint holds
 
 The "right way" should be using a tool for testing APIs like HTTPie, Postman, etc. and follow the spec to interact with it.
