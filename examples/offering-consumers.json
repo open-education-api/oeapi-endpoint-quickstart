@@ -1,0 +1,13 @@
+[
+    {
+      "consumerKey": "test",
+      "alliances": [
+        {
+          "name": "foo",
+          "foo": "zoo"
+        }, {
+          "name": "bar"
+        }
+      ]
+    }
+]
