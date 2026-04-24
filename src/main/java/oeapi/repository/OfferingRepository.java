@@ -1,9 +1,10 @@
 package oeapi.repository;
 
 import java.util.List;
-import oeapi.model.Course;
+
 import oeapi.model.CourseOffering;
 import oeapi.model.Offering;
+import oeapi.model.ProgramOffering;
 
 /**
  *
@@ -11,8 +12,8 @@ import oeapi.model.Offering;
  */
 public interface OfferingRepository extends oeapiUnitaRepositoryBase<Offering> {
 
-    List<CourseOffering> findByCourse(Course course);
-
     List<CourseOffering> findByCourse_CourseId(String courseId);
+
+    List<ProgramOffering> findByProgram_ProgramId(String programId);
 
 }

@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +30,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import java.util.Objects;
-
+import oeapi.oeapiException;
+import oeapi.oeapiObjectsValidator;
 import oeapi.controller.requestparameters.oeapiComponentRequestParam;
 import oeapi.controller.requestparameters.oeapiCourseRequestParam;
 import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
@@ -39,8 +39,6 @@ import oeapi.model.Component;
 import oeapi.model.Course;
 import oeapi.model.CourseOffering;
 import oeapi.model.Offering;
-import oeapi.oeapiException;
-import oeapi.oeapiObjectsValidator;
 import oeapi.payload.ComponentDTO;
 import oeapi.payload.CourseDTO;
 import oeapi.payload.CourseOfferingDTO;
@@ -48,8 +46,6 @@ import oeapi.service.ComponentService;
 import oeapi.service.CourseService;
 import oeapi.service.OfferingService;
 import oeapi.service.oeapiEnumConversionService;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * The type Courses controller.
@@ -97,9 +93,6 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         return super.get(id, expand, courseService);
     }
 
-    //V6
-    //@GetMapping(value = "/{id}/course-offerings")
-    //V5
     @GetMapping(value = "/{id}/offerings")
     public ResponseEntity<?> getOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
 

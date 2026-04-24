@@ -1,20 +1,10 @@
 package oeapi.controller;
 
-import oeapi.controller.requestparameters.oeapiCourseRequestParam;
-import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
-import oeapi.controller.requestparameters.oeapiProgramRequestParam;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
-import oeapi.model.Course;
-import oeapi.model.Program;
-import oeapi.oeapiException;
-import oeapi.service.CourseService;
-import oeapi.service.ProgramService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +18,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import oeapi.oeapiException;
+import oeapi.controller.requestparameters.oeapiCourseRequestParam;
+import oeapi.controller.requestparameters.oeapiProgramRequestParam;
+import oeapi.model.Program;
 import oeapi.payload.ProgramDTO;
+import oeapi.service.CourseService;
+import oeapi.service.OfferingService;
+import oeapi.service.ProgramService;
 
 /**
  *
@@ -43,6 +41,9 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private OfferingService offeringService;
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiProgramRequestParam requestParam) {
@@ -71,7 +72,17 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
             return super.getResponse(requestParam.toPageable(), courseService.getCoursesByProgramId(id));
         }
 
-        throw new oeapiException(HttpStatus.NOT_FOUND, "There are not courses for Id: " + id);
+        throw new oeapiException(HttpStatus.NOT_FOUND, "Program does not exist: " + id);
+    }
+
+    @GetMapping(value = "/{id}/offerings", produces = "application/json")
+    public ResponseEntity<?> getOfferings(@PathVariable String id, @ModelAttribute oeapiCourseRequestParam requestParam) {
+        Optional<Program> existing = service.getById(id);
+        if (existing.isPresent()) {
+            return super.getResponse(requestParam.toPageable(), offeringService.getByProgramId(id));
+        }
+
+        throw new oeapiException(HttpStatus.NOT_FOUND, "Program does not exist: " + id);
     }
 
     @PostMapping
