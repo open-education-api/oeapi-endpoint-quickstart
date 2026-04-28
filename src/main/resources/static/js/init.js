@@ -1,4 +1,3 @@
-
 // get url params...
 const queryString = window.location.search;
 urlParams = new URLSearchParams(queryString);
@@ -13,6 +12,8 @@ let ooapiDefaultShortUnivName;
 let ooapiDefaultUnivName;
 let ooapiDefaultOrganizationId;
 let ooapiDefaultEndpointURL;
+let ooapiDefaultCourseConsumers;
+let ooapiDefaultOfferingConsumers;
 
 function init(config) {
   console.log("Got configuration", config);
@@ -23,6 +24,8 @@ function init(config) {
   ooapiDefaultUnivName = config.ooapiDefaultUnivName;
   ooapiDefaultOrganizationId = config.ooapiDefaultOrganizationId;
   ooapiDefaultEndpointURL = config.ooapiDefaultEndpointURL || window.location.origin;
+  ooapiDefaultCourseConsumers = config.ooapiDefaultCourseConsumers;
+  ooapiDefaultOfferingConsumers = config.ooapiDefaultOfferingConsumers;
 
   if (!ooapiDefaultOrganizationId) {
     alert('No organizations loaded!');

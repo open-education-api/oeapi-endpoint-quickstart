@@ -1,9 +1,12 @@
 package oeapi.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,12 @@ public class QuickstartConfigController {
     @Value("${quickdashboard.config.ooapiDefaultEndpointURL:http://localhost:57075}")
     private String ooapiDefaultEndpointURL;
 
+    @Value("${quickdashboard.config.ooapiDefaultCourseConsumersJsonFile:}")
+    private String ooapiDefaultCourseConsumersJsonFile;
+
+    @Value("${quickdashboard.config.ooapiDefaultOfferingConsumersJsonFile:}")
+    private String ooapiDefaultOfferingConsumersJsonFile;
+
     @Autowired
     private OrganizationService organizationService;
 
@@ -51,19 +60,29 @@ public class QuickstartConfigController {
                     produces = "application/javascript")
     @ResponseBody
     public String getQuickstartConfig(@RequestParam(value = "callback",
-                                                    required = false) String callback) throws JsonProcessingException {
+                                                    required = false) String callback)
+            throws IOException {
         if (ooapiDefaultOrganizationId.isEmpty()) {
             Optional<Organization> org = organizationService.getDefault();
             ooapiDefaultOrganizationId = org.isPresent() ? org.get().getOrganizationId() : "";
         }
 
-        Map<String,String> data =
-            Map.of("ooapiDefaultCountry", ooapiDefaultCountry,
-                   "ooapiDefaultLogo", ooapiDefaultLogo,
-                   "ooapiDefaultShortUnivName", ooapiDefaultShortUnivName,
-                   "ooapiDefaultUnivName", ooapiDefaultUnivName,
-                   "ooapiDefaultOrganizationId", ooapiDefaultOrganizationId,
-                   "ooapiDefaultEndpointURL", ooapiDefaultEndpointURL);
+        Map<String, Object> data = new HashMap<>();
+        data.putAll(Map.of("ooapiDefaultCountry", ooapiDefaultCountry,
+                "ooapiDefaultLogo", ooapiDefaultLogo,
+                "ooapiDefaultShortUnivName", ooapiDefaultShortUnivName,
+                "ooapiDefaultUnivName", ooapiDefaultUnivName,
+                "ooapiDefaultOrganizationId", ooapiDefaultOrganizationId,
+                "ooapiDefaultEndpointURL", ooapiDefaultEndpointURL));
+
+        if (!ooapiDefaultCourseConsumersJsonFile.isEmpty()) {
+            data.put("ooapiDefaultCourseConsumers", readJSONFile(ooapiDefaultCourseConsumersJsonFile));
+        }
+
+        if (!ooapiDefaultOfferingConsumersJsonFile.isEmpty()) {
+            data.put("ooapiDefaultOfferingConsumers", readJSONFile(ooapiDefaultOfferingConsumersJsonFile));
+        }
+
         String json = objectMapper.writeValueAsString(data);
 
         if (callback != null && !callback.isEmpty()) {
@@ -71,5 +90,10 @@ public class QuickstartConfigController {
         } else {
             return json;
         }
+    }
+
+    private Object readJSONFile(String path) throws IOException {
+        String json = Files.readString(Path.of(path));
+        return  objectMapper.readValue(json, Object.class);
     }
 }

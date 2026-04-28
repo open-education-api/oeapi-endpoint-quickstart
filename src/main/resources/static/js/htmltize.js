@@ -121,17 +121,16 @@ function htmltizeCoordinators(CoordinatorsList) {
 
 
 function htmltizeTargetUniversities(courseJson) {
-    htmlRes = " ( Not specified. )";
-    if (courseJson.consumers && courseJson.consumers[0]) {
-        elem = courseJson.consumers[0].alliances[0].jointPartnerCodes
-        if (elem) {
-            htmlRes = '<div style="display:flex;"> '
-            elem.forEach(univ => {
-                img = htmltizeLogo(univ);
-                htmlRes = htmlRes + '<p><img src=' + img + ' style="width:100px; height:20px;" alt="' + univ + '"></p>';
-            });
-            htmlRes = htmlRes + '</div>';
-        }
+    let htmlRes = " ( Not specified. )";
+
+    const jointPartnerCodes = courseJson?.consumers?.[0]?.alliances?.[0]?.jointPartnerCodes
+    if (jointPartnerCodes) {
+        htmlRes = '<div style="display:flex;"> '
+        jointPartnerCodes.forEach(univ => {
+            img = htmltizeLogo(univ);
+            htmlRes = htmlRes + '<p><img src=' + img + ' style="width:100px; height:20px;" alt="' + univ + '"></p>';
+        });
+        htmlRes = htmlRes + '</div>';
     }
 
     return htmlRes;
