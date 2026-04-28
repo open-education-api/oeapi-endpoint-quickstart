@@ -16,23 +16,39 @@ jobs:
 
     steps:
 
-    - uses: actions/setup-java@v4
+    - uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: '18'
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
-    - uses: actions/cache@v4
+    - name: Cache maven repository
+      uses: actions/cache@v5
       with:
         path: "~/.m2"
-        key: "${{ runner.os }}-${{ hashFiles('pom.xml') }}-m2-nvd"
+        key: "${{ runner.os }}-m2-${{ hashFiles('pom.xml') }}"
+        restore-keys: |
+          ${{ runner.os }}-m2
 
-    - name: Cache NVD database
-      uses: actions/cache@v4
+    - id: get-dates
+      shell: bash
+      run: |
+        echo "today=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+        echo "yesterday=$(/bin/date -u "+%Y%m%d" --date=yesterday)" >> $GITHUB_OUTPUT
+        echo "two_days_ago=$(/bin/date -u "+%Y%m%d" --date='2 days ago')" >> $GITHUB_OUTPUT
+        echo "three_days_ago=$(/bin/date -u "+%Y%m%d" --date='3 days ago')" >> $GITHUB_OUTPUT
+
+    - name: Restore NVD database
+      uses: actions/cache/restore@v5
       with:
-        path: "~/.m2/repository/org/owasp/dependency-check-utils/*/data"
-        key: "${{ runner.os }}-nvd"
+        path: "~/.m2/repository/org/owasp/dependency-check-data"
+        key: "${{ runner.os }}-nvd-${{ steps.get-dates.outputs.today }}"
+        restore-keys: |
+          ${{ runner.os }}-nvd-${{ steps.get-dates.outputs.yesterday }}
+          ${{ runner.os }}-nvd-${{ steps.get-dates.outputs.two_days_ago }}
+          ${{ runner.os }}-nvd-${{ steps.get-dates.outputs.three_days_ago }}
+          ${{ runner.os }}-nvd
 
     - env:
         NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
@@ -44,3 +60,10 @@ jobs:
         NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
       run: |
         mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=8
+
+    - name: Save NVD database
+      if: always()
+      uses: actions/cache/save@v5
+      with:
+        path: "~/.m2/repository/org/owasp/dependency-check-data"
+        key: "${{ runner.os }}-nvd-${{ steps.get-dates.outputs.today }}"
