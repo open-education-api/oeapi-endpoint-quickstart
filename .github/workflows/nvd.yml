@@ -40,6 +40,7 @@ jobs:
         echo "three_days_ago=$(/bin/date -u "+%Y%m%d" --date='3 days ago')" >> $GITHUB_OUTPUT
 
     - name: Restore NVD database
+      id: nvd-database-restore
       uses: actions/cache/restore@v5
       with:
         path: "~/.m2/repository/org/owasp/dependency-check-data"
@@ -62,7 +63,8 @@ jobs:
         mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=8
 
     - name: Save NVD database
-      if: always()
+      id: nvd-database-save
+      if: always() && steps.nvd-database-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v5
       with:
         path: "~/.m2/repository/org/owasp/dependency-check-data"
