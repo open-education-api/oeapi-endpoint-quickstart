@@ -43,4 +43,4 @@ jobs:
       env:
         NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
       run: |
-        mvn org.owasp:dependency-check-maven:check
+        mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=8

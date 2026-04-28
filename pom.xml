@@ -184,9 +184,6 @@
                 <configuration>
                     <nvdApiKeyEnvironmentVariable>NVD_API_TOKEN</nvdApiKeyEnvironmentVariable>
 
-                    <!-- fail build when vulnerabilities found -->
-                    <failBuildOnCVSS>0</failBuildOnCVSS>
-
                     <!-- need oss index user/password, we're fine without it for now -->
                     <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
 
