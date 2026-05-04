@@ -50,6 +50,7 @@ import oeapi.service.OfferingService;
 import oeapi.service.oeapiEnumConversionService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import oeapi.service.FilterSearchService;
 
 /**
  * The type Courses controller.
@@ -76,6 +77,9 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
 
     @Autowired
     private ComponentService componentService;
+
+    @Autowired
+    private FilterSearchService filterSearchService;    
 
     @Value("${ooapi.config.autoCreateOfferIfNotExists:false}")
     private boolean defaultAutoCreateOfferIfNotExists;
@@ -240,4 +244,13 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
            throw new oeapiException(HttpStatus.NOT_FOUND, "Error deleteCourse with Id: " + courseId);
         }
     }
+    
+    // Experimental. Generic Search using Storyblok filter_query syntax. 
+    // Introduced in OEAPI V6 through requestParam filter_query
+    // This is custom backporting to V5 using /search for evaluation.
+    @GetMapping("/search")
+    public List<Course> search(@RequestParam Map<String, String> params) {
+        return filterSearchService.search(courseService.getAll(), params);
+    }    
+        
 }
