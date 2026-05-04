@@ -52,6 +52,10 @@ public class CourseDTO extends oeapiEducationDTO {
 
     @JsonProperty("fieldsOfStudy")
     private String fieldsOfStudyId;
+    
+    @JsonProperty("duration")
+    private String duration;
+    
 
     @ValidEnumYaml(yamlfile = "sectorType.yml")
     private String sector;
@@ -173,6 +177,20 @@ public class CourseDTO extends oeapiEducationDTO {
      */
     public void setLevel(String level) {
         this.level = level;
+    }
+
+    /**
+     * @return the duration
+     */
+    public String getDuration() {
+        return duration;
+    }
+
+    /**
+     * @param duration the duration to set
+     */
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     /**
