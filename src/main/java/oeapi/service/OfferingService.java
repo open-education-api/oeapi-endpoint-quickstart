@@ -86,6 +86,10 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
         return repository.findByCourse_CourseId(id);
     }
 
+    public List<ProgramOffering> getByProgramId(String id) {
+        return repository.findByProgram_ProgramId(id);
+    }
+
     @Override
     public Optional<Offering> getById(String id) {
         return super.getById(id);
