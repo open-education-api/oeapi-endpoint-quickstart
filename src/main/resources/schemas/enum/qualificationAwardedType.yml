@@ -1,3 +1,5 @@
 type: string
-enum: ["ad","ba","bsc","llb","ma","msc","llm","phd","none"]
-
+# this should be a case-insensitive match, but that's not supported for enums in json schema.
+# added the non-lowercase values from the ooapi spec.
+enum: ["ad","ba","bsc","llb","ma","msc","llm","phd","none",
+       "AD", "BA", "BSc", "LLB", "MA", "MSc", "LLM", "Phd", "None"]
