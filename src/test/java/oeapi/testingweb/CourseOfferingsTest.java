@@ -47,15 +47,15 @@ public class CourseOfferingsTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @Autowired
     private TestUtil TU;
-    
-    @Autowired    
+
+    @Autowired
     private TestUtilCUDRest TUCudRest;
 
     Logger logger = LoggerFactory.getLogger(CourseOfferingsTest.class);
-    
+
     private String randomOrgId;
     private String randomProgId;
     private String randomCourseId;
@@ -70,7 +70,7 @@ public class CourseOfferingsTest {
     private String randomOfferingCode;
     private String randomOfferingId2;
     private String randomOfferingCode2;
-   
+
     @BeforeAll
     void initOnce() {
         randomOrgId = UUID.randomUUID().toString();
@@ -83,12 +83,12 @@ public class CourseOfferingsTest {
         randomProgCode = TU.genRandomCode();
         randomCourseCode = TU.genRandomCode();
         randomPersonCode = TU.genRandomCode();
-        
+
         randomOfferingId = UUID.randomUUID().toString();
         randomOfferingCode = UUID.randomUUID().toString();
         randomOfferingId2 = UUID.randomUUID().toString();
-        randomOfferingCode2 = UUID.randomUUID().toString();            
-    } 
+        randomOfferingCode2 = UUID.randomUUID().toString();
+    }
 
     String restResource = "courses";
 
@@ -104,7 +104,7 @@ public class CourseOfferingsTest {
 
         webTestClient.post()
                 .uri("/organizations")
-                .header("Authorization",TU.authHeaderForTest())                
+                .header("Authorization",TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(organizationPayload.replace("--ORG_ID_TOBEINFORMED--", randomOrgId)
                         .replace("--ORG_CODE_TOBEINFORMED--", randomOrgCode))
@@ -119,7 +119,7 @@ public class CourseOfferingsTest {
 
         webTestClient.post()
                 .uri("/persons")
-                .header("Authorization",TU.authHeaderForTest())                
+                .header("Authorization",TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(coordinatorPayload.replace("--PERSON_CODE_TOBEINFORMED--", randomPersonCode)
                         .replace("--PERSON_ID_TOBEINFORMED--", randomPersonId))
@@ -131,7 +131,7 @@ public class CourseOfferingsTest {
 
         webTestClient.post()
                 .uri("/programs")
-                .header("Authorization",TU.authHeaderForTest())                
+                .header("Authorization",TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(programPayload.replace("--PROG_ID_TOBEINFORMED--", randomProgId)
                         .replace("--PROG_CODE_TOBEINFORMED--", randomProgCode))
@@ -155,7 +155,7 @@ public class CourseOfferingsTest {
 
         String responseBody = webTestClient.post()
                 .uri("/courses")
-                .header("Authorization",TU.authHeaderForTest())                
+                .header("Authorization",TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(testCourse)
                 .exchange()
@@ -180,7 +180,7 @@ public class CourseOfferingsTest {
         String offeringPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/offering_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
-                .uri("/offerings")                
+                .uri("/offerings")
                 .header("Authorization",TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId)
@@ -194,13 +194,11 @@ public class CourseOfferingsTest {
 
 
         logStep("Adding Second Offering to Course [" + randomCourseId + "] load, OfferingID: " + randomOfferingId2);
-        
-        offeringPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/offering_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
                 .uri("/offerings")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization",TU.authHeaderForTest())                
+                .header("Authorization",TU.authHeaderForTest())
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId2)
                                           .replace("--COURSE_ID_TOBEINFORMED--", randomCourseId)
                                           .replace("--OFFERING_CODE_TOBEINFORMED--",randomOfferingCode2))
@@ -214,7 +212,7 @@ public class CourseOfferingsTest {
 
         webTestClient.get()
                 .uri("/courses/{courseId}/offerings", randomCourseId)
-                .header("Authorization",TU.authHeaderForTest())                
+                .header("Authorization",TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -232,7 +230,7 @@ public class CourseOfferingsTest {
             assertTrue(ids.contains(randomOfferingId2),
                     "Expected offeringId " + randomOfferingId2 + " not found in returned items");
         });
- 
+
 
 
 
@@ -252,14 +250,14 @@ public class CourseOfferingsTest {
         // --- Step 2: query offerings should now return 404 ---
         webTestClient.get()
                 .uri("/courses/{courseId}/offerings", randomCourseId)
-                .header("Authorization",TU.authHeaderForTest())                
+                .header("Authorization",TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isNotFound();
 
         verifyOfferingIsDeleted(randomOfferingId);
         verifyOfferingIsDeleted(randomOfferingId2);
     }
-            
+
     private void verifyOfferingIsDeleted(String offeringId) {
         webTestClient.get()
                 .uri("/offerings/{offeringId}", offeringId)
@@ -268,38 +266,38 @@ public class CourseOfferingsTest {
                 .expectStatus().isNotFound();
     }
 
-    
+
     // Clean other data inserted on tests
-    
+
     @Test
     @Order(2)
     void deleteOrgTest() throws Exception {
-              
+
         logStep("Course deleteOrgTest delete Org [" + randomOrgId + "] delete...");
-                
+
         TUCudRest.delete_test("organizations", randomOrgId, webTestClient);
     }
 
     @Test
     @Order(3)
     void deletePersonTest() throws Exception {
-              
+
         logStep("Course deletePersonTest delete Person [" + randomPersonId + "] delete...");
-                
+
         TUCudRest.delete_test("persons", randomPersonId, webTestClient);
-    }    
-        
+    }
+
     @Test
     @Order(4)
     void deleteProgramTest() throws Exception {
-              
+
         logStep("Course deleteProgramTest delete Program [" + randomProgId + "] delete...");
-                
+
         TUCudRest.delete_test("programs", randomProgId, webTestClient);
-    }        
-        
-    
-    
+    }
+
+
+
     private void logStep(String title) {
         logger.info("\n\n"
                 + "############################################################\n"
