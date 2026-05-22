@@ -323,7 +323,7 @@ ooapi.metadata.documentation=https://open-education-api.github.io/specification/
 ooapi.config.defaultTeachingLanguage=$TEACH_LANG
 
 ooapi.config.autoCreateByDefault=false
-ooapi.config.autoCreateOfferIfNotExists=false
+ooapi.config.autoCreateOfferingIfNotExists=false
 ooapi.config.autoCreateOrgIfNotExists=false
 ooapi.config.autoCreateProgramIfNotExists=false
 ooapi.config.autoCreateCoordinatorIfNotExists=false

@@ -77,8 +77,8 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
     @Autowired
     private ComponentService componentService;
 
-    @Value("${ooapi.config.autoCreateOfferIfNotExists:false}")
-    private boolean defaultAutoCreateOfferIfNotExists;
+    @Value("${ooapi.config.autoCreateOfferingIfNotExists:false}")
+    private boolean defaultAutoCreateOfferingIfNotExists;
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiCourseRequestParam requestParam) {
@@ -113,7 +113,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         // If there is no CourseOffering and Autocreate is on, return a basic autogen offering
         if (courseOfferings.isEmpty()) {
             List<Offering> offerings = new ArrayList<>();
-            if (defaultAutoCreateOfferIfNotExists) {
+            if (defaultAutoCreateOfferingIfNotExists) {
                 offerings.add(offeringService.autoGenerateBasicItem(id));
             }
             return super.getResponse(requestParam, offerings);
