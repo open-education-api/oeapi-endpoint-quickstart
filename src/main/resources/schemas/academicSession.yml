@@ -9,7 +9,7 @@ properties:
     properties:
       codeType:
         type: string
-        enum: ["identifier", "otherType"] # Enumerated values
+        enum: ["identifier", "uuid"] # Enumerated values
       code:
         type: string
     required: ["codeType", "code"]

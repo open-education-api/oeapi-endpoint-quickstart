@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SURF Education Catalog</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/surfView.css">
+    </head>
+    <body>
+        <noscript>
+            <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 2rem">
+            You've forgotten to enable JavaScript
+            </div>
+        </noscript>
+        <header class="topbar">
+            <div class="brand">
+                <img class="brand-logo" src="img/OpenEducationApi_Logo.png" alt="OEAPI">
+                <div class="brand-copy">
+                    <strong>Education catalog</strong>
+                    <span>OEAPI endpoint</span>
+                </div>
+            </div>
+
+            <nav class="tab-list" aria-label="Catalog tabs">
+                <button class="tab-button" type="button" data-tab="persons">Persons</button>
+                <button class="tab-button" type="button" data-tab="organizations">Organizations</button>
+                <button class="tab-button" type="button" data-tab="academicSessions">Academic sessions</button>
+                <button class="tab-button" type="button" data-tab="programs">Programs</button>
+                <button class="tab-button active" type="button" data-tab="courses">Courses</button>
+            </nav>
+
+            <a class="login-link" href="login.html">Log in</a>
+        </header>
+
+        <main class="layout">
+            <aside class="filters" aria-label="Filters">
+                <h1>Filters</h1>
+                <p class="filter-summary" id="filter-summary">Showing all courses</p>
+
+                <section class="filter-group">
+                    <div class="filter-title">
+                        <span>Education level</span>
+                    </div>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="bachelor"> Bachelor</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="secondary vocational education 1"> Secondary vocational education 1</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="secondary vocational education 2"> Secondary vocational education 2</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="secondary vocational education 3"> Secondary vocational education 3</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="secondary vocational education 4"> Secondary vocational education 4</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="nt2-1"> NT2-1</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="nt2-2"> NT2-2</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="undivided"> Undivided</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="associate degree"> Associate degree</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="master"> Master</label>
+                </section>
+
+                <section class="filter-group">
+                    <div class="filter-title">
+                        <span>Language</span>
+                    </div>
+                    <label class="checkbox-row"><input type="checkbox" data-language-filter="english"> English</label>
+                    <label class="checkbox-row"><input type="checkbox" data-language-filter="dutch"> Dutch</label>
+                    <label class="checkbox-row"><input type="checkbox" data-language-filter="spanish"> Spanish</label>
+                    <label class="checkbox-row"><input type="checkbox" data-language-filter="multiple"> Multiple languages</label>
+                </section>
+
+                <section class="filter-group">
+                    <div class="filter-title">
+                        <span>Offering details</span>
+                    </div>
+                    <label class="checkbox-row"><input type="checkbox"> On campus</label>
+                    <label class="checkbox-row"><input type="checkbox"> Online</label>
+                    <label class="checkbox-row"><input type="checkbox"> ECTS available</label>
+                    <label class="checkbox-row"><input type="checkbox"> Starts soon</label>
+                </section>
+            </aside>
+
+            <section class="main">
+                <div class="main-head">
+                    <h2 id="view-title">All courses</h2>
+                    <div class="search">
+                        <input id="filter-search" type="search" placeholder="Search courses..." autocomplete="off">
+                        <span class="search-icon" aria-hidden="true"></span>
+                    </div>
+                    <button class="detail-action-button main-action-button" type="button" id="main-action-button">Add</button>
+                </div>
+
+                <div id="status" class="table-status">Loading...</div>
+                <div id="table-region" class="table-wrap" aria-live="polite"></div>
+
+                <nav class="pager" aria-label="Pagination">
+                    <button id="prev-page" type="button">Previous</button>
+                    <span id="page-indicator" class="page-indicator">Page 1</span>
+                    <button id="next-page" type="button">Next</button>
+                </nav>
+            </section>
+        </main>
+
+        <div class="modal-backdrop" id="course-modal-backdrop" role="presentation">
+            <section class="modal" role="dialog" aria-modal="true" aria-labelledby="course-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="course-modal-title">Course</h2>
+                        <button class="json-preview-button hidden" type="button" id="entity-json-preview-button">Show JSON</button>
+                    </div>
+                    <div class="modal-head-actions">
+                        <button class="detail-action-button modal-action-button hidden" type="button" id="entity-edit-button">Edit</button>
+                        <button class="detail-action-button modal-action-button danger-button hidden" type="button" id="entity-delete-button">Delete</button>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <div class="modal-body" id="course-modal-body"></div>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="offering-modal-backdrop" role="presentation">
+            <section class="modal offering-modal" role="dialog" aria-modal="true" aria-labelledby="offering-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="offering-modal-title">Add offering</h2>
+                        <div class="modal-subtitle"></div>
+                        <button class="json-preview-button" type="button" id="offering-json-preview-button">Show JSON</button>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <form class="offering-form" id="offering-form"></form>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="json-preview-modal-backdrop" role="presentation">
+            <section class="modal json-preview-modal" role="dialog" aria-modal="true" aria-labelledby="json-preview-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="json-preview-modal-title">Offering JSON</h2>
+                        <div class="modal-subtitle">Payload that will be submitted when adding this offering</div>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <pre class="json-preview-content" id="json-preview-content"></pre>
+            </section>
+        </div>
+
+        <div class="modal-backdrop error-details-backdrop" id="error-details-modal-backdrop" role="presentation">
+            <section class="modal error-details-modal" role="dialog" aria-modal="true" aria-labelledby="error-details-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="error-details-modal-title">Request error</h2>
+                        <div class="modal-subtitle"></div>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <pre class="error-details-content" id="error-details-content"></pre>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="academic-session-modal-backdrop" role="presentation">
+            <section class="modal offering-modal" role="dialog" aria-modal="true" aria-labelledby="academic-session-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="academic-session-modal-title">Add academic session</h2>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <form class="offering-form" id="academic-session-form"></form>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="nested-offering-modal-backdrop" role="presentation">
+            <section class="modal offering-modal" role="dialog" aria-modal="true" aria-labelledby="nested-offering-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="nested-offering-modal-title">Add item</h2>
+                        <div class="modal-subtitle"></div>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <form class="offering-form" id="nested-offering-form"></form>
+            </section>
+        </div>
+        <script src="js/surfview/constants.js" defer></script>
+        <script src="js/surfview/utils.js" defer></script>
+        <script src="js/surfview/url_utils.js" defer></script>
+        <script src="js/surfview/filters.js" defer></script>
+        <script src="js/surfview/dom_utils.js" defer></script>
+        <script src="js/surfview/dom/addresses.js" defer></script>
+        <script src="js/surfview/dom/offerings.js" defer></script>
+        <script src="js/surfview/dom/academic_sessions.js" defer></script>
+        <script src="js/surfview/dom/organizations.js" defer></script>
+        <script src="js/surfview/dom/persons.js" defer></script>
+        <script src="js/surfview/dom/course_program.js" defer></script>
+        <script src="js/surfview/surfView.js" defer></script>
+        <script src="js/surfview/event_listeners.js" defer></script>
+    </body>
+</html>
