@@ -1,0 +1,25 @@
+{
+    "offeringId": "--OFFERING_ID_TOBEINFORMED--",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--OFFERING_CODE_TOBEINFORMED--"
+    },
+    "offeringType": "program",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "Program Offering"
+        }
+    ],
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "Offering for this program"
+        }
+    ],
+    "teachingLanguage": "spa",
+    "resultExpected": true,
+    "startDate": "2025-09-17",
+    "endDate": "2025-12-18",
+    "program": "--PROG_ID_TOBEINFORMED--"
+}

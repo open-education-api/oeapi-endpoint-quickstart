@@ -1,0 +1,62 @@
+{
+  "program": "58095060-d18c-fcd2-04df-c20b156736f6",
+  "offeringType": "program",
+  "primaryCode": {
+    "codeType": "offeringIdentifier",
+    "code": "null"
+  },
+  "maxNumberStudents": 166,
+  "enrollEndDate": "2019-01-31",
+  "name": [
+    {
+      "language": "en-GB",
+      "value": "EN TRANSLATION: Offshore and Dredging Engineering - semester 1"
+    },
+    {
+      "language": "nl-NL",
+      "value": "NL VERTALING: Offshore and Dredging Engineering - semester 1"
+    }
+  ],
+  "description": [
+    {
+      "language": "en-GB",
+      "value": "EN TRANSLATION: This course is to conceive a realistic case related to the field of interest for a scientific report or article, and by reviewing recently submitted papers. Focusing on the transport problems. Data science can be observed in common food products."
+    },
+    {
+      "language": "nl-NL",
+      "value": "NL VERTALING: This course is to conceive a realistic case related to the field of interest for a scientific report or article, and by reviewing recently submitted papers. Focusing on the transport problems. Data science can be observed in common food products."
+    }
+  ],
+  "link": "https://universiteit-van-rohel.nl/programs/aa7d22b0-6290-2ed7-9029-ee7efaa6ef92",
+  "otherCodes": [
+    {
+      "codeType": "offeringIdentifier",
+      "code": "null"
+    }
+  ],
+  "consumers": [
+    {
+      "consumerKey": "rio",
+      "requiredPermissionRegistration": "yes",
+      "registrationStatus": "closed"
+    }
+  ],
+  "enrolledNumberStudents": 47,
+  "minNumberStudents": 3,
+  "offeringId": "aa7d22b0-6290-2ed7-9029-ee7efaa6ef92",
+  "resultExpected": true,
+  "flexibleEntryPeriodStart": "2003-09-01",
+  "resultValueType": "UK letter",
+  "modeOfDelivery": [
+    "online",
+    "on campus"
+  ],
+  "abbreviation": "OADE",
+  "pendingNumberStudents": 10,
+  "addresses": null,
+  "teachingLanguage": "eng",
+  "enrollStartDate": "2003-09-01",
+  "endDate": "2019-01-31",
+  "startDate": "2003-09-01",
+  "flexibleEntryPeriodEnd": "2019-01-31"
+}

@@ -1,34 +1,36 @@
 package oeapi.service;
 
+import jakarta.transaction.Transactional;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
-import oeapi.model.Offering;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import jakarta.transaction.Transactional;
+
+import oeapi.controller.oeapiDTOMapper;
 import oeapi.model.Course;
 import oeapi.model.CourseOffering;
 import oeapi.model.ModeOfDelivery;
+import oeapi.model.Offering;
 import oeapi.model.Organization;
 import oeapi.model.Program;
 import oeapi.model.ProgramOffering;
-import oeapi.payload.OfferingDTO;
 import oeapi.oeapiException;
 import oeapi.oeapiUtils;
-import oeapi.controller.oeapiDTOMapper;
+import oeapi.payload.OfferingDTO;
 import oeapi.repository.ModeOfDeliveryRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import oeapi.repository.OfferingRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 /**
  *
@@ -84,6 +86,10 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
     // mejorar pasar a getByField
     public List<CourseOffering> getByCourseId(String id) {
         return repository.findByCourse_CourseId(id);
+    }
+
+    public List<ProgramOffering> getByProgramId(String id) {
+        return repository.findByProgram_ProgramId(id);
     }
 
     @Override

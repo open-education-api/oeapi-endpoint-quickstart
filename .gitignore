@@ -100,3 +100,9 @@ META-INF/
 
 # Eclipse JDT Language Server
 .factorypath
+
+# env files
+.envrc
+
+# local Makefile
+Makefile
