@@ -36,7 +36,7 @@ podman exec -it oeapi-endpoint-quickstart-mysql \
 Setup sprint database URL:
 
 ```sh
-export SPRING_DATABASE_URL='jdbc:mysql://localhost/oeapi_qs'
+export SPRING_DATASOURCE_URL='jdbc:mysql://localhost/oeapi_qs'
 ```
 
 
