@@ -185,11 +185,16 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
     @PostMapping
     public ResponseEntity<?> createOrganization(@RequestBody OrganizationDTO o) {
 
+        // Check organization is not parent of itself.  This may lead to an infinite loop getting its children
+        if ((o.getParent() != null)  && o.getParent().getOrganizationId().equalsIgnoreCase(o.getOrganizationId())) {
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organization: organization cannot be parent of itself! Check organization and parent ids");
+        }
+
         Errors errors = new BeanPropertyBindingResult(o, "organization");
         validator.validate(o, errors);
         if (errors.hasErrors()) {
             throw new oeapiException(HttpStatus.BAD_REQUEST, "Error creating Organization at validate: " + errors.getAllErrors());
-        }
+        }        
         return super.createDTO(o, organizationService);
     }
 
@@ -200,7 +205,12 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
         if ((o.getOrganizationId() == null) || (!o.getOrganizationId().equalsIgnoreCase(organizationId))) {
             throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organization: organizationId on JSON does not match URL request or is missing : [" + organizationId + "," + o.getOrganizationId() + "]");
         }
-
+        
+        // Check organization is not parent of itself.  This may lead to an infinite loop getting its children
+        if ((o.getParent() != null) && o.getParent().getOrganizationId().equalsIgnoreCase(organizationId)) {
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organization: organization cannot be parent of itself! Check organization and parent ids");
+        }
+        
         Errors errors = new BeanPropertyBindingResult(o, "organization");
         validator.validate(o, errors);
         if (errors.hasErrors()) {

@@ -1,7 +1,9 @@
 package oeapi.payload;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -11,12 +13,15 @@ import java.util.UUID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListAddressConverter;
 import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
 import oeapi.model.Address;
+import oeapi.model.Organization;
 import oeapi.model.PrimaryCode;
 import oeapi.model.oeapiIdentifierEntry;
 import oeapi.model.oeapiLanguageTypedString;
@@ -53,51 +58,27 @@ public class OrganizationDTO extends PrimaryCode {
     //@ValidItemYaml(yamlfile = "LanguageTypedString.yml")
     @ValidLanguageTypedString(message = "Null or Invalid language-typed string elements")
     private List<oeapiLanguageTypedString> name;
+    
+    @JsonProperty("description")
+    @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
+    @ValidLanguageTypedString(message = "Null or Invalid language-typed string elements")    
+    private List<oeapiLanguageTypedString> description;    
 
     @JsonProperty("addresses")
     @Convert(converter = oeapiUnitaListAddressConverter.class)
     @ValidAddresses(message = "Null or Invalid address string elements")
     private List<Address> addresses;
-
+    
     @JsonProperty("parent")
-    /*
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "parent_id", nullable = true, referencedColumnName = "organization_id")
-    @JsonBackReference("parentchildrenOrganization") */
+    @JoinColumn(name = "parent_id")
+    @JsonBackReference    
     private OrganizationDTO parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //@JsonManagedReference("parentchildrenOrganization")
+    @JsonManagedReference    
     private List<OrganizationDTO> children;
 
-    /*
-
-    @JsonManagedReference("groupOrganization")
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Group> groups;
-
-    @JsonManagedReference("offeringOrganization")
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Offering> offerings;
-
-    @JsonManagedReference("courseOrganization")
-    //@JsonBackReference // This side will not be serialized
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Course> courses;
-
-    @JsonManagedReference("programOrganization")
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Program> programs;
-
-    @JsonManagedReference("componentOrganization")
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Component> components;
-
-    @JsonManagedReference("educationSpecificationOrganization")
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<EducationSpecification> educationSpecifications;
-
-     */
+    
     public OrganizationDTO() {
     }
 
@@ -202,6 +183,20 @@ public class OrganizationDTO extends PrimaryCode {
      */
     public void setName(List<oeapiLanguageTypedString> name) {
         this.name = name;
+    }
+
+    /**
+     * @return the description
+     */
+    public List<oeapiLanguageTypedString> getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(List<oeapiLanguageTypedString> description) {
+        this.description = description;
     }
 
     /**
