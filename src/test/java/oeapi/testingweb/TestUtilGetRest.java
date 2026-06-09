@@ -18,15 +18,15 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 public class TestUtilGetRest {
 
     private static Integer pageSize = 3;
-    
+
     @Autowired
     private TestUtil TU;
-    
+
     public void get_primaryCode(String restResource, String code, WebTestClient webTestClient) {
 
         webTestClient.get()
-                .uri("/" + restResource + "?pageNumer=0&primaryCode=" + code)
-                .header("Authorization",TU.authHeaderForTest())                
+                .uri("/" + restResource + "?pageNumber=0&primaryCode=" + code)
+                .header("Authorization",TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()

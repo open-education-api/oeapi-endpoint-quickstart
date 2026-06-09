@@ -52,14 +52,17 @@ public class AcademicSession extends PrimaryCode {
     @JsonProperty("parent")
     private AcademicSession parent;
 
+    public AcademicSession() {
+    }
+
     @JsonCreator
     public AcademicSession(String id) {
         this.academicSessionId = id;
     }
 
-    // Children are managed at service from parent field, 
-    // as it easier than managing a self reference(potentially recursive if wrong)    
-    
+    // Children are managed at service from parent field,
+    // as it easier than managing a self reference(potentially recursive if wrong)
+
     /**
      * @return the academicSessionId
      */
@@ -185,5 +188,5 @@ public class AcademicSession extends PrimaryCode {
     public void setYear(AcademicSession year) {
         this.year = year;
     }
-    
+
 }
