@@ -1,6 +1,9 @@
 package oeapi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +14,8 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
@@ -42,16 +47,25 @@ public class Organization extends PrimaryCode {
     //@ValidItemYaml(yamlfile = "LanguageTypedString.yml")
     @ValidLanguageTypedString(message = "Null or Invalid language-typed string elements")
     private List<oeapiLanguageTypedString> name;
+    
+    @JsonProperty("description")
+    @Column(columnDefinition = "text")
+    @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
+    @ValidLanguageTypedString(isNull = true, message = "Null or Invalid language-typed string elements")
+    private List<oeapiLanguageTypedString> description;
 
     @Column(columnDefinition = "text")
     @Convert(converter = oeapiUnitaListAddressConverter.class)
     //@ValidAddresses(message = "Null or Invalid address string elements")
     private List<Address> addresses;
 
-    private Organization parent;
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    @JsonBackReference
+    private Organization parent;   
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //@JsonManagedReference("parentchildrenOrganization")
+    @JsonManagedReference
     private List<Organization> children;
 
     public Organization() {
@@ -158,6 +172,20 @@ public class Organization extends PrimaryCode {
      */
     public void setName(List<oeapiLanguageTypedString> name) {
         this.name = name;
+    }
+
+    /**
+     * @return the description
+     */
+    public List<oeapiLanguageTypedString> getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(List<oeapiLanguageTypedString> description) {
+        this.description = description;
     }
 
     /**
