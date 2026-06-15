@@ -205,7 +205,10 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
 
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
-        this.organization = organizationId == null ? null : new Organization(organizationId);
+
+        if (this.organization == null || this.organization.getOrganizationId() != organizationId) {
+            this.organization = organizationId == null ? null : new Organization(organizationId);
+        }
     }
 
     // consumers
