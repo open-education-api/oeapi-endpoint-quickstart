@@ -38,4 +38,4 @@ properties:
     type: boolean
   offeringType:
     type: string
-required: ["primaryCode", "name","description","offeringType","teachingLanguage"]
+required: ["primaryCode", "name","description","offeringType","teachingLanguage","modeOfStudy"]

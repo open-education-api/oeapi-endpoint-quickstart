@@ -92,8 +92,9 @@ public class Offering extends PrimaryCode {
     private LocalDate flexibleEntryPeriodStart;
     private LocalDate flexibleEntryPeriodEnd;
 
-    @JsonProperty("offeringType")
-    private String offeringType;
+    // Si usa aqui (y esta bien para el JSON) no se puede usar como @DiscriminatorColumn
+//    @JsonProperty("offeringType") 
+//    private String offeringType;
 
     @JsonProperty("addresses")
     @Column(columnDefinition = "text")

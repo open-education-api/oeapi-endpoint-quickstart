@@ -92,9 +92,9 @@ public class OfferingDTO extends PrimaryCode {
     private LocalDate flexibleEntryPeriodStart;
     private LocalDate flexibleEntryPeriodEnd;
 
-    @JsonProperty("offeringType")
-    private String offeringType;
-
+    // Si usa aqui (y esta bien para el JSON) no se puede usar como @DiscriminatorColumn
+//    @JsonProperty("offeringType")
+//    private String offeringType;
     @JsonProperty("addresses")
     private List<Address> addresses;
 
@@ -462,12 +462,14 @@ public class OfferingDTO extends PrimaryCode {
         this.ext = ext;
     }
 
+    // Since OfferingType cannot be declared as property as Jackson automatically creates it, set/get methods are special
+    // Extended classes override this response for each type
     public String getOfferingType() {
-        return this.offeringType;
+        return ("none");
     }
 
     public void setOfferingType(String offeringType) {
-        this.offeringType = offeringType;
+        logger.warn("offeringType is determined automatically and cannot be set manually.");
     }
 
     // organization
