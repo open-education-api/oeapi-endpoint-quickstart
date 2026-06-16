@@ -155,7 +155,7 @@ public class ProgramService extends oeapiEndpointDTOService<Program, ProgramRepo
                   objExisting = Optional.ofNullable(autoGenerateBasicItem(related.getProgramId()));
                 } 
                 else
-                 { throw new oeapiException(HttpStatus.BAD_REQUEST, "Check Ptogram or ProgramId ", "Element [" + id + "] not found"); } 
+                 { throw new oeapiException(HttpStatus.BAD_REQUEST, "Check Program or ProgramId ", "Element [" + id + "] not found"); }
             } else {
                 logger.debug("--> ProgramService , manageRelated: The Program supplied exists. ProgID = ["+id+"] returning it");
             }
