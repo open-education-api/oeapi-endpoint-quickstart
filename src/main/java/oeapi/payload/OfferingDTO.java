@@ -494,7 +494,10 @@ public class OfferingDTO extends PrimaryCode {
 
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
-        this.organization = organizationId == null ? null : new Organization(organizationId);
+
+        if (this.organization == null || this.organization.getOrganizationId() != organizationId) {
+            this.organization = organizationId == null ? null : new Organization(organizationId);
+        }
     }
 
     // academic session
@@ -512,6 +515,7 @@ public class OfferingDTO extends PrimaryCode {
 
     public void setAcademicSession(AcademicSession academicSession) {
         this.academicSession = academicSession;
+        this.academicSessionId = academicSession == null ? null : academicSession.getAcademicSessionId();
     }
 
     public String getAcademicSessionId() {
@@ -520,6 +524,9 @@ public class OfferingDTO extends PrimaryCode {
 
     public void setAcademicSessionId(String academicSessionId) {
         this.academicSessionId = academicSessionId;
-        this.academicSession = academicSessionId == null ? null : new AcademicSession(academicSessionId);
+
+        if (this.academicSession == null || this.academicSession.getAcademicSessionId() != academicSessionId) {
+            this.academicSession = academicSessionId == null ? null : new AcademicSession(academicSessionId);
+        }
     }
 }
