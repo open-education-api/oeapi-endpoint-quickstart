@@ -184,7 +184,7 @@ public class CourseOfferingsTest {
 
 
         logStep("Adding Offering to Course [" + randomCourseId + "] load, OfferingID: " + randomOfferingId);
-        String offeringPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/offering_template.json")), StandardCharsets.UTF_8);
+        String offeringPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/courseOffering_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
                 .uri("/offerings")

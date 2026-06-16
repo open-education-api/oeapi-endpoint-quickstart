@@ -462,10 +462,36 @@ public class OfferingDTO extends PrimaryCode {
         this.ext = ext;
     }
 
+    // course
+    @JsonProperty("course")
+    private String courseId;
+    public String getCourseId() { return this.courseId; }
+    public void setCourseId(String id) { this.courseId = id; }
+
+    // program
+    @JsonProperty("program")
+    private String programId;
+    public String getProgramId() { return this.programId; }
+    public void setProgramId(String id) { this.programId = id; }
+
+    // component
+    @JsonProperty("component")
+    private String componentId;
+    public String getComponentId() { return this.componentId; }
+    public void setComponentId(String id) { this.componentId = id; }
+
     // Since OfferingType cannot be declared as property as Jackson automatically creates it, set/get methods are special
     // Extended classes override this response for each type
     public String getOfferingType() {
-        return ("none");
+        if (courseId != null) {
+            return "course";
+        } else if (programId != null) {
+            return "program";
+        } else if (componentId != null) {
+            return "component";
+        }
+
+        throw new RuntimeException("Unknown offering type");
     }
 
     public void setOfferingType(String offeringType) {

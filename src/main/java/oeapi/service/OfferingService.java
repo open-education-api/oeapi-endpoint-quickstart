@@ -154,13 +154,30 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
         return true;
     }
 
-    public void deleteByCourse(Course course) {
-        List<CourseOffering> offerings = repository.findByCourse_CourseId(course.getCourseId());
+    public void deleteByCourseId(String courseId) {
+        List<CourseOffering> offerings = repository.findByCourse_CourseId(courseId);
 
         for (CourseOffering offering : offerings) {
             logger.debug("*>-Offering deleteByCourse: Deleting Offering with ID" + offering.getOfferingId());
             this.delete(offering.getOfferingId());
         }
+    }
+
+    public void deleteByCourse(Course course) {
+        this.deleteByCourseId(course.getCourseId());
+    }
+
+    public void deleteByProgramId(String programId) {
+        List<ProgramOffering> offerings = repository.findByProgram_ProgramId(programId);
+
+        for (ProgramOffering offering : offerings) {
+            logger.debug("*>-Offering deleteByProgram: Deleting Offering with ID" + offering.getOfferingId());
+            this.delete(offering.getOfferingId());
+        }
+    }
+
+    public void deleteByProgram(Program program) {
+        this.deleteByProgramId(program.getProgramId());
     }
 
     public Offering clearRelations(Offering offering) {
