@@ -104,24 +104,22 @@ public class OfferingController extends oeapiDTOController<Offering, OfferingDTO
 
     @Deprecated
     @PutMapping
-    public ResponseEntity<?> putCourseOffering(@RequestBody CourseOffering courseOffering) {
-
-        logger.debug("Putting CourseOffering...");
-        if (courseOffering.getOfferingId() == null) {
+    public ResponseEntity<?> put(@RequestBody Offering offering) {
+        logger.debug("Putting Offering...");
+        if (offering.getOfferingId() == null) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId is missing");
         }
 
-        return putCourseOffering(courseOffering.getOfferingId(), courseOffering);
+        return put(offering.getOfferingId(), offering);
     }
 
     @PutMapping(value = "/{offeringId}")
-    public ResponseEntity<?> putCourseOffering(@PathVariable String offeringId, @RequestBody CourseOffering courseOffering) {
-
-        logger.debug("Putting CourseOffering...");
-        if ((courseOffering.getOfferingId() == null) || (!courseOffering.getOfferingId().equalsIgnoreCase(offeringId))) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId on JSON does not match URL request or is missing : [" + offeringId + "," + courseOffering.getOfferingId() + "]");
+    public ResponseEntity<?> put(@PathVariable String offeringId, @RequestBody Offering offering) {
+        logger.debug("Putting Offering...");
+        if ((offering.getOfferingId() == null) || (!offering.getOfferingId().equalsIgnoreCase(offeringId))) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Error putting Offering: offeringId on JSON does not match URL request or is missing : [" + offeringId + "," + offering.getOfferingId() + "]");
         }
-        return super.update(courseOffering, offeringService);
+        return super.update(offering, offeringService);
     }
 
     @DeleteMapping("/{offeringId}")

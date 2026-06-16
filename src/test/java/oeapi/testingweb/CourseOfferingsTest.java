@@ -77,6 +77,7 @@ public class CourseOfferingsTest {
     private String randomOfferingCode;
     private String randomOfferingId2;
     private String randomOfferingCode2;
+    private String randomOfferingCode3;
 
     @BeforeAll
     void initOnce() {
@@ -95,6 +96,8 @@ public class CourseOfferingsTest {
         randomOfferingCode = UUID.randomUUID().toString();
         randomOfferingId2 = UUID.randomUUID().toString();
         randomOfferingCode2 = UUID.randomUUID().toString();
+
+        randomOfferingCode3 = UUID.randomUUID().toString();
     }
 
     String restResource = "courses";
@@ -239,6 +242,19 @@ public class CourseOfferingsTest {
         });
 
 
+        logStep("Course putCourseTest for CourseOffering [" + randomOfferingId + "] ...");
+        webTestClient.put()
+                .uri("/offerings/{offeringId}", randomOfferingId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization",TU.authHeaderForTest())
+                .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId)
+                                          .replace("--COURSE_ID_TOBEINFORMED--", randomCourseId)
+                                          .replace("--OFFERING_CODE_TOBEINFORMED--",randomOfferingCode3))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.offeringId").isEqualTo(randomOfferingId)
+                .jsonPath("$.primaryCode.code").isEqualTo(randomOfferingCode3);
 
 
         logStep("Course deleteCourseTest delete Course [" + randomCourseId + "] delete...");

@@ -48,6 +48,7 @@ public class ProgramOfferingsTest {
     private String randomOfferingCode;
     private String randomOfferingId2;
     private String randomOfferingCode2;
+    private String randomOfferingCode3;
 
     @BeforeAll
     void initOnce() {
@@ -57,6 +58,7 @@ public class ProgramOfferingsTest {
         randomOfferingCode = UUID.randomUUID().toString();
         randomOfferingId2 = UUID.randomUUID().toString();
         randomOfferingCode2 = UUID.randomUUID().toString();
+        randomOfferingCode3 = UUID.randomUUID().toString();
     }
 
     @Test
@@ -83,7 +85,7 @@ public class ProgramOfferingsTest {
         String offeringPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/programOffering_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
-                .uri("/offerings/programOffering")
+                .uri("/offerings")
                 .header("Authorization", TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId)
@@ -97,7 +99,7 @@ public class ProgramOfferingsTest {
         logStep("Adding second ProgramOffering [" + randomOfferingId2 + "] ...");
 
         webTestClient.post()
-                .uri("/offerings/programOffering")
+                .uri("/offerings")
                 .header("Authorization", TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId2)
@@ -107,6 +109,21 @@ public class ProgramOfferingsTest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.offeringId").isEqualTo(randomOfferingId2);
+
+        logStep("Updating second ProgramOffering [" + randomOfferingId2 + "] ...");
+
+        webTestClient.put()
+                .uri("/offerings")
+                .header("Authorization", TU.authHeaderForTest())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId2)
+                        .replace("--PROG_ID_TOBEINFORMED--", randomProgId)
+                        .replace("--OFFERING_CODE_TOBEINFORMED--", randomOfferingCode3))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.offeringId").isEqualTo(randomOfferingId2)
+                .jsonPath("$.primaryCode.code").isEqualTo(randomOfferingCode3);
 
         logStep("Fetching offerings for Program [" + randomProgId + "] ...");
 
