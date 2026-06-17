@@ -111,43 +111,7 @@ The data is meant to be dealt using JSONs. This endpoint is designed to be used 
 ## Security
 
 In this implementation, the OEAPI endpoint can be updated using REST calls (e.g., by sending a JSON object via POST or PUT). This greatly simplifies adding or removing a course, as there’s no need to understand the internal database structure used by OEAPI or how to update it directly.
-To prevent unwanted or unauthorized updates, the endpoint must be secured. This is relatively easy to do and can be implemented in two ways—or ideally, by combining both:
-  
- ### By network configuration
-This involves restricting the IP addresses or subnets that can access the endpoint and/or its update methods (POST, PUT, etc.). This is typically done using Apache or Nginx rules, but it can also be achieved through firewall settings.
-
-It should be place behind a reverse proxy which limits the HTTP methods to GET otherwise anyone could perform uploads.
-
-Sample nginx configuration:
-
-  
-
-```bash
-
-...
-
-location / {
-
-limit_except GET {
-
-allow 127.0.0.1;
-
-deny all;
-
-}
-
-proxy_pass http://your_oeapi_url;
-
-}
-
-...
-
-```
-
- ### By using the endpoint’s built-in security features
-The endpoint can be configured to allow access only to specific users, ensuring that only authorized individuals can perform update operations.  In short, you can enable this by setting a property in the application.properties file  (see https://openproject.univ-unita.eu/projects/unita-it-team/wiki/2-dot-7-1-security )  The security mechanism is based on JWT (JSON Web Tokens).
-
-Once this option is enabled, you will be required to log in to access the update options through the endpoint’s small dashboard, or to authenticate before performing POST, PUT, and similar requests via REST.
+Nevertheless, to prevent unwanted or unauthorized updates, the endpoint must be secured. You can learn more about how to do this in the section dedicated to [security](docs/security.md) .  
 
 
 ## Loading your own institutional data
