@@ -30,11 +30,6 @@ public class AcademicSessionService extends oeapiEndpointService<AcademicSession
     }
 
     @Override
-    public AcademicSession update(AcademicSession o) {
-        return super.create(o);
-    }
-
-    @Override
     public AcademicSession autoGenerateBasicItem(String id) {
         AcademicSession academicSession = new AcademicSession(id);
         academicSession.setName(oeapiUtils.defaultName());
