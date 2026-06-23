@@ -58,6 +58,18 @@ class ProgramTest {
     }
 
     @Test
+    void DeleteProgram() throws IOException {
+
+        logStep("Create Program");
+
+        String id = UUID.randomUUID().toString();
+        TUCudRest.whenPost_test(restResource, entity, templateAbrev, id , webTestClient);
+
+        logStep("Delete Program");
+        TUCudRest.delete_test(restResource, id, webTestClient);
+    }
+
+    @Test
     void FilterProgram() throws IOException {
 
         logStep("Filter Program"); 
