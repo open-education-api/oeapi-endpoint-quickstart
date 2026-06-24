@@ -1,10 +1,15 @@
 package oeapi.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+
 import oeapi.converter.oeapiUnitaExtConverter;
+import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 
 /**
  *
@@ -23,7 +28,9 @@ public class Cost implements Serializable {
 
     private String currency;
 
-    private String displayAmount;
+    @Column(columnDefinition = "text")
+    @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
+    private List<oeapiLanguageTypedString> displayAmount;
 
     @Column(columnDefinition = "text")
     @Convert(converter = oeapiUnitaExtConverter.class)
@@ -88,14 +95,14 @@ public class Cost implements Serializable {
     /**
      * @return the displayAmount
      */
-    public String getDisplayAmount() {
+    public List<oeapiLanguageTypedString> getDisplayAmount() {
         return displayAmount;
     }
 
     /**
      * @param displayAmount the displayAmount to set
      */
-    public void setDisplayAmount(String displayAmount) {
+    public void setDisplayAmount(List<oeapiLanguageTypedString> displayAmount) {
         this.displayAmount = displayAmount;
     }
 
