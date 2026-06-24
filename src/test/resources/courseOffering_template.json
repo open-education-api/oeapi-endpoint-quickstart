@@ -70,5 +70,26 @@
             }
         }
     ],
+    "priceInformation": [
+        {
+            "costType": "total costs",
+            "amount": "340.84",
+            "vatAmount": "40",
+            "amountWithoutVat": "300.84",
+            "currency": "EUR",
+            "displayAmount": [
+                {
+                    "language": "nl-NL",
+                    "value": "€380,84"
+                },
+                {
+                    "language": "en-US",
+                    "value": "$401.17"
+                }
+            ],
+            "ext": { }
+        }
+
+    ],
     "course": "--COURSE_ID_TOBEINFORMED--"
 }
