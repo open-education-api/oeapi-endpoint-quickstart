@@ -32,10 +32,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 import oeapi.payload.ProgramDTO;
 
 /**
@@ -122,8 +125,16 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Program program) {
-        return super.create(program, service);
+    @Override
+    public ResponseEntity<?> createFromDTO(@Valid @RequestBody ProgramDTO dto) {
+        return super.createDTO(dto, service);
+    }
+
+    @PutMapping("/{programId}")
+    @Override
+    public ResponseEntity<?> updateFromDTO(@PathVariable String programId, @Valid @RequestBody ProgramDTO dto) {
+        dto.setProgramId(programId);
+        return super.updateDTO(dto, service);
     }
 
     @DeleteMapping("/{id}")
@@ -142,15 +153,5 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
     @PostMapping(value = {"/loadbyjson"}, produces = "application/json")
     public ResponseEntity<String> createByProgramsJSON(@RequestBody List<ProgramDTO> items) {
         return super.createByJSON(items, service);
-    }
-
-    @Override
-    public ResponseEntity<?> createFromDTO(ProgramDTO dto) {
-        throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'updateFromDTO' is not yet implemented");
-    }
-
-    @Override
-    public ResponseEntity<?> updateFromDTO(String courseId, ProgramDTO dto) {
-        throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'updateFromDTO' is not yet implemented");
     }
 }

@@ -278,6 +278,11 @@ public class ProgramService extends oeapiEndpointDTOService<Program, ProgramRepo
     }
 
     @Override
+    public Program update(Program program) {
+        return super.update(normalizeAttributes(checkRelations(program)));
+    }
+
+    @Override
     public boolean delete(String id) {
 
         Optional<Program> programExisting = this.getById(id);

@@ -4,20 +4,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class ProgramTest {
@@ -39,7 +36,6 @@ class ProgramTest {
     @Autowired    
     private TestUtilGetRest TUGetRest;      
 
-
     @Test
     void CreateProgram() throws IOException {
 
@@ -47,6 +43,30 @@ class ProgramTest {
         
         TUCudRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
 
+    }
+
+    @Test
+    void UpdateProgram() throws IOException {
+
+        logStep("Create Program");
+
+        String id = UUID.randomUUID().toString();
+        TUCudRest.whenPost_test(restResource, entity, templateAbrev, id , webTestClient);
+
+        logStep("Update Program");
+        TUCudRest.whenPut_testUpdateCode(restResource, entity, templateAbrev, id, webTestClient);
+    }
+
+    @Test
+    void DeleteProgram() throws IOException {
+
+        logStep("Create Program");
+
+        String id = UUID.randomUUID().toString();
+        TUCudRest.whenPost_test(restResource, entity, templateAbrev, id , webTestClient);
+
+        logStep("Delete Program");
+        TUCudRest.delete_test(restResource, id, webTestClient);
     }
 
     @Test

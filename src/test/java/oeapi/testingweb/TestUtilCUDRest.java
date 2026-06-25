@@ -1,12 +1,11 @@
 package oeapi.testingweb;
 
 import java.io.IOException;
-
 import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -33,13 +32,17 @@ public class TestUtilCUDRest {
         return randomId;
     }
 
-    public  void whenPost_test(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
-        String randomId = UUID.randomUUID().toString();
+    public  void whenPost_test(String restResource, String entity, String templateAbrev, String id, WebTestClient webTestClient) throws IOException {
         String randomCode = TU.genRandomCode();
-        String payload = TU.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
+        String payload = TU.getPayload(entity + "_template", templateAbrev, id, randomCode);
 
-        post_test(restResource, entity, payload, randomId, randomCode, webTestClient);
+        post_test(restResource, entity, payload, id, randomCode, webTestClient);
 
+    }
+
+    public void whenPost_test(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
+        String randomId = UUID.randomUUID().toString();
+        whenPost_test(restResource, entity, templateAbrev, randomId, webTestClient);
     }
 
     public  String whenPost_testId(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
@@ -70,7 +73,7 @@ public class TestUtilCUDRest {
 
         String newCode = TU.genRandomCode();
 
-        String payload = TU.getPayload(entity + "update" + entity + "_template", templateAbrev, randomId, newCode);
+        String payload = TU.getPayload("update" + entity + "_template", templateAbrev, randomId, newCode);
 
         String uri = "/" + restResource + "/" + randomId;
 
