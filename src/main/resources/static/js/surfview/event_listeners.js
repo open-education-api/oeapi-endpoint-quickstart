@@ -177,7 +177,10 @@ document.addEventListener('click', event => {
 
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
-        if (errorDetailsModal.backdrop.classList.contains('open')) {
+        const loginBackdrop = document.getElementById('login-modal-backdrop');
+        if (loginBackdrop?.classList.contains('open')) {
+            hideLoginModal();
+        } else if (errorDetailsModal.backdrop.classList.contains('open')) {
             closeErrorDetailsModal();
         } else if (jsonPreviewModal.backdrop.classList.contains('open')) {
             closeOfferingJsonPreview();

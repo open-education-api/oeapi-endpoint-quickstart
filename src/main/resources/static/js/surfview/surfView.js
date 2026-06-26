@@ -52,6 +52,7 @@ let tableRenderId = 0;
 let draftOffering = initialDraftOffering();
 let organizationsLoadPromise = null;
 let academicSessionsLoadPromise = null;
+let personsLoadPromise = null;
 
 function initialDraftOffering() {
     return {
@@ -126,7 +127,7 @@ async function loadAllEndpointItems(endpoint) {
         const url = new URL(endpoint, window.location.origin);
         url.searchParams.set('pageSize', Constants.loadPageSize);
         url.searchParams.set('pageNumber', pageNumber);
-        const response = await fetch(url.toString(), {
+        const response = await callEndpoint(url.toString(), {
             headers: {
                 'Accept': 'application/json'
             }
@@ -364,6 +365,36 @@ async function loadAcademicSessions() {
     return academicSessionsLoadPromise;
 }
 
+async function loadPersons() {
+    if (personsLoadPromise) {
+        return personsLoadPromise;
+    }
+
+    personsLoadPromise = (async () => {
+        personById.clear();
+        const items = await loadAllEndpointItems('/persons');
+        items.forEach(person => {
+            const id = entityId('person', person);
+            if (id) {
+                personById.set(String(id), person);
+            }
+        });
+    })().catch(error => {
+        personsLoadPromise = null;
+        throw error;
+    });
+
+    return personsLoadPromise;
+}
+
+function personLabel(person) {
+    return entityDisplayName('person', person) || entityId('person', person) || '';
+}
+
+function personLabelById(id) {
+    return personLabel(personById.get(String(id))) || String(id || '');
+}
+
 function academicSessionOptionEntries(selectedAcademicSessionId = '') {
     const academicSessions = [...academicSessionsById.values()]
         .sort((left, right) => academicSessionLabel(left).localeCompare(academicSessionLabel(right)));
@@ -502,7 +533,7 @@ async function openEntityById(kind, id, options = {}) {
                 ? 'organizations'
                 : kind === 'person' ? 'persons' : 'courses';
         const tab = Constants.tabs[tabKey];
-        const response = await fetch(tab.detailEndpoint(id), {
+        const response = await callEndpoint(tab.detailEndpoint(id), {
             headers: {
                 'Accept': 'application/json'
             }
@@ -617,6 +648,62 @@ function localizeLanguageValues(value) {
     );
 }
 
+
+function initLoginModal() {
+    const loginLink = document.getElementById('login-link');
+    const logoutLink = document.getElementById('logout-link');
+    const loginForm = document.getElementById('login-form');
+    const loginClose = document.getElementById('login-modal-close');
+    const loginBackdrop = document.getElementById('login-modal-backdrop');
+
+    if (loginLink) {
+        loginLink.addEventListener('click', () => {
+            if (!isAuthenticated()) {
+                showLoginModal();
+            }
+        });
+    }
+
+    if (logoutLink) {
+        logoutLink.addEventListener('click', () => {
+            if (window.confirm('Do you want to log out?')) {
+                logout();
+            }
+        });
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', submitLoginForm);
+    }
+
+    if (loginClose) {
+        loginClose.addEventListener('click', hideLoginModal);
+    }
+
+    if (loginBackdrop) {
+        let pointerDownOnBackdrop = false;
+        loginBackdrop.addEventListener('pointerdown', event => {
+            pointerDownOnBackdrop = event.target === loginBackdrop;
+        });
+        loginBackdrop.addEventListener('click', event => {
+            if (pointerDownOnBackdrop && event.target === loginBackdrop) {
+                hideLoginModal();
+            }
+            pointerDownOnBackdrop = false;
+        });
+    }
+
+    window.addEventListener('surfview:login', () => {
+        loadOrganizations().catch(() => {
+            // Organization dropdowns fall back to the current entity organization id.
+        });
+        loadCurrentPage();
+    });
+
+    updateLoginLink();
+}
+
+initLoginModal();
 
 syncFiltersFromUrl();
 selectTab(tabFromUrl(), {load: false});

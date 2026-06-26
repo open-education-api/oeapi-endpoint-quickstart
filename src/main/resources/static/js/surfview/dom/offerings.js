@@ -782,12 +782,11 @@ async function submitOfferingForm(event) {
     submitButton.disabled = true;
 
     try {
-        const response = await fetch(endpoint, {
+        const response = await callEndpoint(endpoint, {
             method,
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                ...authorizationHeader()
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
         });
@@ -905,11 +904,10 @@ async function deleteOffering(button) {
     button.textContent = 'Deleting';
 
     try {
-        const response = await fetch(`/offerings/${encodeURIComponent(offeringId)}`, {
+        const response = await callEndpoint(`/offerings/${encodeURIComponent(offeringId)}`, {
             method: 'DELETE',
             headers: {
-                'Accept': 'application/json',
-                ...authorizationHeader()
+                'Accept': 'application/json'
             }
         });
 

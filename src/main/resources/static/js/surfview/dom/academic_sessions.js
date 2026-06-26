@@ -134,12 +134,11 @@ async function submitAcademicSessionForm(event) {
     submitButton.disabled = true;
 
     try {
-        const response = await fetch('/academic-sessions', {
+        const response = await callEndpoint('/academic-sessions', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                ...authorizationHeader()
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
         });

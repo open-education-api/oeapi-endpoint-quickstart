@@ -32,7 +32,10 @@
                 <button class="tab-button active" type="button" data-tab="courses">Courses</button>
             </nav>
 
-            <a class="login-link" href="login.html">Log in</a>
+            <div class="auth-actions">
+                <button class="login-link" type="button" id="login-link">Log in</button>
+                <button class="logout-link" type="button" id="logout-link">Log out</button>
+            </div>
         </header>
 
         <main class="layout">
@@ -177,6 +180,31 @@
                     <button class="modal-close" type="button" aria-label="Close">x</button>
                 </header>
                 <form class="offering-form" id="nested-offering-form"></form>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="login-modal-backdrop" role="presentation">
+            <section class="modal login-modal" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="login-modal-title">Log in</h2>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close" id="login-modal-close">x</button>
+                </header>
+                <form class="offering-form login-form" id="login-form">
+                    <label class="full-width">
+                        <span class="label-text">Username (email)</span>
+                        <input type="text" name="username" id="login-username" required autocomplete="username">
+                    </label>
+                    <label class="full-width">
+                        <span class="label-text">Password</span>
+                        <input type="password" name="password" id="login-password" required autocomplete="current-password">
+                    </label>
+                    <div class="offering-form-actions login-form-actions">
+                        <span class="offering-form-status" id="login-result-message"></span>
+                        <button class="detail-action-button" type="submit" id="login-submit">Login</button>
+                    </div>
+                </form>
             </section>
         </div>
         <script src="js/surfview/constants.js" defer></script>

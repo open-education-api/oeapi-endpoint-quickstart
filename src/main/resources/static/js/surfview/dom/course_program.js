@@ -700,12 +700,11 @@ async function submitEntityEditForm(event) {
     submitButton.disabled = true;
 
     try {
-        const response = await fetch(`/${kind === 'program' ? 'programs' : 'courses'}/${encodeURIComponent(id)}`, {
+        const response = await callEndpoint(`/${kind === 'program' ? 'programs' : 'courses'}/${encodeURIComponent(id)}`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                ...authorizationHeader()
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
         });

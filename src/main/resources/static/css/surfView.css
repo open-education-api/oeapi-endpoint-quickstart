@@ -32,7 +32,7 @@ select {
 
 .topbar {
     display: grid;
-    grid-template-columns: 320px 1fr 180px;
+    grid-template-columns: 320px 1fr auto;
     align-items: center;
     min-height: 82px;
     padding: 0 28px;
@@ -96,8 +96,14 @@ select {
     border-bottom-color: #fff;
 }
 
-.login-link {
+.auth-actions {
     justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.login-link {
     color: #fff;
     font-size: 18px;
     text-decoration: none;
@@ -1256,7 +1262,7 @@ td {
         min-width: 190px;
     }
 
-    .login-link {
+    .auth-actions {
         align-self: flex-start;
     }
 
@@ -1306,4 +1312,52 @@ td {
         border-right: 0;
         border-bottom: 1px solid var(--line);
     }
+}
+
+button.login-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+button.logout-link {
+    padding: 6px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+button.logout-link:hover,
+button.logout-link:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+
+#login-modal-backdrop {
+    z-index: 70;
+}
+
+.login-modal {
+    width: min(480px, 100%);
+    max-height: calc(100vh - 64px);
+}
+
+.login-form .offering-form-actions {
+    justify-content: flex-end;
+}
+
+.hidden {
+    display: none !important;
 }

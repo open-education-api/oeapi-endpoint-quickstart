@@ -179,3 +179,142 @@ function listValue(value) {
 
     return value || '';
 }
+
+function isAuthenticated() {
+    return Boolean(window.localStorage.getItem('jwt'));
+}
+
+function authUserNameFromToken(token) {
+    if (!token) {
+        return '';
+    }
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.sub || payload.email || payload.preferred_username || payload.name || '';
+    } catch {
+        return '';
+    }
+}
+
+function getAuthUserName() {
+    return authUserNameFromToken(window.localStorage.getItem('jwt'));
+}
+
+function logout() {
+    window.localStorage.removeItem('jwt');
+    updateLoginLink();
+}
+
+function updateLoginLink() {
+    const link = document.getElementById('login-link');
+    const logoutButton = document.getElementById('logout-link');
+    const name = getAuthUserName();
+    const authenticated = isAuthenticated();
+
+    if (link) {
+        link.textContent = name || 'Log in';
+    }
+
+    if (logoutButton) {
+        logoutButton.classList.toggle('hidden', !authenticated);
+    }
+}
+
+function showLoginModal() {
+    const backdrop = document.getElementById('login-modal-backdrop');
+    if (!backdrop) {
+        return;
+    }
+
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('login-username')?.focus();
+}
+
+function hideLoginModal() {
+    const backdrop = document.getElementById('login-modal-backdrop');
+    if (!backdrop) {
+        return;
+    }
+
+    backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+    const form = document.getElementById('login-form');
+    if (form) {
+        form.reset();
+    }
+    const status = document.getElementById('login-result-message');
+    if (status) {
+        status.textContent = '';
+    }
+}
+
+async function callEndpoint(url, options = {}) {
+    const resolvedUrl = url.startsWith('http://') || url.startsWith('https://')
+        ? url
+        : new URL(url, window.location.origin).toString();
+    const response = await fetch(resolvedUrl, {
+        ...options,
+        headers: {
+            ...options.headers,
+            ...authorizationHeader()
+        }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+        window.localStorage.removeItem('jwt');
+        updateLoginLink();
+        showLoginModal();
+    }
+
+    return response;
+}
+
+async function submitLoginForm(event) {
+    event.preventDefault();
+    const form = event.target;
+    const status = document.getElementById('login-result-message');
+    const submitButton = document.getElementById('login-submit');
+
+    if (status) {
+        status.textContent = '';
+    }
+    if (submitButton) {
+        submitButton.disabled = true;
+    }
+
+    try {
+        const response = await fetch(new URL('auth/login', window.location.origin).toString(), {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({email: form.username.value, password: form.password.value})
+        });
+
+        if (!response.ok) {
+            throw new Error(response.status === 401 ? 'Invalid user/password' : `Login failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!data.token) {
+            throw new Error('Login failed: no token received');
+        }
+
+        window.localStorage.setItem('jwt', data.token);
+        updateLoginLink();
+        hideLoginModal();
+        window.dispatchEvent(new CustomEvent('surfview:login'));
+    } catch (error) {
+        window.localStorage.removeItem('jwt');
+        updateLoginLink();
+        if (status) {
+            status.textContent = error.message || 'Login failed';
+        }
+    } finally {
+        if (submitButton) {
+            submitButton.disabled = false;
+        }
+    }
+}

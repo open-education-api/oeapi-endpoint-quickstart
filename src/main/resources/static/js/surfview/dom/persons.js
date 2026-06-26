@@ -133,9 +133,9 @@ async function submitPersonForm(form) {
     status.textContent = 'Saving...';
     submitButton.disabled = true;
     try {
-        const response = await fetch(mode === 'create' ? '/persons' : `/persons/${encodeURIComponent(id)}`, {
+        const response = await callEndpoint(mode === 'create' ? '/persons' : `/persons/${encodeURIComponent(id)}`, {
             method: mode === 'create' ? 'POST' : 'PUT',
-            headers: {'Accept': 'application/json', 'Content-Type': 'application/json', ...authorizationHeader()},
+            headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
             body: JSON.stringify(payload)
         });
         if (!response.ok) {
@@ -179,9 +179,9 @@ async function deleteCurrentPerson() {
     }
     entityDeleteButton.disabled = true;
     try {
-        const response = await fetch(`/persons/${encodeURIComponent(id)}`, {
+        const response = await callEndpoint(`/persons/${encodeURIComponent(id)}`, {
             method: 'DELETE',
-            headers: {'Accept': 'application/json', ...authorizationHeader()}
+            headers: {'Accept': 'application/json'}
         });
         if (!response.ok) {
             throw await requestErrorFromResponse(response);
