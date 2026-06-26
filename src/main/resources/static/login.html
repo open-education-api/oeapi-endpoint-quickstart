@@ -54,6 +54,11 @@
         <script>
 
             const form = document.getElementById('loginForm');
+
+            function getRedirectUrl() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('redirect') || './oeapi-td.html';
+            }
             
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -67,7 +72,7 @@
                         showAlert("success", "Success!", resultMsg.textContent);
                         // Redirect                      
                         setTimeout(function () {
-                            window.location.href = "./oeapi-td.html";
+                            window.location.href = getRedirectUrl();
                         }, 1000); // 1000 milliseconds = 1 seconds                           
                     } else {  // has response but not ok; 400, 401,....
                             messageDiv.textContent = 'Login failed: ' + res.status;
