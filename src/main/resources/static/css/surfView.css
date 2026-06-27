@@ -857,6 +857,17 @@ td {
     grid-column: 1 / -1;
 }
 
+.entity-coordinators-panel {
+    grid-column: 1 / -1;
+}
+
+.entity-coordinator-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: end;
+}
+
 .entity-alliance-row {
     display: contents;
 }

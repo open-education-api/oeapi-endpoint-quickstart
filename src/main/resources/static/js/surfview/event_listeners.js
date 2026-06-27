@@ -237,6 +237,20 @@ modalBody.addEventListener('click', event => {
         return;
     }
 
+    const addEntityCoordinatorButton = event.target.closest('[data-add-entity-coordinator]');
+    if (addEntityCoordinatorButton) {
+        event.preventDefault();
+        addEntityCoordinator(addEntityCoordinatorButton);
+        return;
+    }
+
+    const deleteEntityCoordinatorButton = event.target.closest('[data-delete-entity-coordinator]');
+    if (deleteEntityCoordinatorButton) {
+        event.preventDefault();
+        deleteEntityCoordinator(deleteEntityCoordinatorButton);
+        return;
+    }
+
     const addOrganizationLanguageButton = event.target.closest('[data-add-organization-language]');
     if (addOrganizationLanguageButton) {
         event.preventDefault();

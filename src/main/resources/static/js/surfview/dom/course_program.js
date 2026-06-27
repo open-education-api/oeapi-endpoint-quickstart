@@ -19,6 +19,7 @@ function entityDetailsHtml(kind, entity, options = {}) {
         ['Delivery', listValue(entity.modeOfDelivery)],
         ['First start date', entity.firstStartDate],
         ['Organization', organizationValue(entity.organization)],
+        ['Coordinators', coordinatorLabels(entity)],
         ['Link', entity.link]
     ];
     const description = textValue(entity.description);
@@ -295,6 +296,9 @@ function entityEditFormHtml(kind, entity) {
         }));
     }
 
+    const coordinatorsPanel = entityCoordinatorsPanel(entity);
+    coordinatorsPanel.dataset.entityFormSection = 'coordinators';
+
     fields.push(
         fieldLabelHtml('Teaching language', 'select', 'teachingLanguage', entity.teachingLanguage || 'eng', {
             options: Constants.enumOptions.teachingLanguage,
@@ -318,12 +322,135 @@ function entityEditFormHtml(kind, entity) {
             options: organizationOptionEntries(organizationIdValue(entity.organization))
         }),
         fieldLabelHtml('Link', 'url', 'link', entity.link || '', {placeholder: 'https://'}, 'full-width'),
+        coordinatorsPanel,
         entityConsumersPanel(entity),
         entityEditFormActions()
     );
     form.append(...fields);
     fragment.append(form);
     return fragment;
+}
+
+function coordinatorIds(entity) {
+    return (Array.isArray(entity?.coordinators) ? entity.coordinators : [])
+        .map(coordinator => typeof coordinator === 'string' ? coordinator : entityId('person', coordinator))
+        .filter(Boolean)
+        .map(String);
+}
+
+function coordinatorLabels(entity) {
+    const labels = coordinatorIds(entity).map(id => personLabelById(id));
+    return labels.length ? labels.join(', ') : '';
+}
+
+function entityCoordinatorsPanel(entity) {
+    const section = document.createElement('section');
+    section.className = 'nested-item-panel consumer-panel entity-coordinators-panel';
+
+    const head = document.createElement('div');
+    head.className = 'nested-item-head';
+    head.append(textElement('h3', 'Coordinators'));
+
+    const list = document.createElement('div');
+    list.id = 'entity-coordinator-list';
+    list.className = 'entity-array-chips entity-coordinator-list full-width';
+    coordinatorIds(entity).forEach(id => list.append(entityCoordinatorChip(id)));
+
+    const controls = document.createElement('div');
+    controls.className = 'entity-coordinator-controls full-width';
+
+    const label = document.createElement('label');
+    label.append(labelTextElement('Add coordinator', false));
+
+    const select = document.createElement('select');
+    select.id = 'entity-coordinator-select';
+    select.dataset.entityCoordinatorSelect = '';
+    label.append(select);
+
+    const addButton = document.createElement('button');
+    addButton.className = 'detail-action-button';
+    addButton.type = 'button';
+    addButton.dataset.addEntityCoordinator = '';
+    addButton.textContent = 'Add';
+
+    controls.append(label, addButton);
+    section.append(head, list, controls);
+    refreshCoordinatorSelect(section);
+    return section;
+}
+
+function entityCoordinatorChip(id) {
+    const chip = document.createElement('span');
+    chip.className = 'entity-array-chip entity-coordinator-chip';
+    chip.dataset.coordinatorId = id;
+
+    const text = document.createElement('span');
+    text.textContent = personLabelById(id);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.dataset.deleteEntityCoordinator = '';
+    deleteButton.setAttribute('aria-label', `Remove ${text.textContent}`);
+    deleteButton.textContent = 'x';
+
+    chip.append(text, deleteButton);
+    return chip;
+}
+
+function refreshCoordinatorSelect(scope = document) {
+    const panel = scope.closest?.('.entity-coordinators-panel') || scope.querySelector?.('.entity-coordinators-panel') || scope;
+    const select = panel.querySelector?.('[data-entity-coordinator-select]');
+    const addButton = panel.querySelector?.('[data-add-entity-coordinator]');
+    if (!select || !addButton) {
+        return;
+    }
+
+    const selectedIds = new Set(entityCoordinatorValues(panel));
+    const options = [...personById.values()]
+        .filter(person => {
+            const id = entityId('person', person);
+            return id && !selectedIds.has(String(id));
+        })
+        .sort((left, right) => personLabel(left).localeCompare(personLabel(right)));
+
+    select.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = options.length ? 'Select person' : 'No persons available';
+    select.append(placeholder);
+    options.forEach(person => {
+        const id = String(entityId('person', person));
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = personLabel(person);
+        select.append(option);
+    });
+    select.value = '';
+    addButton.disabled = !options.length;
+}
+
+function addEntityCoordinator(button) {
+    const panel = button.closest('.entity-coordinators-panel');
+    const select = panel?.querySelector('[data-entity-coordinator-select]');
+    const list = panel?.querySelector('#entity-coordinator-list');
+    const id = select?.value || '';
+    if (!panel || !list || !id) {
+        return;
+    }
+
+    const duplicate = entityCoordinatorValues(panel).includes(String(id));
+    if (!duplicate) {
+        list.append(entityCoordinatorChip(String(id)));
+    }
+    refreshCoordinatorSelect(panel);
+}
+
+function deleteEntityCoordinator(button) {
+    const panel = button.closest('.entity-coordinators-panel');
+    button.closest('.entity-coordinator-chip')?.remove();
+    if (panel) {
+        refreshCoordinatorSelect(panel);
+    }
 }
 
 function entityConsumersPanel(entity) {
@@ -645,9 +772,12 @@ async function openEntityEditForm() {
     }
 
     try {
-        await loadOrganizations();
+        await Promise.all([
+            loadOrganizations().catch(() => null),
+            loadPersons().catch(() => null)
+        ]);
     } catch (error) {
-        // Keep editing available if organizations cannot be listed.
+        // Keep editing available if related entity lists cannot be loaded.
     }
 
     modalBody.replaceChildren(entityEditFormHtml(currentModalKind, currentModalEntity));
@@ -799,9 +929,18 @@ function entityPayloadFromForm(kind, form, originalEntity) {
     payload.sector = value('sector');
     payload.organization = value('organization');
     payload.link = value('link');
+    payload.coordinators = entityCoordinatorValues(form);
     payload.consumers = entityConsumersFromForm(form, originalEntity);
 
-    return removeEmptyPayloadValues(payload);
+    const cleanedPayload = removeEmptyPayloadValues(payload);
+    cleanedPayload.coordinators = payload.coordinators;
+    return cleanedPayload;
+}
+
+function entityCoordinatorValues(row) {
+    return [...row.querySelectorAll('.entity-coordinator-chip')]
+        .map(chip => chip.dataset.coordinatorId)
+        .filter(Boolean);
 }
 
 function entityConsumersFromForm(form, originalEntity) {

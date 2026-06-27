@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Login</title>
+
+        <script src="js/init.js"></script>
+        <script src="_quickdashboard_config.json?callback=init"></script>
+        <script src="js/oeapi.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="./css/td_oeapi.css" />
+
+    </head>
+    <body class="login-body" style="background-color: --color-blue-light">
+
+        <div class="login-container">
+
+            <h2>Login</h2>
+
+            <form id="loginForm">
+                <label for="username">Username (email):</label>
+                <input type="text" id="username" name="username" required />
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+
+                <button type="submit" id="login">Login</button>
+
+                <button type="text" id="bckdb" style="margin-top:3em">(Go back to dashboard)</button>
+            </form>
+
+            <div id="login-resultMsg"></div>
+        </div>
+
+        <!-- Message popup -->
+        <div class="modal fade" id="alertModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header" id="alertModalHeader">
+                        <h5 class="modal-title" id="alertModalTitle"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="alertModalBody"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <script>
+
+            const form = document.getElementById('loginForm');
+
+            function getRedirectUrl() {
+                const params = new URLSearchParams(window.location.search);
+                return params.get('redirect') || './oeapi-td.html';
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const resultMsg = document.getElementById('login-resultMsg');
+
+                try {
+                    const res = await API.login(form.username.value, form.password.value)
+                    if (res.ok) {
+                        resultMsg.textContent = 'Login successful! You will be redirected to Dashboard';
+                        showAlert("success", "Success!", resultMsg.textContent);
+                        // Redirect
+                        setTimeout(function () {
+                            window.location.href = getRedirectUrl();
+                        }, 1000); // 1000 milliseconds = 1 seconds
+                    } else {  // has response but not ok; 400, 401,....
+                            messageDiv.textContent = 'Login failed: ' + res.status;
+                            showAlert("error", "Error", resultMsg.textContent);
+                    }
+                } catch (errResponse) {
+                    // We can get a simple message or more elaborated depending on the issue
+                    if (errResponse.responseText || errResponse.responseJSON) {
+                        let message = errResponse.responseText ? errResponse.responseText : errResponse.responseJSON.messages[0];
+                        resultMsg.textContent = "Login has failed " + " ( Cause: " + message + " )";
+                        showAlert("error", "Error", resultMsg.textContent);
+
+                    } else {
+                        if (errResponse.status) {
+                            if  (errResponse.status == 401) {
+                                resultMsg.textContent = "Invalid user/password";
+                                showAlert("error", "Not authorized", resultMsg.textContent);
+                            } else {
+                                    resultMsg.textContent = "Communication problem or undefined error";
+                                    showAlert("error", resultMsg.textContent, "Possibly no internet connection or cannot establish proper connection with the endpoint");
+                            }
+                        }
+                    }
+                  } // catch
+            });
+
+            document.getElementById('bckdb').addEventListener('click', () => {
+                window.location.href = './oeapi-td.html';
+            });
+
+        </script>
+
+    </body>
+</html>
