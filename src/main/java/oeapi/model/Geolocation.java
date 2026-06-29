@@ -3,7 +3,7 @@ package oeapi.model;
 import java.io.Serializable;
 
 
-public class Geolocation implements Serializable {
+public class Geolocation extends oeapiEquals implements Serializable {
 
     private double latitude;
     private double longitude;

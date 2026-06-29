@@ -19,7 +19,7 @@ import oeapi.converter.oeapiUnitaListEnrollmentConverter;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 
-public class Consumer {
+public class Consumer extends oeapiEquals {
 
     private Map<String, Object> otherAttributes = new HashMap<>();
       

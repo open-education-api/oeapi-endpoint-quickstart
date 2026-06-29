@@ -1,15 +1,18 @@
 package oeapi.model;
 
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.springframework.stereotype.Component;
+
 /**
  *
  * @author itziar.urrutia
  */
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.Serializable;
-import org.springframework.stereotype.Component;
 
 @Component
-public class oeapiLanguageTypedString implements Serializable {
+public class oeapiLanguageTypedString extends oeapiEquals implements Serializable {
 
     @JsonProperty("language")
     private String language;
@@ -51,5 +54,4 @@ public class oeapiLanguageTypedString implements Serializable {
     public void setValue(String value) {
         this.value = value;
     }
-
 }

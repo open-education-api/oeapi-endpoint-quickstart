@@ -1,14 +1,13 @@
 package oeapi.model;
 
 import java.io.Serializable;
-import java.util.Objects;
 import oeapi.validation.ValidObjectYaml;
 
 /**
  *
  * @author itziar.urrutia
  */
-public class oeapiIdentifierEntry implements Serializable {
+public class oeapiIdentifierEntry extends oeapiEquals implements Serializable {
 
     @ValidObjectYaml(yamlfile = "enum/codeType.yaml")
     private String codeType;
@@ -37,25 +36,5 @@ public class oeapiIdentifierEntry implements Serializable {
     public oeapiIdentifierEntry(String codeType, String code) {
         this.code = code;
         this.codeType = codeType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true; // Check if the objects are the same instance
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false; // Check for null or different class
-        }
-        oeapiIdentifierEntry that = (oeapiIdentifierEntry) o;
-
-        // Check equality of fields
-        return Objects.equals(codeType, that.codeType)
-                && Objects.equals(code, that.code);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(codeType, code); // Generate a hash based on fields
     }
 }
