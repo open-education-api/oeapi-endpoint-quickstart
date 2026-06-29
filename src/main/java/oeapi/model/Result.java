@@ -7,7 +7,7 @@ import java.time.LocalDate;
  *
  * @author itziar
  */
-public class Result implements Serializable {
+public class Result extends oeapiEquals implements Serializable {
 
     private String resultState;
     private String pass;

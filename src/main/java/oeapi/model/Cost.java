@@ -16,7 +16,7 @@ import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
  * @author itziar
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Cost implements Serializable {
+public class Cost extends oeapiEquals implements Serializable {
 
     private String costType;
 

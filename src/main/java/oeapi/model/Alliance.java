@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @author itziar.urrutia
  */
-public class Alliance {
+public class Alliance extends oeapiEquals {
 
     private Map<String, Object> otherAttributes = new HashMap<>();
     

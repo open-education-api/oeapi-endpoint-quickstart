@@ -1,12 +1,12 @@
 package oeapi.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.validation.Valid;
 import oeapi.converter.oeapiGeolocationConverter;
-import oeapi.converter.oeapiResultConverter;
 import oeapi.converter.oeapiUnitaExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.validation.ValidLanguageTypedString;
@@ -18,7 +18,7 @@ import oeapi.validation.ValidLanguageTypedString;
  */
 @Valid
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Address {
+public class Address extends oeapiEquals {
 
     private String addressType;
 
@@ -168,5 +168,4 @@ public class Address {
     public void setExt(Ext ext) {
         this.ext = ext;
     }
-
 }

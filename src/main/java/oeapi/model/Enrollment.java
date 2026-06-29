@@ -4,7 +4,7 @@ package oeapi.model;
  *
  * @author itziar.urrutia
  */
-public class Enrollment {
+public class Enrollment extends oeapiEquals {
 
     private String crohoCreboCode;
     private String name;
