@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -100,6 +101,11 @@ public class PersonController extends oeapiController<Person> {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Person person) {
         return super.create(person, personService);
+    }
+
+    @PutMapping("/{personId}")
+    public ResponseEntity<?> update(@PathVariable String personId, @RequestBody Person person) {
+        return super.update(person, personService);
     }
 
     @DeleteMapping("/{personId}")
