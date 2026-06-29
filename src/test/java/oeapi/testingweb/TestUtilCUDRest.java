@@ -69,7 +69,7 @@ public class TestUtilCUDRest {
 
     }
 
-    public  void whenPut_testUpdateCode(String restResource, String entity, String templateAbrev, String randomId, WebTestClient webTestClient) throws IOException {
+    public String whenPut_testUpdateCode(String restResource, String entity, String templateAbrev, String randomId, WebTestClient webTestClient) throws IOException {
 
         String newCode = TU.genRandomCode();
 
@@ -79,6 +79,7 @@ public class TestUtilCUDRest {
 
         put_testCode(uri, payload, newCode, webTestClient);
 
+        return newCode;
     }
 
     public void post_testCode(String restResource, String payload, String code, WebTestClient webTestClient) {

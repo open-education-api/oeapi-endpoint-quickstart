@@ -1,5 +1,7 @@
 package oeapi.testingweb;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,6 +9,7 @@ import java.nio.file.Paths;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import oeapi.model.Person;
+import oeapi.service.PersonService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +43,29 @@ class PersonTest {
     private TestUtilCUDRest TUCudRest;    
     
     @Autowired    
-    private TestUtilGetRest TUGetRest;      
-    
+    private TestUtilGetRest TUGetRest;
+
+    @Autowired
+    private PersonService personService;
     
     @Test
     void CreatePerson() throws IOException {
 
-        logStep("Create Person");        
-        
+        logStep("Create Person");
+
         TUCudRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
 
+    }
+
+    @Test
+    void UpdatePerson() throws IOException {
+        logStep("Update Person");
+
+        String id = TUCudRest.whenPost_testOk(restResource, entity, templateAbrev, webTestClient);
+        String code = TUCudRest.whenPut_testUpdateCode(restResource, entity, templateAbrev, id, webTestClient);
+
+        Optional<Person> person = personService.getById(id);
+        assertTrue(person.isPresent() && code.equals(person.get().getPrimaryCode().getCode()));
     }
 
     @Test
