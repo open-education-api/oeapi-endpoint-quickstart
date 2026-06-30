@@ -1,8 +1,16 @@
-function languageSpecificSectionFragment({activeLanguage, buttonAttribute, label, fields}) {
+function languageSpecificSectionFragment({
+    activeLanguage,
+    buttonAttribute,
+    label,
+    fields,
+    languages = draftOffering.languages,
+    languageActions = null,
+    headerContent = null
+}) {
     const section = document.createElement('section');
     section.className = 'nested-item-panel language-specific-section';
 
-    section.append(languageSwitcherHtml({activeLanguage, buttonAttribute, label}));
+    section.append(languageSwitcherHtml({activeLanguage, buttonAttribute, label, languages, languageActions, headerContent}));
 
     const fieldsElement = document.createElement('div');
     fieldsElement.className = 'language-specific-fields';
@@ -77,7 +85,14 @@ function offeringFormActionsFragment(submitText) {
     return actions;
 }
 
-function languageSwitcherHtml({activeLanguage, buttonAttribute, label}) {
+function languageSwitcherHtml({
+    activeLanguage,
+    buttonAttribute,
+    label,
+    languages = draftOffering.languages,
+    languageActions = null,
+    headerContent = null
+}) {
     const head = document.createElement('div');
     head.className = 'language-section-head';
 
@@ -87,17 +102,27 @@ function languageSwitcherHtml({activeLanguage, buttonAttribute, label}) {
 
     const navItems = document.createElement('div');
     navItems.className = 'language-nav-items';
-    draftOffering.languages.forEach(code => {
+    languages.forEach(code => {
         const button = document.createElement('button');
         button.className = `language-nav-button${code === activeLanguage ? ' active' : ''}`;
         button.type = 'button';
         button.setAttribute(buttonAttribute, code);
         button.title = languageLabel(code);
         button.textContent = code;
-        navItems.append(button);
+        if (typeof languageActions === 'function') {
+            const item = document.createElement('span');
+            item.className = 'language-nav-item';
+            item.append(button, languageActions(code));
+            navItems.append(item);
+        } else {
+            navItems.append(button);
+        }
     });
 
     head.append(labelElement, navItems);
+    if (headerContent) {
+        head.append(headerContent);
+    }
     return head;
 }
 

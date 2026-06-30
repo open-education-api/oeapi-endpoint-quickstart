@@ -87,6 +87,13 @@ offeringForm.addEventListener('click', event => {
         return;
     }
 
+    const editPriceButton = event.target.closest('[data-edit-price-index]');
+    if (editPriceButton) {
+        event.preventDefault();
+        openNestedOfferingModal('price', {index: editPriceButton.dataset.editPriceIndex});
+        return;
+    }
+
     const deleteAddressButton = event.target.closest('[data-delete-address-index]');
     if (deleteAddressButton) {
         event.preventDefault();
@@ -226,7 +233,14 @@ modalBody.addEventListener('click', event => {
     const deleteEntityLanguageButton = event.target.closest('[data-delete-entity-language]');
     if (deleteEntityLanguageButton) {
         event.preventDefault();
-        deleteEntityLanguageRow(deleteEntityLanguageButton);
+        deleteEntityLanguageRow(deleteEntityLanguageButton.dataset.deleteEntityLanguage);
+        return;
+    }
+
+    const entityLanguageButton = event.target.closest('[data-entity-language-code]');
+    if (entityLanguageButton) {
+        event.preventDefault();
+        switchDraftEntityLanguage(entityLanguageButton.dataset.entityLanguageCode);
         return;
     }
 
@@ -261,7 +275,14 @@ modalBody.addEventListener('click', event => {
     const deleteOrganizationLanguageButton = event.target.closest('[data-delete-organization-language]');
     if (deleteOrganizationLanguageButton) {
         event.preventDefault();
-        deleteOrganizationLanguageRow(deleteOrganizationLanguageButton);
+        deleteOrganizationLanguageRow(deleteOrganizationLanguageButton.dataset.deleteOrganizationLanguage);
+        return;
+    }
+
+    const organizationLanguageButton = event.target.closest('[data-organization-language-code]');
+    if (organizationLanguageButton) {
+        event.preventDefault();
+        switchDraftOrganizationLanguage(organizationLanguageButton.dataset.organizationLanguageCode);
         return;
     }
 
@@ -348,13 +369,13 @@ modalBody.addEventListener('keydown', event => {
 });
 
 modalBody.addEventListener('input', event => {
-    if (event.target.matches('.organization-language-row input[name="organizationName"]')) {
+    if (event.target.matches('input[name="organizationName"]')) {
         syncOrganizationAddressLanguages();
     }
 });
 
 modalBody.addEventListener('change', event => {
-    if (event.target.matches('.organization-language-row select[name="organizationLanguage"]')) {
+    if (event.target.matches('input[name="organizationName"]')) {
         syncOrganizationAddressLanguages();
     }
 });

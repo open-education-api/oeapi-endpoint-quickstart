@@ -89,9 +89,10 @@ function organizationSectionLinks(description, otherCodes, addresses) {
 }
 
 function organizationFormFragment(organization, mode = 'edit') {
+    initializeDraftOrganizationLanguages(organization);
     const form = document.createElement('form');
     const primaryCode = primaryCodeParts(organization.primaryCode, organization.organizationId);
-    const localizedNameLanguages = organizationLocalizedNameLanguagesFromEntity(organization);
+    const localizedNameLanguages = organizationLocalizedNameLanguagesFromDraft();
     form.className = 'offering-form entity-edit-form';
     form.id = 'entity-edit-form';
     form.dataset.entityKind = 'organization';
@@ -122,24 +123,76 @@ function organizationFormFragment(organization, mode = 'edit') {
 }
 
 function organizationLocalizedPanel(organization) {
-    const section = document.createElement('section');
-    section.className = 'nested-item-panel entity-localized-panel';
-    const head = document.createElement('div');
-    head.className = 'nested-item-head';
-    const heading = document.createElement('h3');
-    heading.textContent = 'Localized content';
+    const section = languageSpecificSectionFragment({
+        activeLanguage: draftEntity.language,
+        buttonAttribute: 'data-organization-language-code',
+        label: 'Content language',
+        languages: draftEntity.languages,
+        languageActions: organizationLanguageActions,
+        headerContent: organizationLanguageControls(),
+        fields: organizationLanguageFields(draftEntity.language)
+    });
+    section.classList.add('entity-localized-panel');
+    section.dataset.organizationLocalizedPanel = '';
+    refreshOrganizationLanguageControls(section);
+    return section;
+}
+
+function organizationLanguageActions(language) {
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'language-delete-button';
+    deleteButton.type = 'button';
+    deleteButton.dataset.deleteOrganizationLanguage = language;
+    deleteButton.title = `Delete ${languageLabel(language)}`;
+    deleteButton.setAttribute('aria-label', `Delete ${languageLabel(language)}`);
+    deleteButton.textContent = 'x';
+    return deleteButton;
+}
+
+function organizationLanguageControls() {
+    const controls = document.createElement('div');
+    controls.className = 'entity-language-controls full-width';
+
+    const label = document.createElement('label');
+    label.append(labelTextElement('Add language', false));
+
+    const select = document.createElement('select');
+    select.name = 'newOrganizationLanguage';
+    select.dataset.organizationLanguageSelect = '';
+    label.append(select);
+
     const addButton = document.createElement('button');
     addButton.className = 'detail-action-button';
     addButton.type = 'button';
     addButton.dataset.addOrganizationLanguage = '';
-    addButton.textContent = 'Add language';
-    const list = document.createElement('div');
-    list.className = 'entity-language-list';
-    list.id = 'organization-language-list';
-    organizationLanguageCodes(organization).forEach(language => list.append(organizationLanguageRow(organization, language)));
-    head.append(heading, addButton);
-    section.append(head, list);
-    return section;
+    addButton.textContent = 'Add';
+
+    controls.append(label, addButton);
+    return controls;
+}
+
+function organizationLanguageFields(language) {
+    const values = draftEntity.languageValues[language] || organizationEmptyLanguageValues();
+    return [
+        fieldLabelHtml('Name', 'text', 'organizationName', values.name || '', {required: true}, 'full-width'),
+        fieldLabelHtml('Description', 'textarea', 'organizationDescription', values.description || '', {}, 'full-width')
+    ];
+}
+
+function organizationEmptyLanguageValues() {
+    return {name: '', description: ''};
+}
+
+function initializeDraftOrganizationLanguages(organization) {
+    const languages = organizationLanguageCodes(organization);
+    draftEntity.languages = languages.length ? [...new Set(languages)] : ['en-GB'];
+    draftEntity.language = currentModalLanguage && draftEntity.languages.includes(currentModalLanguage)
+        ? currentModalLanguage
+        : draftEntity.languages[0];
+    draftEntity.languageValues = Object.fromEntries(draftEntity.languages.map(language => [language, {
+        name: entityLocalizedFieldValue(organization.name, language),
+        description: entityLocalizedFieldValue(organization.description, language)
+    }]));
 }
 
 function organizationLanguageCodes(organization) {
@@ -157,33 +210,8 @@ function organizationLanguageCodes(organization) {
     return [...codes];
 }
 
-function organizationLocalizedNameLanguagesFromEntity(organization) {
-    return [...new Set((Array.isArray(organization.name) ? organization.name : [])
-        .filter(item => item?.language && String(item.value || '').trim())
-        .map(item => item.language))];
-}
-
-function organizationLanguageRow(organization, language) {
-    const row = document.createElement('section');
-    row.className = 'entity-language-row organization-language-row';
-    const head = document.createElement('div');
-    head.className = 'entity-language-row-head';
-    head.append(fieldLabelHtml('Language', 'select', 'organizationLanguage', language, {
-        required: true,
-        options: entityLanguageOptions(language)
-    }));
-    const deleteButton = document.createElement('button');
-    deleteButton.className = 'nested-item-delete';
-    deleteButton.type = 'button';
-    deleteButton.dataset.deleteOrganizationLanguage = '';
-    deleteButton.textContent = 'Delete';
-    head.append(deleteButton);
-    row.append(
-        head,
-        fieldLabelHtml('Name', 'text', 'organizationName', entityLocalizedFieldValue(organization.name, language), {required: true}, 'full-width'),
-        fieldLabelHtml('Description', 'textarea', 'organizationDescription', entityLocalizedFieldValue(organization.description, language), {}, 'full-width')
-    );
-    return row;
+function organizationLocalizedNameLanguagesFromDraft() {
+    return draftEntity.languages.filter(language => String(draftEntity.languageValues[language]?.name || '').trim());
 }
 
 function organizationCodesPanel(codes = []) {
@@ -294,6 +322,7 @@ function openCreateOrganizationModal() {
     currentModalOfferings = [];
     currentModalLanguages = ['en-GB'];
     currentModalLanguage = 'en-GB';
+    resetDraftEntity();
     courseModal.title.textContent = 'Add organization';
     entityEditButton.classList.add('hidden');
     entityDeleteButton.classList.add('hidden');
@@ -305,6 +334,7 @@ function openCreateOrganizationModal() {
 }
 
 function openOrganizationEditForm(organization) {
+    resetDraftEntity();
     modalBody.replaceChildren(organizationFormFragment(organization, 'edit'));
     entityEditButton.classList.add('hidden');
     entityDeleteButton.classList.add('hidden');
@@ -313,24 +343,98 @@ function openOrganizationEditForm(organization) {
 }
 
 function addOrganizationLanguageRow() {
-    const list = document.getElementById('organization-language-list');
-    if (!list) {
+    const form = document.getElementById('entity-edit-form');
+    const select = form?.querySelector('[data-organization-language-select]');
+    const language = select?.value || '';
+    if (!form || !language || draftEntity.languages.includes(language) || !(language in Constants.languageNames)) {
         return;
     }
-    const selected = new Set([...list.querySelectorAll('select[name="organizationLanguage"]')].map(field => field.value));
-    const language = Object.keys(Constants.languageNames).find(code => !selected.has(code));
-    if (language) {
-        list.append(organizationLanguageRow({}, language));
-        syncOrganizationAddressLanguages();
-    }
+
+    saveDraftOrganizationLanguageFields(form);
+    draftEntity.languages.push(language);
+    draftEntity.languageValues[language] = organizationEmptyLanguageValues();
+    renderOrganizationLanguagePanel();
+    switchDraftOrganizationLanguage(language);
+    syncOrganizationAddressLanguages();
 }
 
-function deleteOrganizationLanguageRow(button) {
-    const list = document.getElementById('organization-language-list');
-    if (list?.querySelectorAll('.organization-language-row').length > 1) {
-        button.closest('.organization-language-row')?.remove();
-        syncOrganizationAddressLanguages();
+function deleteOrganizationLanguageRow(language) {
+    const form = document.getElementById('entity-edit-form');
+    if (!form || draftEntity.languages.length <= 1) {
+        return;
     }
+
+    saveDraftOrganizationLanguageFields(form);
+    const index = draftEntity.languages.indexOf(language);
+    if (index < 0) {
+        return;
+    }
+
+    draftEntity.languages.splice(index, 1);
+    delete draftEntity.languageValues[language];
+    if (draftEntity.language === language) {
+        draftEntity.language = draftEntity.languages[Math.min(index, draftEntity.languages.length - 1)];
+    }
+    renderOrganizationLanguagePanel();
+    syncOrganizationAddressLanguages();
+}
+
+function saveDraftOrganizationLanguageFields(form = document.getElementById('entity-edit-form')) {
+    if (!form || form.dataset.entityKind !== 'organization' || !draftEntity.language) {
+        return;
+    }
+
+    draftEntity.languageValues[draftEntity.language] = {
+        name: form.elements.organizationName?.value || '',
+        description: form.elements.organizationDescription?.value || ''
+    };
+}
+
+function switchDraftOrganizationLanguage(language) {
+    const form = document.getElementById('entity-edit-form');
+    if (!form || !language || language === draftEntity.language || !draftEntity.languages.includes(language)) {
+        return;
+    }
+
+    saveDraftOrganizationLanguageFields(form);
+    draftEntity.language = language;
+    const values = draftEntity.languageValues[language] || organizationEmptyLanguageValues();
+    if (form.elements.organizationName) {
+        form.elements.organizationName.value = values.name || '';
+    }
+    if (form.elements.organizationDescription) {
+        form.elements.organizationDescription.value = values.description || '';
+    }
+    form.querySelectorAll('[data-organization-language-code]').forEach(button => {
+        button.classList.toggle('active', button.dataset.organizationLanguageCode === language);
+    });
+    refreshOrganizationLanguageControls(form);
+    syncOrganizationAddressLanguages();
+    form.elements.organizationName?.focus();
+}
+
+function renderOrganizationLanguagePanel() {
+    const panel = document.querySelector('[data-organization-localized-panel]');
+    const replacement = organizationLocalizedPanel(currentModalEntity || {});
+    panel?.replaceWith(replacement);
+}
+
+function refreshOrganizationLanguageControls(scope = document) {
+    const panel = scope.closest?.('[data-organization-localized-panel]') || scope.querySelector?.('[data-organization-localized-panel]') || scope;
+    const select = panel.querySelector?.('[data-organization-language-select]');
+    const addButton = panel.querySelector?.('[data-add-organization-language]');
+    const deleteButtons = panel.querySelectorAll?.('[data-delete-organization-language]') || [];
+    if (!select || !addButton) {
+        return;
+    }
+
+    const options = entityLanguageOptions();
+    select.replaceChildren(...enumOptionsHtml(options.length ? options : [['', 'No languages available']], ''));
+    select.value = options[0]?.[0] || '';
+    addButton.disabled = !options.length;
+    deleteButtons.forEach(button => {
+        button.disabled = draftEntity.languages.length <= 1;
+    });
 }
 
 function organizationLocalizedNameLanguages() {
@@ -339,10 +443,8 @@ function organizationLocalizedNameLanguages() {
         return [];
     }
 
-    return [...new Set([...form.querySelectorAll('.organization-language-row')]
-        .filter(row => row.querySelector('input[name="organizationName"]')?.value.trim())
-        .map(row => row.querySelector('select[name="organizationLanguage"]')?.value)
-        .filter(Boolean))];
+    saveDraftOrganizationLanguageFields(form);
+    return organizationLocalizedNameLanguagesFromDraft();
 }
 
 function syncOrganizationAddressLanguages() {
@@ -365,6 +467,7 @@ function syncOrganizationAddressLanguages() {
 }
 
 function organizationPayloadFromForm(form, originalOrganization = {}) {
+    saveDraftOrganizationLanguageFields(form);
     const data = new FormData(form);
     const value = name => String(data.get(name) || '').trim();
     const payload = structuredClone(originalOrganization || {});
@@ -376,10 +479,13 @@ function organizationPayloadFromForm(form, originalOrganization = {}) {
     payload.logo = value('logo');
     payload.name = [];
     payload.description = [];
-    form.querySelectorAll('.organization-language-row').forEach(row => {
-        const language = row.querySelector('select[name="organizationLanguage"]')?.value || '';
-        const name = row.querySelector('input[name="organizationName"]')?.value.trim() || '';
-        const description = row.querySelector('textarea[name="organizationDescription"]')?.value.trim() || '';
+    const uniqueLanguages = [...new Set(draftEntity.languages.filter(language => language in Constants.languageNames))];
+    if (!uniqueLanguages.length || uniqueLanguages.length !== draftEntity.languages.length) {
+        throw new Error('Add at least one unique language.');
+    }
+    uniqueLanguages.forEach(language => {
+        const name = String(draftEntity.languageValues[language]?.name || '').trim();
+        const description = String(draftEntity.languageValues[language]?.description || '').trim();
         if (language && name) {
             payload.name.push({language, value: name});
         }
@@ -417,12 +523,13 @@ async function submitOrganizationForm(form) {
     const mode = form.dataset.entityMode;
     const status = document.getElementById('entity-edit-form-status');
     const submitButton = form.querySelector('button[type="submit"]');
-    const payload = organizationPayloadFromForm(form, currentModalEntity);
-    const id = payload.organizationId;
     status.classList.remove('error');
-    status.textContent = 'Saving...';
-    submitButton.disabled = true;
+    status.replaceChildren();
     try {
+        const payload = organizationPayloadFromForm(form, currentModalEntity);
+        const id = payload.organizationId;
+        status.textContent = 'Saving...';
+        submitButton.disabled = true;
         const response = await callEndpoint(mode === 'create' ? '/organizations' : `/organizations/${encodeURIComponent(id)}`, {
             method: mode === 'create' ? 'POST' : 'PUT',
             headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},

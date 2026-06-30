@@ -50,6 +50,7 @@ let currentModalLanguage = null;
 let currentPageEntities = [];
 let tableRenderId = 0;
 let draftOffering = initialDraftOffering();
+let draftEntity = initialDraftEntity();
 let organizationsLoadPromise = null;
 let academicSessionsLoadPromise = null;
 let personsLoadPromise = null;
@@ -70,6 +71,18 @@ function initialDraftOffering() {
 
 function resetDraftOffering() {
     draftOffering = initialDraftOffering();
+}
+
+function initialDraftEntity() {
+    return {
+        language: 'en-GB',
+        languages: [],
+        languageValues: {}
+    };
+}
+
+function resetDraftEntity() {
+    draftEntity = initialDraftEntity();
 }
 
 function modalElements(backdrop) {
@@ -468,7 +481,7 @@ async function openEntityModal(kind, entity, options = {}) {
     const id = entityId(kind, entity);
     const name = entityDisplayName(kind, entity) || id || titleCase(kind);
     courseModal.title.textContent = name;
-    entityEditButton.textContent = `Edit ${kind}`;
+    entityEditButton.textContent = `Edit`;
     entityEditButton.classList.remove('hidden');
     entityDeleteButton.classList.toggle('hidden', !['organization', 'person'].includes(kind));
     entityJsonPreviewButton.classList.add('hidden');

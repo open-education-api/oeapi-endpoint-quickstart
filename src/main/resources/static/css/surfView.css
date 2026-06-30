@@ -853,6 +853,14 @@ td {
     align-items: end;
 }
 
+.entity-language-controls {
+    display: grid;
+    grid-template-columns: minmax(180px, 320px) auto;
+    gap: 12px;
+    align-items: end;
+    margin-top: 2px;
+}
+
 .entity-consumers-panel {
     grid-column: 1 / -1;
 }
@@ -1081,6 +1089,7 @@ td {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px 18px;
+    background-color: aliceblue;
 }
 
 .consumer-panel .nested-item-head {
@@ -1105,6 +1114,37 @@ td {
     display: grid;
     gap: 8px;
     margin-bottom: 12px;
+}
+
+.language-nav-item {
+    display: inline-flex;
+    align-items: stretch;
+}
+
+.language-nav-item .language-nav-button {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.language-delete-button {
+    min-width: 30px;
+    border: 1px solid #c58d8d;
+    border-left: 0;
+    border-radius: 0 4px 4px 0;
+    background: #fff;
+    color: #a12622;
+    cursor: pointer;
+    font: inherit;
+}
+
+.language-delete-button:hover:not(:disabled) {
+    border-color: #a12622;
+    background: #fff5f5;
+}
+
+.language-delete-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
 }
 
 .language-specific-fields {
@@ -1313,6 +1353,11 @@ td {
     .organization-code-row,
     .organization-address-row {
         grid-template-columns: 1fr;
+    }
+
+    .entity-language-controls {
+        grid-template-columns: 1fr;
+        align-items: stretch;
     }
 
     .course-detail-layout {

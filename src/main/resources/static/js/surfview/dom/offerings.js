@@ -140,17 +140,17 @@ function consumerAllianceOptions() {
     return Constants.offeringConsumer.allianceNames.map(name => [name, name]);
 }
 
-function priceFormHtml() {
+function priceFormHtml(price = {}) {
     const fragment = document.createDocumentFragment();
     fragment.append(
-        fieldLabelHtml('Cost type', 'select', 'costType', 'total costs', {
+        fieldLabelHtml('Cost type', 'select', 'costType', price.costType || 'total costs', {
             required: true,
             options: Constants.enumOptions.costType
         }),
-        fieldLabelHtml('Amount', 'number', 'amount', '', {required: true, min: 0, step: 0.01}),
-        fieldLabelHtml('VAT amount', 'number', 'vatAmount', '', {min: 0, step: 0.01}),
-        fieldLabelHtml('Amount without VAT', 'number', 'amountWithoutVat', '', {min: 0, step: 0.01}),
-        fieldLabelHtml('Currency', 'text', 'currency', 'EUR', {required: true}),
+        fieldLabelHtml('Amount', 'number', 'amount', price.amount ?? '', {required: true, min: 0, step: 0.01}),
+        fieldLabelHtml('VAT amount', 'number', 'vatAmount', price.vatAmount ?? '', {min: 0, step: 0.01}),
+        fieldLabelHtml('Amount without VAT', 'number', 'amountWithoutVat', price.amountWithoutVat ?? '', {min: 0, step: 0.01}),
+        fieldLabelHtml('Currency', 'text', 'currency', price.currency || 'EUR', {required: true}),
         languageSpecificSectionFragment({
             activeLanguage: draftOffering.nestedPriceLanguage,
             buttonAttribute: 'data-price-language-code',
@@ -505,6 +505,7 @@ function openNestedOfferingModal(type, options = {}) {
     nestedOfferingForm.dataset.nestedType = type;
     const editIndex = Number(options.index);
     const isEditing = Number.isInteger(editIndex);
+    const price = type === 'price' && isEditing ? draftOffering.priceInformation[editIndex] : {};
     const address = type === 'address' && isEditing ? draftOffering.addresses[editIndex] : {};
     nestedOfferingForm.dataset.nestedMode = isEditing ? 'edit' : 'add';
     if (isEditing) {
@@ -513,16 +514,16 @@ function openNestedOfferingModal(type, options = {}) {
         delete nestedOfferingForm.dataset.nestedIndex;
     }
     nestedOfferingModal.title.textContent = type === 'price'
-        ? 'Add price information'
+        ? `${isEditing ? 'Edit' : 'Add'} price information`
         : `${isEditing ? 'Edit' : 'Add'} address`;
     nestedOfferingModal.subtitle.textContent = offeringModal.subtitle.textContent;
     if (type === 'price') {
-        initializeDraftNestedPriceLanguages();
+        initializeDraftNestedPriceLanguages(price);
     } else if (type === 'address') {
         initializeDraftNestedAddressLanguages(address);
     }
-    nestedOfferingForm.replaceChildren(type === 'price' ? priceFormHtml() : addressFormHtml(address));
-    if (type === 'address' && isEditing) {
+    nestedOfferingForm.replaceChildren(type === 'price' ? priceFormHtml(price) : addressFormHtml(address));
+    if (isEditing) {
         const submitButton = nestedOfferingForm.querySelector('button[type="submit"]');
         if (submitButton) {
             submitButton.textContent = 'Save';
@@ -544,14 +545,14 @@ function closeNestedOfferingModal() {
     draftOffering.nestedAddressLanguageValues = {};
 }
 
-function initializeDraftNestedPriceLanguages() {
+function initializeDraftNestedPriceLanguages(price = {}) {
     const languages = draftOffering.languages.length ? draftOffering.languages : [draftOffering.language || 'en-GB'];
     draftOffering.nestedPriceLanguage = draftOffering.language && languages.includes(draftOffering.language)
         ? draftOffering.language
         : languages[0];
     draftOffering.nestedPriceLanguageValues = Object.fromEntries(languages.map(language => [language, {
-        description: '',
-        displayAmount: ''
+        description: textValueForLanguage(price.description, language),
+        displayAmount: textValueForLanguage(price.displayAmount, language)
     }]));
 }
 
@@ -632,7 +633,13 @@ function submitNestedOfferingForm(event) {
     const type = nestedOfferingForm.dataset.nestedType;
     if (type === 'price') {
         saveDraftNestedPriceLanguageFields();
-        draftOffering.priceInformation.push(priceItemFromNestedForm());
+        const price = priceItemFromNestedForm();
+        const index = Number(nestedOfferingForm.dataset.nestedIndex);
+        if (nestedOfferingForm.dataset.nestedMode === 'edit' && Number.isInteger(index) && index >= 0 && index < draftOffering.priceInformation.length) {
+            draftOffering.priceInformation[index] = price;
+        } else {
+            draftOffering.priceInformation.push(price);
+        }
     } else if (type === 'address') {
         saveDraftNestedAddressLanguageFields();
         const address = addressItemFromForm(nestedOfferingForm, nestedAddressLanguageValues('additional'));
@@ -688,6 +695,7 @@ function renderNestedOfferingSummaries() {
             item => [textValueForLanguage(item.displayAmount, draftOffering.language) || `${item.amount || '-'} ${item.currency || ''}`.trim(), item.costType].filter(Boolean).join(' - '),
             'No price information',
             {
+                editAttribute: 'data-edit-price-index',
                 deleteAttribute: 'data-delete-price-index',
                 itemName: 'price information'
             }
