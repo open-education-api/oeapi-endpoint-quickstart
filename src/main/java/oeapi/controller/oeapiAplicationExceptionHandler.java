@@ -1,20 +1,21 @@
 package oeapi.controller;
 
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import oeapi.oeapiException;
-import oeapi.oeapiStatus;
+
 import org.everit.json.schema.ValidationException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import oeapi.oeapiException;
 
 /**
  *
@@ -40,61 +41,46 @@ public class oeapiAplicationExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-
-    public ResponseEntity<Object> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.toList());
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("status", HttpStatus.BAD_REQUEST.value());
-        responseBody.put("error", "Failed in validation constraints");
-        responseBody.put("messages", errors);
 
-        String contentType = httpStatusToContentType.get(HttpStatus.BAD_REQUEST);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
-
-        return new ResponseEntity<>(responseBody, headers, HttpStatus.BAD_REQUEST);
+        return badRequestResponse("Failed in validation constraints", errors);
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Object> handleJsonValidationException(ValidationException ex) {
-        // Collect all validation errors
-        //ex.getViolatedSchema().
+    public ResponseEntity<?> handleJsonValidationException(ValidationException ex) {
         List<String> errors = ex.getAllMessages();
-
-        // Build the response body
-        Map<String, Object> responseBody = new HashMap<>();
-
-        responseBody.put("status", HttpStatus.BAD_REQUEST.value());
-        responseBody.put("title", "JSON validation error");
-        responseBody.put("detail", errors);
-
-        String contentType = httpStatusToContentType.get(HttpStatus.BAD_REQUEST);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, contentType);
-
-        return new ResponseEntity<>(responseBody, headers, HttpStatus.BAD_REQUEST);
+        return badRequestResponse("JSON validation error", errors);
     }
 
 
     @ExceptionHandler(oeapiException.class)
-    public ResponseEntity<oeapiStatus> handleOoapiUnitaException(oeapiException ex, WebRequest request
-    ) {
+    public ResponseEntity<?> handleOoapiUnitaException(oeapiException ex) {
+        return response(ex.getStatus(), ex.getTitle(), ex.getDetail());
+    }
 
-        oeapiStatus error;
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<?> handleSQLIntegrityConstraintViolation(SQLIntegrityConstraintViolationException ex) {
+        return badRequestResponse("Can not update or delete entity", ex.getMessage());
+    }
 
-        if (ex.getDetail() == null) {
-            error = new oeapiStatus(String.valueOf(ex.getStatus().value()), ex.getTitle());
-        } else {
-            error = new oeapiStatus(String.valueOf(ex.getStatus().value()), ex.getTitle(), ex.getDetail());
-        }
-
-        String contentType = httpStatusToContentType.get(ex.getStatus());
+    private ResponseEntity<Object> response(HttpStatus status, String title, Object details) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/problem+json");
-        return new ResponseEntity<>(error, headers, ex.getStatus());  //TDB Fine tune Status
+        headers.add(HttpHeaders.CONTENT_TYPE, httpStatusToContentType.get(status));
+
+        Map<String, Object> body =
+            Map.of("status", status.value(),
+                   "title", title,
+                   "details", details);
+
+        return new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
+    }
+
+    private ResponseEntity<?> badRequestResponse(String title, Object detail) {
+        return response(HttpStatus.BAD_REQUEST, title, detail);
     }
 }
