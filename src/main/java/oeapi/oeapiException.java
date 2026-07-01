@@ -1,13 +1,12 @@
 package oeapi;
 
-import java.io.Serializable;
 import org.springframework.http.HttpStatus;
 
 /**
  *
  * @author Carlos Alonso <losalo@unavarra.es>
  */
-public class oeapiException extends RuntimeException implements Serializable {
+public class oeapiException extends RuntimeException {
 
     private HttpStatus status;
     private String title;

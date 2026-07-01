@@ -249,4 +249,15 @@ public class OfferingsTest {
             .replace("--PROGRAM_ID_TOBEINFORMED--", programId);
         expandAcademicSessionTest(payload);
     }
+
+    @Test
+    void deleteOrganizationTriggerBadRequest() throws Exception {
+        webTestClient.delete()
+            .uri("/organizations/{organizationId}", organizationId)
+            .header("Authorization", TU.authHeaderForTest())
+            .exchange()
+            .expectStatus().isBadRequest()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Can not update or delete entity");
+    }
 }
