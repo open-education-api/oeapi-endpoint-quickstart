@@ -5,7 +5,6 @@ properties:
     properties:
       codeType:
         type: string
-        enum: ["identifier", "otherType"] # Enumerated values
       code:
         type: string
     required: ["codeType", "code"]
