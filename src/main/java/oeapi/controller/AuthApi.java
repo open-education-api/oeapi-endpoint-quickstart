@@ -3,10 +3,9 @@ package oeapi.controller;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,17 +27,14 @@ import oeapi.JwtTokenService;
 import oeapi.model.CustomUserDetails;
 import oeapi.model.Role;
 import oeapi.model.User;
-import oeapi.payload.LoginDTO;
 import oeapi.payload.ChangePasswordDTO;
+import oeapi.payload.LoginDTO;
 import oeapi.payload.RegisterUserDTO;
 import oeapi.repository.RoleRepository;
 import oeapi.repository.UserRepository;
 
 @RestController
 public class AuthApi {
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthApi.class);
-
     @Autowired
     AuthenticationManager authManager;
     @Autowired
@@ -59,7 +55,6 @@ public class AuthApi {
 
             CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
             String token = jwtUtil.generateAccessToken(userDetails);
-            logger.error("got token: {}", token);
 
             return ResponseEntity.ok(Collections.singletonMap("token", token));
 
@@ -137,7 +132,7 @@ public class AuthApi {
     public ResponseEntity<?> secMode() {
 
         String status = "None";
-        
+
         if (ENDPOINT_SECURITY_STATUS_ENABLED) {
             status = endpointSecMode;
         }
@@ -145,4 +140,20 @@ public class AuthApi {
         return ResponseEntity.ok(status);
     }
 
+    @GetMapping("/auth/status")
+    public ResponseEntity<?> status(Principal principal) {
+        Map<String, Object> body = new HashMap<>(Map.of("mode", endpointSecMode));
+
+        if (principal != null) {
+            String email = principal.getName();
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            body.put("current",
+                     Map.of("email", email,
+                            "roles", user.getRoles().stream().map(Role::getName)));
+        }
+
+        return ResponseEntity.ok(body);
+    }
 }

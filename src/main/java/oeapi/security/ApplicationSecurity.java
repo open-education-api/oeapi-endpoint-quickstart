@@ -54,6 +54,7 @@ public class ApplicationSecurity {
             // 1. Always‑public endpoints (apply in all modes)
             auth.requestMatchers(HttpMethod.GET, "/auth/secStatus").permitAll();
             auth.requestMatchers(HttpMethod.GET, "/auth/secMode").permitAll();
+            auth.requestMatchers(HttpMethod.GET, "/auth/status").permitAll();
 
             auth.requestMatchers(HttpMethod.GET, "/*.html").permitAll();
             auth.requestMatchers(HttpMethod.GET, "/css/*").permitAll();
@@ -65,14 +66,13 @@ public class ApplicationSecurity {
             switch (endpointSecMode.toLowerCase()) {
 
                 case "guest":
-                   // In guest mode the endpoint is only readable, no updates are possible       
+                    // In guest mode the endpoint is only readable, no updates are possible
                     auth.requestMatchers(HttpMethod.GET, "/**").permitAll();
 
                     auth.requestMatchers(HttpMethod.POST, "/**").denyAll();
                     auth.requestMatchers(HttpMethod.PUT, "/**").denyAll();
                     auth.requestMatchers(HttpMethod.DELETE, "/**").denyAll();
                     break;
-
 
                 case "restricted":
                      // In restricted mode the endpoint is readable but need authorization for updates
@@ -89,39 +89,28 @@ public class ApplicationSecurity {
                     break;
 
 
+                case "none":
+                    // No security at all
+                    auth.anyRequest().permitAll();
+                    break;
+
                 case "private":
+                    // The default mode so fall through..
+
+                default:
                     // Everything requires authentication except login/signup
                     auth.requestMatchers("/auth/login").permitAll();
                     auth.requestMatchers("/auth/signup").hasRole("ADMIN");
 
                     auth.requestMatchers(HttpMethod.POST, "/**").hasAnyRole("ADMIN", "USER");
                     auth.requestMatchers(HttpMethod.PUT, "/**").hasAnyRole("ADMIN", "USER");
-                    auth.requestMatchers(HttpMethod.DELETE, "/**").hasAnyRole("ADMIN", "USER");            
+                    auth.requestMatchers(HttpMethod.DELETE, "/**").hasAnyRole("ADMIN", "USER");
 
                     auth.anyRequest().authenticated();
                     break;
-
-
-                case "none":
-                    // No security at all
-                    auth.anyRequest().permitAll();
-                    break;
-
-                default:
-                    // if mode is not one of the allowed modes, default to private
-                    auth.requestMatchers("/auth/login").permitAll();
-                    auth.requestMatchers("/auth/signup").hasRole("ADMIN");
-
-                    auth.requestMatchers(HttpMethod.POST, "/**").hasAnyRole("ADMIN", "USER");
-                    auth.requestMatchers(HttpMethod.PUT, "/**").hasAnyRole("ADMIN", "USER");
-                    auth.requestMatchers(HttpMethod.DELETE, "/**").hasAnyRole("ADMIN", "USER");            
-
-                    auth.anyRequest().authenticated();
-                    break;                    
-
             }
         });
-        
+
         return http.build();
     }
 

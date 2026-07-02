@@ -2,11 +2,17 @@ package oeapi.security;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.security.Principal;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -60,6 +66,14 @@ public class ApplicationSecurityTest {
         void anonymousSecurityStatusOk() throws Exception {
             mockMvc.perform(get("/auth/secStatus")).andExpect(status().isOk());
         }
+
+        @Test
+        void statusOk() throws Exception {
+            mockMvc.perform(get("/auth/status"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.mode").value("none"));
+        }
     }
 
     @Nested
@@ -95,6 +109,14 @@ public class ApplicationSecurityTest {
         @Test
         void anonymousSecurityStatusOk() throws Exception {
             mockMvc.perform(get("/auth/secStatus")).andExpect(status().isOk());
+        }
+
+        @Test
+        void statusOk() throws Exception {
+            mockMvc.perform(get("/auth/status"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.mode").value("guest"));
         }
     }
 
@@ -133,6 +155,14 @@ public class ApplicationSecurityTest {
             mockMvc.perform(get("/auth/secStatus")).andExpect(status().isOk());
         }
 
+        @Test
+        void statusOk() throws Exception {
+            mockMvc.perform(get("/auth/status"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.mode").value("private"));
+        }
+
         @Nested
         class Login {
             @Test
@@ -147,9 +177,9 @@ public class ApplicationSecurityTest {
             void anonymousLoginPostUnauthorized() throws Exception {
                 // Note: when not accessible returns Forbidden to this proves access
                 mockMvc.perform(post("/auth/login")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{}"))
-                    .andExpect(status().isUnauthorized());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                        .andExpect(status().isUnauthorized());
             }
 
             @Autowired
@@ -159,17 +189,45 @@ public class ApplicationSecurityTest {
 
             @Test
             void anonymousLoginPostOk() throws Exception {
-                User user = new User("dummy", passwordEncoder.encode("pass"));
+                User user = new User("dummy@example.com", passwordEncoder.encode("pass"));
 
                 try {
                     userRepository.save(user);
 
                     mockMvc.perform(post("/auth/login")
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content("{\"email\":\"dummy\",\"password\":\"pass\"}"))
-                        .andExpect(status().isOk());
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"email\":\"dummy@example.com\",\"password\":\"pass\"}"))
+                            .andExpect(status().isOk());
                 } finally {
                     userRepository.delete(user);
+                }
+            }
+
+            @Nested
+            class LoggedIn {
+                User user = new User("dummy@example.com", passwordEncoder.encode("pass"));
+
+                @BeforeEach
+                void beforeEach() throws Exception {
+                    userRepository.save(user);
+                }
+
+                @AfterEach
+                void afterEach() {
+                    userRepository.delete(user);
+                }
+
+                @Test
+                void statusOk() throws Exception {
+                    Principal mockPrincipal = Mockito.mock(Principal.class);
+                    Mockito.when(mockPrincipal.getName()).thenReturn(user.getEmail());
+
+                    mockMvc.perform(get("/auth/status")
+                                    .principal(mockPrincipal))
+                            .andExpect(status().isOk())
+                            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                            .andExpect(jsonPath("$.mode").value("private"))
+                            .andExpect(jsonPath("$.current.email").value(user.getEmail()));
                 }
             }
         }
