@@ -181,14 +181,15 @@
                 </executions>                
             </plugin>
 
-<!--            <plugin>
+            <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>12.1.9</version>
                 <configuration>
-                    <nvdApiKeyEnvironmentVariable>NVD_API_TOKEN</nvdApiKeyEnvironmentVariable>
+                    <nvdApiKey>dummy</nvdApiKey>
+                    <nvdDatafeedUrl>https://dependency-check.github.io/DependencyCheck_Builder/nvd_cache/nvdcve-{0}.json.gz</nvdDatafeedUrl>
 
-                    --><!-- need oss index user/password, we're fine without it for now --><!--
+                    <!-- need oss index user/password, we're fine without it for now -->
                     <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
 
                     <suppressionFile>.dependency-check-suppressions.xml</suppressionFile>
@@ -200,7 +201,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
         </plugins>
     </build>
 </project>
