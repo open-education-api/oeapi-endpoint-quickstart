@@ -57,14 +57,6 @@ public class BearerTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Allow public endpoints (login, GET requests)
-        String uri = request.getRequestURI().toLowerCase();
-        if (uri.contains("auth/login") || request.getMethod().equalsIgnoreCase("GET")) {
-            filterChain.doFilter(request, response);
-            logger.debug("Login or GETs allowed, skip token checks at BearerTokenFilter");            
-            return;
-        }        
-        
         logger.debug("Token checks at BearerTokenFilter...");
 
         String header = request.getHeader("Authorization");
