@@ -10,8 +10,6 @@ jobs:
 
   nvd:
     uses: ./.github/workflows/nvd.yml
-    secrets:
-       NVD_API_TOKEN: ${{ secrets.NVD_API_TOKEN }}
 
   build-and-push:
     needs: [test, nvd]
