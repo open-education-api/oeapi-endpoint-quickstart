@@ -1,13 +1,13 @@
 package oeapi.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.validation.Valid;
 import oeapi.converter.oeapiGeolocationConverter;
-import oeapi.converter.oeapiUnitaExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.validation.ValidLanguageTypedString;
 
@@ -41,7 +41,7 @@ public class Address extends oeapiEquals {
 
     @Column(columnDefinition = "text")
     @Convert(converter = oeapiUnitaExtConverter.class)
-    private Ext ext = new Ext();
+    private Ext ext;
 
     /**
      * @return the addressType
