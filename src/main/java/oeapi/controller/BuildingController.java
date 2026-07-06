@@ -48,7 +48,7 @@ public class BuildingController extends oeapiController<Building> {
         return super.get(id, service);
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> create(@RequestBody Building program) {
         return super.create(program, service);
 

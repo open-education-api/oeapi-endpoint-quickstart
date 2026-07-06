@@ -68,7 +68,7 @@ public class GroupController extends oeapiController<Group> {
 
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> create(@RequestBody Group group) {
         return super.create(group, service);
 

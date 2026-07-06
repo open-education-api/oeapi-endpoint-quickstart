@@ -1,0 +1,15 @@
+{
+    "personId": "3542f2d3-3ba4-381a-00c4-eefe0c81c3f6",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "lise-poell@universiteit-van-zuidoostbeemster.nl"
+    },
+    "givenName": "Lise",
+    "surname": "Poell",
+    "displayName": "Lise Poell",
+    "activeEnrollment": false,
+    "affiliations": [
+        "employee"
+    ],
+    "mail": "lise-poell@universiteit-van-zuidoostbeemster.nl"
+}

@@ -41,7 +41,7 @@ public class AssociationController {
         }
     }
 
-    @PostMapping("/external/me")
+    @PostMapping(value = "/external/me", produces = "application/json")
     public ResponseEntity<?> create(@RequestBody Association association) {
 
         Association a = service.create(association);

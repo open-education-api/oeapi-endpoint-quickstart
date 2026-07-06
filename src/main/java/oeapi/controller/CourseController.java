@@ -162,7 +162,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
 
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     @Override
     public ResponseEntity<?> createFromDTO(@Valid @RequestBody CourseDTO o) {
 
@@ -170,7 +170,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
 
     }
 
-    @PutMapping(value = "/{courseId}")
+    @PutMapping(value = "/{courseId}", produces = "application/json")
     @Override
     public ResponseEntity<?> updateFromDTO(@PathVariable String courseId, @Valid @RequestBody CourseDTO dto) {
 

@@ -57,12 +57,12 @@ public class AcademicSessionController extends oeapiController<AcademicSession> 
         return super.getResponse(requestParam.toPageable(), new ArrayList<AcademicSession>());
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> create(@RequestBody AcademicSession academicSession) {
         return super.create(academicSession, service);
     }
 
-    @PutMapping("/{academicSessionId}")
+    @PutMapping(value = "/{academicSessionId}", produces = "application/json")
     public ResponseEntity<?> put(@PathVariable String academicSessionId, @RequestBody AcademicSession academicSession) {
         if (academicSessionId.equals(academicSession.getAcademicSessionId())) {
             return super.update(academicSession, service);

@@ -64,7 +64,7 @@ public class EducationSpecificationController extends oeapiController<EducationS
 
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> create(@RequestBody EducationSpecification educationSpecification) {
 
         return super.create(educationSpecification, service);

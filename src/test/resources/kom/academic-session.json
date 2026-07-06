@@ -1,0 +1,20 @@
+{
+    "academicSessionId": "af72fc8a-8c28-4989-b092-2ef9bd7136ee",
+    "endDate": "2030-01-31",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "1234qwe12"
+    },
+    "academicSessionType": "quarter",
+    "startDate": "2017-02-06",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: semester 1"
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: semester 1"
+        }
+    ]
+}

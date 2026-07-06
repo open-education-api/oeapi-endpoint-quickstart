@@ -1,3 +1,2 @@
 type: string
-enum:  ["identifier"]
 example: identifier

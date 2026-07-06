@@ -89,7 +89,7 @@ public class ComponentController extends oeapiDTOController<Component, Component
 
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     @Override
     public ResponseEntity<?> createFromDTO(ComponentDTO dto) {
         return super.createDTO(dto, service);

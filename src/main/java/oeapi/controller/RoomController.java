@@ -51,7 +51,7 @@ public class RoomController extends oeapiController<Room> {
 
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> create(@RequestBody Room room) {
         return super.create(room, service);
 

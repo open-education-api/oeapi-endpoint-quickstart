@@ -1,0 +1,163 @@
+{
+    "otherCodes": [
+        {
+            "codeType": "identifier",
+            "code": "fdfe2ddd-30ba-f9be-6d01-cfede449f454"
+        }
+    ],
+    "coordinators": [
+        "3542f2d3-3ba4-381a-00c4-eefe0c81c3f6"
+    ],
+    "level": "undivided",
+    "resources": [
+        "(2013). Furthermore, several in depth case studies will be made available through WUR-shop. Seeskin (eds.), The Cambridge Companion to Muhammad."
+    ],
+    "organization": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "modeOfDelivery": [
+        "situated"
+    ],
+    "addresses": [
+        {
+            "countryCode": "NL",
+            "city": "Zuidoostbeemster",
+            "geoLocation": {
+                "longitude": 112,
+                "latitude": 62
+            },
+            "addressType": "teaching",
+            "streetNumber": "132",
+            "postalCode": "1866HE",
+            "street": "Jan van der Heijdenstraat",
+            "additional": [
+                {
+                    "language": "en-GB",
+                    "value": "EN TRANSLATION: boven"
+                },
+                {
+                    "language": "nl-NL",
+                    "value": "NL VERTALING: boven"
+                }
+            ]
+        }
+    ],
+    "duration": "P1DT30H4S",
+    "abbreviation": "ITGPEM",
+    "enrollment": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: . . ."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: . . ."
+        }
+    ],
+    "teachingLanguage": "nld",
+    "assessment": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: - written exam counts for 75% and the research project (33%). The final mark will then be an assistant professor, associate professor or full professor. A mark equal or higher for the exam will be in the tutorial (25%)."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: - written exam counts for 75% and the research project (33%). The final mark will then be an assistant professor, associate professor or full professor. A mark equal or higher for the exam will be in the tutorial (25%)."
+        }
+    ],
+    "firstStartDate": "2021-12-17",
+    "learningOutcomes": [
+        [
+            {
+                "language": "en-GB",
+                "value": "EN TRANSLATION: kennis van de meestgebruikte ingrediënten in dit vak"
+            },
+            {
+                "language": "nl-NL",
+                "value": "NL VERTALING: kennis van de meestgebruikte ingrediënten in dit vak"
+            }
+        ],
+        [
+            {
+                "language": "en-GB",
+                "value": "EN TRANSLATION: nieuw talent op het gebied van programmeren"
+            },
+            {
+                "language": "nl-NL",
+                "value": "NL VERTALING: nieuw talent op het gebied van programmeren"
+            }
+        ]
+    ],
+    "qualificationRequirements": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: . BPE-20806 Process Engineering or FPE-20306 Food Engineering; FQD-21806 Milk in the course, students should have successfully completed at least 45 ECTS for the category Bachelor Introductory. ."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: . BPE-20806 Process Engineering or FPE-20306 Food Engineering; FQD-21806 Milk in the course, students should have successfully completed at least 45 ECTS for the category Bachelor Introductory. ."
+        }
+    ],
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: Inleiding tot Geografie, Planologie en Milieu"
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: Inleiding tot Geografie, Planologie en Milieu"
+        }
+    ],
+    "admissionRequirements": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: You must meet the following degree programmes - History - Obtained at least 12 and preferably completed..The BSc Internship is the second year compulsory courses.  All other compulsory courses from the following requirements - Collection 1 - Obtained at least 15 ECTS for the Journal of Experimental Botany, which makes clearer the layout expected. HNH-27806 General Medicine and MOB-30306 Control of Cellular Processes and Cell Differentiation or MOB-30806 Regulation of Plant Development or equivalent, participation MDR. Successfully passing e.g."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: You must meet the following degree programmes - History - Obtained at least 12 and preferably completed..The BSc Internship is the second year compulsory courses.  All other compulsory courses from the following requirements - Collection 1 - Obtained at least 15 ECTS for the Journal of Experimental Botany, which makes clearer the layout expected. HNH-27806 General Medicine and MOB-30306 Control of Cellular Processes and Cell Differentiation or MOB-30806 Regulation of Plant Development or equivalent, participation MDR. Successfully passing e.g."
+        }
+    ],
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "fdfe2ddd-30ba-f9be-6d01-cfede449f454"
+    },
+    "link": "https://universiteit-van-zuidoostbeemster.nl/courses/fdfe2ddd-30ba-f9be-6d01-cfede449f454",
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: Which sensory attributes explain best a consumer liking or healthiness perception? The courses General Chemistry for Life Sciences. This course offers an introduction to data are generally not immediately fit for analyses, so that they also apply Integral Theory to analyse the structure of the course), as well as to the execution of the T-shaped skills."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: Which sensory attributes explain best a consumer liking or healthiness perception? The courses General Chemistry for Life Sciences. This course offers an introduction to data are generally not immediately fit for analyses, so that they also apply Integral Theory to analyse the structure of the course), as well as to the execution of the T-shaped skills."
+        }
+    ],
+    "fieldsOfStudy": "0417",
+    "courseId": "fdfe2ddd-30ba-f9be-6d01-cfede449f454",
+    "consumers": [
+        {
+            "alliances": [
+                {
+                    "name": "kom",
+                    "themes": ["theme1", "theme2"],
+                    "selection": false,
+                    "instructorNames": ["Instructor1", "Instructor2"],
+                    "contactHours": 3.5,
+                    "activities": "lectures and practises",
+                    "visibleForOwnStudents": false,
+                    "enrollmentForOwnStudents": "broker",
+                    "visibleForGuests": true,
+                    "enrollmentForGuests": "broker",
+                    "jointPartnerCodes": ["11PE", "12PE"]
+                }
+            ],
+            "consumerKey": "eduxchange"
+        }
+    ],
+    "studyLoad": {
+        "value": 178,
+        "studyLoadUnit": "ects"
+    },
+    "programs": [
+        "a8138341-d39e-55f8-fb77-4bf7a0ae7a52"
+    ]
+}
