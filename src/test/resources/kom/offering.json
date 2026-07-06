@@ -88,8 +88,8 @@
             "countryCode": "NL",
             "city": "Zuidoostbeemster",
             "geoLocation": {
-                "longitude": 112,
-                "latitude": 62
+                "longitude": 112.0,
+                "latitude": 62.0
             },
             "addressType": "teaching",
             "streetNumber": "132",

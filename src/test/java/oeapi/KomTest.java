@@ -1,12 +1,15 @@
 package oeapi;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -33,25 +36,56 @@ class KomTest {
     @Autowired
     OrganizationRepository organizationRepository;
 
+    ObjectMapper mapper = new ObjectMapper();
+
     @Test
     void all() throws Exception {
-        doPost("/organizations", "organization");
-        doPost("/persons", "person");
-        doPost("/programs", "parent");
-        doPost("/programs", "program");
-        doPost("/academic-sessions", "academic-session");
-        doPost("/courses", "course");
-        doPost("/offerings", "offering");
+        doAll("/organizations", "organization");
+        doAll("/persons", "person");
+        doAll("/programs", "program", "parent");
+        doAll("/programs", "program");
+        doAll("/academic-sessions", "academicSession");
+        doAll("/courses", "course");
+        doAll("/offerings", "offering");
     }
 
-    private void doPost(String path, String resource) throws Exception {
-        logger.info("POST {}", path);
+    private void doAll(String path, String resource, String altResource) throws Exception {
+        doPost(path, resource, altResource);
+        doGet(path, resource, altResource);
+    }
 
-        mockMvc.perform(post(path)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(slurp("kom/" + resource + ".json")))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"));
+    private void doAll(String path, String resource) throws Exception {
+        doAll(path, resource, resource);
+    }
+
+    private void doPost(String resourcePath, String resource, String altResource) throws Exception {
+        String content = slurp("kom/" + altResource + ".json");
+
+        logger.info("POST {}", resourcePath);
+        mockMvc.perform(post(resourcePath)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"));
+    }
+
+    private void doGet(String resourcePath, String resource, String altResource) throws Exception {
+        String content = slurp("kom/" + altResource + ".json");
+        String id = extractId(content, resource);
+        String path = resourcePath + "/" + id;
+
+        logger.info("GET {}", path);
+
+        String json = mockMvc.perform(get(path))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andReturn().getResponse().getContentAsString();
+
+        assertEquals(mapper.readTree(content), mapper.readTree(json));
+    }
+
+    private String extractId(String content, String resource) throws Exception {
+        return mapper.readTree(content).at("/" + resource + "Id").asText();
     }
 
     private String slurp(String path) throws IOException {
