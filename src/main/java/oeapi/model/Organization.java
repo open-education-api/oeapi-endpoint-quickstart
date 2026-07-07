@@ -20,6 +20,7 @@ import jakarta.persistence.OneToMany;
 
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListAddressConverter;
+import oeapi.converter.oeapiUnitaListConsumerConverter;
 import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
 import oeapi.validation.ValidLanguageTypedString;
 
@@ -67,6 +68,11 @@ public class Organization extends PrimaryCode {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Organization> children;
+
+    @JsonProperty("consumers")
+    @Column(columnDefinition = "text")
+    @Convert(converter = oeapiUnitaListConsumerConverter.class)
+    private List<Consumer> consumers;
 
     public Organization() {
     }
@@ -230,4 +236,17 @@ public class Organization extends PrimaryCode {
         this.children = children;
     }
 
+    /**
+     * @return the consumers
+     */
+    public List<Consumer> getConsumers() {
+        return consumers;
+    }
+
+    /**
+     * @param consumers the consumers to set
+     */
+    public void setConsumers(List<Consumer> consumers) {
+        this.consumers = consumers;
+    }
 }

@@ -1,5 +1,8 @@
 package oeapi.payload;
 
+import java.util.List;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -7,27 +10,22 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.List;
-import java.util.UUID;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListAddressConverter;
 import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
 import oeapi.model.Address;
-import oeapi.model.Organization;
+import oeapi.model.Consumer;
 import oeapi.model.PrimaryCode;
 import oeapi.model.oeapiIdentifierEntry;
 import oeapi.model.oeapiLanguageTypedString;
-import oeapi.validation.ValidLanguageTypedString;
 import oeapi.validation.ValidAddresses;
 import oeapi.validation.ValidEnumYaml;
+import oeapi.validation.ValidLanguageTypedString;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonPropertyOrder({"organizationId", "primaryCode", "name", "shortName"})
@@ -241,87 +239,16 @@ public class OrganizationDTO extends PrimaryCode {
         this.children = children;
     }
 
-//    /**
-//     * @return the groups
-//     */
-//    public List<Group> getGroups() {
-//        return groups;
-//    }
-//
-//    /**
-//     * @param groups the groups to set
-//     */
-//    public void setGroups(List<Group> groups) {
-//        this.groups = groups;
-//    }
-//
-//    /**
-//     * @return the offerings
-//     */
-//    public List<Offering> getOfferings() {
-//        return offerings;
-//    }
-//
-//    /**
-//     * @param offerings the offerings to set
-//     */
-//    public void setOfferings(List<Offering> offerings) {
-//        this.offerings = offerings;
-//    }
-//
-//    /**
-//     * @return the courses
-//     */
-//    public List<Course> getCourses() {
-//        return courses;
-//    }
-//
-//    /**
-//     * @param courses the courses to set
-//     */
-//    public void setCourses(List<Course> courses) {
-//        this.courses = courses;
-//    }
-//
-//    /**
-//     * @return the programs
-//     */
-//    public List<Program> getPrograms() {
-//        return programs;
-//    }
-//
-//    /**
-//     * @param programs the programs to set
-//     */
-//    public void setPrograms(List<Program> programs) {
-//        this.programs = programs;
-//    }
-//
-//    /**
-//     * @return the components
-//     */
-//    public List<Component> getComponents() {
-//        return components;
-//    }
-//
-//    /**
-//     * @param components the components to set
-//     */
-//    public void setComponents(List<Component> components) {
-//        this.components = components;
-//    }
-//
-//    /**
-//     * @return the educationSpecifications
-//     */
-//    public List<EducationSpecification> getEducationSpecifications() {
-//        return educationSpecifications;
-//    }
-//
-//    /**
-//     * @param educationSpecifications the educationSpecifications to set
-//     */
-//    public void setEducationSpecifications(List<EducationSpecification> educationSpecifications) {
-//        this.educationSpecifications = educationSpecifications;
-//    }
+    // consumers
+
+    @JsonProperty("consumers")
+    private List<Consumer> consumers;
+
+    public List<Consumer> getConsumers() {
+        return consumers;
+    }
+
+    public void setConsumers(List<Consumer> consumers) {
+        this.consumers = consumers;
+    }
 }
