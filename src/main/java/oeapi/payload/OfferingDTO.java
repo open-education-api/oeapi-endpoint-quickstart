@@ -4,6 +4,10 @@
  */
 package oeapi.payload;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,8 +16,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import java.time.LocalDate;
-import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -27,15 +33,12 @@ import oeapi.model.ComponentOffering;
 import oeapi.model.Consumer;
 import oeapi.model.Cost;
 import oeapi.model.CourseOffering;
-import oeapi.model.Ext;
 import oeapi.model.ModeOfDelivery;
 import oeapi.model.Organization;
 import oeapi.model.PrimaryCode;
 import oeapi.model.ProgramOffering;
 import oeapi.model.oeapiIdentifierEntry;
 import oeapi.model.oeapiLanguageTypedString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -64,7 +67,7 @@ public class OfferingDTO extends PrimaryCode {
     private List<oeapiIdentifierEntry> otherCodes;
 
     @JsonProperty("ext")
-    private Ext ext;
+    private Map<String,Object> ext;
 
     //@JsonIgnore
     //private String startDateJSON;
@@ -451,14 +454,14 @@ public class OfferingDTO extends PrimaryCode {
     /**
      * @return the ext
      */
-    public Ext getExt() {
+    public Map<String,Object> getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Ext ext) {
+    public void setExt(Map<String,Object> ext) {
         this.ext = ext;
     }
 

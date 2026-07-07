@@ -2,16 +2,15 @@ package oeapi.payload;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.EntityListeners;
 import oeapi.oeapiEducationListener;
-
 import oeapi.model.Address;
 import oeapi.model.Consumer;
-import oeapi.model.Ext;
 import oeapi.model.ModeOfDelivery;
 import oeapi.model.Organization;
 import oeapi.model.PrimaryCode;
@@ -251,13 +250,13 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
     // ext
 
     @JsonProperty("ext")
-    private Ext ext;
+    private Map<String,Object> ext;
 
-    public Ext getExt() {
+    public Map<String,Object> getExt() {
         return ext;
     }
 
-    public void setExt(Ext ext) {
+    public void setExt(Map<String,Object> ext) {
         this.ext = ext;
     }
 }

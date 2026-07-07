@@ -1,16 +1,20 @@
 package oeapi.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -42,7 +46,8 @@ public class Group extends PrimaryCode {
 
     @JsonProperty("ext")
     @Column(columnDefinition = "text")
-    private Ext ext;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String,Object> ext;
 
     @ValidObjectYaml(yamlfile = "enum/groupType.yml")
     private String groupType;
@@ -260,14 +265,14 @@ public class Group extends PrimaryCode {
     /**
      * @return the ext
      */
-    public Ext getExt() {
+    public Map<String,Object> getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Ext ext) {
+    public void setExt(Map<String,Object> ext) {
         this.ext = ext;
     }
 

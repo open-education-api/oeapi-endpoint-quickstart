@@ -1,8 +1,12 @@
 package oeapi.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -40,8 +44,8 @@ public class Address extends oeapiEquals {
     private Geolocation geolocation;
 
     @Column(columnDefinition = "text")
-    @Convert(converter = oeapiUnitaExtConverter.class)
-    private Ext ext;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String,Object> ext;
 
     /**
      * @return the addressType
@@ -158,14 +162,14 @@ public class Address extends oeapiEquals {
     /**
      * @return the ext
      */
-    public Ext getExt() {
+    public Map<String,Object> getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Ext ext) {
+    public void setExt(Map<String,Object> ext) {
         this.ext = ext;
     }
 }

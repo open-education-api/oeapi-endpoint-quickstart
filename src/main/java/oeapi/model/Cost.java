@@ -2,13 +2,12 @@ package oeapi.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-
-import oeapi.converter.oeapiUnitaExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 
 /**
@@ -32,9 +31,7 @@ public class Cost extends oeapiEquals implements Serializable {
     @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
     private List<oeapiLanguageTypedString> displayAmount;
 
-    @Column(columnDefinition = "text")
-    @Convert(converter = oeapiUnitaExtConverter.class)
-    private Ext ext;
+    private Map<String,Object> ext;
 
     /**
      * @return the costType
@@ -109,14 +106,14 @@ public class Cost extends oeapiEquals implements Serializable {
     /**
      * @return the ext
      */
-    public Ext getExt() {
+    public Map<String,Object> getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Ext ext) {
+    public void setExt(Map<String,Object> ext) {
         this.ext = ext;
     }
 
