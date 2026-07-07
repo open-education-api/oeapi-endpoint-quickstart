@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.15</version>
+        <version>3.5.16</version>
         <relativePath/>
     </parent>
     <groupId>oeapi</groupId>
@@ -18,13 +18,8 @@
     <properties>
         <skipTests>true</skipTests>
 
-       <!-- Security override for SpringBoot-3.5.7, CVE-2025-68161(6.3), CVE-2026-34478, CVE-2026-34480, CVE-2026-34481 with log4j-api-2.24.4 -->
-       <log4j2.version>2.25.4</log4j2.version>
-
-       <!-- tomcat-embed-core tomcat 10.1.* raises CVE-2026-29145, CVE-2026-29129, 
-            CVE-2026-29146, CVE-2026-34483, CVE-2026-34487, CVE-2026-34500, 
-            CVE-2026-25854, CVE-2026-32990 -->   
-           <tomcat.version>11.0.22</tomcat.version>            
+       <!-- Security override for SpringBoot-3.5.16 -->
+       <tomcat.version>10.1.56</tomcat.version>
     </properties>
 
     <dependencies>
@@ -161,8 +156,8 @@
                 <!-- To use an external application.properties uncomment these lines
                 <excludes>
                     <exclude>**/*.properties</exclude>
-                </excludes>     
-                -->                       
+                </excludes>
+                -->
             </resource>
         </resources>
         <plugins>
@@ -178,7 +173,7 @@
                             <goal>repackage</goal>
                         </goals>
                     </execution>
-                </executions>                
+                </executions>
             </plugin>
 
             <plugin>
