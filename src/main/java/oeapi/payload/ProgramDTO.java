@@ -234,6 +234,7 @@ public class ProgramDTO extends oeapiEducationDTO {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+        this.parent = parentId == null ? null : new Program(parentId);
     }
 
     @JsonIgnore
@@ -246,6 +247,7 @@ public class ProgramDTO extends oeapiEducationDTO {
 
     public void setParent(Program parent) {
         this.parent = parent;
+        this.parentId = parent == null ? null : parent.getProgramId();
     }
 
     @JsonProperty("children")

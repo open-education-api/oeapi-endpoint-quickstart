@@ -39,6 +39,6 @@ properties:
     type: string
   level:
     type: string
-    programType:
+  programType:
     type: string
 required: ["name","programType","teachingLanguage","abbreviation","description","level"]
