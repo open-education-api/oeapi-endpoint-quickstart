@@ -1,16 +1,11 @@
 package oeapi.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.JoinTable;
@@ -106,8 +101,7 @@ public abstract class oeapiEducation extends PrimaryCode {
 
     @JsonProperty("ext")
     @Column(columnDefinition = "text")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String,Object> ext;
+    private Ext ext;
 
     private String duration;
 
@@ -310,14 +304,14 @@ public abstract class oeapiEducation extends PrimaryCode {
     /**
      * @return the ext
      */
-    public Map<String,Object> getExt() {
+    public Ext getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Map<String,Object> ext) {
+    public void setExt(Ext ext) {
         this.ext = ext;
     }
 

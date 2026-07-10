@@ -2,7 +2,6 @@ package oeapi.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Map;
 
 /**
  *
@@ -15,7 +14,7 @@ public class Result extends oeapiEquals implements Serializable {
     private String comment;
     private String score;
     private LocalDate resultDate;
-    private Map<String,Object> ext;
+    private Ext ext;
     private StudyLoad studyLoad;
     private Integer weight;
 
@@ -92,14 +91,14 @@ public class Result extends oeapiEquals implements Serializable {
     /**
      * @return the ext
      */
-    public Map<String,Object> getExt() {
+    public Ext getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Map<String,Object> ext) {
+    public void setExt(Ext ext) {
         this.ext = ext;
     }
 

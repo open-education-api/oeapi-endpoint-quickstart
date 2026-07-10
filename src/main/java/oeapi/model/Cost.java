@@ -2,7 +2,6 @@ package oeapi.model;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -31,7 +30,8 @@ public class Cost extends oeapiEquals implements Serializable {
     @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
     private List<oeapiLanguageTypedString> displayAmount;
 
-    private Map<String,Object> ext;
+    @Column(columnDefinition = "text")
+    private Ext ext;
 
     /**
      * @return the costType
@@ -106,14 +106,14 @@ public class Cost extends oeapiEquals implements Serializable {
     /**
      * @return the ext
      */
-    public Map<String,Object> getExt() {
+    public Ext getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Map<String,Object> ext) {
+    public void setExt(Ext ext) {
         this.ext = ext;
     }
 

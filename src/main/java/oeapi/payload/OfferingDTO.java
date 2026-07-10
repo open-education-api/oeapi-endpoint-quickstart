@@ -6,7 +6,6 @@ package oeapi.payload;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -33,6 +32,7 @@ import oeapi.model.ComponentOffering;
 import oeapi.model.Consumer;
 import oeapi.model.Cost;
 import oeapi.model.CourseOffering;
+import oeapi.model.Ext;
 import oeapi.model.ModeOfDelivery;
 import oeapi.model.Organization;
 import oeapi.model.PrimaryCode;
@@ -67,7 +67,7 @@ public class OfferingDTO extends PrimaryCode {
     private List<oeapiIdentifierEntry> otherCodes;
 
     @JsonProperty("ext")
-    private Map<String,Object> ext;
+    private Ext ext;
 
     //@JsonIgnore
     //private String startDateJSON;
@@ -454,14 +454,14 @@ public class OfferingDTO extends PrimaryCode {
     /**
      * @return the ext
      */
-    public Map<String,Object> getExt() {
+    public Ext getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Map<String,Object> ext) {
+    public void setExt(Ext ext) {
         this.ext = ext;
     }
 

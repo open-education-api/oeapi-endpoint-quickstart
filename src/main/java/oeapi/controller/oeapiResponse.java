@@ -1,7 +1,6 @@
 package oeapi.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -10,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
+import oeapi.model.Ext;
 
 /**
  *
@@ -29,7 +30,7 @@ public class oeapiResponse<T> {
     //private Boolean hasPreviousPage;
     //private Boolean hasNextPage;
     private int totalPages;
-    private Map<String,Object> ext;
+    private Ext ext;
 
     public oeapiResponse(Page<T> page, List<T> items) {
         this.items = items;
@@ -151,14 +152,14 @@ public class oeapiResponse<T> {
     /**
      * @return the ext
      */
-    public Map<String,Object> getExt() {
+    public Ext getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Map<String,Object> ext) {
+    public void setExt(Ext ext) {
         this.ext = ext;
     }
 }

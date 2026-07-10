@@ -2,7 +2,6 @@ package oeapi.model;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -11,8 +10,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,9 +66,8 @@ public class Offering extends PrimaryCode {
     private List<oeapiIdentifierEntry> otherCodes;
 
     @JsonProperty("ext")
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "text")
-    private Map<String,Object> ext;
+    private Ext ext;
 
     private LocalDate startDate;
     private LocalDate endDate;
@@ -518,14 +514,14 @@ public class Offering extends PrimaryCode {
     /**
      * @return the ext
      */
-    public Map<String,Object> getExt() {
+    public Ext getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Map<String,Object> ext) {
+    public void setExt(Ext ext) {
         this.ext = ext;
     }
 

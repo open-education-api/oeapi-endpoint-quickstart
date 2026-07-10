@@ -1,14 +1,10 @@
 package oeapi.model;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -48,8 +44,7 @@ public class Building extends PrimaryCode {
 
     @JsonProperty("ext")
     @Column(columnDefinition = "text")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String,Object> ext;
+    private Ext ext;
 
     @JsonProperty("abbreviation")
     private String abbreviation;
@@ -157,14 +152,14 @@ public class Building extends PrimaryCode {
     /**
      * @return the ext
      */
-    public Map<String,Object> getExt() {
+    public Ext getExt() {
         return ext;
     }
 
     /**
      * @param ext the ext to set
      */
-    public void setExt(Map<String,Object> ext) {
+    public void setExt(Ext ext) {
         this.ext = ext;
     }
 
