@@ -20,7 +20,7 @@
         {
             "countryCode": "NL",
             "city": "Zuidoostbeemster",
-            "geoLocation": {
+            "geolocation": {
                 "longitude": 112.0,
                 "latitude": 62.0
             },
