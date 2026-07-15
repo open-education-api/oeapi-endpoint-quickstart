@@ -12,8 +12,6 @@ jobs:
     uses: ./.github/workflows/nvd.yml
 
   build-and-push:
-    needs: [test, nvd]
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
