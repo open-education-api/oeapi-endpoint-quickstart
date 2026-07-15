@@ -51,7 +51,7 @@ jobs:
           type=ref,event=pr
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
-
+          type=match,pattern=v\d+.\d+
     - name: Build and push container image
       uses: docker/build-push-action@v5
       with:
