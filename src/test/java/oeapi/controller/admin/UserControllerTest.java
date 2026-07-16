@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +22,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,7 @@ import oeapi.repository.UserRepository;
 @Transactional
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestPropertySource(properties = {"ooapi.security.enabled=true", "ooapi.security.mode=restricted"})
 class UserControllerTest {
     @Autowired
     MockMvc mockMvc;
@@ -63,28 +67,30 @@ class UserControllerTest {
         user = userRepository.save(user);
     }
 
-    @Test
-    void testGetAll() throws Exception {
-        mockMvc.perform(get("/admin/users"))
+    @Nested
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    class WithAdminUser {
+        void testGetAll() throws Exception {
+            mockMvc.perform(get("/admin/users"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].email").value(user.getEmail()))
                 .andExpect(jsonPath("$[0].password").doesNotExist());
-    }
+        }
 
-    @Test
-    void testGetAllWithoutUsers() throws Exception {
-        userRepository.deleteAll();
+        @Test
+        void testGetAllWithoutUsers() throws Exception {
+            userRepository.deleteAll();
 
-        mockMvc.perform(get("/admin/users"))
+            mockMvc.perform(get("/admin/users"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(0)));
-    }
+        }
 
-    @Test
-    void testGetById() throws Exception {
-        mockMvc.perform(get("/admin/users/{id}", user.getId()))
+        @Test
+        void testGetById() throws Exception {
+            mockMvc.perform(get("/admin/users/{id}", user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(user.getId()))
@@ -92,16 +98,16 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.roles[0].name").value(user.getRoles().get(0).getName()))
                 .andExpect(jsonPath("$.email").value(user.getEmail()))
                 .andExpect(jsonPath("$.password").doesNotExist());
-    }
+        }
 
-    @Test
-    void testPost() throws Exception {
-        User newUser = new User("wilma@example.com", "fred");
-        newUser.setRoles(Arrays.asList(role));
+        @Test
+        void testPost() throws Exception {
+            User newUser = new User("wilma@example.com", "fred");
+            newUser.setRoles(Arrays.asList(role));
 
-        String json = mockMvc
+            String json = mockMvc
                 .perform(post("/admin/users").contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(newUser)))
+                         .content(new ObjectMapper().writeValueAsString(newUser)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").exists())
@@ -109,33 +115,33 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.password").doesNotExist())
                 .andReturn().getResponse().getContentAsString();
 
-        JsonNode node = mapper.readTree(json);
-        int id = node.at("/id").asInt();
-        Optional<User> maybeUser = userRepository.findById(id);
-        assertTrue(maybeUser.isPresent(), "user saved");
+            JsonNode node = mapper.readTree(json);
+            int id = node.at("/id").asInt();
+            Optional<User> maybeUser = userRepository.findById(id);
+            assertTrue(maybeUser.isPresent(), "user saved");
 
-        User createdUser = maybeUser.get();
-        assertTrue(passwordEncoder.matches(newUser.getPassword(), createdUser.getPassword()), "password properly encoded");
+            User createdUser = maybeUser.get();
+            assertTrue(passwordEncoder.matches(newUser.getPassword(), createdUser.getPassword()), "password properly encoded");
 
-        List<Role> roles = createdUser.getRoles();
-        assertTrue(roles.size() == 1, "roles added");
-    }
+            List<Role> roles = createdUser.getRoles();
+            assertTrue(roles.size() == 1, "roles added");
+        }
 
-    @Test
-    void testPostExisting() throws Exception {
-        mockMvc.perform(post("/admin/users").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(user)))
-            .andExpect(status().isBadRequest());
-    }
+        @Test
+        void testPostExisting() throws Exception {
+            mockMvc.perform(post("/admin/users").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(user)))
+                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    void testPut() throws Exception {
-        User updateUser = new User("barney@example.com", null);
-        updateUser.setRoles(Arrays.asList(role, otherRole));
+        @Test
+        void testPut() throws Exception {
+            User updateUser = new User("barney@example.com", null);
+            updateUser.setRoles(Arrays.asList(role, otherRole));
 
-        String json = mockMvc
+            String json = mockMvc
                 .perform(put("/admin/users/{id}", user.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(updateUser)))
+                         .contentType(MediaType.APPLICATION_JSON)
+                         .content(new ObjectMapper().writeValueAsString(updateUser)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").exists())
@@ -143,25 +149,25 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.password").doesNotExist())
                 .andReturn().getResponse().getContentAsString();
 
-        JsonNode node = mapper.readTree(json);
-        int id = node.at("/id").asInt();
-        assertTrue(id == user.getId(), "updated correct user");
+            JsonNode node = mapper.readTree(json);
+            int id = node.at("/id").asInt();
+            assertTrue(id == user.getId(), "updated correct user");
 
-        User updatedUser = userRepository.findById(id).get();
+            User updatedUser = userRepository.findById(id).get();
 
-        List<Role> roles = updatedUser.getRoles();
-        assertTrue(roles.size() == 2, "roles added");
-    }
+            List<Role> roles = updatedUser.getRoles();
+            assertTrue(roles.size() == 2, "roles added");
+        }
 
-    @Test
-    void testPutWithRoleIdsOnly() throws Exception {
-        User updateUser = new User("barney@example.com", null);
-        updateUser.setRoles(Arrays.asList(new Role(otherRole.getId())));
+        @Test
+        void testPutWithRoleIdsOnly() throws Exception {
+            User updateUser = new User("barney@example.com", null);
+            updateUser.setRoles(Arrays.asList(new Role(otherRole.getId())));
 
-        String json = mockMvc
+            String json = mockMvc
                 .perform(put("/admin/users/{id}", user.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(updateUser)))
+                         .contentType(MediaType.APPLICATION_JSON)
+                         .content(new ObjectMapper().writeValueAsString(updateUser)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").exists())
@@ -169,26 +175,36 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.password").doesNotExist())
                 .andReturn().getResponse().getContentAsString();
 
-        JsonNode node = mapper.readTree(json);
-        int id = node.at("/id").asInt();
-        assertTrue(id == user.getId(), "updated correct user");
+            JsonNode node = mapper.readTree(json);
+            int id = node.at("/id").asInt();
+            assertTrue(id == user.getId(), "updated correct user");
 
-        User updatedUser = userRepository.findById(id).get();
+            User updatedUser = userRepository.findById(id).get();
 
-        List<Role> roles = updatedUser.getRoles();
-        assertTrue(roles.size() == 1, "roles changed");
-        assertEquals(otherRole, roles.get(0), "correct role");
-    }
+            List<Role> roles = updatedUser.getRoles();
+            assertTrue(roles.size() == 1, "roles changed");
+            assertEquals(otherRole, roles.get(0), "correct role");
+        }
 
-    @Test
-    void testDelete() throws Exception {
-        Optional<User> maybeUser = userRepository.findById(user.getId());
-        assertTrue(maybeUser.isPresent(), "user exists");
+        @Test
+        void testDelete() throws Exception {
+            Optional<User> maybeUser = userRepository.findById(user.getId());
+            assertTrue(maybeUser.isPresent(), "user exists");
 
-        mockMvc.perform(delete("/admin/users/{id}", user.getId()))
+            mockMvc.perform(delete("/admin/users/{id}", user.getId()))
                 .andExpect(status().isOk());
 
-        maybeUser = userRepository.findById(user.getId());
-        assertTrue(maybeUser.isEmpty(), "user deleted");
+            maybeUser = userRepository.findById(user.getId());
+            assertTrue(maybeUser.isEmpty(), "user deleted");
+        }
+    }
+
+    @Nested
+    class WithoutAdminUser {
+        @Test
+        void testGetAll() throws Exception {
+            mockMvc.perform(get("/admin/users"))
+                .andExpect(status().isForbidden());
+        }
     }
 }
