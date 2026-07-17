@@ -98,12 +98,12 @@ public class PersonController extends oeapiController<Person> {
 
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> create(@RequestBody Person person) {
         return super.create(person, personService);
     }
 
-    @PutMapping("/{personId}")
+    @PutMapping(value = "/{personId}", produces = "application/json")
     public ResponseEntity<?> update(@PathVariable String personId, @RequestBody Person person) {
         return super.update(person, personService);
     }

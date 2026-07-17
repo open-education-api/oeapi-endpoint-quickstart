@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.EntityListeners;
 import oeapi.oeapiEducationListener;
-
 import oeapi.model.Address;
 import oeapi.model.Consumer;
 import oeapi.model.Ext;

@@ -1,42 +1,22 @@
 package oeapi.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-/**
- *
- * @author itziar
- */
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+
 public class Ext implements Serializable {
+    private Map<String, Object> anyAttributes = new HashMap<>();
 
-    private String key;
-    private Object value;
-
-    /**
-     * @return the key
-     */
-    public String getKey() {
-        return key;
+    @JsonAnySetter
+    public void set(String name, Object value) {
+        anyAttributes.put(name, value);
     }
 
-    /**
-     * @param key the key to set
-     */
-    public void setKey(String key) {
-        this.key = key;
+    @JsonAnyGetter
+    public Map<String, Object> get() {
+        return anyAttributes;
     }
-
-    /**
-     * @return the value
-     */
-    public Object getValue() {
-        return value;
-    }
-
-    /**
-     * @param value the value to set
-     */
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
 }

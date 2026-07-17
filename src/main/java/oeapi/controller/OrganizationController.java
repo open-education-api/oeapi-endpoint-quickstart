@@ -182,7 +182,7 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
         return super.getResponse(components);
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> createOrganization(@RequestBody OrganizationDTO o) {
 
         // Check organization is not parent of itself.  This may lead to an infinite loop getting its children
@@ -198,7 +198,7 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
         return super.createDTO(o, organizationService);
     }
 
-    @PutMapping(value = "/{organizationId}")
+    @PutMapping(value = "/{organizationId}", produces = "application/json")
     public ResponseEntity<?> updateOrganization(@PathVariable String organizationId, @RequestBody OrganizationDTO o) {
  
         // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 

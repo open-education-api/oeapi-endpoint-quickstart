@@ -4,16 +4,16 @@
  */
 package oeapi.model;
 
+import java.util.List;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import oeapi.converter.oeapiUnitaExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListConsumerConverter;
 import oeapi.validation.ValidEnumYaml;
@@ -43,7 +43,6 @@ public class NewsFeed extends PrimaryCode {
     private List<Consumer> consumers;
 
     @Column(columnDefinition = "text")
-    @Convert(converter = oeapiUnitaExtConverter.class)
     private Ext ext;
 
     /**

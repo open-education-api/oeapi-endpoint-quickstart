@@ -7,8 +7,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-
-import oeapi.converter.oeapiUnitaExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 
 /**
@@ -33,7 +31,6 @@ public class Cost extends oeapiEquals implements Serializable {
     private List<oeapiLanguageTypedString> displayAmount;
 
     @Column(columnDefinition = "text")
-    @Convert(converter = oeapiUnitaExtConverter.class)
     private Ext ext;
 
     /**

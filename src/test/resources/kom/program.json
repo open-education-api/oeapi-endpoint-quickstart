@@ -1,0 +1,165 @@
+{
+    "fieldsOfStudy": "0715",
+    "teachingLanguage": "eng",
+    "studyLoad": {
+        "value": 179.0,
+        "studyLoadUnit": "ects"
+    },
+    "organization": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "level": "associate degree",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: Type and Media"
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: Type and Media"
+        }
+    ],
+    "programType": "minor",
+    "primaryCode": {
+        "codeType": "crohoCreboCode",
+        "code": "49106"
+    },
+    "modeOfDelivery": [
+        "on campus"
+    ],
+    "coordinators": [
+        "3542f2d3-3ba4-381a-00c4-eefe0c81c3f6"
+    ],
+    "otherCodes": [
+        {
+            "codeType": "crohoCreboCode",
+            "code": "49106"
+        }
+    ],
+    "modeOfStudy": "part-time",
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: Especially diseases which are a prerequisite to show the applications of nanomaterials in medicinal applications. This course offers an introduction to plant breeding. When feasible teaching staff from social Web feeds or by social psychology, with topics like designing your research, philosophy of science, economy, politics and governance in a species are used and how the course will introduce concepts related to collecting, handling and visualizing concepts."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: Especially diseases which are a prerequisite to show the applications of nanomaterials in medicinal applications. This course offers an introduction to plant breeding. When feasible teaching staff from social Web feeds or by social psychology, with topics like designing your research, philosophy of science, economy, politics and governance in a species are used and how the course will introduce concepts related to collecting, handling and visualizing concepts."
+        }
+    ],
+    "consumers": [
+        {
+            "alliances": [
+                {
+                    "name": "kom",
+                    "themes": ["theme1", "theme2"],
+                    "selection": false,
+                    "instructorNames": ["Instructor1", "Instructor2"],
+                    "contactHours": 3.5,
+                    "activities": "lectures and practises",
+                    "visibleForOwnStudents": false,
+                    "enrollmentForOwnStudents": "broker",
+                    "visibleForGuests": true,
+                    "enrollmentForGuests": "broker",
+                    "jointPartnerCodes": ["11PE", "12PE"]
+                }
+            ],
+            "consumerKey": "eduxchange"
+        }
+    ],
+    "programId": "a8138341-d39e-55f8-fb77-4bf7a0ae7a52",
+    "firstStartDate": "2020-04-04",
+    "resources": [
+        "(2014). A reader will be announced in Brightspace. Literature and exercises will be handed out during the course.",
+        "Introduction Atmosphere. . (2017).",
+        "ISBN 978-0-19-959665-2. Brightspace site for this course. 1098p."
+    ],
+    "abbreviation": "TAM",
+    "admissionRequirements": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: FNP-11806 Forest, Nature, Society and builds on the statistical data analysis of breeding trials.It is necessary to have basic knowledge on Human Nutrition (FCH-11306 Nutritional Aspects of Bio-interactions [ENT30306]). . You must meet the following requirements - Enrolled for a degree programme of faculty Faculty of Humanities."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: FNP-11806 Forest, Nature, Society and builds on the statistical data analysis of breeding trials.It is necessary to have basic knowledge on Human Nutrition (FCH-11306 Nutritional Aspects of Bio-interactions [ENT30306]). . You must meet the following requirements - Enrolled for a degree programme of faculty Faculty of Humanities."
+        }
+    ],
+    "enrollment": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: . . Osiris."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: . . Osiris."
+        }
+    ],
+    "duration": "P6M",
+    "link": "https://universiteit-van-zuidoostbeemster.nl/programs/a8138341-d39e-55f8-fb77-4bf7a0ae7a52",
+    "learningOutcomes": [
+        [
+            {
+                "language": "en-GB",
+                "value": "EN TRANSLATION: knowledge of the most-used ingredients in this minor"
+            },
+            {
+                "language": "nl-NL",
+                "value": "NL VERTALING: kennis van de meestgebruikte ingrediënten in deze minor"
+            }
+        ],
+        [
+            {
+                "language": "en-GB",
+                "value": "EN TRANSLATION: new talent in the field of programming"
+            },
+            {
+                "language": "nl-NL",
+                "value": "NL VERTALING: nieuw talent op het gebied van programmeren"
+            }
+        ]
+    ],
+    "assessment": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: written exam counts for 75% and the research project for 25%."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: het schriftelijk tentamen telt voor 75% en het onderzoeksproject voor 25%."
+        }
+    ],
+    "qualificationRequirements": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: students should have successfully completed at least 45 ECTS before enrolling."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: studenten moeten ten minste 45 ECTS hebben behaald voor inschrijving."
+        }
+    ],
+    "addresses": [
+        {
+            "countryCode": "NL",
+            "city": "Zuidoostbeemster",
+            "geolocation": {
+                "longitude": 112.0,
+                "latitude": 62.0
+            },
+            "addressType": "teaching",
+            "streetNumber": "132",
+            "postalCode": "1866HE",
+            "street": "Jan van der Heijdenstraat",
+            "additional": [
+                {
+                    "language": "en-GB",
+                    "value": "EN TRANSLATION: boven"
+                },
+                {
+                    "language": "nl-NL",
+                    "value": "NL VERTALING: boven"
+                }
+            ]
+        }
+    ],
+    "parent": "abe67694-a727-4d3f-8e2b-435189e670d1"
+}

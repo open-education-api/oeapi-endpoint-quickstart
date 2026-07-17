@@ -1,14 +1,17 @@
 package oeapi.model;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,16 +26,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListAddressConverter;
-import oeapi.converter.oeapiUnitaListCostConverter;
 import oeapi.converter.oeapiUnitaListConsumerConverter;
+import oeapi.converter.oeapiUnitaListCostConverter;
 import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
 import oeapi.validation.ValidEnumYaml;
 import oeapi.validation.ValidLanguageTypedString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *

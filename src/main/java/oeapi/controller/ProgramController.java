@@ -124,13 +124,13 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     @Override
     public ResponseEntity<?> createFromDTO(@Valid @RequestBody ProgramDTO dto) {
         return super.createDTO(dto, service);
     }
 
-    @PutMapping("/{programId}")
+    @PutMapping(value = "/{programId}", produces = "application/json")
     @Override
     public ResponseEntity<?> updateFromDTO(@PathVariable String programId, @Valid @RequestBody ProgramDTO dto) {
         dto.setProgramId(programId);

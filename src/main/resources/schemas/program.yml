@@ -5,7 +5,6 @@ properties:
     properties:
       codeType:
         type: string
-        enum: ["identifier", "otherType", "crohoCreboCode"] # Enumerated values
       code:
         type: string
     required: ["codeType", "code"]
@@ -40,6 +39,6 @@ properties:
     type: string
   level:
     type: string
-    programType:
+  programType:
     type: string
 required: ["name","programType","teachingLanguage","abbreviation","description","level"]

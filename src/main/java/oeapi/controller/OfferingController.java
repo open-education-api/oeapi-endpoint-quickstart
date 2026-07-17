@@ -79,7 +79,7 @@ public class OfferingController extends oeapiDTOController<Offering, OfferingDTO
         throw new oeapiException(HttpStatus.NOT_IMPLEMENTED,"Method 'getGroups' is not yet implemented");
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<?> create(@RequestBody Offering offering) {
         return super.create(offering, offeringService);
     }
@@ -113,7 +113,7 @@ public class OfferingController extends oeapiDTOController<Offering, OfferingDTO
         return put(offering.getOfferingId(), offering);
     }
 
-    @PutMapping(value = "/{offeringId}")
+    @PutMapping(value = "/{offeringId}", produces = "application/json")
     public ResponseEntity<?> put(@PathVariable String offeringId, @RequestBody Offering offering) {
         logger.debug("Putting Offering...");
         if ((offering.getOfferingId() == null) || (!offering.getOfferingId().equalsIgnoreCase(offeringId))) {

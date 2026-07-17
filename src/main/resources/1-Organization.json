@@ -36,7 +36,9 @@
                 "latitude": 52.366667,
                 "longitude": 4.883333
             },
-            "ext": {}
+            "ext": {
+                "hello": { "world": true }
+            }
         }
     ],
     "link": "https://openonderwijsapi.nl/#/",
