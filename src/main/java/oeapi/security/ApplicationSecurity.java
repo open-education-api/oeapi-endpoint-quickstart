@@ -61,6 +61,9 @@ public class ApplicationSecurity {
             auth.requestMatchers(HttpMethod.GET, "/js/*").permitAll();
             auth.requestMatchers(HttpMethod.GET, "/_quickdashboard_config.json").permitAll();
 
+            // All /admin/ endpoints need an admin user!
+            auth.requestMatchers("/admin/*").hasRole("ADMIN");
+
             // 2. Mode‑specific logic
             switch (endpointSecMode.toLowerCase()) {
 

@@ -24,7 +24,10 @@ public class Role {
     private String name;
 
     public Role() {
+    }
 
+    public Role(Integer id) {
+        this.id = id;
     }
 
     public Role(String name) {
