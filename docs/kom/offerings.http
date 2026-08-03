@@ -1,0 +1,21 @@
+@hostname=localhost
+@port=57075
+@host={{hostname}}:{{port}}
+
+@offering_id=f3a49e21-4670-9cb0-3d97-59eb8902be7e
+
+### GET all
+GET http://{{host}}/offerings
+
+### GET one
+GET http://{{host}}/offerings/{{offering_id}}
+
+### POST offering with id f3a49e21-4670-9cb0-3d97-59eb8902be7e
+POST http://{{host}}/offerings
+Content-Type: application/json
+
+< ./data/offering.json
+
+
+### DELETE offering
+DELETE http://{{host}}/offerings/{{offering_id}}

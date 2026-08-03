@@ -56,13 +56,13 @@ public class ApplicationSecurity {
             auth.requestMatchers(HttpMethod.GET, "/auth/secMode").permitAll();
 
             auth.requestMatchers(HttpMethod.GET, "/*.html").permitAll();
-            auth.requestMatchers(HttpMethod.GET, "/css/*").permitAll();
-            auth.requestMatchers(HttpMethod.GET, "/img/*").permitAll();
-            auth.requestMatchers(HttpMethod.GET, "/js/*").permitAll();
+            auth.requestMatchers(HttpMethod.GET, "/css/**").permitAll();
+            auth.requestMatchers(HttpMethod.GET, "/img/**").permitAll();
+            auth.requestMatchers(HttpMethod.GET, "/js/**").permitAll();
             auth.requestMatchers(HttpMethod.GET, "/_quickdashboard_config.json").permitAll();
 
             // All /admin/ endpoints need an admin user!
-            auth.requestMatchers("/admin/*").hasRole("ADMIN");
+            auth.requestMatchers("/admin/**").hasRole("ADMIN");
 
             // 2. Mode‑specific logic
             switch (endpointSecMode.toLowerCase()) {

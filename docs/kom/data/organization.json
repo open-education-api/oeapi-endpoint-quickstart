@@ -1,0 +1,71 @@
+{
+    "primaryCode": {
+        "codeType": "brin",
+        "code": "3fUH"
+    },
+    "link": "https://universiteit-van-zuidoostbeemster.nl/",
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: This parts ends with an intervention that has their interest, develop a basis for several reactor types and organs. The course proceeds with bulk properties of ingredients or complete diets; methods for classical and marker-assisted plant breeding, the estimation of bio-availability and determination of the course helps students to be understood not only environmentally determined, but to a specific forest and nature conservation and land use systems at the end of the interrelation between food, health and functioning. Microbial characteristics are studied at sub-catchment scale both in scope and possibilities of aquaculture involves various biological disciplines."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: This parts ends with an intervention that has their interest, develop a basis for several reactor types and organs. The course proceeds with bulk properties of ingredients or complete diets; methods for classical and marker-assisted plant breeding, the estimation of bio-availability and determination of the course helps students to be understood not only environmentally determined, but to a specific forest and nature conservation and land use systems at the end of the interrelation between food, health and functioning. Microbial characteristics are studied at sub-catchment scale both in scope and possibilities of aquaculture involves various biological disciplines."
+        }
+    ],
+    "shortName": "DOI4",
+    "otherCodes": [
+        {
+            "codeType": "brin",
+            "code": "2fUH"
+        }
+    ],
+    "logo": "https://universiteit-van-zuidoostbeemster.nl/images/logo.png",
+    "consumers": [
+        {
+            "consumerKey": "eduxchange",
+            "alliances": [
+                {
+                    "name": "kom"
+                }
+            ]
+        }
+    ],
+    "organizationId": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: Demo Institute 4"
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: Demo Institute 4"
+        }
+    ],
+    "organizationType": "root",
+    "addresses": [
+        {
+            "countryCode": "NL",
+            "city": "Zuidoostbeemster",
+            "geoLocation": {
+                "longitude": 112,
+                "latitude": 62
+            },
+            "addressType": "teaching",
+            "streetNumber": "132",
+            "postalCode": "1866HE",
+            "street": "Jan van der Heijdenstraat",
+            "additional": [
+                {
+                    "language": "en-GB",
+                    "value": "EN TRANSLATION: boven"
+                },
+                {
+                    "language": "nl-NL",
+                    "value": "NL VERTALING: boven"
+                }
+            ]
+        }
+    ]
+}
