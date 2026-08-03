@@ -139,6 +139,7 @@ public class ApplicationSecurityTest {
             void anonymousLoginPageOk() throws Exception {
                 mockMvc.perform(get("/login.html")).andExpect(status().isOk());
                 mockMvc.perform(get("/js/init.js")).andExpect(status().isOk());
+                mockMvc.perform(get("/js/surfview/auth.js")).andExpect(status().isOk());
                 mockMvc.perform(get("/_quickdashboard_config.json?callback=init")).andExpect(status().isOk());
                 mockMvc.perform(get("/js/oeapi.js")).andExpect(status().isOk());
             }
