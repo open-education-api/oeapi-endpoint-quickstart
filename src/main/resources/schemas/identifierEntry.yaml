@@ -2,7 +2,7 @@ type: object
 properties:
     codeType:
       type: string
-      enum: ["identifier", "uuid", "otherType", "crohoCreboCode", "offeringIdentifier"] # Enumerated values
+      enum: ["brin", "identifier", "uuid", "otherType", "crohoCreboCode", "offeringIdentifier"] # Enumerated values
     code:
       type: string
 required:
