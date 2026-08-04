@@ -52,6 +52,7 @@ public class ApplicationSecurity {
         http.authorizeHttpRequests(auth -> {
 
             // 1. Always‑public endpoints (apply in all modes)
+            auth.requestMatchers(HttpMethod.GET, "/health").permitAll();
             auth.requestMatchers(HttpMethod.GET, "/auth/secStatus").permitAll();
             auth.requestMatchers(HttpMethod.GET, "/auth/secMode").permitAll();
 
