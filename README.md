@@ -316,7 +316,7 @@ The following environment variables can be use to change the behavior of this ap
 
 - `SPRING_DATASOURCE_DRIVER_CLASS_NAME`
 
-  Class name of JDBC driver.   Default value: `com.mysql.cj.jdbc.Driver`), make sure to add the dependency to the [pom.xml file](./pom.xml) when changing this.
+  Class name of JDBC driver (default value: `com.mysql.cj.jdbc.Driver`), make sure to add the dependency to the [pom.xml file](./pom.xml) when changing this.  Note that the MariaDB driver is already included (use `org.mariadb.jdbc.Driver` here for that).
 
 - `SPRING_DATASOURCE_USERNAME`
 
