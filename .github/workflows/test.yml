@@ -7,21 +7,41 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        include:
+          - db_image: 'mysql'
+            db_health_cmd: 'mysqladmin ping -h localhost -u root -px'
+            db_root_pw_var: 'MYSQL_ROOT_PASSWORD'
+            db_database_var: 'MYSQL_DATABASE'
+            db_user_var: 'MYSQL_USER'
+            db_password_var: 'MYSQL_PASSWORD'
+            datasource_driver_class: 'com.mysql.cj.jdbc.Driver'
+            datasource_url: 'jdbc:mysql://localhost/oeapi_qs'
+          - db_image: 'mariadb'
+            db_health_cmd: 'healthcheck.sh --connect --innodb_initialized'
+            db_root_pw_var: 'MARIADB_ROOT_PASSWORD'
+            db_database_var: 'MARIADB_DATABASE'
+            db_user_var: 'MARIADB_USER'
+            db_password_var: 'MARIADB_PASSWORD'
+            datasource_driver_class: 'org.mariadb.jdbc.Driver'
+            datasource_url: 'jdbc:mariadb://localhost/oeapi_qs'
+
     services:
-      mysql:
-        image: mysql
+      database:
+        image: ${{ matrix.db_image }}
         env:
-          MYSQL_ROOT_PASSWORD: x
-          MYSQL_DATABASE: oeapi_qs
-          MYSQL_USER: oeapi_qs
-          MYSQL_PASSWORD: oeapi_qs
+          ${{ matrix.db_root_pw_var }}: x
+          ${{ matrix.db_database_var }}: oeapi_qs
+          ${{ matrix.db_user_var }}: oeapi_qs
+          ${{ matrix.db_password_var }}: oeapi_qs
+        ports:
+          - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -u root -px"
+          --health-cmd="${{ matrix.db_health_cmd }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
-        ports:
-          - 3306:3306
 
     steps:
 
@@ -39,9 +59,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-m2
 
-
     - name: run tests
+      env:
+        SPRING_DATASOURCE_DRIVER_CLASS_NAME: ${{ matrix.db_driver_class_name }}
+        SPRING_DATASOURCE_URL: ${{ matrix.datasource_url }}
       run: |
-        mvn -DskipTests=false \
-            -Dspring.datasource.url='jdbc:mysql://localhost/oeapi_qs' \
-            clean test
+        mvn -DskipTests=false clean test
