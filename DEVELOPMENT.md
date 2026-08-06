@@ -33,12 +33,20 @@ podman exec -it oeapi-endpoint-quickstart-mysql \
     mysql -u oeapi_qs -p oeapi_qs
 ```
 
-Setup sprint database URL:
+Setup spring database URL:
 
 ```sh
 export SPRING_DATASOURCE_URL='jdbc:mysql://localhost/oeapi_qs'
 ```
 
+#### Using MariaDB
+
+Same as above but using `mariadb` instead of `mysql`.  Make sure the following application properties are in place:
+
+```sh
+export SPRING_DATASOURCE_URL=jdbc:mariadb://localhost/oeapi_qs
+export SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.mariadb.jdbc.Driver
+```
 
 ## Running the application
 
