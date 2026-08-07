@@ -1,0 +1,30 @@
+@hostname=localhost
+@port=57075
+@host={{hostname}}:{{port}}
+
+@program_id=a8138341-d39e-55f8-fb77-4bf7a0ae7a52
+
+@parent_id=abe67694-a727-4d3f-8e2b-435189e670d1
+
+### GET all
+GET http://{{host}}/programs
+
+### GET one
+GET http://{{host}}/programs/{{program_id}}
+
+### POST program with id abe67694-a727-4d3f-8e2b-435189e670d1
+POST http://{{host}}/programs
+Content-Type: application/json
+
+< ./data/parent.json
+
+
+### POST program with id a8138341-d39e-55f8-fb77-4bf7a0ae7a52
+POST http://{{host}}/programs
+Content-Type: application/json
+
+< ./data/program.json
+
+
+### DELETE program
+DELETE http://{{host}}/programs/{{program_id}}

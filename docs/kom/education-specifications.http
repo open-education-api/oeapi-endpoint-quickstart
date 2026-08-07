@@ -1,0 +1,21 @@
+@hostname=localhost
+@port=57075
+@host={{hostname}}:{{port}}
+
+@education_specification_id=af72fc8a-8c28-4989-b092-2ef9bd7136ee
+
+### GET all
+GET http://{{host}}/education-specifications
+
+### GET one
+GET http://{{host}}/education-specifications/{{education_specification_id}}
+
+### POST education-specification with id 
+POST http://{{host}}/education-specifications
+Content-Type: application/json
+
+< ./data/education-specification.json
+
+
+### DELETE education-specification
+DELETE http://{{host}}/education-specifications/{{education_specification_id}}

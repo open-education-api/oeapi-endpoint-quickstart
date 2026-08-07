@@ -1,0 +1,37 @@
+@hostname=localhost
+@port=57075
+@host={{hostname}}:{{port}}
+
+@pagesize=1
+
+@programId=a8138341-d39e-55f8-fb77-4bf7a0ae7a52
+
+@courseId=fdfe2ddd-30ba-f9be-6d01-cfede449f454
+
+@offeringId=f3a49e21-4670-9cb0-3d97-59eb8902be7e
+
+GET http://{{host}}/organizations?pageSize={{pagesize}}&organizationType=root
+
+###
+GET http://{{host}}/programs?pageSize={{pagesize}}&programType=minor
+
+###
+GET http://{{host}}/programs/{{programId}}?expand=coordinators,organization,parent
+
+###
+GET http://{{host}}/programs/{{programId}}/offerings
+
+###
+GET http://{{host}}/programs/{{programId}}/courses?pageSize={{pagesize}}
+
+###
+GET http://{{host}}/courses?pageSize={{pagesize}}
+
+###
+GET http://{{host}}/courses/{{courseId}}?expand=coordinators,programs
+
+###
+GET http://{{host}}/courses/{{courseId}}/offerings
+
+###
+GET http://{{host}}/offerings/{{offeringId}}?expand=academicSession

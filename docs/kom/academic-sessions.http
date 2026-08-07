@@ -1,0 +1,21 @@
+@hostname=localhost
+@port=57075
+@host={{hostname}}:{{port}}
+
+@academic_session_id=af72fc8a-8c28-4989-b092-2ef9bd7136ee
+
+### GET all
+GET http://{{host}}/academic-sessions?pageSize=25&pageNumber=1
+
+### GET one
+GET http://{{host}}/academic-sessions/{{academic_session_id}}
+
+### POST academic-session with id 
+POST http://{{host}}/academic-sessions
+Content-Type: application/json
+
+< ./data/academic-session.json
+
+
+### DELETE academic-session
+DELETE http://{{host}}/academic-sessions/{{academic_session_id}}

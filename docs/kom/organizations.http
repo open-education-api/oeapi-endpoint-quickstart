@@ -1,0 +1,21 @@
+@hostname=localhost
+@port=57075
+@host={{hostname}}:{{port}}
+
+@organization_id=1ccdc93b-ff5b-0522-9f8e-d798966873ac
+
+### GET all
+GET http://{{host}}/organizations
+
+### GET one
+GET http://{{host}}/organizations/{{organization_id}}
+
+### POST organization with id 1ccdc93b-ff5b-0522-9f8e-d798966873ac
+POST http://{{host}}/organizations
+Content-Type: application/json
+
+< ./data/organization.json
+
+
+### DELETE organization
+DELETE http://{{host}}/organizations/{{organization_id}}

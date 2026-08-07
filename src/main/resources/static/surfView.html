@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SURF Education Catalog</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="css/surfView.css">
+    </head>
+    <body>
+        <noscript>
+            <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-size: 2rem">
+            You've forgotten to enable JavaScript
+            </div>
+        </noscript>
+        <header class="topbar">
+            <div class="brand">
+                <img class="brand-logo" src="img/OpenEducationApi_Logo.png" alt="OEAPI">
+                <div class="brand-copy">
+                    <strong>Education catalog</strong>
+                    <span>OEAPI endpoint</span>
+                </div>
+            </div>
+
+            <nav class="tab-list" role="tablist" aria-label="Catalog tabs">
+                <button id="tab-persons" class="tab-button" role="tab" type="button" aria-selected="false" aria-controls="catalog-panel" data-tab="persons">Persons</button>
+                <button id="tab-organizations" class="tab-button" role="tab" type="button" aria-selected="false" aria-controls="catalog-panel" data-tab="organizations">Organizations</button>
+                <button id="tab-academicSessions" class="tab-button" role="tab" type="button" aria-selected="false" aria-controls="catalog-panel" data-tab="academicSessions">Academic sessions</button>
+                <button id="tab-programs" class="tab-button" role="tab" type="button" aria-selected="false" aria-controls="catalog-panel" data-tab="programs">Programs</button>
+                <button id="tab-courses" class="tab-button active" role="tab" type="button" aria-selected="true" aria-controls="catalog-panel" data-tab="courses">Courses</button>
+            </nav>
+
+            <div class="auth-actions">
+                <span class="auth-status-label hidden" id="auth-status-label">Security disabled</span>
+                <button class="login-link" type="button" id="login-link">Log in</button>
+                <div class="account-menu hidden" id="account-menu">
+                    <button class="account-menu-toggle" type="button" id="account-menu-toggle" aria-label="Open account menu" aria-haspopup="menu" aria-expanded="false">
+                        <span></span><span></span><span></span>
+                    </button>
+                    <div class="account-menu-items hidden" id="account-menu-items" role="menu">
+                        <button class="hidden" type="button" id="manage-users-link" role="menuitem">Manage users</button>
+                        <button type="button" id="logout-link" role="menuitem">Log out</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="layout">
+            <aside class="filters" aria-label="Filters">
+                <h1>Filters</h1>
+                <p class="filter-summary" id="filter-summary">Showing all courses</p>
+
+                <section class="filter-group" data-education-filter-group>
+                    <div class="filter-title">
+                        <span>Education level</span>
+                    </div>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="associate degree"> Associate degree</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="bachelor"> Bachelor</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="master"> Master</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="nt2-1"> NT2-1</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="nt2-2"> NT2-2</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="secondary vocational education 1"> Secondary vocational education 1</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="secondary vocational education 2"> Secondary vocational education 2</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="secondary vocational education 3"> Secondary vocational education 3</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="secondary vocational education 4"> Secondary vocational education 4</label>
+                    <label class="checkbox-row"><input type="checkbox" data-level-filter="undivided"> Undivided</label>
+                </section>
+
+                <section class="filter-group" data-education-filter-group>
+                    <div class="filter-title">
+                        <span>Language</span>
+                    </div>
+                    <div id="language-filter-options"></div>
+                </section>
+
+                <section class="filter-group hidden" data-person-filter-group>
+                    <div class="filter-title">
+                        <span>Affiliation</span>
+                    </div>
+                    <label class="checkbox-row"><input type="checkbox" data-affiliation-filter="student"> Student</label>
+                    <label class="checkbox-row"><input type="checkbox" data-affiliation-filter="employee"> Employee</label>
+                    <label class="checkbox-row"><input type="checkbox" data-affiliation-filter="guest"> Guest</label>
+                </section>
+
+                <section class="filter-group hidden" data-person-filter-group>
+                    <div class="filter-title">
+                        <span>Active enrollment</span>
+                    </div>
+                    <label class="checkbox-row"><input type="checkbox" data-active-enrollment-filter="true"> Yes</label>
+                    <label class="checkbox-row"><input type="checkbox" data-active-enrollment-filter="false"> No</label>
+                </section>
+
+            </aside>
+
+            <section id="catalog-panel" class="main" role="tabpanel" aria-labelledby="tab-courses">
+                <div class="main-head">
+                    <h2 id="view-title">All courses</h2>
+                    <div class="search">
+                        <input id="filter-search" type="search" placeholder="Search courses..." autocomplete="off">
+                        <span class="search-icon" aria-hidden="true"></span>
+                    </div>
+                    <button class="detail-action-button main-action-button" type="button" id="main-action-button">Add</button>
+                </div>
+
+                <div id="status" class="table-status">Loading...</div>
+                <div id="table-region" class="table-wrap" aria-live="polite"></div>
+
+                <nav class="pager" aria-label="Pagination">
+                    <button id="prev-page" type="button">Previous</button>
+                    <span id="page-indicator" class="page-indicator">Page 1</span>
+                    <button id="next-page" type="button">Next</button>
+                </nav>
+            </section>
+        </main>
+
+        <div class="modal-backdrop" id="module-modal-backdrop" role="presentation">
+            <section class="modal" role="dialog" aria-modal="true" aria-labelledby="module-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="module-modal-title">Course</h2>
+                        <div id="entity-title-actions"></div>
+                    </div>
+                    <div class="modal-head-actions" id="entity-modal-actions"></div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <div class="modal-body" id="module-modal-body"></div>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="offering-modal-backdrop" role="presentation">
+            <section class="modal offering-modal" role="dialog" aria-modal="true" aria-labelledby="offering-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="offering-modal-title">Add offering</h2>
+                        <div class="modal-subtitle"></div>
+                        <button class="json-preview-button" type="button" id="offering-json-preview-button">Show JSON</button>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <form class="offering-form" id="offering-form" autocomplete="off"></form>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="json-preview-modal-backdrop" role="presentation">
+            <section class="modal json-preview-modal" role="dialog" aria-modal="true" aria-labelledby="json-preview-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="json-preview-modal-title">Offering JSON</h2>
+                        <div class="modal-subtitle">Payload that will be submitted when adding this offering</div>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <pre class="json-preview-content" id="json-preview-content"></pre>
+            </section>
+        </div>
+
+        <div class="modal-backdrop error-details-backdrop" id="error-details-modal-backdrop" role="presentation">
+            <section class="modal error-details-modal" role="dialog" aria-modal="true" aria-labelledby="error-details-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="error-details-modal-title">Request error</h2>
+                        <div class="modal-subtitle"></div>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <pre class="error-details-content" id="error-details-content"></pre>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="nested-offering-modal-backdrop" role="presentation">
+            <section class="modal offering-modal" role="dialog" aria-modal="true" aria-labelledby="nested-offering-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="nested-offering-modal-title">Add item</h2>
+                        <div class="modal-subtitle"></div>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <form class="offering-form" id="nested-offering-form" autocomplete="off"></form>
+            </section>
+        </div>
+
+        <div class="modal-backdrop" id="login-modal-backdrop" role="presentation">
+            <section class="modal login-modal" role="dialog" aria-modal="true" aria-labelledby="login-modal-title">
+                <header class="modal-head">
+                    <div>
+                        <h2 class="modal-title" id="login-modal-title">Log in</h2>
+                    </div>
+                    <button class="modal-close" type="button" aria-label="Close" id="login-modal-close">x</button>
+                </header>
+                <form class="offering-form login-form" id="login-form">
+                    <label class="full-width">
+                        <span class="label-text">Username (email)</span>
+                        <input type="text" name="username" id="login-username" required autocomplete="username">
+                    </label>
+                    <label class="full-width">
+                        <span class="label-text">Password</span>
+                        <input type="password" name="password" id="login-password" required autocomplete="current-password">
+                    </label>
+                    <div class="offering-form-actions login-form-actions">
+                        <span class="offering-form-status" id="login-result-message"></span>
+                        <button class="detail-action-button" type="submit" id="login-submit">Login</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <main class="user-admin-view hidden" id="user-admin-view" aria-labelledby="user-admin-title">
+            <section>
+                <header class="user-admin-head">
+                    <div>
+                        <h1 id="user-admin-title">User management</h1>
+                        <p>Create users and assign application roles</p>
+                    </div>
+                </header>
+                <div class="user-admin-body">
+                    <div class="user-admin-toolbar">
+                        <span class="offering-form-status" id="user-admin-status"></span>
+                        <button class="detail-action-button" type="button" id="add-user-button">Add user</button>
+                    </div>
+                    <div class="table-wrap" id="user-admin-table"></div>
+                </div>
+            </section>
+        </main>
+
+        <div class="modal-backdrop" id="user-form-modal-backdrop" role="presentation">
+            <section class="modal user-form-modal" role="dialog" aria-modal="true" aria-labelledby="user-form-title">
+                <header class="modal-head">
+                    <h2 class="modal-title" id="user-form-title">Add user</h2>
+                    <button class="modal-close" type="button" aria-label="Close">x</button>
+                </header>
+                <form class="offering-form user-form" id="user-form" autocomplete="off">
+                        <input type="hidden" name="id">
+                        <label class="full-width">
+                            <span class="label-text">Email</span>
+                            <input type="email" name="email" maxlength="50" required autocomplete="off">
+                        </label>
+                        <label class="full-width">
+                            <span class="label-text">Password <span id="user-password-hint"></span></span>
+                            <input type="password" name="password" maxlength="64" autocomplete="new-password">
+                        </label>
+                        <fieldset class="full-width user-role-options">
+                            <legend class="label-text">Roles</legend>
+                            <div id="user-role-options"></div>
+                        </fieldset>
+                        <div class="offering-form-actions">
+                            <button class="pager-button detail-action-button" type="button" id="cancel-user-button">Cancel</button>
+                            <button class="detail-action-button" type="submit" id="save-user-button">Save</button>
+                        </div>
+                </form>
+            </section>
+        </div>
+
+        <!-- templates: dom_utils.js -->
+        <template id="nested-summary-panel-template">
+            <section class="nested-item-panel">
+                <div class="nested-item-head">
+                    <h3 data-tm-text="title"></h3>
+                    <button class="detail-action-button" type="button" data-tm-text="buttonText" data-tm-attribute="nestedType:data-open-nested-offering"></button>
+                </div>
+                <div class="nested-item-summary" data-tm-remove-if-missing="summaryId" data-tm-attribute="summaryId:id"></div>
+            </section>
+        </template>
+        <template id="nested-form-actions-template">
+            <div class="offering-form-actions">
+                <button class="detail-action-button" type="button" data-cancel-nested>Cancel</button>
+                <button class="detail-action-button" type="submit" data-tm-text="submitText"></button>
+            </div>
+        </template>
+        <template id="offering-form-actions-template">
+            <div class="offering-form-actions">
+                <span class="offering-form-status" data-tm-attribute="statusId:id"></span>
+                <button class="pager-button detail-action-button" type="button" data-tm-empty-attribute="cancelAttribute">Cancel</button>
+                <button class="detail-action-button" type="submit" data-tm-text="submitText"></button>
+            </div>
+        </template>
+        <template id="language-specific-section-template">
+            <section class="nested-item-panel language-specific-section">
+                <div class="language-specific-fields"></div>
+            </section>
+        </template>
+        <template id="draft-language-controls-template">
+            <div class="entity-language-controls full-width">
+                <label>
+                    <span class="label-text">Add language</span>
+                    <select></select>
+                </label>
+                <button class="detail-action-button" type="button">Add</button>
+            </div>
+        </template>
+        <template id="language-switcher-template">
+            <div class="language-section-head">
+                <div class="detail-label" data-tm-text="label"></div>
+                <div class="language-nav-items"></div>
+            </div>
+        </template>
+        <template id="datalist-combobox-template">
+            <div class="datalist-combobox">
+                <input type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" data-datalist-input>
+                <div class="datalist-options" role="listbox" hidden></div>
+            </div>
+        </template>
+        <template id="detail-layout-template">
+            <div class="detail-layout">
+                <nav class="detail-nav" data-tm-attribute="navLabel:aria-label"></nav>
+                <div class="detail-content"></div>
+            </div>
+        </template>
+        <template id="detail-field-template">
+            <div class="detail-field">
+                <div class="detail-label" data-tm-text="label"></div>
+                <div data-detail-value-slot></div>
+            </div>
+        </template>
+        <template id="detail-nav-section-template">
+            <div class="detail-nav-section">
+                <div class="detail-nav-label" role="heading" aria-level="3" data-tm-text="label"></div>
+            </div>
+        </template>
+        <template id="nested-item-row-template">
+            <li>
+                <span data-tm-text="label"></span>
+                <span class="nested-item-actions">
+                    <button class="nested-item-edit" type="button">Edit</button>
+                    <button class="nested-item-delete" type="button">Delete</button>
+                </span>
+            </li>
+        </template>
+
+        <!-- templates: organizations.js -->
+        <template id="organization-code-row-template">
+            <div class="organization-code-row" data-tm-attribute="index:data-original-index">
+                <button class="nested-item-delete organization-row-delete" type="button" data-delete-organization-code>Delete</button>
+            </div>
+        </template>
+        <!-- templates: module.js -->
+        <template id="module-offerings-section-head-template">
+            <div class="detail-section-head">
+                <h3>Offerings</h3>
+                <button class="detail-action-button" type="button" data-add-offering-kind data-add-offering-id data-offerings-endpoint>Add offering</button>
+            </div>
+        </template>
+        <template id="consumer-panel-template">
+            <section class="nested-item-panel consumer-panel" data-tm-attribute="consumerIndex:data-original-consumer-index">
+                <div class="nested-item-head">
+                    <h3>Consumer</h3>
+                </div>
+            </section>
+        </template>
+        <template id="module-coordinators-panel-template">
+            <section class="nested-item-panel module-coordinators-panel">
+                <div class="nested-item-head">
+                    <h3>Coordinators</h3>
+                </div>
+                <div class="module-array-chips module-coordinator-list full-width" id="module-coordinator-list"></div>
+                <div class="module-coordinator-controls full-width">
+                    <label>
+                        <span class="label-text">Add coordinator</span>
+                        <select id="module-coordinator-select" data-module-coordinator-select></select>
+                    </label>
+                    <button class="detail-action-button" type="button" data-add-module-coordinator>Add</button>
+                </div>
+            </section>
+        </template>
+        <template id="module-coordinator-chip-template">
+            <span class="module-array-chip module-coordinator-chip" data-tm-attribute="id:data-coordinator-id">
+                <span data-tm-text="label"></span>
+                <button type="button" data-tm-attribute="buttonLabel:aria-label" data-delete-module-coordinator>x</button>
+            </span>
+        </template>
+        <template id="module-array-field-template">
+            <label class="full-width module-array-field">
+                <span class="label-text" data-tm-text="labelName"></span>
+                <div class="module-array-editor" data-tm-attribute="fieldName:data-module-array-field">
+                    <div class="module-array-chips"></div>
+                    <input type="text" data-module-array-input placeholder="Type a value and press Enter">
+                </div>
+            </label>
+        </template>
+        <template id="module-array-chip-template">
+            <span class="module-array-chip" data-tm-attribute="value:data-value">
+                <span data-tm-text="value"></span>
+                <button type="button" data-tm-attribute="buttonLabel:aria-label" data-delete-module-array-value>x</button>
+            </span>
+        </template>
+        <template id="module-language-controls-template">
+            <div class="module-language-controls full-width">
+                <label>
+                    <span class="label-text">Add language</span>
+                    <select name="newModuleLanguage" data-module-language-select></select>
+                </label>
+                <button class="detail-action-button" type="button" data-add-module-language>Add</button>
+            </div>
+        </template>
+        <script src="js/surfview/constants.js" defer></script>
+        <script src="js/surfview/utils.js" defer></script>
+        <script src="js/surfview/modal.js" defer></script>
+        <script src="js/surfview/auth.js" defer></script>
+        <script src="js/surfview/user_admin.js" defer></script>
+        <script src="js/surfview/url_utils.js" defer></script>
+        <script src="js/surfview/filters.js" defer></script>
+        <script src="js/surfview/dom_utils.js" defer></script>
+        <script src="js/surfview/modal_language.js" defer></script>
+        <script src="js/surfview/addresses.js" defer></script>
+        <script src="js/surfview/offerings.js" defer></script>
+        <script src="js/surfview/academic_sessions.js" defer></script>
+        <script src="js/surfview/organizations.js" defer></script>
+        <script src="js/surfview/persons.js" defer></script>
+        <script src="js/surfview/module.js" defer></script>
+        <script src="js/surfview/surfView.js" defer></script>
+        <script src="js/surfview/init.js" defer></script>
+        <script src="js/surfview/event_listeners.js" defer></script>
+    </body>
+</html>

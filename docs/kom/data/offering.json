@@ -1,0 +1,116 @@
+{
+    "program": "a8138341-d39e-55f8-fb77-4bf7a0ae7a52",
+    "offeringType": "program",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "49106"
+    },
+    "maxNumberStudents": 128,
+    "enrollEndDate": "2023-12-31",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: Type and Media - semester 1"
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: Type and Media - semester 1"
+        }
+    ],
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "EN TRANSLATION: Especially diseases which are a prerequisite to show the applications of nanomaterials in medicinal applications. This course offers an introduction to plant breeding. When feasible teaching staff from social Web feeds or by social psychology, with topics like designing your research, philosophy of science, economy, politics and governance in a species are used and how the course will introduce concepts related to collecting, handling and visualizing concepts."
+        },
+        {
+            "language": "nl-NL",
+            "value": "NL VERTALING: Especially diseases which are a prerequisite to show the applications of nanomaterials in medicinal applications. This course offers an introduction to plant breeding. When feasible teaching staff from social Web feeds or by social psychology, with topics like designing your research, philosophy of science, economy, politics and governance in a species are used and how the course will introduce concepts related to collecting, handling and visualizing concepts."
+        }
+    ],
+    "link": "https://universiteit-van-zuidoostbeemster.nl/programs/f3a49e21-4670-9cb0-3d97-59eb8902be7e",
+    "otherCodes": [
+        {
+            "codeType": "identifier",
+            "code": "49106"
+        }
+    ],
+    "consumers": [
+        {
+            "alliances": [
+                {
+                    "name": "kom",
+                    "enrollStartTime": "9:00:00",
+                    "enrollEndTime": "13:00:00",
+                    "enrollmentUrlForGuests": "https://www.eigen-inschrijf-url-voor-gasten.nl/gasten-schrijven-zich-hier-in",
+                    "enrollmentUrl": "https://www.eigen-inschrijf-url.nl/schrijf-hier-in",
+                    "dateComment": "The course takes place on monday morning",
+                    "queuedNumberStudents": 1,
+                    "maxQueuedNumberStudents": 10,
+                    "hasStudentQueue": true
+                }
+            ],
+            "consumerKey": "eduxchange"
+        }
+    ],
+    "priceInformation": [
+        {
+            "costType": "additional costs",
+            "amount": "150.00",
+            "vatAmount": "0.00",
+            "amountWithoutVat": "150.00",
+            "currency": "EUR",
+            "displayAmount": [
+                { "language": "nl-NL", "value": "€150" },
+                { "language": "en-GB", "value": "€150" }
+            ],
+            "ext": {
+                "description": [
+                    { "language": "nl-NL", "value": "Materiaalkosten" },
+                    { "language": "en-GB", "value": "Material costs" }
+                ]
+            }
+        }
+    ],
+    "enrolledNumberStudents": 115,
+    "organization": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "minNumberStudents": 3,
+    "offeringId": "f3a49e21-4670-9cb0-3d97-59eb8902be7e",
+    "resultExpected": true,
+    "flexibleEntryPeriodStart": "2017-02-06",
+    "resultValueType": "0-100",
+    "modeOfDelivery": [
+        "hybrid"
+    ],
+    "abbreviation": "TAM",
+    "pendingNumberStudents": 5,
+    "addresses": [
+        {
+            "countryCode": "NL",
+            "city": "Zuidoostbeemster",
+            "geoLocation": {
+                "longitude": 112,
+                "latitude": 62
+            },
+            "addressType": "teaching",
+            "streetNumber": "132",
+            "postalCode": "1866HE",
+            "street": "Jan van der Heijdenstraat",
+            "additional": [
+                {
+                    "language": "en-GB",
+                    "value": "EN TRANSLATION: boven"
+                },
+                {
+                    "language": "nl-NL",
+                    "value": "NL VERTALING: boven"
+                }
+            ]
+        }
+    ],
+    "teachingLanguage": "eng",
+    "enrollStartDate": "2023-01-01",
+    "endDate": "2030-01-31",
+    "academicSession": "af72fc8a-8c28-4989-b092-2ef9bd7136ee",
+    "startDate": "2017-02-06",
+    "flexibleEntryPeriodEnd": "2030-01-31"
+}

@@ -1,0 +1,21 @@
+@hostname=localhost
+@port=57075
+@host={{hostname}}:{{port}}
+
+@person_id=3542f2d3-3ba4-381a-00c4-eefe0c81c3f6
+
+### GET all
+GET http://{{host}}/persons
+
+### GET one
+GET http://{{host}}/persons/{{person_id}}
+
+### POST person with id a8138341-d39e-55f8-fb77-4bf7a0ae7a52
+POST http://{{host}}/persons
+Content-Type: application/json
+
+< ./data/person.json
+
+
+### DELETE person
+DELETE http://{{host}}/persons/{{person_id}}

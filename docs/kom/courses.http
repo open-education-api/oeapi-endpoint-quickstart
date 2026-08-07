@@ -1,0 +1,21 @@
+@hostname=localhost
+@port=57075
+@host={{hostname}}:{{port}}
+
+@course_id=fdfe2ddd-30ba-f9be-6d01-cfede449f454
+
+### GET all
+GET http://{{host}}/courses
+
+### GET one
+GET http://{{host}}/courses/{{course_id}}
+
+### POST course with id a8138341-d39e-55f8-fb77-4bf7a0ae7a52
+POST http://{{host}}/courses
+Content-Type: application/json
+
+< ./data/course.json
+
+
+### DELETE course
+DELETE http://{{host}}/courses/{{course_id}}
