@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import oeapi.repository.UserRepository;
 
-@RestController("/health")
+@RestController
 public class HealthController {
     @Autowired
     UserRepository userRepository;
@@ -16,7 +16,7 @@ public class HealthController {
     public static String MESSAGE_NO_DATABASE = "no database";
     public static String MESSAGE_OK = "up and running";
 
-    @GetMapping
+    @GetMapping("/health")
     public ResponseEntity<?> health() {
         try {
             // count users to see if database is accessible

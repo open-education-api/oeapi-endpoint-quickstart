@@ -23,7 +23,7 @@ class HealthControllerTest {
 
     @Test
     void getHealth() throws Exception {
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/health"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("text/plain;charset=UTF-8"))
                 .andExpect(content().string(equalTo(HealthController.MESSAGE_OK)));
