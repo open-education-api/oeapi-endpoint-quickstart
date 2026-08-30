@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -82,8 +83,11 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<?> getOrganization(@PathVariable String id) throws JsonProcessingException {
-        return super.get(id, organizationService);
+//    public ResponseEntity<?> getOrganization(@PathVariable String id) throws JsonProcessingException {
+//        return super.get(id, organizationService);
+    public ResponseEntity<?> getOrganization(@PathVariable String id,
+            @RequestParam(required = false) String expand) throws JsonProcessingException {
+        return super.get(id, expand, organizationService);
     }
 
     @GetMapping(value = "/{id}/groups", produces = "application/json")
