@@ -13,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiResultConverter;
 import oeapi.converter.oeapiUnitaListConsumerConverter;
 import oeapi.validation.ValidObjectYaml;
@@ -54,6 +55,7 @@ public class Association extends PrimaryCode {
     private List<Consumer> consumers;
 
     @Column(columnDefinition = "text")
+    @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
     @Column(columnDefinition = "text", name = "result")
