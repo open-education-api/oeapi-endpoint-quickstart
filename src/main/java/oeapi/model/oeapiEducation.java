@@ -11,6 +11,7 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.MappedSuperclass;
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiResourcesConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringListConverter;
@@ -100,6 +101,7 @@ public abstract class oeapiEducation extends PrimaryCode {
     private List<oeapiIdentifierEntry> otherCodes;
 
     @JsonProperty("ext")
+    @Convert(converter = oeapiExtConverter.class)
     @Column(columnDefinition = "text")
     private Ext ext;
 

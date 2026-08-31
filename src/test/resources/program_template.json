@@ -23,5 +23,6 @@
         "studyLoadUnit": "ects",
         "value": 3
     },
-    "level": "master"
+    "level": "master",
+    "ext":  {"attribute": "value"}
 }
