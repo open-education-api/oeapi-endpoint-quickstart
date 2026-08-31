@@ -234,7 +234,18 @@ public class OrganizationDTO extends PrimaryCode {
      */
     public void setParentId(String parentId) {
         this.parentId = parentId;
-        this.parent = parentId == null ? null : new OrganizationDTO(parentId); 
+
+        if (parentId == null) {
+            this.parent = null;
+        } else if (this.parent == null || !parentId.equals(this.parent.getOrganizationId())) {
+            // Reference stub, used only to carry the id into the entity mapper.
+            // OrganizationService.toEntity() replaces it with the real organization,
+            // or rejects the request when no such organization exists.
+            // Never overwrite an already mapped parent: on a read ModelMapper fills
+            // the full object through setParent(), and rebuilding a stub here would
+            // reduce ?expand=parent to a bare organizationId.
+            this.parent = new OrganizationDTO(parentId);
+        }
     }
 
     /**
