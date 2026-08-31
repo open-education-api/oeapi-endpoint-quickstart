@@ -83,8 +83,6 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-//    public ResponseEntity<?> getOrganization(@PathVariable String id) throws JsonProcessingException {
-//        return super.get(id, organizationService);
     public ResponseEntity<?> getOrganization(@PathVariable String id,
             @RequestParam(required = false) String expand) throws JsonProcessingException {
         return super.get(id, expand, organizationService);

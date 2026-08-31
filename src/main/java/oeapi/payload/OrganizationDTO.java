@@ -64,29 +64,25 @@ public class OrganizationDTO extends PrimaryCode {
     @ValidAddresses(message = "Null or Invalid address string elements")
     private List<Address> addresses;
     
-    // Same pattern as ProgramDTO: the id is always serialized as "parent",
-    // the full object replaces it only when ?expand=parent is requested.
-    // It must be public - oeapiDTOMapper.toJSON() looks it up with
-    // Class.getField(), which only sees public fields.    
-    
+    // "parent" is serialized as the parent's organizationId; the full object
+    // replaces it only when ?expand=parent is requested.
     @JsonProperty("parent")
     private String parentId;
 
+    // Must be public: oeapiDTOMapper.toJSON() resolves expandable fields with
+    // Class.getField(), which only sees public fields.
     @JsonIgnore
-    @oeapiDTOExpandable        
-    @JoinColumn(name = "parent_id")
-//    @JsonBackReference    
+    @oeapiDTOExpandable
     public OrganizationDTO parent;
 
-    // Same pattern as parent above: "children" is serialized as an array of
-    // organizationIds; the full objects are available only via ?expand=children.
-    // The object list must be public - oeapiDTOMapper.toJSON() resolves
-    // expandable fields with Class.getField().
-    // (@JsonManagedReference used to sit on this field; it became unpaired when
-    //  parent's @JsonBackReference was disabled, which broke deserialization -> 415.)
+    // "children" is serialized as an array of child organizationIds; the full
+    // objects are available only via ?expand=children.
     @JsonProperty("children")
     private List<String> childrenIds;
 
+    // Must be public, same reason as parent above.
+    // (@JsonManagedReference used to sit on this field; it became unpaired once
+    //  parent's @JsonBackReference was disabled, which broke deserialization.)
     @JsonIgnore
     @oeapiDTOExpandable
     public List<OrganizationDTO> children;
