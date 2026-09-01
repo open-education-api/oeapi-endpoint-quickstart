@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiGeolocationConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
@@ -54,6 +55,7 @@ public class Room extends PrimaryCode {
 
     @JsonProperty("ext")
     @Column(columnDefinition = "text")
+    @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
     @JsonProperty("abbreviation")

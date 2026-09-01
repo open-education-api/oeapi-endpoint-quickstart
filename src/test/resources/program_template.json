@@ -23,5 +23,19 @@
         "studyLoadUnit": "ects",
         "value": 3
     },
-    "level": "master"
+    "level": "master",
+    "ext": {
+        "unitaCampus": "Pamplona",
+        "unitaCredits": 4,
+        "unitaWeight": 4.5,
+        "unitaActive": true,
+        "unitaTags": [
+            "alpha",
+            "beta"
+        ],
+        "unitaNested": {
+            "code": "--PROG_CODE_TOBEINFORMED--",
+            "depth": 2
+        }
+    }
 }

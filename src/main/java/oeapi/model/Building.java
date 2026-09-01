@@ -10,6 +10,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiAddressConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListConsumerConverter;
@@ -44,6 +45,7 @@ public class Building extends PrimaryCode {
 
     @JsonProperty("ext")
     @Column(columnDefinition = "text")
+    @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
     @JsonProperty("abbreviation")

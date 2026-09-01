@@ -161,5 +161,19 @@
                 }
             ]
         }
-    ]
+    ],
+    "ext": {
+        "unitaCampus": "Tudela",
+        "unitaCredits": 4,
+        "unitaWeight": 4.5,
+        "unitaActive": true,
+        "unitaTags": [
+            "alpha",
+            "beta"
+        ],
+        "unitaNested": {
+            "code": "--COURSE_CODE_TOBEINFORMED--",
+            "depth": 2
+        }
+    }
 }
