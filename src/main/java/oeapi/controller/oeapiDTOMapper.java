@@ -4,7 +4,11 @@
  */
 package oeapi.controller;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
@@ -22,11 +26,13 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import oeapi.oeapiUtils;
 import oeapi.payload.oeapiDTOExpandable;
+import oeapi.service.oeapiDTOMapperService;
 import oeapi.service.oeapiEnumConversionService;
 
 /**
@@ -46,7 +52,7 @@ public class oeapiDTOMapper<T, S> {
     private oeapiEnumConversionService enumService;
     private Class<S> dtoTargetType;
 
-    private Class<T> objectTargetType;
+    public Class<T> objectTargetType;
 
     public oeapiDTOMapper(Class<T> objectTargetType, Class<S> dtoTargetType, oeapiEnumConversionService ooapiEnumService, List<String> enumFields) {
 
@@ -188,6 +194,8 @@ public class oeapiDTOMapper<T, S> {
         this.enumService = enumService;
     }
 
+    public oeapiDTOMapperService mapperService;
+
     private ObjectMapper objectMapper = oeapiUtils.ooapiObjectMapper();
 
     public String toJSON(T e, String expand) throws JsonProcessingException {
@@ -202,7 +210,13 @@ public class oeapiDTOMapper<T, S> {
                 try {
                     Field field = dto.getClass().getField(fieldName);
                     if (field.isAnnotationPresent(oeapiDTOExpandable.class)) {
-                        Object value = field.get(dto);
+                        Object value = getFieldValue(dto, fieldName);
+
+                        try {
+                            value = mapperService.toDTO(value);
+                        } catch (oeapiDTOMapperService.MapperNotFound ex) {
+                            // fallback to original value
+                        }
                         node.set(fieldName, objectMapper.valueToTree(value));
                     } else {
                         logger.warn("Non-expandable field requested: {}#{}",
@@ -219,5 +233,21 @@ public class oeapiDTOMapper<T, S> {
         }
 
         return objectMapper.writeValueAsString(node);
+    }
+
+    private static Object getFieldValue(Object obj, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        Class<?> c = obj.getClass();
+
+        try {
+            PropertyDescriptor pd = new PropertyDescriptor(fieldName, c);
+            Method getter = pd.getReadMethod();
+
+            if (getter != null) return getter.invoke(obj);
+        } catch (IntrospectionException | InvocationTargetException | IllegalAccessException ex) {
+            // ignore
+        }
+
+        Field field = c.getField(fieldName);
+        return field.get(obj);
     }
 }
