@@ -3,9 +3,11 @@ package oeapi.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import oeapi.controller.oeapiDTOMapper;
 import static oeapi.oeapiUtils.ooapiObjectMapper;
@@ -32,6 +34,7 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
      * @return the mapper
      */
     public oeapiDTOMapper<T, S> getMapper() {
+        if (mapper != null) mapper.mapperService = mapperService;
         return mapper;
     }
 
@@ -53,7 +56,15 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
     @Autowired
     private oeapiEnumConversionService enumService;
 
+    @Autowired
+    private oeapiDTOMapperService mapperService;
+
     private oeapiDTOMapper<T, S> mapper;
+
+    @PostConstruct
+    public void registerMapper() {
+        mapperService.register(getMapper());
+    }
 
     static Logger logger = LoggerFactory.getLogger(oeapiEndpointDTOService.class);
 
