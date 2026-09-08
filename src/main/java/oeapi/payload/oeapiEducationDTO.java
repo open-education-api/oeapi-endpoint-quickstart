@@ -205,8 +205,15 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
 
-        if (this.organization == null || this.organization.getOrganizationId() != organizationId) {
-            this.organization = organizationId == null ? null : new Organization(organizationId);
+        if (organizationId == null) {
+            this.organization = null;
+        } else if (this.organization == null
+                || !organizationId.equals(this.organization.getOrganizationId())) {
+            // Reference stub, so the id alone is enough on input. The guard used "!=", which
+            // compares String references rather than values and was therefore always true:
+            // on a read it replaced the organization ModelMapper had just mapped with an
+            // id-only stub, which is why ?expand=organization looked like it did nothing.
+            this.organization = new Organization(organizationId);
         }
     }
 

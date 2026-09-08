@@ -8,6 +8,7 @@ import java.util.Map;
 
 import jakarta.transaction.Transactional;
 import oeapi.controller.oeapiDTOMapper;
+import oeapi.controller.oeapiDTOMapperRegistry;
 import static oeapi.oeapiUtils.ooapiObjectMapper;
 
 import org.springframework.data.domain.Page;
@@ -40,6 +41,14 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
      */
     public void setMapper(oeapiDTOMapper<T, S> mapper) {
         this.mapper = mapper;
+
+        // Publish it as THE mapper for its entity type, so that any DTO expanding a value of
+        // that type - ?expand=organization on a course, ?expand=programs, ... - can convert
+        // it to its OOAPI shape instead of serializing the entity. Registering here rather
+        // than in the mapper's constructor means a service that replaces a generic mapper
+        // with a specialized one (CourseService, ProgramService) registers the specialized
+        // one last, and that is the one that wins.
+        oeapiDTOMapperRegistry.register(mapper);
     }
 
     /*
