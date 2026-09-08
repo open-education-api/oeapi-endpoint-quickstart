@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.modelmapper.spi.MappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +76,29 @@ public class oeapiDTOMapper<T, S> {
         modelMapper.addConverter(stringToLocalDate);
         modelMapper.addConverter(localDateToString);
 
+        // Resolve enum-backed fields during the mapping rather than afterwards. ModelMapper
+        // reuses this TypeMap for nested properties of the same pair - an organization's
+        // parent and children - so a post converter reaches every DTO in the graph, while
+        // patching the result of map() only ever reached the root. That is what made
+        // ?expand=children answer with the raw enumeration id instead of the value.
+        try {
+            TypeMap<T, S> typeMap = modelMapper.getTypeMap(objectTargetType, dtoTargetType);
+
+            if (typeMap == null) {
+                typeMap = modelMapper.createTypeMap(objectTargetType, dtoTargetType);
+            }
+
+            typeMap.setPostConverter(context -> {
+                applyEnumFixup(context.getSource(), context.getDestination());
+                return context.getDestination();
+            });
+
+        } catch (RuntimeException ex) {
+            // Never fail construction over this: toDTO() still fixes the root.
+            logger.warn("Could not attach the enum post converter for {} -> {}: {}",
+                        objectTargetType.getSimpleName(), dtoTargetType.getSimpleName(),
+                        ex.getLocalizedMessage());
+        }
     }
 
     public Long mapIdValue(String nameType, String valueType, oeapiEnumConversionService ooapiEnumService) {
@@ -140,28 +164,93 @@ public class oeapiDTOMapper<T, S> {
             return null;
         }
         S dto = getModelMapper().map(e, dtoTargetType);
-        try {
-            for (String fieldName : this.enumFields) {
-                String fieldNameId = fieldName + "Id";
-                Long id = null;
-                Field fieldEntity = objectTargetType.getDeclaredField(fieldNameId);
-                fieldEntity.setAccessible(true);
-                Object value = fieldEntity.get(e);
-                if (value != null) {
-                    id = (Long) value;
+
+        // Belt and braces: the post converter normally does this during the mapping itself,
+        // nested DTOs included. Repeating it is harmless - the value is always derived from
+        // the entity's id, never from what is on the DTO - and keeps the root correct even if
+        // the post converter could not be attached.
+        applyEnumFixup(e, dto);
+
+        return dto;
+    }
+
+    /**
+     * Replaces enum-backed fields on a mapped DTO with their human readable value.
+     *
+     * The entity keeps these as "&lt;field&gt;Id", a Long pointing into the enumeration table,
+     * while the DTO exposes "&lt;field&gt;" as the value. ModelMapper token matches
+     * "&lt;field&gt;Id" onto "&lt;field&gt;" and leaves the raw id sitting there, so it has to
+     * be replaced. Idempotent, and a no-op for a pair that has no such field.
+     */
+    private void applyEnumFixup(Object source, Object destination) {
+
+        if (source == null || destination == null || enumFields == null || getEnumService() == null) {
+            return;
+        }
+
+        for (String fieldName : enumFields) {
+            try {
+                // Read through the getter when there is one: the source may be a lazy
+                // Hibernate proxy, whose own fields are empty until it is initialized.
+                Object rawId = readProperty(source, fieldName + "Id");
+
+                Field valueField = findField(destination.getClass(), fieldName);
+
+                if (valueField == null) {
+                    continue;   // this DTO does not carry that enum field
                 }
 
-                String stringValue = getEnumService().convertIdToValue(id);
-                Field fieldDTO = dtoTargetType.getDeclaredField(fieldName);
-                fieldDTO.setAccessible(true);
-                fieldDTO.set(dto, stringValue);
+                // Only ever REPLACE a value that resolves. Never clear one: some entities keep
+                // a field the service lists as an enum as a plain String with no "<field>Id" at
+                // all - Program.level maps to the program_level column, while Course.levelId is
+                // a real enumeration id - and for those the mapped value is already correct.
+                // The old code cleared them, and only got away with it because
+                // "finally { return dto; }" swallowed the NoSuchFieldException.
+                if (rawId instanceof Long) {
+                    String resolved = getEnumService().convertIdToValue((Long) rawId);
+
+                    if (resolved != null) {
+                        valueField.set(destination, resolved);
+                    }
+                }
+
+            } catch (IllegalAccessException | RuntimeException ex) {
+                logger.debug("Could not resolve enum field {} on {}: {}", fieldName,
+                             destination.getClass().getSimpleName(), ex.getLocalizedMessage());
             }
-        } catch (NoSuchFieldException | IllegalAccessException err) {
-
-        } finally {
-            return dto;
-
         }
+    }
+
+    /**
+     * Reads a property by getter, falling back to the declared field. Returns null when neither
+     * exists, which is how a pair without that enum field is detected.
+     */
+    private static Object readProperty(Object target, String property) throws IllegalAccessException {
+
+        String getterName = "get" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
+
+        try {
+            Method getter = target.getClass().getMethod(getterName);
+            return getter.invoke(target);
+        } catch (NoSuchMethodException | InvocationTargetException ex) {
+            Field field = findField(target.getClass(), property);
+            return (field == null) ? null : field.get(target);
+        }
+    }
+
+    /** Finds an accessible declared field anywhere up the hierarchy, or null. */
+    private static Field findField(Class<?> type, String name) {
+
+        for (Class<?> current = type; current != null && current != Object.class; current = current.getSuperclass()) {
+            try {
+                Field field = current.getDeclaredField(name);
+                field.setAccessible(true);
+                return field;
+            } catch (NoSuchFieldException ignored) {
+                // keep walking up
+            }
+        }
+        return null;
     }
 
     /**
