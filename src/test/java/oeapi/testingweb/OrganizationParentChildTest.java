@@ -153,6 +153,7 @@ class OrganizationParentChildTest {
 
         get("/organizations/" + rootId)
                 .jsonPath("$.primaryCode.code").isEqualTo(rootCode)
+                .jsonPath("$.organizationType").isEqualTo("department")
                 .jsonPath("$.shortName").isEqualTo("UPNA")
                 .jsonPath("$.link").isEqualTo("https://www.unavarra.es");
     }
@@ -189,7 +190,12 @@ class OrganizationParentChildTest {
                 .jsonPath("$.children[*].organizationId")
                         .value(Matchers.<String>hasItems(childAId, childBId))
                 .jsonPath("$.children[0].primaryCode.code").exists()
-                .jsonPath("$.children[0].parent").isEqualTo(rootId);
+                .jsonPath("$.children[0].parent").isEqualTo(rootId)
+                // Enum-backed fields must be resolved on the expanded objects too. These
+                // used to report the raw enumeration id ("5") because the id -> value fixup
+                // only ran on the root DTO, never on the nested ones.
+                .jsonPath("$.children[0].organizationType").isEqualTo("department")
+                .jsonPath("$.children[1].organizationType").isEqualTo("department");
     }
 
     /**
@@ -203,7 +209,8 @@ class OrganizationParentChildTest {
 
         get("/organizations/" + childAId + "?expand=parent")
                 .jsonPath("$.parent.organizationId").isEqualTo(rootId)
-                .jsonPath("$.parent.primaryCode.code").isEqualTo(rootCode);
+                .jsonPath("$.parent.primaryCode.code").isEqualTo(rootCode)
+                .jsonPath("$.parent.organizationType").isEqualTo("department");
     }
 
     /**
