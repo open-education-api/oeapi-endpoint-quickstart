@@ -144,11 +144,10 @@ public class CourseDTO extends oeapiEducationDTO {
 
     public void setProgramIds(List<String> programIds) {
         this.programIds = programIds;
-        List<Program> programs = new ArrayList<Program>();
-        for (String id : programIds) {
-            programs.add(new Program(id));
-        }
-        this.programs = programs;
+
+        // Keep the programs already mapped rather than replacing them with id-only stubs:
+        // see oeapiDTORefs. This is what ?expand=programs returns.
+        this.programs = oeapiDTORefs.keepOrStub(this.programs, programIds, Program::getProgramId, Program::new);
     }
 
     /**
@@ -279,12 +278,7 @@ public class CourseDTO extends oeapiEducationDTO {
 
     public void setCoordinatorIds(List<String> coordinatorIds) {
         this.coordinatorIds = coordinatorIds;
-        List<Person> coordinators = new ArrayList<Person>();
-        for (String currPersonId : coordinatorIds) {
-            Person aPerson = new Person(currPersonId);
-            coordinators.add(aPerson);
-        }
-        this.coordinators = coordinators;
+        this.coordinators = oeapiDTORefs.keepOrStub(this.coordinators, coordinatorIds, Person::getPersonId, Person::new);
     }
 
     public List<String> getCoordinatorIds() {

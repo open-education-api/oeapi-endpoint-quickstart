@@ -197,11 +197,7 @@ public class ProgramDTO extends oeapiEducationDTO {
 
     public void setCoordinatorIds(List<String> coordinatorIds) {
         this.coordinatorIds = coordinatorIds;
-        List<Person> coordinators = new ArrayList<Person>();
-        for (String id : coordinatorIds) {
-            coordinators.add(new Person(id));
-        }
-        this.coordinators = coordinators;
+        this.coordinators = oeapiDTORefs.keepOrStub(this.coordinators, coordinatorIds, Person::getPersonId, Person::new);
     }
 
     @JsonIgnore
@@ -234,7 +230,11 @@ public class ProgramDTO extends oeapiEducationDTO {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
-        this.parent = parentId == null ? null : new Program(parentId);
+
+        // Never discard an already mapped parent for a stub built from its own id: see
+        // oeapiDTORefs. Without this ?expand=parent answers with a bare programId whenever
+        // ModelMapper happens to call this setter after setParent().
+        this.parent = oeapiDTORefs.keepOrStub(this.parent, parentId, Program::getProgramId, Program::new);
     }
 
     @JsonIgnore
@@ -259,11 +259,7 @@ public class ProgramDTO extends oeapiEducationDTO {
 
     public void setChildrenIds(List<String> childrenIds) {
         this.childrenIds = childrenIds;
-        List<Program> children = new ArrayList<Program>();
-        for (String id : childrenIds) {
-            children.add(new Program(id));
-        }
-        this.children = children;
+        this.children = oeapiDTORefs.keepOrStub(this.children, childrenIds, Program::getProgramId, Program::new);
     }
 
     @JsonIgnore
@@ -276,5 +272,9 @@ public class ProgramDTO extends oeapiEducationDTO {
 
     public void setChildren(List<Program> children) {
         this.children = children;
+
+        // The id counterpart was missing here, so a read that went through this setter left
+        // childrenIds null and the unexpanded program carried no "children" at all.
+        this.childrenIds = oeapiDTORefs.idsOf(children, Program::getProgramId);
     }
 }
