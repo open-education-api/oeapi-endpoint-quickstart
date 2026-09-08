@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package oeapi.controller;
 
 import java.beans.IntrospectionException;
@@ -26,7 +22,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
@@ -212,11 +207,10 @@ public class oeapiDTOMapper<T, S> {
                     if (field.isAnnotationPresent(oeapiDTOExpandable.class)) {
                         Object value = getFieldValue(dto, fieldName);
 
-                        try {
-                            value = mapperService.toDTO(value);
-                        } catch (oeapiDTOMapperService.MapperNotFound ex) {
-                            // fallback to original value
-                        }
+                        // toExpandedValue also covers a collection of related objects, and
+                        // falls back to the value itself when its type has no mapper, so the
+                        // MapperNotFound case is handled there rather than here.
+                        value = mapperService.toExpandedValue(value);
                         node.set(fieldName, objectMapper.valueToTree(value));
                     } else {
                         logger.warn("Non-expandable field requested: {}#{}",
