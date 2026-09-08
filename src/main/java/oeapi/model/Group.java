@@ -18,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
 import oeapi.validation.ValidLanguageTypedString;
@@ -42,6 +43,7 @@ public class Group extends PrimaryCode {
 
     @JsonProperty("ext")
     @Column(columnDefinition = "text")
+    @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
     @ValidObjectYaml(yamlfile = "enum/groupType.yml")

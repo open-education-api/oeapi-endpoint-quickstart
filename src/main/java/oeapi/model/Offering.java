@@ -26,6 +26,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListAddressConverter;
 import oeapi.converter.oeapiUnitaListConsumerConverter;
@@ -67,6 +68,7 @@ public class Offering extends PrimaryCode {
 
     @JsonProperty("ext")
     @Column(columnDefinition = "text")
+    @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
     private LocalDate startDate;

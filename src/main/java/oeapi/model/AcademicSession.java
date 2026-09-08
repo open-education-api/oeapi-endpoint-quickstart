@@ -12,6 +12,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListConsumerConverter;
 import oeapi.validation.ValidEnumYaml;
@@ -44,6 +45,7 @@ public class AcademicSession extends PrimaryCode {
     private List<Consumer> consumers;
 
     @Column(columnDefinition = "text")
+    @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
     @JsonProperty("year")

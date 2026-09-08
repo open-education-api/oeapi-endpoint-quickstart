@@ -14,6 +14,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListConsumerConverter;
 import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
@@ -92,6 +93,7 @@ public class EducationSpecification extends PrimaryCode {
 
     @JsonProperty("ext")
     @Column(columnDefinition = "text")
+    @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
     private LocalDate validFrom;

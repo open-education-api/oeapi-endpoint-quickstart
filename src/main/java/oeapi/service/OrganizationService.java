@@ -28,7 +28,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 
-public class OrganizationService extends oeapiEndpointDTOService<Organization, OrganizationRepository, OrganizationDTO> implements oeapiRelatedObjServiceInterface<Organization> {
+public class OrganizationService extends oeapiEndpointDTOService<Organization, OrganizationRepository, OrganizationDTO>
+        implements oeapiRelatedObjServiceInterface<Organization>, oeapiRelationalModelInterface<Organization> {
 
     Logger logger = LoggerFactory.getLogger(OrganizationService.class);
 
@@ -67,7 +68,7 @@ public class OrganizationService extends oeapiEndpointDTOService<Organization, O
             objExisting = super.manageRelated(related);
             if (!objExisting.isPresent()) {
                 logger.debug("--> Organization, manageRelated: No org exist like the supplied one.");
-                throw new oeapiException(HttpStatus.BAD_REQUEST, "Check Organization", "Element [" + objExisting.get().getOrganizationId() + "] not found");
+                throw new oeapiException(HttpStatus.BAD_REQUEST, "Check Organization", "Element [" + id + "] not found");
             } else {
                 logger.debug("--> Organization, manageRelated: The ORG supplied exists. OrgID = ["+objExisting.get().getOrganizationId()+"] returning it");
             }
@@ -129,6 +130,66 @@ public class OrganizationService extends oeapiEndpointDTOService<Organization, O
         o.setShortName(autoCreateOrg_ShortName);
 
         return super.create(super.toEntity(o));
+    }
+
+    /**
+     * Resolves the organization's relations against what is actually stored, the same
+     * way CourseService and ComponentService do for their organization, program and
+     * person references.
+     *
+     * The only relation an Organization owns is its parent. The DTO carries it as an
+     * organizationId ("parent" on the wire), which the mapper turns into an
+     * Organization holding nothing but that id; persisting that as-is would write
+     * parent_id without ever checking the row exists. manageRelated() looks it up and
+     * raises 400 when it does not, so an unknown parent is refused instead of becoming
+     * a dangling foreign key.
+     */
+    @Override
+    public Organization checkRelations(Organization organization) {
+
+        try {
+            logger.debug("+OrganizationService checkRelations: parent...");
+
+            if (organization.getParent() != null) {
+                Optional<Organization> parentExisting = this.manageRelated(organization.getParent());
+
+                if (parentExisting.isPresent()) {
+                    logger.debug("++OrganizationService checkRelations: parent set to: id="
+                            + parentExisting.get().getOrganizationId()
+                            + " ShortName: " + parentExisting.get().getShortName());
+                    organization.setParent(parentExisting.get());
+                }
+            }
+
+        } catch (oeapiException ooapiEx) {
+            logger.debug("ooapiException checking organization relations: " + ooapiEx.getTitle() + " -> " + ooapiEx.getDetail());
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Organization relations not valid",
+                    ooapiEx.getTitle() + " -> " + ooapiEx.getDetail());
+        } catch (Exception exc) {
+            logger.debug("Unexpected general exception checking organization relations: " + exc.getLocalizedMessage());
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Organization relations not valid",
+                    "Unexpected general exception checking organization relations: " + exc.getLocalizedMessage());
+        }
+
+        return organization;
+    }
+
+    @Override
+    public Organization normalizeAttributes(Organization organization) {
+        // Nothing to normalize for an Organization yet.
+        return organization;
+    }
+
+    @Override
+    public Organization create(Organization organization) {
+        logger.debug("*>-OrganizationService create(organization): Revising relations...");
+        return super.create(normalizeAttributes(checkRelations(organization)));
+    }
+
+    @Override
+    public Organization update(Organization organization) {
+        logger.debug("*>-OrganizationService update(organization): Revising relations...");
+        return super.update(normalizeAttributes(checkRelations(organization)));
     }
 
     public Optional<Organization> findByOrganizationId(String organizationId) {

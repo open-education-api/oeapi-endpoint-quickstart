@@ -2,19 +2,16 @@ package oeapi.payload;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.converter.oeapiUnitaListAddressConverter;
 import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
@@ -67,14 +64,28 @@ public class OrganizationDTO extends PrimaryCode {
     @ValidAddresses(message = "Null or Invalid address string elements")
     private List<Address> addresses;
     
+    // "parent" is serialized as the parent's organizationId; the full object
+    // replaces it only when ?expand=parent is requested.
     @JsonProperty("parent")
-    @JoinColumn(name = "parent_id")
-    @JsonBackReference    
-    private OrganizationDTO parent;
+    private String parentId;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference    
-    private List<OrganizationDTO> children;
+    // Must be public: oeapiDTOMapper.toJSON() resolves expandable fields with
+    // Class.getField(), which only sees public fields.
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public OrganizationDTO parent;
+
+    // "children" is serialized as an array of child organizationIds; the full
+    // objects are available only via ?expand=children.
+    @JsonProperty("children")
+    private List<String> childrenIds;
+
+    // Must be public, same reason as parent above.
+    // (@JsonManagedReference used to sit on this field; it became unpaired once
+    //  parent's @JsonBackReference was disabled, which broke deserialization.)
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public List<OrganizationDTO> children;
 
     
     public OrganizationDTO() {
@@ -212,6 +223,32 @@ public class OrganizationDTO extends PrimaryCode {
     }
 
     /**
+     * @return the parentId
+     */
+    public String getParentId() {
+        return parentId;
+    }
+
+    /**
+     * @param parentId the parent organizationId to set
+     */
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+
+        if (parentId == null) {
+            this.parent = null;
+        } else if (this.parent == null || !parentId.equals(this.parent.getOrganizationId())) {
+            // Reference stub, used only to carry the id into the entity mapper.
+            // OrganizationService.toEntity() replaces it with the real organization,
+            // or rejects the request when no such organization exists.
+            // Never overwrite an already mapped parent: on a read ModelMapper fills
+            // the full object through setParent(), and rebuilding a stub here would
+            // reduce ?expand=parent to a bare organizationId.
+            this.parent = new OrganizationDTO(parentId);
+        }
+    }
+
+    /**
      * @return the parent
      */
     public OrganizationDTO getParent() {
@@ -219,10 +256,26 @@ public class OrganizationDTO extends PrimaryCode {
     }
 
     /**
-     * @param parent the parent to set
+     * @param parent the parent to set. Keeps parentId in sync so the
+     *               unexpanded response still carries the link.    
      */
     public void setParent(OrganizationDTO parent) {
         this.parent = parent;
+        this.parentId = parent == null ? null : parent.getOrganizationId();
+    }
+
+    /**
+     * @return the ids of the child organizations
+     */
+    public List<String> getChildrenIds() {
+        return childrenIds;
+    }
+
+    /**
+     * @param childrenIds the child organizationIds to set
+     */
+    public void setChildrenIds(List<String> childrenIds) {
+        this.childrenIds = childrenIds;
     }
 
     /**
@@ -233,10 +286,16 @@ public class OrganizationDTO extends PrimaryCode {
     }
 
     /**
-     * @param children the children to set
+     * @param children the children to set. Keeps childrenIds in sync so the
+     *                 unexpanded response carries the links.
      */
     public void setChildren(List<OrganizationDTO> children) {
         this.children = children;
+        this.childrenIds = (children == null) ? null
+                : children.stream()
+                        .filter(c -> c != null && c.getOrganizationId() != null)
+                        .map(OrganizationDTO::getOrganizationId)
+                        .collect(Collectors.toList());
     }
 
     // consumers
