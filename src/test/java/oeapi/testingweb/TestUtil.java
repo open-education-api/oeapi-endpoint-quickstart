@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,9 +51,15 @@ public class TestUtil {
       return headerAuth;   
     }
 
+    /**
+     * A primaryCode that is unique within this run and across runs.
+     *
+     */
+    private static final String RUN_TAG = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    private static final AtomicInteger CODE_SEQUENCE = new AtomicInteger();
+
     public String genRandomCode() {
-        Random r = new Random(System.currentTimeMillis());
-        return "" + ((1 + r.nextInt(2)) * 10000 + r.nextInt(10000));
+        return "QS-" + RUN_TAG + "-" + CODE_SEQUENCE.incrementAndGet();
     }
 
     

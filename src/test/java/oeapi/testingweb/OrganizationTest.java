@@ -15,8 +15,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.AfterAll;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class OrganizationTest {
 
     Logger logger = LoggerFactory.getLogger(OrganizationTest.class);
@@ -79,6 +82,18 @@ class OrganizationTest {
                 + "#  STEP: " + String.format("%-50s", title) + " #\n"
                 + "#                                                          #\n"
                 + "############################################################\n");
+    }
+
+
+    /**
+     * Teardown. Tests in this class used to leave their entities in the database:
+     *
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.cleanupCreated(webTestClient);
     }
 
 }

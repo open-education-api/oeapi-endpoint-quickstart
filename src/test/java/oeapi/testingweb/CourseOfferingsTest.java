@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
+import org.junit.jupiter.api.AfterAll;
 
 /*
 TestInstance(PER_CLASS)
@@ -328,6 +329,24 @@ public class CourseOfferingsTest {
                 + "#  STEP: " + String.format("%-50s", title) + " #\n"
                 + "#                                                          #\n"
                 + "############################################################\n");
+    }
+
+
+    /**
+     * Teardown. Tests in this class used to leave their entities in the database:
+     * 
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.deleteQuiet("offerings", randomOfferingId, webTestClient);
+        TUCudRest.deleteQuiet("offerings", randomOfferingId2, webTestClient);
+        TUCudRest.deleteQuiet("courses", randomCourseId, webTestClient);
+        TUCudRest.deleteQuiet("programs", randomProgId, webTestClient);
+        TUCudRest.deleteQuiet("persons", randomPersonId, webTestClient);
+        TUCudRest.deleteQuiet("organizations", randomOrgId, webTestClient);
+        TUCudRest.cleanupCreated(webTestClient);
     }
 
 }

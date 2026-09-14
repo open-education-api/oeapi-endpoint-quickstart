@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.AfterAll;
 
 /*
  * Integration test for the programOffering endpoints, modeled on CourseOfferingsTest:
@@ -194,6 +195,21 @@ public class ProgramOfferingsTest {
                 + "############################################################\n"
                 + "#  STEP: " + String.format("%-50s", title) + " #\n"
                 + "############################################################\n");
+    }
+
+
+    /**
+     * Teardown. Tests in this class used to leave their entities in the database:
+     *
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.deleteQuiet("offerings", randomOfferingId, webTestClient);
+        TUCudRest.deleteQuiet("offerings", randomOfferingId2, webTestClient);
+        TUCudRest.deleteQuiet("programs", randomProgId, webTestClient);
+        TUCudRest.cleanupCreated(webTestClient);
     }
 
 }

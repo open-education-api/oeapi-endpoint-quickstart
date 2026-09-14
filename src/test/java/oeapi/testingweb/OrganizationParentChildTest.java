@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.junit.jupiter.api.AfterAll;
 
 /**
  * Integration tests for the Organization parent / children relation.
@@ -58,6 +59,9 @@ class OrganizationParentChildTest {
 
     @Autowired
     private TestUtil TU;
+
+    @Autowired
+    private TestUtilCUDRest TUCudRest;
 
     private String rootId;
     private String rootCode;
@@ -335,4 +339,19 @@ class OrganizationParentChildTest {
                 + "#                                                          #\n"
                 + "############################################################\n");
     }
+
+    /**
+     * Teardown. Tests in this class used to leave their entities in the database:
+     *
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.deleteQuiet("organizations", childAId, webTestClient);
+        TUCudRest.deleteQuiet("organizations", childBId, webTestClient);
+        TUCudRest.deleteQuiet("organizations", rootId, webTestClient);
+        TUCudRest.cleanupCreated(webTestClient);
+    }
+
 }

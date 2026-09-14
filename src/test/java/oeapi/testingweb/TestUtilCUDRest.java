@@ -1,6 +1,8 @@
 package oeapi.testingweb;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -23,13 +25,66 @@ public class TestUtilCUDRest {
     @Autowired
     private TestUtil TU;
 
-    
+    /**
+     * Everything created through this helper, most recent first.
+     *
+     * Tests used to leave their courses, programs, organizations and persons in the
+     * database. That is invisible in CI, where every job gets a fresh database, but it
+     * accumulates against a development database and eventually breaks the suite: a
+     * retained row keeps its primaryCode, and create() refuses a duplicate one.
+     *
+     * A test class ends with cleanupCreated(webTestClient) in @AfterAll and everything it
+     * created through this helper goes away - including when the test failed halfway.
+     * This bean is a singleton in the test context, so anything a class forgets to clean
+     * is cleaned by the next class that does.
+     */
+    private final Deque<String[]> created = new ArrayDeque<>();
+
+    /** Records an entity for teardown. Public so tests that POST directly can register theirs. */
+    public synchronized String track(String restResource, String id) {
+        if (id != null) {
+            created.push(new String[]{restResource, id});
+        }
+        return id;
+    }
+
+    private synchronized void untrack(String restResource, String id) {
+        created.removeIf(e -> e[0].equals(restResource) && e[1].equals(id));
+    }
+
+    /**
+     * Best-effort teardown, children before parents (most recent first). Never asserts:
+     * a failed delete must not turn a passing run red, it is logged and the run continues.
+     */
+    public synchronized void cleanupCreated(WebTestClient webTestClient) {
+        while (!created.isEmpty()) {
+            String[] entity = created.pop();
+            deleteQuiet(entity[0], entity[1], webTestClient);
+        }
+    }
+
+    /** DELETE without any status assertion - for teardown, where the entity may already be gone. */
+    public void deleteQuiet(String restResource, String id, WebTestClient webTestClient) {
+        if (id == null) {
+            return;
+        }
+        untrack(restResource, id);
+        try {
+            webTestClient.delete()
+                    .uri("/" + restResource + "/" + id)
+                    .header("Authorization", TU.authHeaderForTest())
+                    .exchange();
+        } catch (RuntimeException ex) {
+            LOGGER.debug("cleanup: could not delete {}/{}: {}", restResource, id, ex.getMessage());
+        }
+    }
+
     public  String whenPost_testOk(String restResource, String entity, String templateAbrev, WebTestClient webTestClient) throws IOException {
         String randomId = UUID.randomUUID().toString();
         String randomCode = TU.genRandomCode();
         String payload = TU.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
         post_testOk(restResource, payload, webTestClient);
-        return randomId;
+        return track(restResource, randomId);
     }
 
     public  void whenPost_test(String restResource, String entity, String templateAbrev, String id, WebTestClient webTestClient) throws IOException {
@@ -64,6 +119,8 @@ public class TestUtilCUDRest {
         String payload = TU.getPayload(entity + "_template", templateAbrev, randomId, randomCode);
 
         post_testCode(restResource, payload, randomCode, webTestClient);
+
+        track(restResource, randomId);
 
         return randomCode;
 
@@ -127,6 +184,8 @@ public class TestUtilCUDRest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$." + entity + "Id").isEqualTo(id);
+
+        track(restResource, id);
     }
 
     public void post_test(String restResource, String entity, String payload, String id, String code, WebTestClient webTestClient) {
@@ -140,9 +199,14 @@ public class TestUtilCUDRest {
                 .expectBody()
                 .jsonPath("$." + entity + "Id").isEqualTo(id)
                 .jsonPath("$.primaryCode.code").isEqualTo(code);
+
+        track(restResource, id);
     }
 
     public void delete_test(String restResource, String id, WebTestClient webTestClient) {
+
+        untrack(restResource, id);
+
         
         LOGGER.debug("delete_test deleting... (DELETE) params: "+restResource+", "+id+" ,"+webTestClient);
         

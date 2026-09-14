@@ -12,8 +12,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.AfterAll;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CourseComposeEntitiesTest {
 
     Logger logger = LoggerFactory.getLogger(CourseComposeEntitiesTest.class);
@@ -61,6 +64,17 @@ class CourseComposeEntitiesTest {
         // Deleting course created for test                
         TUCudRest.delete_test(restResource, randomId, webTestClient);
         
+    }
+
+
+    /**
+     *
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.cleanupCreated(webTestClient);
     }
 
 }

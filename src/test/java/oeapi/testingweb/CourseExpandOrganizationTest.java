@@ -19,18 +19,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.junit.jupiter.api.AfterAll;
 
 /**
  * Covers ?expand= on a to-ONE relation, using expand=organization on GET /courses/{courseId}.
  *
  * KomTest already covers the same parameter on a PROGRAM. A course is worth covering separately
  * rather than assumed equivalent: it is a different DTO and therefore a different ModelMapper
- * TypeMap, and both halves of the relation have a setter - setOrganization, which keeps the
- * mapped object, and setOrganizationId, which builds an id-only reference stub. ModelMapper
- * calls them in an order nobody controls, and setOrganizationId's guard compares Strings with
- * "!=", which compares references and is therefore always true, so it rebuilds the stub every
- * time it runs. Whichever setter happens to run last decides what ?expand=organization answers
- * with, and that order need not be the same for a course as for a program.
+ * TypeMap, and both halves of the relation have a setter - setOrganization.. 
  *
  * Reading the failures:
  *   - "$.organization.primaryCode" or ".shortName" missing WITH expand -> the expanded value is
@@ -57,6 +53,9 @@ class CourseExpandOrganizationTest {
 
     @Autowired
     private TestUtil TU;
+
+    @Autowired
+    private TestUtilCUDRest TUCudRest;
 
     private String orgId;
     private String orgCode;
@@ -176,4 +175,18 @@ class CourseExpandOrganizationTest {
                 + "#                                                          #\n"
                 + "############################################################\n");
     }
+
+    /**
+     * Teardown. Tests in this class used to leave their entities in the database
+     * 
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.deleteQuiet("courses", courseId, webTestClient);
+        TUCudRest.deleteQuiet("organizations", orgId, webTestClient);
+        TUCudRest.cleanupCreated(webTestClient);
+    }
+
 }
