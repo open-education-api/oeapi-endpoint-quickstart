@@ -192,9 +192,9 @@ SurfView.Persons = (() => {
             successText: mode === 'edit' ? 'Saved' : 'Added',
             preserveArrayFields: ['affiliations'],
             errorMessage: mode === 'edit' ? 'Unable to save person' : 'Unable to add person',
-            onSuccess: ({payload, updatedEntity: updatedPerson}) => {
+            onSuccess: async ({payload, updatedEntity: updatedPerson}) => {
                 const id = payload.personId;
-                applySubmitEntitySuccess({
+                await applySubmitEntitySuccess({
                     kind: 'person',
                     mode,
                     updatedEntity: updatedPerson,

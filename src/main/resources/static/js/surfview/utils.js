@@ -450,7 +450,7 @@ async function submitEntity(config) {
 }
 
 /** Applies the shared state updates after an entity create or edit succeeds. */
-function applySubmitEntitySuccess(config) {
+async function applySubmitEntitySuccess(config) {
     const {
         kind,
         mode = 'edit',
@@ -495,7 +495,9 @@ function applySubmitEntitySuccess(config) {
         updateEntityUrl(kind, normalizedId, SurfView.State.currentModalLanguage, replaceUrl);
     }
     if (renderList) {
-        renderEntityList();
+        // The save response is often empty or partial. Reload the collection so the
+        // list reflects the persisted server representation, not the form payload.
+        await loadCurrentPage();
     }
 }
 
