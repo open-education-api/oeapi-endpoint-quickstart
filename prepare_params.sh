@@ -316,6 +316,12 @@ spring.jpa.hibernate.ddl-auto=update
 spring.sql.init.mode=always
 spring.jackson.default-property-inclusion=non-null
 
+# Loading one Offering by id walks an entirely eager association graph and joins more
+# than sixty tables; MySQL refuses anything past sixty-one. Capping the depth splits
+# that one impossible statement into several possible ones. The associations stay
+# eager, so nothing changes about what is loaded - only how many round trips it takes.
+spring.jpa.properties.hibernate.max_fetch_depth=2
+
 ooapi.metadata.contactEmail=$CONTACT_EMAIL
 ooapi.metadata.specification=https://openonderwijsapi.nl/
 ooapi.metadata.documentation=https://open-education-api.github.io/specification/v5/docs.html
