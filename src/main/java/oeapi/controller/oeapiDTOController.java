@@ -285,7 +285,7 @@ public class oeapiDTOController<T, S> {
 
             countProcessed++;
 
-            if (itemResponse.getStatusCodeValue() > 299) {
+            if (itemResponse.getStatusCode().value() > 299) {
                 countWithError++;
             }
         }
