@@ -327,7 +327,7 @@ function primaryCodeParts(primaryCode, fallbackCode = '', defaultCodeType = 'ide
     };
 }
 
-/** Builds the shared read-only id and primary-code form fields. */
+/** Builds the shared editable id and primary-code form fields. */
 function primaryCodeFormFields(config) {
     const {
         idLabel,
@@ -339,7 +339,7 @@ function primaryCodeFormFields(config) {
     const code = primaryCodeParts(primaryCode, idValue, defaultCodeType);
 
     return [
-        fieldLabelHtml(idLabel, 'text', idName, idValue || generateId(), {required: true, readonly: true}, 'full-width'),
+        fieldLabelHtml(idLabel, 'text', idName, idValue || generateId(), {required: true}, 'full-width'),
         fieldLabelHtml('Primary code type', 'datalist', 'primaryCodeType', code.codeType, {
             required: true,
             options: Constants.enumOptions.codeType
