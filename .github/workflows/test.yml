@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - db_image: 'mysql'
+          - db_image: 'mysql:8.4'
             db_health_cmd: 'mysqladmin ping -h localhost -u root -px'
             db_root_pw_var: 'MYSQL_ROOT_PASSWORD'
             db_database_var: 'MYSQL_DATABASE'
@@ -18,7 +18,7 @@ jobs:
             db_password_var: 'MYSQL_PASSWORD'
             datasource_driver_class: 'com.mysql.cj.jdbc.Driver'
             datasource_url: 'jdbc:mysql://localhost/oeapi_qs'
-          - db_image: 'mariadb'
+          - db_image: 'mariadb:11.8'
             db_health_cmd: 'healthcheck.sh --connect --innodb_initialized'
             db_root_pw_var: 'MARIADB_ROOT_PASSWORD'
             db_database_var: 'MARIADB_DATABASE'
