@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import tools.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,8 +44,9 @@ class AcademicSessionTest {
                 }
                 """;
 
-        ObjectMapper objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule());
+        // Nothing to register: Java 8 date/time support is built into jackson-databind
+        // in Jackson 3, so the module that used to be added here no longer exists.
+        ObjectMapper objectMapper = new ObjectMapper();
 
         AcademicSession academicSession = assertDoesNotThrow(
                 () -> objectMapper.readValue(payload, AcademicSession.class));
