@@ -19,6 +19,13 @@
         <skipTests>true</skipTests>
 
     <!--
+      No java.version was set, so the release level was whatever the parent
+      happened to default to. Boot 4 requires 17 or later; pin it here so the
+      bytecode target stops moving when the parent does.
+    -->
+       <java.version>17</java.version>
+
+    <!--
       Spring Boot 3.5.16 manages Tomcat 10.1.55.
       Override to 10.1.59 to include Apache Tomcat security fixes.
     -->
