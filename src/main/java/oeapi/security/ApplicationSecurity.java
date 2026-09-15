@@ -125,10 +125,18 @@ public class ApplicationSecurity {
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(customUserDetailsService)
-                .passwordEncoder(passwordEncoder())
-                .and()
-                .build();
+
+        // Built in two steps rather than one chain. userDetailsService() returns the
+        // DaoAuthenticationConfigurer, not the builder, so the old chain needed .and() to
+        // get back to the builder before calling build(). .and() has been deprecated for
+        // removal across the Spring Security 6 line in favour of lambda configuration, and
+        // this is the only place in the project that still used it. Naming the builder
+        // avoids it without changing what is configured.
+        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        builder.userDetailsService(customUserDetailsService)
+               .passwordEncoder(passwordEncoder());
+
+        return builder.build();
     }
 }
