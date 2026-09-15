@@ -33,7 +33,7 @@ import oeapi.model.User;
 import oeapi.repository.RoleRepository;
 import oeapi.repository.UserRepository;
 import org.junit.jupiter.api.Nested;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
