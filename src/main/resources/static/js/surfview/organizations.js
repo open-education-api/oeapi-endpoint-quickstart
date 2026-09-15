@@ -392,9 +392,9 @@ SurfView.Organizations = (() => {
             successText: mode === 'edit' ? 'Saved' : 'Added',
             preserveArrayFields: ['name', 'description', 'consumers', 'addresses', 'otherCodes'],
             errorMessage: mode === 'edit' ? 'Unable to save organization' : 'Unable to add organization',
-            onSuccess: ({payload, updatedEntity: updatedOrganization}) => {
+            onSuccess: async ({payload, updatedEntity: updatedOrganization}) => {
                 const id = payload.organizationId;
-                applySubmitEntitySuccess({
+                await applySubmitEntitySuccess({
                     kind: 'organization',
                     mode,
                     updatedEntity: updatedOrganization,

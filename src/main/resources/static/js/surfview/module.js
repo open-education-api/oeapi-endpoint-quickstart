@@ -621,9 +621,9 @@ SurfView.Module = (() => {
             successText: mode === 'edit' ? 'Saved' : 'Added',
             preserveArrayFields: moduleLocalizedFields(kind),
             errorMessage: mode === 'edit' ? `Unable to save ${kind}` : `Unable to add ${kind}`,
-            onSuccess: ({payload, updatedEntity: updatedModule}) => {
+            onSuccess: async ({payload, updatedEntity: updatedModule}) => {
                 const id = entityId(kind, updatedModule) || entityId(kind, payload);
-                applySubmitEntitySuccess({
+                await applySubmitEntitySuccess({
                     kind,
                     mode,
                     updatedEntity: updatedModule,
