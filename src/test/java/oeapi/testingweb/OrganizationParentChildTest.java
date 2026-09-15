@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.junit.jupiter.api.AfterAll;
 
 /**
  * Integration tests for the Organization parent / children relation.
@@ -58,6 +59,9 @@ class OrganizationParentChildTest {
 
     @Autowired
     private TestUtil TU;
+
+    @Autowired
+    private TestUtilCUDRest TUCudRest;
 
     private String rootId;
     private String rootCode;
@@ -189,7 +193,12 @@ class OrganizationParentChildTest {
                 .jsonPath("$.children[*].organizationId")
                         .value(Matchers.<String>hasItems(childAId, childBId))
                 .jsonPath("$.children[0].primaryCode.code").exists()
-                .jsonPath("$.children[0].parent").isEqualTo(rootId);
+                .jsonPath("$.children[0].parent").isEqualTo(rootId)
+                // Enum-backed fields must be resolved on the expanded objects too, not left
+                // as the raw enumeration id. These are nested DTOs that ModelMapper builds
+                // inside the root mapping, which is the case a root-only fixup misses.
+                .jsonPath("$.children[0].organizationType").isEqualTo("department")
+                .jsonPath("$.children[1].organizationType").isEqualTo("department");
     }
 
     /**
@@ -203,7 +212,8 @@ class OrganizationParentChildTest {
 
         get("/organizations/" + childAId + "?expand=parent")
                 .jsonPath("$.parent.organizationId").isEqualTo(rootId)
-                .jsonPath("$.parent.primaryCode.code").isEqualTo(rootCode);
+                .jsonPath("$.parent.primaryCode.code").isEqualTo(rootCode)
+                .jsonPath("$.parent.organizationType").isEqualTo("department");
     }
 
     /**
@@ -329,4 +339,19 @@ class OrganizationParentChildTest {
                 + "#                                                          #\n"
                 + "############################################################\n");
     }
+
+    /**
+     * Teardown. Tests in this class used to leave their entities in the database:
+     *
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.deleteQuiet("organizations", childAId, webTestClient);
+        TUCudRest.deleteQuiet("organizations", childBId, webTestClient);
+        TUCudRest.deleteQuiet("organizations", rootId, webTestClient);
+        TUCudRest.cleanupCreated(webTestClient);
+    }
+
 }

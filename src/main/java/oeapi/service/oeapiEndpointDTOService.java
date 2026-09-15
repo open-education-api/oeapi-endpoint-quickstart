@@ -3,9 +3,11 @@ package oeapi.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import oeapi.controller.oeapiDTOMapper;
 import static oeapi.oeapiUtils.ooapiObjectMapper;
@@ -32,6 +34,7 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
      * @return the mapper
      */
     public oeapiDTOMapper<T, S> getMapper() {
+        if (mapper != null) mapper.mapperService = mapperService;
         return mapper;
     }
 
@@ -53,7 +56,26 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
     @Autowired
     private oeapiEnumConversionService enumService;
 
+    @Autowired
+    private oeapiDTOMapperService mapperService;
+
     private oeapiDTOMapper<T, S> mapper;
+
+    @PostConstruct
+    public void registerMapper() {
+        // A subclass builds its mapper in its constructor, where the @Autowired fields of this
+        // class are still null - field injection happens after the constructor returns - so the
+        // mapper is born without an enum conversion service. initializeMapper() repairs that,
+        // but it only runs from this class's own methods, so a caller that reaches past the
+        // service straight to the mapper got an unrepaired one: oeapiDTOController.get() does
+        // that for a single item, and oeapiDTOMapperService does it for every expanded value.
+        // The symptom was an enum-backed field answering with its raw enumeration id, and it
+        // depended on whether some earlier request had happened to repair the mapper first.
+        // @PostConstruct runs after injection, so doing it here settles it once for every
+        // mapper, whatever calls it afterwards.
+        initializeMapper();
+        mapperService.register(getMapper());
+    }
 
     static Logger logger = LoggerFactory.getLogger(oeapiEndpointDTOService.class);
 
@@ -83,7 +105,7 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
     }
 
     public void initializeMapper() {
-        if (this.getMapper().getEnumService() == null) {
+        if (this.getMapper() != null && this.getMapper().getEnumService() == null) {
             this.getMapper().setEnumService(enumService);
         }
     }

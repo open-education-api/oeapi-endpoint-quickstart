@@ -205,8 +205,16 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
 
-        if (this.organization == null || this.organization.getOrganizationId() != organizationId) {
-            this.organization = organizationId == null ? null : new Organization(organizationId);
+        if (organizationId == null) {
+            this.organization = null;
+        } else if (this.organization == null
+                || !organizationId.equals(this.organization.getOrganizationId())) {
+            // Reference stub, so an id alone is enough on input. Never rebuild it over an
+            // organization already mapped for this id: on a read ModelMapper supplies the
+            // real one through setOrganization(), and replacing it would reduce
+            // ?expand=organization to a bare organizationId. The guard used "!=", which
+            // compares String references rather than contents and was therefore always true.
+            this.organization = new Organization(organizationId);
         }
     }
 

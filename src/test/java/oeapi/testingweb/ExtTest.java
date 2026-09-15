@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.TestInstance;
 
 /**
  * Regression tests for the free-form OOAPI {@code ext} attribute.
@@ -24,7 +26,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  *   Incorrect string value: '\xAC\xED\x00\x05sr...' for column 'ext' at row 1
  *
- * The bug stayed hidden because no template sent a top-level "ext": a null Ext
+ * The bug could stay hidden because no template sent a top-level "ext": a null Ext
  * is written as SQL NULL, so only a non-null value reaches the broken path.
  *
  * Reading the failures:
@@ -33,6 +35,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *     fine and the entity -> DTO mapping is dropping the Ext contents instead.
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ExtTest {
 
     Logger logger = LoggerFactory.getLogger(ExtTest.class);
@@ -43,6 +46,9 @@ class ExtTest {
     @Autowired
     private TestUtil TU;
 
+    @Autowired
+    private TestUtilCUDRest TUCudRest;
+
     @Test
     void ProgramExtRoundTrip() throws Exception {
 
@@ -52,6 +58,7 @@ class ExtTest {
         logStep("Create Program [" + id + "] carrying ext");
         post("/programs", TU.getPayload("program_template", "PROG", id, code))
                 .jsonPath("$.programId").isEqualTo(id);
+        TUCudRest.track("programs", id);
 
         logStep("Read Program [" + id + "] back and check ext survived the database");
         assertExt(get("/programs/" + id), "Pamplona", code);
@@ -66,6 +73,7 @@ class ExtTest {
         logStep("Create Program [" + id + "] carrying ext");
         post("/programs", TU.getPayload("program_template", "PROG", id, code))
                 .jsonPath("$.programId").isEqualTo(id);
+        TUCudRest.track("programs", id);
 
         String newCode = TU.genRandomCode();
 
@@ -86,6 +94,7 @@ class ExtTest {
         logStep("Create Course [" + id + "] carrying ext");
         post("/courses", TU.getPayload("course_template", "COURSE", id, code))
                 .jsonPath("$.courseId").isEqualTo(id);
+        TUCudRest.track("courses", id);
 
         logStep("Read Course [" + id + "] back and check ext survived the database");
         assertExt(get("/courses/" + id), "Pamplona", code);
@@ -102,6 +111,7 @@ class ExtTest {
         logStep("Create parent Course [" + courseId + "] for the offering");
         post("/courses", TU.getPayload("course_template", "COURSE", courseId, courseCode))
                 .jsonPath("$.courseId").isEqualTo(courseId);
+        TUCudRest.track("courses", courseId);
 
         String offeringPayload = new String(
                 Files.readAllBytes(Paths.get("src/test/resources/courseOffering_template.json")),
@@ -113,6 +123,7 @@ class ExtTest {
         logStep("Create Offering [" + offeringId + "] carrying ext");
         post("/offerings", offeringPayload)
                 .jsonPath("$.offeringId").isEqualTo(offeringId);
+        TUCudRest.track("offerings", offeringId);
 
         logStep("Read Offering [" + offeringId + "] back and check ext survived the database");
         assertExt(get("/offerings/" + offeringId), "Pamplona", offeringCode);
@@ -174,4 +185,15 @@ class ExtTest {
                 + "#                                                          #\n"
                 + "############################################################\n");
     }
+
+    /**
+     * Teardown. These tests used to leave their programs, courses and offerings behind;
+     * 
+     * Runs even when a test fails, and never asserts.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.cleanupCreated(webTestClient);
+    }
+
 }

@@ -2,8 +2,7 @@ package oeapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +46,12 @@ class KomTest {
         doAll("/academic-sessions", "academicSession");
         doAll("/courses", "course");
         doAll("/offerings", "offering");
+
+        logger.info("GET /program/{id}?expand=organization");
+        mockMvc.perform(get("/programs/" + extractId("program") + "?expand=organization"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json"))
+            .andExpect(jsonPath("$.organization.organizationType").value("root"));
     }
 
     private void doAll(String path, String resource, String altResource) throws Exception {
@@ -86,6 +91,11 @@ class KomTest {
 
     private String extractId(String content, String resource) throws Exception {
         return mapper.readTree(content).at("/" + resource + "Id").asText();
+    }
+
+    private String extractId(String resource) throws Exception {
+        String content = slurp("kom/" + resource + ".json");
+        return extractId(content, resource);
     }
 
     private String slurp(String path) throws IOException {

@@ -15,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.AfterAll;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProgramTest {
 
     Logger logger = LoggerFactory.getLogger(ProgramTest.class);
@@ -145,4 +148,15 @@ class ProgramTest {
             "############################################################\n");
     }      
     
+
+    /**
+     * Teardown. Tests in this class used to leave their entities in the database:
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.cleanupCreated(webTestClient);
+    }
+
 }
