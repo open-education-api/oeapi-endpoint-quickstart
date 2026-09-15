@@ -9,8 +9,8 @@ import jakarta.persistence.Converter;
 import java.util.List;
 import oeapi.model.Cost;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import jakarta.persistence.AttributeConverter;
 import oeapi.oeapiException;
