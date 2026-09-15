@@ -1,6 +1,6 @@
 package oeapi.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
@@ -50,7 +50,7 @@ public class oeapiListConverter<T> implements AttributeConverter<List<T>, String
 
         try {
             return objectMapper.writeValueAsString(attribute);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert attribute to JSON", e.getLocalizedMessage());
         }
     }
@@ -69,7 +69,7 @@ public class oeapiListConverter<T> implements AttributeConverter<List<T>, String
                     .constructCollectionType(List.class, targetType);
 
             return readMapper.readValue(json, listType);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             // When stored value uses an older or incompatible structure, rather
             // than throwing (which would break retrieval of the whole entity),
             // log it and treat this attribute as absent so legacy records keep

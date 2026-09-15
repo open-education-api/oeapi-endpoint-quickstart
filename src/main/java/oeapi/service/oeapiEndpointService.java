@@ -1,6 +1,6 @@
 package oeapi.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.lang.reflect.Method;
@@ -67,7 +67,7 @@ public abstract class oeapiEndpointService<T, R extends oeapiUnitaRepositoryBase
 
         try {
             item = objectMapper.readValue("{\"codeType\": \"identifier\",\"code\": \"" + code + "\"}", oeapiIdentifierEntry.class);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             logger.error(ex.getLocalizedMessage());
             return Page.empty(pageable);
         }
@@ -80,7 +80,7 @@ public abstract class oeapiEndpointService<T, R extends oeapiUnitaRepositoryBase
 
         try {
             item = objectMapper.readValue("{\"codeType\": \"identifier\",\"code\": \"" + code + "\"}", oeapiIdentifierEntry.class);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             logger.error(ex.getLocalizedMessage());
             return new ArrayList<T>();
         }

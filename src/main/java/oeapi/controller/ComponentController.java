@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import jakarta.validation.Valid;
 
@@ -58,7 +58,7 @@ public class ComponentController extends oeapiDTOController<Component, Component
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<?> get(@PathVariable String id) throws JsonProcessingException {
+    public ResponseEntity<?> get(@PathVariable String id) throws JacksonException {
         return super.get(id, service);
     }
 

@@ -11,7 +11,7 @@ import oeapi.model.Cost;
 
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
 import jakarta.persistence.AttributeConverter;
 import oeapi.oeapiException;
 import static oeapi.oeapiUtils.ooapiObjectMapper;
@@ -27,7 +27,7 @@ public class oeapiUnitaListCostConverter implements AttributeConverter<List<Cost
     public String convertToDatabaseColumn(List<Cost> attribute) {
         try {
             return attribute == null ? null : objectMapper.writeValueAsString(attribute);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert map to JSON", e.getLocalizedMessage());
         }
     }
@@ -36,7 +36,7 @@ public class oeapiUnitaListCostConverter implements AttributeConverter<List<Cost
     public List<Cost> convertToEntityAttribute(String dbData) {
         try {
             return dbData == null ? null : objectMapper.readValue(dbData, new TypeReferenceImpl());
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert JSON to name list", e.getLocalizedMessage());
         }
     }

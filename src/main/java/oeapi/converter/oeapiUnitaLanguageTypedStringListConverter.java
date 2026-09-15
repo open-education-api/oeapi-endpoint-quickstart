@@ -3,7 +3,7 @@ package oeapi.converter;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
 import java.util.List;
 import oeapi.model.oeapiLanguageTypedString;
 
@@ -21,7 +21,7 @@ public class oeapiUnitaLanguageTypedStringListConverter implements AttributeConv
     public String convertToDatabaseColumn(List<List<oeapiLanguageTypedString>> attribute) {
         try {
             return attribute == null ? null : objectMapper.writeValueAsString(attribute);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert name list to JSON", e.getLocalizedMessage());
         }
     }
@@ -30,7 +30,7 @@ public class oeapiUnitaLanguageTypedStringListConverter implements AttributeConv
     public List<List<oeapiLanguageTypedString>> convertToEntityAttribute(String dbData) {
         try {
             return dbData == null ? null : objectMapper.readValue(dbData, new TypeReferenceImpl());
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Failed to convert JSON to name list", e);
         }
     }

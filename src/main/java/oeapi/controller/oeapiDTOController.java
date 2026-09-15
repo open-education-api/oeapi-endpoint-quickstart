@@ -2,7 +2,7 @@ package oeapi.controller;
 
 import oeapi.controller.requestparameters.oeapiRequestParam;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.ObjectNode;
 import java.util.List;
@@ -135,7 +135,7 @@ public class oeapiDTOController<T, S> {
 
     }
 
-    public ResponseEntity<?> get(String id, @RequestParam(required = false) String expand, oeapiDTOServiceInterface<T, S> service) throws JsonProcessingException {
+    public ResponseEntity<?> get(String id, @RequestParam(required = false) String expand, oeapiDTOServiceInterface<T, S> service) throws JacksonException {
         Optional<T> p = service.getById(id);
         if (!p.isPresent()) return NotFound(id);
 
@@ -143,7 +143,7 @@ public class oeapiDTOController<T, S> {
         return ResponseEntity.ok(service.getMapper().toJSON(obj, expand));
     }
 
-    public ResponseEntity<?> get(String id, oeapiDTOServiceInterface<T, S> service) throws JsonProcessingException {
+    public ResponseEntity<?> get(String id, oeapiDTOServiceInterface<T, S> service) throws JacksonException {
         return get(id, null, service);
     }
 

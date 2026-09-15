@@ -3,7 +3,7 @@ package oeapi.controller;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class OfferingController extends oeapiDTOController<Offering, OfferingDTO
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand) throws JsonProcessingException {
+    public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand) throws JacksonException {
         return super.get(id, expand, offeringService);
     }
 

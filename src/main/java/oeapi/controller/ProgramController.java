@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import oeapi.model.Course;
 import oeapi.model.Offering;
@@ -80,7 +80,7 @@ public class ProgramController extends oeapiDTOController<Program, ProgramDTO> i
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand)
-            throws JsonProcessingException {
+            throws JacksonException {
         return super.get(id, expand, service);
     }
 

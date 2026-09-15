@@ -1,6 +1,6 @@
 package oeapi;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -75,7 +75,7 @@ public class oeapiUtils {
 
         try {
             jsonObjectAsString = objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             logger.error("Error converting JSON to String. " + ex.getLocalizedMessage());
         }
 

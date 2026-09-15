@@ -2,7 +2,7 @@ package oeapi.service;
 
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import org.springframework.data.domain.Page;
 
@@ -21,6 +21,6 @@ public interface oeapiDTOServiceInterface<T, S> extends oeapiServiceInterface<T>
 
     public oeapiDTOMapper<T, S> getMapper();
 
-    public String toJSON(T item) throws JsonProcessingException;
-    public String toJSON(T item , String expand) throws JsonProcessingException;
+    public String toJSON(T item) throws JacksonException;
+    public String toJSON(T item , String expand) throws JacksonException;
 }
