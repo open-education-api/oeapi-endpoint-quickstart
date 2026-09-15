@@ -90,7 +90,7 @@ class KomTest {
     }
 
     private String extractId(String content, String resource) throws Exception {
-        return mapper.readTree(content).at("/" + resource + "Id").asText();
+        return mapper.readTree(content).at("/" + resource + "Id").asString();
     }
 
     private String extractId(String resource) throws Exception {

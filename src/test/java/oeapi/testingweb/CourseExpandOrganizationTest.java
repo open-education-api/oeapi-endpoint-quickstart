@@ -5,6 +5,7 @@ import java.util.UUID;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -113,7 +114,8 @@ class CourseExpandOrganizationTest {
 
         get("/courses/" + courseId)
                 .jsonPath("$.organization").isEqualTo(orgId)
-                .jsonPath("$.organization").value(Matchers.instanceOf(String.class));
+                .jsonPath("$.organization")
+                        .value((Object organization) -> assertThat(organization, Matchers.instanceOf(String.class)));
     }
 
     /**
