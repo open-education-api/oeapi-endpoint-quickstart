@@ -301,6 +301,8 @@ The "right way" should be using a tool for testing APIs like HTTPie, Postman, et
 A small built‑in frontend is included to help you view and check the data in your OEAPI instance. You can access it at:
 http://localhost:57075/oeapi-td.html
 
+There is also an alternative frontend, made by SURFnet, but not specific to SURFnet, or Dutch institutes. It is a SPA which allows creating, viewing and editing persons, academic sessions, organizations, programs, courses and offerings. You can access it at http://localhost:57075/surfView.html. It uses the Spring API and respects the security mode defined in application.properties.
+
 
 # Configuration
 
