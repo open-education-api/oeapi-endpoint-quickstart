@@ -197,9 +197,9 @@ SurfView.AcademicSessions = (() => {
             successText: mode === 'edit' ? 'Saved' : 'Added',
             preserveArrayFields: ['name'],
             errorMessage: mode === 'edit' ? 'Unable to save academic session' : 'Unable to add academic session',
-            onSuccess: ({payload, updatedEntity: updatedAcademicSession}) => {
+            onSuccess: async ({payload, updatedEntity: updatedAcademicSession}) => {
                 const id = academicSessionIdValue(updatedAcademicSession) || payload.academicSessionId;
-                applySubmitEntitySuccess({
+                await applySubmitEntitySuccess({
                     kind: 'academicSession',
                     mode,
                     updatedEntity: updatedAcademicSession,
