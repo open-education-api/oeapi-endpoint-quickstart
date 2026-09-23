@@ -53,7 +53,7 @@ SurfView.Module = (() => {
         const nav = layout.querySelector('.detail-nav');
         nav.append(
             detailNavSectionElement('Language', languageDetailNavElement(code => `?${languageHrefQuery(kind, entityId(kind, module), code)}`)),
-            detailNavSectionElement(titleCase(kind), moduleSectionLinks({
+            detailNavSectionElement(titleCase(kind), moduleSectionLinks(kind, {
                 description,
                 hasRequirements,
                 hasLearningOutcomes,
@@ -61,29 +61,29 @@ SurfView.Module = (() => {
                 hasAssessment,
                 hasConsumers
             })),
-            detailNavSectionElement('Addresses', moduleAddressNavElement(module.addresses)),
+            detailNavSectionElement('Addresses', moduleAddressNavElement(kind, module.addresses)),
             detailNavSectionElement('Offerings', moduleOfferingNavElement(offerings, loadingOfferings))
         );
 
         const content = layout.querySelector('.detail-content');
-        const overview = detailSectionElement('course-overview', 'Overview');
+        const overview = detailSectionElement(`${kind}-overview`, 'Overview');
         const details = detailGridElement();
         details.append(...fields.map(([label, value]) => detailFieldElement(label, value)));
         overview.append(details);
         content.append(overview);
 
         if (description) {
-            const section = detailSectionElement('course-description', 'Description');
+            const section = detailSectionElement(`${kind}-description`, 'Description');
             section.append(detailValueElement(description));
             content.append(section);
         }
         if (hasRequirements) {
-            content.append(requirementsHtml(admissionRequirements, qualificationRequirements));
+            content.append(requirementsHtml(kind, admissionRequirements, qualificationRequirements));
         }
         [
-            [hasLearningOutcomes, 'course-learning-outcomes', 'Learning outcomes', learningOutcomes],
-            [hasEnrollment, 'course-enrollment', 'Enrollment', enrollment],
-            [hasAssessment, 'course-assessment', 'Assessment', assessment]
+            [hasLearningOutcomes, `${kind}-learning-outcomes`, 'Learning outcomes', learningOutcomes],
+            [hasEnrollment, `${kind}-enrollment`, 'Enrollment', enrollment],
+            [hasAssessment, `${kind}-assessment`, 'Assessment', assessment]
         ].forEach(([visible, id, heading, items]) => {
             if (visible) {
                 const section = detailSectionElement(id, heading);
@@ -92,29 +92,29 @@ SurfView.Module = (() => {
             }
         });
         if (hasConsumers) {
-            const section = detailSectionElement('course-consumers', 'Consumers');
+            const section = detailSectionElement(`${kind}-consumers`, 'Consumers');
             section.append(consumersHtml(module.consumers));
             content.append(section);
         }
         if (hasAddresses) {
-            const section = detailSectionElement('course-addresses', 'Addresses');
-            section.append(addressesHtml(module.addresses));
+            const section = detailSectionElement(`${kind}-addresses`, 'Addresses');
+            section.append(addressesHtml(module.addresses, {idPrefix: `${kind}-address`}));
             content.append(section);
         }
         content.append(moduleOfferingsSection(kind, moduleDetailId, offerings, loadingOfferings));
         return layout;
     }
 
-    function moduleSectionLinks(state) {
+    function moduleSectionLinks(kind, state) {
         const fragment = document.createDocumentFragment();
         [
-            ['course-overview', 'Overview', true],
-            ['course-description', 'Description', Boolean(state.description)],
-            ['course-requirements', 'Requirements', state.hasRequirements],
-            ['course-learning-outcomes', 'Learning outcomes', state.hasLearningOutcomes],
-            ['course-enrollment', 'Enrollment', state.hasEnrollment],
-            ['course-assessment', 'Assessment', state.hasAssessment],
-            ['course-consumers', 'Consumers', state.hasConsumers]
+            [`${kind}-overview`, 'Overview', true],
+            [`${kind}-description`, 'Description', Boolean(state.description)],
+            [`${kind}-requirements`, 'Requirements', state.hasRequirements],
+            [`${kind}-learning-outcomes`, 'Learning outcomes', state.hasLearningOutcomes],
+            [`${kind}-enrollment`, 'Enrollment', state.hasEnrollment],
+            [`${kind}-assessment`, 'Assessment', state.hasAssessment],
+            [`${kind}-consumers`, 'Consumers', state.hasConsumers]
         ].forEach(([id, label, visible]) => {
             if (visible) {
                 fragment.append(anchorElement(`#${id}`, label));
@@ -123,12 +123,12 @@ SurfView.Module = (() => {
         return fragment;
     }
 
-    function moduleAddressNavElement(addresses) {
+    function moduleAddressNavElement(kind, addresses) {
         if (!Array.isArray(addresses) || !addresses.length) {
             return textElement('span', 'No addresses', 'detail-nav-empty');
         }
         const fragment = document.createDocumentFragment();
-        addresses.forEach((address, index) => fragment.append(anchorElement(`#course-address-${index + 1}`, addressLabel(address, index))));
+        addresses.forEach((address, index) => fragment.append(anchorElement(`#${kind}-address-${index + 1}`, addressLabel(address, index))));
         return fragment;
     }
 
@@ -145,7 +145,7 @@ SurfView.Module = (() => {
     }
 
     function moduleOfferingsSection(kind, id, offerings, loading) {
-        const section = detailSectionElement('course-offerings');
+        const section = detailSectionElement(`${kind}-offerings`);
         const head = cloneTemplate('module-offerings-section-head-template', node => {
             const button = node.querySelector('[data-add-offering-kind]');
             if (!id || isReadOnlyMode()) {
@@ -199,8 +199,8 @@ SurfView.Module = (() => {
         return fragment;
     }
 
-    function requirementsHtml(admissionRequirements, qualificationRequirements) {
-        const section = detailSectionElement('course-requirements', 'Requirements');
+    function requirementsHtml(kind, admissionRequirements, qualificationRequirements) {
+        const section = detailSectionElement(`${kind}-requirements`, 'Requirements');
         if (admissionRequirements.length) {
             section.append(textElement('h4', 'Admission requirements'), languageTextSectionHtml(admissionRequirements));
         }
