@@ -5,5 +5,13 @@ services:
       - ./config/${ENV_TARGET:-test}/application-custom.properties:/config/application-custom.properties:rw
       - ./config/${ENV_TARGET:-test}/initial_org.json:/config/initial_org.json:rw
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${SERVER_PORT:?Run ./start_oeapi.sh on install instead of docker compose directly. It writes .env and config/<env>/ with your settings; docker compose alone cannot start a freshly cloned checkout. See README.md}:${SERVER_PORT}"
+      
+      # SERVER_PORT and ENV_TARGET live in .env, which ./start_oeapi.sh writes once the
+      # configuration under config/<env>/ exists - the script removes .env first, so its
+      # presence means "install completed". Requiring the variable here (":?") avoids that 
+      # a "docker compose up" could be done before endpoint is properly configured. It 
+      # gives a readable message instead of the "invalid proto:" error that an 
+      # empty ${SERVER_PORT} would produce, and stops before the volume mounts above 
+      # create empty directories where the config files should be.
 
