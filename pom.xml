@@ -26,17 +26,16 @@
        <java.version>17</java.version>
 
     <!--
-      The tomcat.version override is gone: it raised 10.1.55 to 10.1.59 for
-      Apache Tomcat security fixes, and Boot 4.1 manages Tomcat 11 (Servlet 6.1
-      / Jakarta EE 11). Pinning 10.1.x across that boundary would be a downgrade
-      through a major version.
-
       jackson-bom.version now names JACKSON 3 in Boot 4. The Jackson 2 line,
       still managed for libraries that have not moved (jjwt's serializer, among
       others), moved to jackson-2-bom.version - which is where this override,
       also a security bump, belongs now.
     -->
        <jackson-2-bom.version>2.21.5</jackson-2-bom.version>
+       <!-- Fix CVE-2026-65182, CVE-2026-65183, CVE-2026-65905, CVE-2026-65637, CVE-2026-66422, CVE-2026-68525, and CVE-2026-68569 -->
+       <tomcat.version>11.0.26</tomcat.version>
+       <!-- Fix CVE-2026-89044 -->
+       <netty.version>4.2.18.Final</netty.version>
        <log4j2.version>2.26.1</log4j2.version>
     </properties>
 

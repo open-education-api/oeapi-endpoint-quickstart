@@ -29,4 +29,32 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-(config|core|crypto|web)@.*$</packageUrl>
         <cve>CVE-2026-22748</cve>
     </suppress>
+       
+    <suppress>
+        <notes><![CDATA[
+        False positive: CVE-2022-31691 applies to Spring Tools 4 for Eclipse
+        and Spring Boot Tools VS Code extensions, not to
+        org.springframework.boot:spring-boot-devtools.
+        Verified against Spring's official CVE advisory.
+        ]]></notes>
+        <packageUrl>pkg:maven/org.springframework.boot/spring-boot-devtools@4.1.1</packageUrl>
+        <cve>CVE-2022-31691</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+        Worth upgrading, but not necessarily an externally 
+        exploitable vulnerability in this REST service. 
+        Fix would require at least MySQL 8.4+ (not granted in
+        all cases yet)                   
+        TEMPORARY: MySQL Connector/J upgrade pending.
+        Remove this suppression after upgrading from 9.7.0.
+        ]]></notes>
+        <gav>com.mysql:mysql-connector-j:9.7.0</gav>
+        <cve>CVE-2026-60586</cve>
+        <cve>CVE-2026-60623</cve>
+        <cve>CVE-2026-60624</cve>
+        <cve>CVE-2026-61082</cve>
+    </suppress>
+            
 </suppressions>
