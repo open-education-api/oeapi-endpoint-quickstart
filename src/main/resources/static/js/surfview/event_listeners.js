@@ -146,6 +146,22 @@ modalBody.addEventListener('click', event => {
     updateEntityUrl(SurfView.State.currentModalKind, entityId(SurfView.State.currentModalKind, SurfView.State.currentModalEntity), SurfView.State.currentModalLanguage);
 });
 
+modalBody.addEventListener('click', event => {
+    const link = event.target.closest('.detail-nav a[href^="#"]:not([data-language-code])');
+    if (!link || !modalBody.contains(link)) {
+        return;
+    }
+
+    const target = document.getElementById(link.getAttribute('href').slice(1));
+    const content = link.closest('.detail-layout')?.querySelector('.detail-content');
+    if (!content || !target || !content.contains(target)) {
+        return;
+    }
+
+    event.preventDefault();
+    content.scrollTop += target.getBoundingClientRect().top - content.getBoundingClientRect().top - 18;
+});
+
 delegateClick(modalBody, {
     '[data-cancel-entity-edit]': () => closeEntityEditForm()
 });
