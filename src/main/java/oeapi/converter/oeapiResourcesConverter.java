@@ -1,12 +1,12 @@
 
 package oeapi.converter;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
 import java.util.List;
 import oeapi.oeapiException;
 import static oeapi.oeapiUtils.ooapiObjectMapper;
@@ -21,7 +21,7 @@ public class oeapiResourcesConverter implements AttributeConverter<List<String>,
     public String convertToDatabaseColumn(List<String> attribute) {
         try {
             return attribute == null ? null : objectMapper.writeValueAsString(attribute);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert name list to JSON", e.getLocalizedMessage());
         }
     }
@@ -30,7 +30,7 @@ public class oeapiResourcesConverter implements AttributeConverter<List<String>,
     public List<String> convertToEntityAttribute(String dbData) {
         try {
             return dbData == null ? null : objectMapper.readValue(dbData, new TypeReferenceImpl());
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert JSON to name list", e.getLocalizedMessage());
         }
     }

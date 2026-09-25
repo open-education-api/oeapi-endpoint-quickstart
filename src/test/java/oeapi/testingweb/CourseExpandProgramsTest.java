@@ -2,9 +2,10 @@ package oeapi.testingweb;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
@@ -39,6 +41,7 @@ import org.junit.jupiter.api.AfterAll;
  *     so the entity does not serialize it at all, while ProgramDTO publishes it as the
  *     organizationId - which makes it a reliable tell for which of the two shapes came back.
  */
+@AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -125,7 +128,8 @@ class CourseExpandProgramsTest {
         get("/courses/" + courseId)
                 .jsonPath("$.programs.length()").isEqualTo(1)
                 .jsonPath("$.programs[0]").isEqualTo(progId)
-                .jsonPath("$.programs[0]").value(Matchers.instanceOf(String.class));
+                .jsonPath("$.programs[0]")
+                        .value((Object program) -> assertThat(program, Matchers.instanceOf(String.class)));
     }
 
     /**

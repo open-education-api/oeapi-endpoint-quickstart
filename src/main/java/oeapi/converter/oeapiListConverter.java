@@ -1,10 +1,10 @@
 package oeapi.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
 import java.util.List;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -26,15 +26,19 @@ public class oeapiListConverter<T> implements AttributeConverter<List<T>, String
 
     private final ObjectMapper objectMapper = ooapiObjectMapper();
 
-    // More tolerant mapper used ONLY when READING JSON back from the DB, so that
+    // More tolerant view used ONLY when READING JSON back from the DB, so that
     // records written with an older/different structure (e.g. a new attribute
     // that did not exist yet, a removed field, or a single object where a list
     // is now expected) can still be retrieved instead of failing the request.
-    // Copied from the shared mapper so registered modules (JavaTime, etc.) are
-    // preserved; feature changes here do NOT affect the shared singleton.
-    private final ObjectMapper readMapper = ooapiObjectMapper().copy()
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+    //
+    // An ObjectReader rather than a copied mapper: a Jackson 3 ObjectMapper is
+    // immutable and copy() no longer exists. A reader IS the per-read view of the
+    // shared mapper - it inherits its whole configuration, and these two feature
+    // overrides apply here only, which is exactly what the copy was for.
+    private final ObjectReader readReader = ooapiObjectMapper()
+            .reader()
+            .without(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .with(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
     private final Class<T> targetType;
 
@@ -50,7 +54,7 @@ public class oeapiListConverter<T> implements AttributeConverter<List<T>, String
 
         try {
             return objectMapper.writeValueAsString(attribute);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert attribute to JSON", e.getLocalizedMessage());
         }
     }
@@ -65,11 +69,13 @@ public class oeapiListConverter<T> implements AttributeConverter<List<T>, String
         }
 
         try {
-            JavaType listType = TypeFactory.defaultInstance()
+            // TypeFactory.defaultInstance() is gone in Jackson 3; the mapper's own
+            // factory is the right one to ask anyway.
+            JavaType listType = objectMapper.getTypeFactory()
                     .constructCollectionType(List.class, targetType);
 
-            return readMapper.readValue(json, listType);
-        } catch (JsonProcessingException e) {
+            return readReader.forType(listType).readValue(json);
+        } catch (JacksonException e) {
             // When stored value uses an older or incompatible structure, rather
             // than throwing (which would break retrieval of the whole entity),
             // log it and treat this attribute as absent so legacy records keep

@@ -1,9 +1,9 @@
 package oeapi;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -54,14 +54,23 @@ public class oeapiUtils {
     private static final String SPECIAL = "!@#$%^&*()_+";
 
     /* Useful to customize ObjectMapper. For example for Java 8 issues
+     *
+     * A Jackson 3 mapper is immutable: there is no disable() or registerModule() to call
+     * after construction, so the configuration moves into the builder. The return type stays
+     * ObjectMapper because JsonMapper is one, which leaves every caller - the nine attribute
+     * converters, debugJSON, the schema validator - unchanged.
      */
     public static ObjectMapper ooapiObjectMapper() {
 
         if (customObjectMapper == null) {
-            customObjectMapper = new ObjectMapper();
-            customObjectMapper.registerModule(new JavaTimeModule());
-            customObjectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-            customObjectMapper.writerWithDefaultPrettyPrinter();
+            customObjectMapper = JsonMapper.builder()
+                    // Java 8 date/time is built into jackson-databind now, so there is no
+                    // JavaTimeModule to register. WRITE_DATES_AS_TIMESTAMPS moved from
+                    // SerializationFeature to DateTimeFeature; it is disabled here as before,
+                    // and remains disabled by default in Jackson 3 - stated rather than
+                    // assumed, because this mapper writes the JSON columns.
+                    .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                    .build();
         }
         return customObjectMapper;
     }
@@ -75,7 +84,7 @@ public class oeapiUtils {
 
         try {
             jsonObjectAsString = objectMapper.writeValueAsString(object);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             logger.error("Error converting JSON to String. " + ex.getLocalizedMessage());
         }
 

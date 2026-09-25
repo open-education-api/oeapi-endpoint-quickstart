@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -84,7 +84,7 @@ public class OrganizationController extends oeapiDTOController<Organization, Org
 
     @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> getOrganization(@PathVariable String id,
-            @RequestParam(required = false) String expand) throws JsonProcessingException {
+            @RequestParam(required = false) String expand) throws JacksonException {
         return super.get(id, expand, organizationService);
     }
 

@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectWriter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -296,7 +296,7 @@ public class Course extends oeapiEducation {
 
         try {
             jsonCourse = ow.writeValueAsString(this);
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             logger.error("Course toString Error: " + ex);
         }
 

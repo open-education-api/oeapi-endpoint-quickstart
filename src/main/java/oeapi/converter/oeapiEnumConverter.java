@@ -1,6 +1,6 @@
 package oeapi.converter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import jakarta.persistence.AttributeConverter;
 import oeapi.model.oeapiUnitaEnumeration;

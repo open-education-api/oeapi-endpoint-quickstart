@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -282,7 +282,7 @@ public class oeapiDTOMapper<T, S> {
 
     private ObjectMapper objectMapper = oeapiUtils.ooapiObjectMapper();
 
-    public String toJSON(T e, String expand) throws JsonProcessingException {
+    public String toJSON(T e, String expand) throws JacksonException {
         S dto = this.toDTO(e);
 
         ObjectNode node = objectMapper.valueToTree(dto);

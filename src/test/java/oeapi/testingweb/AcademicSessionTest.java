@@ -11,18 +11,19 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+@AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class AcademicSessionTest {
     @Test
@@ -45,8 +46,9 @@ class AcademicSessionTest {
                 }
                 """;
 
-        ObjectMapper objectMapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule());
+        // Nothing to register: Java 8 date/time support is built into jackson-databind
+        // in Jackson 3, so the module that used to be added here no longer exists.
+        ObjectMapper objectMapper = new ObjectMapper();
 
         AcademicSession academicSession = assertDoesNotThrow(
                 () -> objectMapper.readValue(payload, AcademicSession.class));

@@ -1,7 +1,7 @@
 package oeapi.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import oeapi.oeapiException;
 import static oeapi.oeapiUtils.ooapiObjectMapper;
@@ -29,7 +29,7 @@ public class oeapiConverter<T> implements AttributeConverter<T, String> {
 
         try {
             return objectMapper.writeValueAsString(attribute);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert attribute to JSON", e.getLocalizedMessage());
         }
     }
@@ -43,7 +43,7 @@ public class oeapiConverter<T> implements AttributeConverter<T, String> {
 
         try {
             return objectMapper.readValue(json, targetType);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to convert JSON to attribute", e.getLocalizedMessage());
         }
     }

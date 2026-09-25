@@ -49,7 +49,7 @@ import oeapi.service.CourseService;
 import oeapi.service.OfferingService;
 import oeapi.service.oeapiEnumConversionService;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 
 /**
  * The type Courses controller.
@@ -93,7 +93,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
     @GetMapping(value = "/{id}", produces = "application/json")
 
     public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand)
-            throws JsonProcessingException {
+            throws JacksonException {
         return super.get(id, expand, courseService);
     }
 

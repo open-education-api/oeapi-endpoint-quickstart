@@ -3,8 +3,10 @@ package oeapi.testingweb;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
@@ -47,6 +50,7 @@ import org.junit.jupiter.api.AfterAll;
  *   - children absent on the root -> ModelMapper is not populating the DTO's children list;
  *   - expand returning ids -> the expandable field is not public, so Class.getField() missed it.
  */
+@AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -141,7 +145,8 @@ class OrganizationParentChildTest {
                 .jsonPath("$.organizationId").isEqualTo(rootId)
                 .jsonPath("$.children").exists()
                 .jsonPath("$.children.length()").isEqualTo(2)
-                .jsonPath("$.children").value(Matchers.<String>hasItems(childAId, childBId));
+                .jsonPath("$.children")
+                        .value((List<String> children) -> assertThat(children, Matchers.hasItems(childAId, childBId)));
     }
 
     /**
@@ -191,7 +196,7 @@ class OrganizationParentChildTest {
         get("/organizations/" + rootId + "?expand=children")
                 .jsonPath("$.children.length()").isEqualTo(2)
                 .jsonPath("$.children[*].organizationId")
-                        .value(Matchers.<String>hasItems(childAId, childBId))
+                        .value((List<String> ids) -> assertThat(ids, Matchers.hasItems(childAId, childBId)))
                 .jsonPath("$.children[0].primaryCode.code").exists()
                 .jsonPath("$.children[0].parent").isEqualTo(rootId)
                 // Enum-backed fields must be resolved on the expanded objects too, not left
@@ -227,7 +232,8 @@ class OrganizationParentChildTest {
         logStep("Read child [" + childAId + "] without expand");
 
         get("/organizations/" + childAId)
-                .jsonPath("$.parent").value(Matchers.instanceOf(String.class));
+                .jsonPath("$.parent")
+                        .value((Object parent) -> assertThat(parent, Matchers.instanceOf(String.class)));
     }
 
 
@@ -259,7 +265,8 @@ class OrganizationParentChildTest {
                 .exchange()
                 .expectStatus().is4xxClientError()
                 .expectBody()
-                .jsonPath("$.title").value(Matchers.containsString("cannot be parent of itself"));
+                .jsonPath("$.title")
+                        .value((String title) -> assertThat(title, Matchers.containsString("cannot be parent of itself")));
 
         logStep("And it must not have been created");
 

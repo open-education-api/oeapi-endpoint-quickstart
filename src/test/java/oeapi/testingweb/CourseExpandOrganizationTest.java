@@ -2,9 +2,10 @@ package oeapi.testingweb;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
@@ -39,6 +41,7 @@ import org.junit.jupiter.api.AfterAll;
  *   - "organizationType" absent or a number -> the value was serialized as the entity rather
  *     than mapped through its DTO (oeapiDTOMapperService).
  */
+@AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -111,7 +114,8 @@ class CourseExpandOrganizationTest {
 
         get("/courses/" + courseId)
                 .jsonPath("$.organization").isEqualTo(orgId)
-                .jsonPath("$.organization").value(Matchers.instanceOf(String.class));
+                .jsonPath("$.organization")
+                        .value((Object organization) -> assertThat(organization, Matchers.instanceOf(String.class)));
     }
 
     /**

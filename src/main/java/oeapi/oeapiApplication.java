@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -13,12 +14,14 @@ import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer;
+import tools.jackson.databind.ext.javatime.deser.LocalTimeDeserializer;
+import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
+import tools.jackson.databind.ext.javatime.ser.LocalTimeSerializer;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -29,13 +32,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import oeapi.model.Organization;
@@ -205,21 +207,41 @@ public class oeapiApplication {
         };
     }
 
+    /**
+     * The OOAPI date and time formats on the wire.
+     *
+     * <p>Boot 4 renames the hook - Jackson2ObjectMapperBuilderCustomizer becomes
+     * JsonMapperBuilderCustomizer - and hands over Jackson's own JsonMapper.Builder instead
+     * of Spring's Jackson2ObjectMapperBuilder. That builder has no serializers() /
+     * deserializers() shortcut, so the four serializers are carried by a module, which is
+     * what those shortcuts did underneath anyway.</p>
+     *
+     * <p>This bean is the reason the migration cannot be judged by whether it compiles.
+     * Jackson 3 writes dates as ISO-8601 strings by default where Jackson 2 wrote numeric
+     * timestamps; these formatters are what keep the responses OOAPI-shaped, and if they
+     * stop being applied nothing fails to build - the dates just come out wrong. Check
+     * an academicSession and a courseOffering by hand after this lands.</p>
+     */
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-        return new Jackson2ObjectMapperBuilderCustomizer() {
+    public JsonMapperBuilderCustomizer jsonCustomizer() {
+        return new JsonMapperBuilderCustomizer() {
             @Override
-            public void customize(Jackson2ObjectMapperBuilder builder) {
-                // Custom Date format for LocalDate
+            public void customize(JsonMapper.Builder builder) {
 
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
-                builder.deserializers(new LocalDateDeserializer(dateFormatter));
-                builder.serializers(new LocalDateSerializer(dateFormatter));
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
+
+                SimpleModule ooapiDateFormats = new SimpleModule("ooapi-date-formats");
+
+                // Custom Date format for LocalDate
+                ooapiDateFormats.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
+                ooapiDateFormats.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
 
                 // Custom Time format for LocalTime
-                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(timeFormat);
-                builder.deserializers(new LocalTimeDeserializer(timeFormatter));
-                builder.serializers(new LocalTimeSerializer(timeFormatter));
+                ooapiDateFormats.addSerializer(LocalTime.class, new LocalTimeSerializer(timeFormatter));
+                ooapiDateFormats.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
+
+                builder.addModule(ooapiDateFormats);
             }
         };
     }

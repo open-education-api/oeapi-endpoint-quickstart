@@ -1,7 +1,7 @@
 package oeapi.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -137,12 +137,12 @@ public abstract class oeapiEndpointDTOService<T, R extends oeapiUnitaRepositoryB
         //return mapper.Clean(dtoPages);
     }
 
-    public String toJSON(T item) throws JsonProcessingException {
+    public String toJSON(T item) throws JacksonException {
         initializeMapper();
         return getMapper().toJSON(item, null);
     }
 
-    public String toJSON(T item, String expand) throws JsonProcessingException {
+    public String toJSON(T item, String expand) throws JacksonException {
         initializeMapper();
         return getMapper().toJSON(item, expand);
     }
