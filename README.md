@@ -1,5 +1,6 @@
 
 
+
 # Open Education API Implementation Quickstart
  
 
@@ -30,13 +31,21 @@ git clone https://github.com/open-education-api/oeapi-endpoint-quickstart.git
 
 cd oeapi-endpoint-quickstart 
 
-./start_oeapi.sh   # And select option 1)  (try and test) 
+./start_oeapi.sh   # And select your option; try and test, devel, prod..) 
 
-
-# Depending on your platform the command could be "docker-compose up"
 
 ```
 (The application might restart several times at startup waiting to MySQL to be up)
+
+At installation, start it with `./start_oeapi.sh`, not with `docker compose up` 
+directly. 
+
+A freshly cloned checkout has no `.env` and no `config/` directory: the script 
+creates both (choosing the port, the environment and the database settings) and 
+then calls docker compose for you. Running docker compose on its own stops 
+with a message telling you the same thing.
+
+Once the endpoint has been configured, `docker compose up` works as usual - or use option 4) of the script, which restarts your last configuration.
 
 Using the default configuration the service is accesible at http://localhost:57075
 
@@ -54,12 +63,18 @@ git clone -b devel https://github.com/open-education-api/oeapi-endpoint-quicksta
 
 cd oeapi-endpoint-quickstart 
 
-docker compose up
+./start_oeapi.sh   # And select option 1)  (try and test) 
 
-# Depending on your platform the command could be "docker-compose up"
 
 ```
 (The application might restart several times at startup waiting to MySQL to be up)
+
+At installation, start it with `./start_oeapi.sh`, not with `docker compose up` 
+directly. 
+A freshly cloned checkout has no `.env` and no `config/` directory: the script 
+creates both (choosing the port, the environment and the database settings) and 
+then calls docker compose for you. Running docker compose on its own stops 
+with a message telling you the same thing.
 
 Please note that this is a development version, not intended for production use. It may be unstable, inconsistent, or incomplete
 
