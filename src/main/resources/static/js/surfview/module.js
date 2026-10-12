@@ -95,7 +95,7 @@ SurfView.Module = (() => {
             }
         });
         if (hasResources) {
-            const section = detailSectionElement('course-resources', 'Resources');
+            const section = detailSectionElement('module-resources', 'Resources');
             section.append(...resources.map(resource => detailValueElement(resource)));
             content.append(section);
         }
@@ -122,7 +122,7 @@ SurfView.Module = (() => {
             [`${kind}-learning-outcomes`, 'Learning outcomes', state.hasLearningOutcomes],
             [`${kind}-enrollment`, 'Enrollment', state.hasEnrollment],
             [`${kind}-assessment`, 'Assessment', state.hasAssessment],
-            ['course-resources', 'Resources', state.hasResources],
+            ['module-resources', 'Resources', state.hasResources],
             [`${kind}-consumers`, 'Consumers', state.hasConsumers]
         ].forEach(([id, label, visible]) => {
             if (visible) {
