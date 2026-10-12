@@ -47,6 +47,8 @@ SurfView.Module = (() => {
         const hasAssessment = assessment.length > 0;
         const hasQualificationRequirements = qualificationRequirements.length > 0;
         const hasRequirements = hasAdmissionRequirements || hasQualificationRequirements;
+        const resources = (Array.isArray(module.resources) ? module.resources : []).filter(Boolean);
+        const hasResources = resources.length > 0;
         const hasConsumers = Array.isArray(module.consumers) && module.consumers.length > 0;
         const moduleDetailId = entityId(kind, module);
         const layout = cloneTemplate('detail-layout-template', null, {navLabel: `${titleCase(kind)} detail sections`});
@@ -59,6 +61,7 @@ SurfView.Module = (() => {
                 hasLearningOutcomes,
                 hasEnrollment,
                 hasAssessment,
+                hasResources,
                 hasConsumers
             })),
             detailNavSectionElement('Addresses', moduleAddressNavElement(kind, module.addresses)),
@@ -91,6 +94,11 @@ SurfView.Module = (() => {
                 content.append(section);
             }
         });
+        if (hasResources) {
+            const section = detailSectionElement('course-resources', 'Resources');
+            section.append(...resources.map(resource => detailValueElement(resource)));
+            content.append(section);
+        }
         if (hasConsumers) {
             const section = detailSectionElement(`${kind}-consumers`, 'Consumers');
             section.append(consumersHtml(module.consumers));
@@ -114,6 +122,7 @@ SurfView.Module = (() => {
             [`${kind}-learning-outcomes`, 'Learning outcomes', state.hasLearningOutcomes],
             [`${kind}-enrollment`, 'Enrollment', state.hasEnrollment],
             [`${kind}-assessment`, 'Assessment', state.hasAssessment],
+            ['course-resources', 'Resources', state.hasResources],
             [`${kind}-consumers`, 'Consumers', state.hasConsumers]
         ].forEach(([id, label, visible]) => {
             if (visible) {
@@ -292,6 +301,7 @@ SurfView.Module = (() => {
             }),
             fieldLabelHtml('Link', 'url', 'link', module.link || '', {placeholder: 'https://'}, 'full-width'),
             moduleAddressListPanel.panel(),
+            moduleArrayField('Resources', 'resources', module.resources),
             coordinatorsPanel,
             moduleConsumersPanel(module),
             entityEditFormActions(mode === 'edit' ? 'Save' : 'Add')
@@ -702,6 +712,7 @@ SurfView.Module = (() => {
         payload.organization = value('organization');
         payload.link = value('link');
         payload.addresses = structuredClone(SurfView.State.draftEntity.addresses);
+        payload.resources = moduleArrayValues(form, 'resources');
         payload.coordinators = moduleCoordinatorValues(form);
         payload.consumers = moduleConsumersFromForm(form, originalModule);
 
