@@ -237,6 +237,7 @@ SurfView.Module = (() => {
 
     function moduleEditFormHtml(kind, module, mode = 'edit') {
         moduleDraftLanguageController.initialize({kind, module});
+        SurfView.State.draftEntity.addresses = Array.isArray(module.addresses) ? structuredClone(module.addresses) : [];
         const id = entityId(kind, module);
         const studyLoad = module.studyLoad || {};
         const studyLoadUnit = studyLoad.studyLoadUnit || studyLoad.unit || 'ects';
@@ -290,6 +291,7 @@ SurfView.Module = (() => {
                 options: SurfView.Organizations.organizationOptionEntries(organizationIdValue(module.organization))
             }),
             fieldLabelHtml('Link', 'url', 'link', module.link || '', {placeholder: 'https://'}, 'full-width'),
+            moduleAddressListPanel.panel(),
             coordinatorsPanel,
             moduleConsumersPanel(module),
             entityEditFormActions(mode === 'edit' ? 'Save' : 'Add')
@@ -492,6 +494,20 @@ SurfView.Module = (() => {
         focusField: 'name'
     });
 
+    const moduleAddressListPanel = createDraftAddressListPanel({
+        summaryId: 'module-address-summary',
+        nestedType: 'module-address',
+        items: () => SurfView.State.draftEntity.addresses,
+        languages: () => SurfView.State.draftEntity.languages,
+        language: () => SurfView.State.draftEntity.language,
+        subtitle: () => {
+            const kind = SurfView.State.currentModalKind;
+            return `${titleCase(kind)} ID: ${entityId(kind, SurfView.State.currentModalEntity || {}) || ''}`;
+        },
+        editAttribute: 'data-edit-module-address-index',
+        deleteAttribute: 'data-delete-module-address-index'
+    });
+
     function renderModuleLanguagePanel(kind) {
         const panel = document.querySelector('[data-module-localized-panel]');
         const replacement = moduleLanguagePanel(kind, SurfView.State.currentModalEntity || {});
@@ -685,6 +701,7 @@ SurfView.Module = (() => {
         payload.sector = value('sector');
         payload.organization = value('organization');
         payload.link = value('link');
+        payload.addresses = structuredClone(SurfView.State.draftEntity.addresses);
         payload.coordinators = moduleCoordinatorValues(form);
         payload.consumers = moduleConsumersFromForm(form, originalModule);
 
@@ -763,7 +780,10 @@ SurfView.Module = (() => {
             '[data-module-language-code]': button => moduleDraftLanguageController.switchLanguage(button.dataset.moduleLanguageCode),
             '[data-delete-module-array-value]': button => button.closest('.module-array-chip')?.remove(),
             '[data-add-module-coordinator]': button => addModuleCoordinator(button),
-            '[data-delete-module-coordinator]': button => deleteModuleCoordinator(button)
+            '[data-delete-module-coordinator]': button => deleteModuleCoordinator(button),
+            '[data-open-nested-offering="module-address"]': () => openNestedAddressModal(moduleAddressListPanel.target()),
+            '[data-edit-module-address-index]': button => openNestedAddressModal(moduleAddressListPanel.target(), {index: button.dataset.editModuleAddressIndex}),
+            '[data-delete-module-address-index]': button => moduleAddressListPanel.deleteItem(button.dataset.deleteModuleAddressIndex)
         });
 
         modalBody.addEventListener('keydown', event => {
