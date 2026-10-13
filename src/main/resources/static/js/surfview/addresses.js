@@ -42,7 +42,7 @@ function addressDetailsFields(address = {}) {
 
 /** Builds read-only address detail sections. */
 function addressesHtml(addresses, options = {}) {
-    const idPrefix = options.idPrefix || 'course-address';
+    const idPrefix = options.idPrefix || 'address';
     const fragment = document.createDocumentFragment();
     addresses.forEach((address, index) => {
         const article = createElement(`article#${idPrefix}-${index + 1}.offering-card`);
