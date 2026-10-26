@@ -1,14 +1,15 @@
 window.SurfView = window.SurfView || {};
 
-/** Loads all persons into the lookup cache. */
-async function loadPersons() {
-    if (personsLoadPromise) {
+/** Loads all persons into the lookup cache, reusing a load started less than maxAgeMs ago. */
+async function loadPersons({maxAgeMs = Infinity} = {}) {
+    if (personsLoadPromise && Date.now() - personsLoadStartedAt < maxAgeMs) {
         return personsLoadPromise;
     }
 
+    personsLoadStartedAt = Date.now();
     personsLoadPromise = (async () => {
-        personById.clear();
         const items = await loadAllEndpointItems('/persons');
+        personById.clear();
         items.forEach(person => {
             const id = entityId('person', person);
             if (id) {

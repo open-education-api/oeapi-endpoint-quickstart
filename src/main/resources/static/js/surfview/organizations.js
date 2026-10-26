@@ -1,14 +1,15 @@
 window.SurfView = window.SurfView || {};
 
-/** Loads all organizations into the lookup cache. */
-async function loadOrganizations() {
-    if (organizationsLoadPromise) {
+/** Loads all organizations into the lookup cache, reusing a load started less than maxAgeMs ago. */
+async function loadOrganizations({maxAgeMs = Infinity} = {}) {
+    if (organizationsLoadPromise && Date.now() - organizationsLoadStartedAt < maxAgeMs) {
         return organizationsLoadPromise;
     }
 
+    organizationsLoadStartedAt = Date.now();
     organizationsLoadPromise = (async () => {
-        organizationsById.clear();
         const items = await loadAllEndpointItems('/organizations');
+        organizationsById.clear();
         items.forEach(organization => {
             const id = organizationIdValue(organization);
             if (id) {

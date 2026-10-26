@@ -37,6 +37,9 @@ const tabButtons = [...document.querySelectorAll('.tab-button')];
 let organizationsLoadPromise = null;
 let academicSessionsLoadPromise = null;
 let personsLoadPromise = null;
+let organizationsLoadStartedAt = 0;
+let academicSessionsLoadStartedAt = 0;
+let personsLoadStartedAt = 0;
 
 window.SurfView = window.SurfView || {};
 

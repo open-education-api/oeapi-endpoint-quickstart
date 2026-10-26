@@ -1,14 +1,15 @@
 window.SurfView = window.SurfView || {};
 
-/** Loads all academic sessions into the lookup cache. */
-async function loadAcademicSessions() {
-    if (academicSessionsLoadPromise) {
+/** Loads all academic sessions into the lookup cache, reusing a load started less than maxAgeMs ago. */
+async function loadAcademicSessions({maxAgeMs = Infinity} = {}) {
+    if (academicSessionsLoadPromise && Date.now() - academicSessionsLoadStartedAt < maxAgeMs) {
         return academicSessionsLoadPromise;
     }
 
+    academicSessionsLoadStartedAt = Date.now();
     academicSessionsLoadPromise = (async () => {
-        academicSessionsById.clear();
         const items = await loadAllEndpointItems('/academic-sessions');
+        academicSessionsById.clear();
         items.forEach(academicSession => {
             const id = academicSessionIdValue(academicSession);
             if (id) {

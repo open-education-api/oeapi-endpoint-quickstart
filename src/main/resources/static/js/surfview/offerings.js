@@ -344,20 +344,11 @@ SurfView.Offerings = (() => {
         languages: () => SurfView.State.currentModalLanguages.length ? [...SurfView.State.currentModalLanguages] : ['en-GB'],
         value: (offering, field, language) => textValueForLanguage(offering[field], language),
         afterSwitch: form => {
-            if (form.elements.organization) {
-                const selectedOrganizationId = form.elements.organization.value;
-                form.elements.organization.replaceChildren(
-                    ...enumOptionsHtml(SurfView.Organizations.organizationOptionEntries(selectedOrganizationId), selectedOrganizationId)
-                );
-                form.elements.organization.value = selectedOrganizationId;
-            }
-            if (form.elements.academicSessionId) {
-                const selectedAcademicSessionId = form.elements.academicSessionId.value;
-                form.elements.academicSessionId.replaceChildren(
-                    ...enumOptionsHtml(SurfView.AcademicSessions.academicSessionOptionEntries(selectedAcademicSessionId), selectedAcademicSessionId)
-                );
-                form.elements.academicSessionId.value = selectedAcademicSessionId;
-            }
+            ['organization', 'academicSessionId'].forEach(name => {
+                if (form.elements[name]) {
+                    rebuildLookupSelect(form.elements[name]);
+                }
+            });
             renderNestedOfferingSummaries();
         }
     });

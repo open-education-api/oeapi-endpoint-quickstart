@@ -339,18 +339,9 @@ SurfView.Module = (() => {
     function refreshCoordinatorSelect(scope = document) {
         const panel = scope.closest?.('.module-coordinators-panel') || scope.querySelector?.('.module-coordinators-panel') || scope;
         const select = panel.querySelector?.('[data-module-coordinator-select]');
-        const addButton = panel.querySelector?.('[data-add-module-coordinator]');
-        if (!select || !addButton) {
-            return;
+        if (select) {
+            rebuildLookupSelect(select, '');
         }
-
-        const options = SurfView.Persons.personOptionEntries({
-            excludedPersonIds: moduleCoordinatorValues(panel)
-        });
-
-        select.replaceChildren(...enumOptionsHtml(options, ''));
-        select.value = '';
-        addButton.disabled = options.length <= 1;
     }
 
     function addModuleCoordinator(button) {
@@ -813,6 +804,7 @@ SurfView.Module = (() => {
         closeModuleEditForm,
         modulePayloadFromForm,
         submitModuleForm,
+        moduleCoordinatorValues,
         initEventListeners
     };
 
