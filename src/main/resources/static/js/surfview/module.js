@@ -537,10 +537,7 @@ SurfView.Module = (() => {
             return;
         }
 
-        await preloadLookups([
-            loadOrganizations,
-            loadPersons
-        ]);
+        await preloadLookups([organizationsById, personById]);
 
         const module = defaultModule(kind);
         SurfView.State.currentModalKind = kind;
@@ -594,10 +591,7 @@ SurfView.Module = (() => {
             return;
         }
 
-        await preloadLookups([
-            loadOrganizations,
-            loadPersons
-        ]);
+        await preloadLookups([organizationsById, personById]);
 
         resetDraftEntity();
         modalBody.replaceChildren(moduleEditFormHtml(SurfView.State.currentModalKind, SurfView.State.currentModalEntity, 'edit'));

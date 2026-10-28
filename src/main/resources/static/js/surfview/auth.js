@@ -263,7 +263,7 @@ async function submitLoginForm(event) {
         window.localStorage.setItem('jwt', data.token);
         await loadAuthStatus();
         hideLoginModal();
-        loadOrganizations().catch(() => {
+        organizationsById.load().catch(() => {
             // Organization dropdowns fall back to the current entity organization id.
         });
         loadCurrentPageAndEntity();

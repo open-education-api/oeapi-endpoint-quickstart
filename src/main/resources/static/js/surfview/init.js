@@ -22,7 +22,10 @@ const errorDetailsContent = document.getElementById('error-details-content');
 const nestedOfferingModal = modalElements(document.getElementById('nested-offering-modal-backdrop'));
 const nestedOfferingForm = document.getElementById('nested-offering-form');
 const mainActionButton = document.getElementById('main-action-button');
-const entityMaps = Object.fromEntries(Object.keys(Constants.tabs).map(tabKey => [tabKey, new Map()]));
+const entityMaps = Object.fromEntries(Object.entries(Constants.tabs).map(([tabKey, tab]) => [tabKey, entityCache({
+    endpoint: tab.endpoint,
+    idOf: entity => entityId(tab.kind, entity)
+})]));
 const courseById = entityMaps.courses;
 const organizationsById = entityMaps.organizations;
 const personById = entityMaps.persons;
@@ -34,12 +37,6 @@ const educationFilterGroups = [...document.querySelectorAll('[data-education-fil
 const personFilterGroups = [...document.querySelectorAll('[data-person-filter-group]')];
 const languageFilterOptions = document.getElementById('language-filter-options');
 const tabButtons = [...document.querySelectorAll('.tab-button')];
-let organizationsLoadPromise = null;
-let academicSessionsLoadPromise = null;
-let personsLoadPromise = null;
-let organizationsLoadStartedAt = 0;
-let academicSessionsLoadStartedAt = 0;
-let personsLoadStartedAt = 0;
 
 window.SurfView = window.SurfView || {};
 
@@ -125,7 +122,7 @@ async function startSurfView() {
     if (privateLoginRequired()) {
         return;
     }
-    loadOrganizations().catch(() => {
+    organizationsById.load().catch(() => {
         // Organization dropdowns fall back to the current entity organization id.
     });
 

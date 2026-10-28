@@ -686,10 +686,14 @@ function openDatalistOptions(input) {
         return;
     }
 
-    filterDatalistOptions(input);
-    list.hidden = false;
-    datalistCombobox(input)?.classList.add('open');
-    input.setAttribute('aria-expanded', 'true');
+    // Arrow keys call this on an already open list; filtering again would
+    // reset the active option, so only do that when actually opening.
+    if (list.hidden) {
+        filterDatalistOptions(input);
+        list.hidden = false;
+        datalistCombobox(input)?.classList.add('open');
+        input.setAttribute('aria-expanded', 'true');
+    }
     const lookupSelect = lookupSelectFor(input);
     if (lookupSelect) {
         refreshLookupDropdown(lookupSelect);
@@ -735,7 +739,11 @@ document.addEventListener('focusin', event => {
 
 document.addEventListener('input', event => {
     if (event.target.matches('[data-datalist-input]')) {
-        openDatalistOptions(event.target);
+        if (event.target.getAttribute('aria-expanded') === 'true') {
+            filterDatalistOptions(event.target);
+        } else {
+            openDatalistOptions(event.target);
+        }
     }
 });
 
@@ -759,17 +767,45 @@ document.addEventListener('keydown', event => {
         const active = datalistList(input)?.querySelector('.datalist-option.active');
         const activeIndex = active ? options.indexOf(active) : -1;
         setActiveDatalistOption(input, options[Math.max(activeIndex - 1, 0)] || options[options.length - 1] || null);
-    } else if (event.key === 'Enter' && input.getAttribute('aria-expanded') === 'true') {
-        const active = datalistList(input)?.querySelector('.datalist-option.active');
-        if (!active) {
-            return;
+    } else if (event.key === 'Enter') {
+        const open = input.getAttribute('aria-expanded') === 'true';
+        const active = open ? datalistList(input)?.querySelector('.datalist-option.active') : null;
+        if (active) {
+            event.preventDefault();
+            selectDatalistOption(input, active);
+        } else if (lookupSelectFor(input)) {
+            // The native select this replaces never submitted the form on
+            // Enter; open the listbox instead, like Alt+ArrowDown on a select.
+            event.preventDefault();
+            if (!open) {
+                openDatalistOptions(input);
+            }
         }
-        event.preventDefault();
-        selectDatalistOption(input, active);
     } else if (event.key === 'Escape') {
         closeDatalistOptions(input);
     } else if (event.key === 'Tab') {
         closeDatalistOptions(input);
+    }
+});
+
+// The pointer moves the active option rather than having a separate hover
+// style, so that keyboard and mouse never highlight two options at once.
+// Browsers fire synthetic mousemove events after a keyboard-triggered scroll;
+// those keep the pointer position, so they are ignored.
+let lastPointerPosition = null;
+document.addEventListener('mousemove', event => {
+    const position = `${event.clientX},${event.clientY}`;
+    if (position === lastPointerPosition) {
+        return;
+    }
+    lastPointerPosition = position;
+    const option = event.target.closest?.('.datalist-option');
+    if (!option || option.classList.contains('active')) {
+        return;
+    }
+    const input = datalistCombobox(option)?.querySelector('[data-datalist-input]');
+    if (input) {
+        setActiveDatalistOption(input, option);
     }
 });
 
@@ -823,22 +859,22 @@ function enumOptionsHtml(options, selectedValue, optionsConfig = {}) {
 }
 
 // Another user or browser window may create an organization, person or academic
-// session after this page loads. Reload when a dropdown opens, at most once
-// every 30 seconds per entity type.
+// session after this page loads. Reload when a dropdown opens; the cache decides
+// whether its data is still fresh enough.
 const lookupDropdowns = [
     {
         selector: 'select[name="organization"]',
-        load: () => loadOrganizations({maxAgeMs: 30000}),
+        load: () => organizationsById.load(),
         options: (select, selected) => SurfView.Organizations.organizationOptionEntries(selected)
     },
     {
         selector: 'select[name="academicSessionId"]',
-        load: () => loadAcademicSessions({maxAgeMs: 30000}),
+        load: () => academicSessionsById.load(),
         options: (select, selected) => SurfView.AcademicSessions.academicSessionOptionEntries(selected)
     },
     {
         selector: 'select[data-module-coordinator-select]',
-        load: () => loadPersons({maxAgeMs: 30000}),
+        load: () => personById.load(),
         options: (select, selected) => SurfView.Persons.personOptionEntries({
             selectedPersonId: selected,
             excludedPersonIds: SurfView.Module.moduleCoordinatorValues(select.closest('.module-coordinators-panel'))
@@ -908,6 +944,10 @@ function syncLookupDropdown(select) {
     }
     const input = wrapper.querySelector('input');
     const list = wrapper.querySelector('.datalist-options');
+    // A sync may run asynchronously after a (re)load, right after an arrow key
+    // moved the active option away from the select's value. Keep that option
+    // active instead of snapping back, so Enter selects what the user navigated to.
+    const activeValue = list.querySelector('.datalist-option.active')?.dataset.datalistValue;
     input.value = select.selectedOptions[0]?.textContent || '';
     list.replaceChildren(...[...select.options].map((option, index) => createElement('div.datalist-option', {
         text: option.textContent,
@@ -915,7 +955,14 @@ function syncLookupDropdown(select) {
         attributes: {id: `${list.id}-${index}`, role: 'option', 'aria-selected': String(option.selected)}
     })));
     if (input.getAttribute('aria-expanded') === 'true') {
-        filterDatalistOptions(input);
+        const active = activeValue === undefined
+            ? null
+            : [...list.querySelectorAll('.datalist-option')].find(option => option.dataset.datalistValue === activeValue);
+        if (active) {
+            setActiveDatalistOption(input, active);
+        } else {
+            filterDatalistOptions(input);
+        }
     }
 }
 

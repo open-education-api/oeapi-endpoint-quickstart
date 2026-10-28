@@ -39,10 +39,7 @@ function moduleKindRegistryEntry(kind) {
         submitForm: form => SurfView.Module.submitModuleForm(form),
         payloadFromForm: (form, entity, kind) => SurfView.Module.modulePayloadFromForm(kind, form, entity),
         openCreate: () => SurfView.Module.openCreateModuleModal(kind),
-        preloadDetails: () => preloadLookups([
-            loadOrganizations,
-            loadPersons
-        ]),
+        preloadDetails: () => preloadLookups([organizationsById, personById]),
         loadOfferings: true
     };
 }
@@ -82,14 +79,7 @@ async function loadCurrentPage() {
         }
 
         if (tab.kind) {
-            const map = entityMap(tab.kind);
-            map.clear();
-            entities.forEach(entity => {
-                const id = entityId(tab.kind, entity);
-                if (id) {
-                    map.set(String(id), entity);
-                }
-            });
+            entityMap(tab.kind).fill(entities);
         }
 
         renderEntityList();

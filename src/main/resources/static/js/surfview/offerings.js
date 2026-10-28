@@ -234,10 +234,7 @@ SurfView.Offerings = (() => {
         if (isReadOnlyMode()) {
             return;
         }
-        await preloadLookups([
-            loadOrganizations,
-            loadAcademicSessions
-        ]);
+        await preloadLookups([organizationsById, academicSessionsById]);
         const mode = options.mode || 'add';
         resetDraftOffering();
         SurfView.State.draftOffering.addresses = Array.isArray(offering.addresses) ? structuredClone(offering.addresses) : [];

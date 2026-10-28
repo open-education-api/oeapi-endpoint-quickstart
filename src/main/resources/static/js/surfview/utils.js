@@ -458,7 +458,6 @@ async function applySubmitEntitySuccess(config) {
         id,
         matchId = id,
         cacheMap = entityMap(kind),
-        invalidateCache,
         languages = entity => collectLanguages(entity),
         preserveModalLanguage = false,
         title,
@@ -474,7 +473,7 @@ async function applySubmitEntitySuccess(config) {
     if (cacheMap && normalizedId) {
         cacheMap.set(normalizedId, updatedEntity);
     }
-    invalidateCache?.();
+    cacheMap?.invalidate();
 
     SurfView.State.currentPageEntities = mode === 'create'
         ? [updatedEntity, ...SurfView.State.currentPageEntities]
@@ -509,7 +508,6 @@ async function deleteCurrentEntity(config) {
         endpoint,
         confirmMessage,
         cacheMap = entityMap(kind),
-        invalidateCache,
         onSuccess,
         errorMessage = `Unable to delete ${kind}`
     } = config;
@@ -541,7 +539,7 @@ async function deleteCurrentEntity(config) {
             return;
         }
         cacheMap?.delete(normalizedId);
-        invalidateCache?.();
+        cacheMap?.invalidate();
         SurfView.State.currentPageEntities = SurfView.State.currentPageEntities.filter(entity => (
             String(entityId(kind, entity)) !== normalizedId
         ));
@@ -584,9 +582,65 @@ async function loadAllEndpointItems(endpoint) {
     return entities;
 }
 
+/**
+ * A Map holding all entities of one kind that can (re)load itself from its
+ * endpoint. Another user or browser window may change entities after this page
+ * loads, so load() fetches again once the last load is older than maxAgeMs.
+ */
+function entityCache({endpoint, idOf, maxAgeMs = 30000}) {
+    const map = new Map();
+    let promise = null;
+    let loadedAt = 0;
+
+    function replaceAll(items) {
+        map.clear();
+        items.forEach(item => {
+            const id = idOf(item);
+            if (id) {
+                map.set(String(id), item);
+            }
+        });
+    }
+
+    /** Loads all entities, reusing a load started less than maxAgeMs ago. */
+    function load() {
+        if (promise && Date.now() - loadedAt < maxAgeMs) {
+            return promise;
+        }
+        loadedAt = Date.now();
+        const current = loadAllEndpointItems(endpoint).then(items => {
+            // Drop results of a load that was invalidated (e.g. by a save) meanwhile.
+            if (promise === current) {
+                replaceAll(items);
+            }
+        }).catch(error => {
+            if (promise === current) {
+                promise = null;
+            }
+            throw error;
+        });
+        promise = current;
+        return promise;
+    }
+
+    /** Replaces the contents with a full collection fetched elsewhere; counts as a load. */
+    function fill(items) {
+        replaceAll(items);
+        loadedAt = Date.now();
+        promise = Promise.resolve();
+    }
+
+    /** Makes the next load() fetch again. */
+    function invalidate() {
+        promise = null;
+    }
+
+    return Object.assign(map, {load, fill, invalidate});
+}
+
 /** Preloads lookup caches while keeping the caller usable if a lookup fails. */
-async function preloadLookups(loaders) {
-    await Promise.allSettled(loaders.map(loader => loader()));
+async function preloadLookups(caches) {
+    await Promise.allSettled(caches.map(cache => cache.load()));
 }
 
 // Finds value of localized string based on current lang && defaults

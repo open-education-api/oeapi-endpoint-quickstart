@@ -993,7 +993,6 @@ td {
     line-height: 1.25;
 }
 
-.datalist-option:hover,
 .datalist-option.active {
     background: #e7f1fb;
     color: var(--blue-dark);
