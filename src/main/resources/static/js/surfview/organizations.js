@@ -1,28 +1,5 @@
 window.SurfView = window.SurfView || {};
 
-/** Loads all organizations into the lookup cache. */
-async function loadOrganizations() {
-    if (organizationsLoadPromise) {
-        return organizationsLoadPromise;
-    }
-
-    organizationsLoadPromise = (async () => {
-        organizationsById.clear();
-        const items = await loadAllEndpointItems('/organizations');
-        items.forEach(organization => {
-            const id = organizationIdValue(organization);
-            if (id) {
-                organizationsById.set(String(id), organization);
-            }
-        });
-    })().catch(error => {
-        organizationsLoadPromise = null;
-        throw error;
-    });
-
-    return organizationsLoadPromise;
-}
-
 SurfView.Organizations = (() => {
 
     /** Builds the organization read-only detail view. */
@@ -399,10 +376,6 @@ SurfView.Organizations = (() => {
                     mode,
                     updatedEntity: updatedOrganization,
                     id,
-                    cacheMap: organizationsById,
-                    invalidateCache: () => {
-                        organizationsLoadPromise = null;
-                    },
                     title: organization => textValueLocalizedAttribute(organization.name) || id,
                     detailsHtml: organizationDetailsHtml
                 });
@@ -417,10 +390,6 @@ SurfView.Organizations = (() => {
             id: organizationIdValue(SurfView.State.currentModalEntity),
             endpoint: id => `/organizations/${encodeURIComponent(id)}`,
             confirmMessage: id => `Delete organization ${id}?`,
-            cacheMap: organizationsById,
-            invalidateCache: () => {
-                organizationsLoadPromise = null;
-            },
             errorMessage: 'Unable to delete organization'
         });
     }

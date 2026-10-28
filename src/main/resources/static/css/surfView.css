@@ -993,7 +993,6 @@ td {
     line-height: 1.25;
 }
 
-.datalist-option:hover,
 .datalist-option.active {
     background: #e7f1fb;
     color: var(--blue-dark);
@@ -1542,4 +1541,51 @@ body.private-login-required #login-modal-backdrop {
 
 .hidden {
     display: none !important;
+}
+
+.lookup-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    border: 2px solid #ccd3dc;
+    border-top-color: #0077a8;
+    border-radius: 50%;
+    animation: lookup-spin 0.75s linear infinite;
+}
+
+@keyframes lookup-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* The readonly input that stands in for a lookup select; styled like the
+   select it replaces regardless of the enclosing form. */
+.datalist-combobox > input[data-lookup-input] {
+    color: var(--text);
+    cursor: pointer;
+    padding-right: 30px;
+    background-color: #fff;
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position:
+        calc(100% - 15px) 50%,
+        calc(100% - 10px) 50%;
+    background-repeat: no-repeat;
+    background-size: 5px 5px;
+}
+
+.datalist-combobox:has(> .lookup-spinner) > input[data-lookup-input] {
+    background-image: none;
+}
+
+.datalist-combobox > .lookup-spinner {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.6rem;
+    pointer-events: none;
+}
+
+.datalist-combobox > select[hidden] {
+    display: none;
 }

@@ -339,18 +339,9 @@ SurfView.Module = (() => {
     function refreshCoordinatorSelect(scope = document) {
         const panel = scope.closest?.('.module-coordinators-panel') || scope.querySelector?.('.module-coordinators-panel') || scope;
         const select = panel.querySelector?.('[data-module-coordinator-select]');
-        const addButton = panel.querySelector?.('[data-add-module-coordinator]');
-        if (!select || !addButton) {
-            return;
+        if (select) {
+            rebuildLookupSelect(select, '');
         }
-
-        const options = SurfView.Persons.personOptionEntries({
-            excludedPersonIds: moduleCoordinatorValues(panel)
-        });
-
-        select.replaceChildren(...enumOptionsHtml(options, ''));
-        select.value = '';
-        addButton.disabled = options.length <= 1;
     }
 
     function addModuleCoordinator(button) {
@@ -546,10 +537,7 @@ SurfView.Module = (() => {
             return;
         }
 
-        await preloadLookups([
-            loadOrganizations,
-            loadPersons
-        ]);
+        await preloadLookups([organizationsById, personById]);
 
         const module = defaultModule(kind);
         SurfView.State.currentModalKind = kind;
@@ -603,10 +591,7 @@ SurfView.Module = (() => {
             return;
         }
 
-        await preloadLookups([
-            loadOrganizations,
-            loadPersons
-        ]);
+        await preloadLookups([organizationsById, personById]);
 
         resetDraftEntity();
         modalBody.replaceChildren(moduleEditFormHtml(SurfView.State.currentModalKind, SurfView.State.currentModalEntity, 'edit'));
@@ -813,6 +798,7 @@ SurfView.Module = (() => {
         closeModuleEditForm,
         modulePayloadFromForm,
         submitModuleForm,
+        moduleCoordinatorValues,
         initEventListeners
     };
 

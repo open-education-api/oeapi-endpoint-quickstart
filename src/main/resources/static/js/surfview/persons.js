@@ -1,28 +1,5 @@
 window.SurfView = window.SurfView || {};
 
-/** Loads all persons into the lookup cache. */
-async function loadPersons() {
-    if (personsLoadPromise) {
-        return personsLoadPromise;
-    }
-
-    personsLoadPromise = (async () => {
-        personById.clear();
-        const items = await loadAllEndpointItems('/persons');
-        items.forEach(person => {
-            const id = entityId('person', person);
-            if (id) {
-                personById.set(String(id), person);
-            }
-        });
-    })().catch(error => {
-        personsLoadPromise = null;
-        throw error;
-    });
-
-    return personsLoadPromise;
-}
-
 SurfView.Persons = (() => {
 
     /** Builds the person read-only detail view. */
@@ -199,7 +176,6 @@ SurfView.Persons = (() => {
                     mode,
                     updatedEntity: updatedPerson,
                     id,
-                    cacheMap: personById,
                     title: person => entityDisplayName('person', person) || id,
                     detailsHtml: personDetailsHtml
                 });
@@ -214,7 +190,6 @@ SurfView.Persons = (() => {
             id: SurfView.State.currentModalEntity?.personId,
             endpoint: id => `/persons/${encodeURIComponent(id)}`,
             confirmMessage: 'Are you sure you want to delete this person?',
-            cacheMap: personById,
             errorMessage: 'Unable to delete person'
         });
     }
