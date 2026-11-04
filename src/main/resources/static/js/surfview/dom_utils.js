@@ -1114,9 +1114,8 @@ function nestedListHtml(items, label, emptyText, options = {}) {
     if (!items.length) {
         return createElement('div.nested-item-empty', {text: emptyText});
     }
-    const deleteAttribute = options.deleteAttribute || '';
-    const editAttribute = options.editAttribute || '';
-    const itemName = options.itemName || 'item';
+    const {deleteAttribute, editAttribute, itemName: configuredItemName} = options;
+    const itemName = configuredItemName || 'item';
     const list = createElement('ul.nested-item-list');
     items.forEach((item, index) => {
         list.append(cloneTemplate('nested-item-row-template', row => {

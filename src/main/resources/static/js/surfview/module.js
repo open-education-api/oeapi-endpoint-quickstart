@@ -18,9 +18,9 @@ SurfView.Module = (() => {
     }
 
     /** Builds a course or program read-only detail view. */
-    function moduleDetailsHtml(kind, module, options = {}) {
-        const offerings = options.offerings || [];
-        const loadingOfferings = options.loadingOfferings || false;
+    function moduleDetailsHtml(kind, module, {offerings, loadingOfferings} = {}) {
+        offerings ||= [];
+        loadingOfferings ||= false;
         const fields = [
             ['Name', detailTextValue(module.name)],
             ['Code', plainCodeValue(module.primaryCode)],
