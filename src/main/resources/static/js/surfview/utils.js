@@ -609,7 +609,10 @@ function entityCache({endpoint, idOf, maxAgeMs = 30000}) {
         }
         loadedAt = Date.now();
         const current = loadAllEndpointItems(endpoint).then(items => {
-            // Drop results of a load that was invalidated (e.g. by a save) meanwhile.
+             // Apply results only if this is still the latest load.
+             // The invalidate and fill function call may lead to `current` being outdated.
+             // So can (very) slow requests. Only the promise created last is allowed
+             // to replace `items`.
             if (promise === current) {
                 replaceAll(items);
             }
@@ -627,10 +630,12 @@ function entityCache({endpoint, idOf, maxAgeMs = 30000}) {
     function fill(items) {
         replaceAll(items);
         loadedAt = Date.now();
+        // A promise that is already fulfilled. This will cause
+        // other running promises being turned into NOPs.
         promise = Promise.resolve();
     }
 
-    /** Makes the next load() fetch again. */
+    /** When promise is null or maxAgeMs has elapsed, the next load() will fetch again. */
     function invalidate() {
         promise = null;
     }
