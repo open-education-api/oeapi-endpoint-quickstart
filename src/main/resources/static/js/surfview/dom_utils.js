@@ -717,13 +717,14 @@ function selectDatalistOption(input, option) {
         return;
     }
 
+    const {dataset: {datalistValue}, textContent} = option;
     const lookupSelect = lookupSelectFor(input);
     if (lookupSelect) {
-        lookupSelect.value = option.dataset.datalistValue;
+        lookupSelect.value = datalistValue;
         lookupSelect.dispatchEvent(new Event('change', {bubbles: true}));
-        input.value = option.textContent;
+        input.value = textContent;
     } else {
-        input.value = option.dataset.datalistValue || option.textContent;
+        input.value = datalistValue || textContent;
         input.dispatchEvent(new Event('input', {bubbles: true}));
         input.dispatchEvent(new Event('change', {bubbles: true}));
     }
@@ -731,43 +732,44 @@ function selectDatalistOption(input, option) {
     input.focus();
 }
 
-document.addEventListener('focusin', event => {
-    if (event.target.matches('[data-datalist-input]')) {
-        openDatalistOptions(event.target);
+document.addEventListener('focusin', ({target}) => {
+    if (target.matches('[data-datalist-input]')) {
+        openDatalistOptions(target);
     }
 });
 
-document.addEventListener('input', event => {
-    if (event.target.matches('[data-datalist-input]')) {
-        if (event.target.getAttribute('aria-expanded') === 'true') {
-            filterDatalistOptions(event.target);
+document.addEventListener('input', ({target}) => {
+    if (target.matches('[data-datalist-input]')) {
+        if (target.getAttribute('aria-expanded') === 'true') {
+            filterDatalistOptions(target);
         } else {
-            openDatalistOptions(event.target);
+            openDatalistOptions(target);
         }
     }
 });
 
 document.addEventListener('keydown', event => {
-    const input = event.target.matches?.('[data-datalist-input]') ? event.target : null;
+    const {target, key} = event;
+    const input = target.matches?.('[data-datalist-input]') ? target : null;
     if (!input) {
         return;
     }
 
-    if (event.key === 'ArrowDown') {
+    if (key === 'ArrowDown') {
         event.preventDefault();
         openDatalistOptions(input);
         const options = visibleDatalistOptions(input);
         const active = datalistList(input)?.querySelector('.datalist-option.active');
         const activeIndex = active ? options.indexOf(active) : -1;
         setActiveDatalistOption(input, options[Math.min(activeIndex + 1, options.length - 1)] || options[0] || null);
-    } else if (event.key === 'ArrowUp') {
+    } else if (key === 'ArrowUp') {
         event.preventDefault();
         openDatalistOptions(input);
         const options = visibleDatalistOptions(input);
         const active = datalistList(input)?.querySelector('.datalist-option.active');
         const activeIndex = active ? options.indexOf(active) : -1;
         setActiveDatalistOption(input, options[Math.max(activeIndex - 1, 0)] || options[options.length - 1] || null);
-    } else if (event.key === 'Enter') {
+    } else if (key === 'Enter') {
         const open = input.getAttribute('aria-expanded') === 'true';
         const active = open ? datalistList(input)?.querySelector('.datalist-option.active') : null;
         if (active) {
@@ -781,9 +783,9 @@ document.addEventListener('keydown', event => {
                 openDatalistOptions(input);
             }
         }
-    } else if (event.key === 'Escape') {
+    } else if (key === 'Escape') {
         closeDatalistOptions(input);
-    } else if (event.key === 'Tab') {
+    } else if (key === 'Tab') {
         closeDatalistOptions(input);
     }
 });
