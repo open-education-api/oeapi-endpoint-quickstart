@@ -260,7 +260,7 @@ SurfView.Module = (() => {
                 idValue: id,
                 primaryCode: module.primaryCode
             }),
-            moduleLanguagePanel(kind, module),
+            moduleLanguagePanel(),
             fieldLabelHtml('Abbreviation', 'text', 'abbreviation', module.abbreviation || '', {
                 required: kind === 'program'
             })
@@ -446,7 +446,7 @@ SurfView.Module = (() => {
         return cloneTemplate('module-array-chip-template', null, {value, buttonLabel});
     }
 
-    function moduleLanguagePanel(kind, module) {
+    function moduleLanguagePanel() {
         const section = languageSpecificSectionFragment({
             activeLanguage: SurfView.State.draftEntity.language,
             buttonAttribute: 'data-module-language-code',
@@ -454,7 +454,7 @@ SurfView.Module = (() => {
             languages: SurfView.State.draftEntity.languages,
             languageActions: language => draftLanguageActions('module', language),
             headerContent: cloneTemplate('module-language-controls-template'),
-            fields: moduleLanguageFields(kind, SurfView.State.draftEntity.language)
+            fields: moduleLanguageFields(SurfView.State.draftEntity.language)
         });
         section.classList.add('module-localized-panel');
         section.dataset.moduleLocalizedPanel = '';
@@ -462,45 +462,35 @@ SurfView.Module = (() => {
         return section;
     }
 
-    function moduleLanguageFields(kind, language) {
+    function moduleLanguageFields(language) {
         const values = SurfView.State.draftEntity.languageValues[language]
-            || Object.fromEntries(moduleLocalizedFields(kind).map(field => [field, '']));
+            || Object.fromEntries(moduleLocalizedFields().map(field => [field, '']));
         const fields = [
             fieldLabelHtml('Name', 'text', 'name', values.name || '', {required: true}, 'full-width'),
             fieldLabelHtml('Description', 'textarea', 'description', values.description || '', {
                 required: true
             }, 'full-width'),
             fieldLabelHtml('Admission requirements', 'textarea', 'admissionRequirements', values.admissionRequirements || '', {}, 'full-width'),
-            fieldLabelHtml('Qualification requirements', 'textarea', 'qualificationRequirements', values.qualificationRequirements || '', {}, 'full-width')
+            fieldLabelHtml('Qualification requirements', 'textarea', 'qualificationRequirements', values.qualificationRequirements || '', {}, 'full-width'),
+            fieldLabelHtml('Enrollment', 'textarea', 'enrollment', values.enrollment || '', {}, 'full-width'),
+            fieldLabelHtml('Assessment', 'textarea', 'assessment', values.assessment || '', {}, 'full-width'),
+            fieldLabelHtml('Learning outcomes', 'textarea', 'learningOutcomes', values.learningOutcomes || '', {}, 'full-width')
         ];
-        if (kind === 'course') {
-            fields.push(
-                fieldLabelHtml('Enrollment', 'textarea', 'enrollment', values.enrollment || '', {}, 'full-width'),
-                fieldLabelHtml('Assessment', 'textarea', 'assessment', values.assessment || '', {}, 'full-width'),
-                fieldLabelHtml('Learning outcomes', 'textarea', 'learningOutcomes', values.learningOutcomes || '', {}, 'full-width')
-            );
-        }
         return fields;
     }
 
-    function moduleLocalizedFields(kind) {
-        const fields = ['name', 'description', 'admissionRequirements', 'qualificationRequirements'];
-        return kind === 'course'
-            ? [...fields, 'enrollment', 'assessment', 'learningOutcomes']
-            : fields;
+    function moduleLocalizedFields() {
+        return ['name', 'description', 'admissionRequirements', 'qualificationRequirements', 'enrollment', 'assessment', 'learningOutcomes'];
     }
 
     const moduleDraftLanguageController = createDraftLanguageController({
         prefix: 'module',
         state: () => SurfView.State.draftEntity,
         form: () => document.getElementById('entity-edit-form'),
-        fields: source => moduleLocalizedFields(source?.kind || document.getElementById('entity-edit-form')?.dataset.entityKind || SurfView.State.currentModalKind),
+        fields: moduleLocalizedFields,
         languageSource: source => source?.module,
         value: (source, field, language) => localizedFieldValue(source.module[field], language),
-        renderPanel: () => {
-            const form = document.getElementById('entity-edit-form');
-            renderModuleLanguagePanel(form?.dataset.entityKind || SurfView.State.currentModalKind);
-        },
+        renderPanel: renderModuleLanguagePanel,
         focusField: 'name'
     });
 
@@ -518,9 +508,9 @@ SurfView.Module = (() => {
         deleteAttribute: 'data-delete-module-address-index'
     });
 
-    function renderModuleLanguagePanel(kind) {
+    function renderModuleLanguagePanel() {
         const panel = document.querySelector('[data-module-localized-panel]');
-        const replacement = moduleLanguagePanel(kind, SurfView.State.currentModalEntity || {});
+        const replacement = moduleLanguagePanel();
         panel?.replaceWith(replacement);
     }
 
@@ -575,6 +565,9 @@ SurfView.Module = (() => {
             description: [],
             admissionRequirements: [],
             qualificationRequirements: [],
+            enrollment: [],
+            assessment: [],
+            learningOutcomes: [],
             teachingLanguage: 'eng',
             modeOfDelivery: [],
             studyLoad: {value: null, studyLoadUnit: 'ects'},
@@ -586,11 +579,7 @@ SurfView.Module = (() => {
             }]
         };
 
-        if (kind === 'course') {
-            module.enrollment = [];
-            module.assessment = [];
-            module.learningOutcomes = [];
-        } else if (kind === 'program') {
+        if (kind === 'program') {
             module.programType = 'program';
         }
 
@@ -645,7 +634,7 @@ SurfView.Module = (() => {
             method: mode === 'create' ? 'POST' : 'PUT',
             savingText: mode === 'edit' ? 'Saving...' : 'Adding...',
             successText: mode === 'edit' ? 'Saved' : 'Added',
-            preserveArrayFields: moduleLocalizedFields(kind),
+            preserveArrayFields: moduleLocalizedFields(),
             errorMessage: mode === 'edit' ? `Unable to save ${kind}` : `Unable to add ${kind}`,
             onSuccess: async ({payload, updatedEntity: updatedModule}) => {
                 const id = entityId(kind, updatedModule) || entityId(kind, payload);
@@ -689,7 +678,7 @@ SurfView.Module = (() => {
 
         payload[`${kind}Id`] = value(`${kind}Id`);
         payload.primaryCode = primaryCodePayloadFromFormData(formData);
-        moduleLocalizedFields(kind).forEach(field => {
+        moduleLocalizedFields().forEach(field => {
             payload[field] = field === 'learningOutcomes'
                 ? localizedContent[field].map(item => [item])
                 : localizedContent[field];
