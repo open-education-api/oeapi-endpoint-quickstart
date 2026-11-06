@@ -412,9 +412,45 @@ SurfView.Module = (() => {
             }),
             fieldLabelHtml('Level', 'datalist', 'allianceLevel', alliance.level || '', {
                 options: Constants.enumOptions.level
-            })
+            }),
+            moduleSupplementaryInformationPanel(alliance.supplementaryInformation)
         );
         return row;
+    }
+
+    function moduleSupplementaryInformationPanel(items = []) {
+        return cloneTemplate('module-supplementary-panel-template', panel => {
+            setModuleVideo(panel, items?.[0]);
+        });
+    }
+
+    function setModuleVideo(panel, item) {
+        const fields = panel.querySelector('[data-module-supplementary-fields]');
+        fields.replaceChildren();
+        panel.querySelector('[data-add-module-video]').classList.toggle('hidden', Boolean(item));
+        panel.querySelector('[data-remove-module-video]').classList.toggle('hidden', !item);
+        if (item) {
+            const value = item.value?.[0] || {};
+            fields.append(
+                fieldLabelHtml('Role', 'datalist', 'supplementaryRole', item.role || 'promo', {
+                    required: true,
+                    options: [['promo', 'Promo']]
+                }),
+                fieldLabelHtml('Type', 'datalist', 'supplementaryType', item.type || 'video', {
+                    required: true,
+                    options: [['video', 'Video'], ['image', 'Image'], ['text_plain', 'Plain text']]
+                }),
+                fieldLabelHtml('Language', 'datalist', 'supplementaryLanguage', value.language || SurfView.State.draftEntity.language || 'en-GB', {
+                    required: true,
+                    options: Object.entries(Constants.languageNames).map(([code, label]) => [code, `${label} (${code})`]),
+                    placeholder: 'en or en-GB'
+                }),
+                fieldLabelHtml('URL', 'url', 'supplementaryUrl', value.value || '', {
+                    required: true,
+                    placeholder: 'https://'
+                })
+            );
+        }
     }
 
     function moduleArrayField(labelName, fieldName, values = []) {
@@ -748,7 +784,40 @@ SurfView.Module = (() => {
         alliance.jointPartnerCodes = moduleArrayValues(row, 'jointPartnerCodes');
         alliance.modeOfDelivery = value('allianceModeOfDelivery');
         alliance.level = value('allianceLevel');
+        alliance.supplementaryInformation = moduleSupplementaryInformationFromRow(row, originalAlliance?.supplementaryInformation);
         return alliance;
+    }
+
+    function moduleSupplementaryInformationFromRow(row, originalItems = []) {
+        const urlField = row.querySelector('[name="supplementaryUrl"]');
+        if (!urlField) {
+            return [];
+        }
+
+        const value = name => row.querySelector(`[name="${name}"]`).value.trim();
+        const url = urlField.value.trim();
+        if (!url || !urlField.checkValidity()) {
+            throw new Error('Enter a valid URL for the promotional video.');
+        }
+
+        const role = value('supplementaryRole');
+        const type = value('supplementaryType');
+        const language = value('supplementaryLanguage');
+        if (!role || !type || !language) {
+            throw new Error('Enter a role, type and language for the supplementary URL.');
+        }
+
+        const originalItem = originalItems?.[0];
+        return [{
+            ...structuredClone(originalItem || {}),
+            role,
+            type,
+            value: [{
+                ...structuredClone(originalItem?.value?.[0] || {}),
+                language,
+                value: url
+            }]
+        }];
     }
 
     function moduleArrayValues(row, fieldName) {
@@ -764,6 +833,16 @@ SurfView.Module = (() => {
             '[data-delete-module-language]': button => moduleDraftLanguageController.deleteLanguage(button.dataset.deleteModuleLanguage),
             '[data-module-language-code]': button => moduleDraftLanguageController.switchLanguage(button.dataset.moduleLanguageCode),
             '[data-delete-module-array-value]': button => button.closest('.module-array-chip')?.remove(),
+            '[data-add-module-video]': button => {
+                const panel = button.closest('.module-supplementary-panel');
+                setModuleVideo(panel, {});
+                panel.querySelector('[name="supplementaryUrl"]').focus();
+            },
+            '[data-remove-module-video]': button => {
+                const panel = button.closest('.module-supplementary-panel');
+                setModuleVideo(panel, null);
+                panel.querySelector('[data-add-module-video]').focus();
+            },
             '[data-add-module-coordinator]': button => addModuleCoordinator(button),
             '[data-delete-module-coordinator]': button => deleteModuleCoordinator(button),
             '[data-open-nested-offering="module-address"]': () => openNestedAddressModal(moduleAddressListPanel.target()),
