@@ -260,7 +260,7 @@ SurfView.Module = (() => {
                 idValue: id,
                 primaryCode: module.primaryCode
             }),
-            moduleLanguagePanel(kind, module),
+            moduleLanguagePanel(),
             fieldLabelHtml('Abbreviation', 'text', 'abbreviation', module.abbreviation || '', {
                 required: kind === 'program'
             })
@@ -421,9 +421,45 @@ SurfView.Module = (() => {
             }),
             fieldLabelHtml('Level', 'datalist', 'allianceLevel', alliance.level || '', {
                 options: Constants.enumOptions.level
-            })
+            }),
+            moduleSupplementaryInformationPanel(alliance.supplementaryInformation)
         );
         return row;
+    }
+
+    function moduleSupplementaryInformationPanel(items = []) {
+        return cloneTemplate('module-supplementary-panel-template', panel => {
+            setModuleVideo(panel, items?.[0]);
+        });
+    }
+
+    function setModuleVideo(panel, item) {
+        const fields = panel.querySelector('[data-module-supplementary-fields]');
+        fields.replaceChildren();
+        panel.querySelector('[data-add-module-video]').classList.toggle('hidden', Boolean(item));
+        panel.querySelector('[data-remove-module-video]').classList.toggle('hidden', !item);
+        if (item) {
+            const value = item.value?.[0] || {};
+            fields.append(
+                fieldLabelHtml('Role', 'datalist', 'supplementaryRole', item.role || 'promo', {
+                    required: true,
+                    options: [['promo', 'Promo']]
+                }),
+                fieldLabelHtml('Type', 'datalist', 'supplementaryType', item.type || 'video', {
+                    required: true,
+                    options: [['video', 'Video'], ['image', 'Image'], ['text_plain', 'Plain text']]
+                }),
+                fieldLabelHtml('Language', 'datalist', 'supplementaryLanguage', value.language || SurfView.State.draftEntity.language || 'en-GB', {
+                    required: true,
+                    options: Object.entries(Constants.languageNames).map(([code, label]) => [code, `${label} (${code})`]),
+                    placeholder: 'en or en-GB'
+                }),
+                fieldLabelHtml('URL', 'url', 'supplementaryUrl', value.value || '', {
+                    required: true,
+                    placeholder: 'https://'
+                })
+            );
+        }
     }
 
     function moduleArrayField(labelName, fieldName, values = []) {
@@ -446,7 +482,7 @@ SurfView.Module = (() => {
         return cloneTemplate('module-array-chip-template', null, {value, buttonLabel});
     }
 
-    function moduleLanguagePanel(kind, module) {
+    function moduleLanguagePanel() {
         const section = languageSpecificSectionFragment({
             activeLanguage: SurfView.State.draftEntity.language,
             buttonAttribute: 'data-module-language-code',
@@ -454,7 +490,7 @@ SurfView.Module = (() => {
             languages: SurfView.State.draftEntity.languages,
             languageActions: language => draftLanguageActions('module', language),
             headerContent: cloneTemplate('module-language-controls-template'),
-            fields: moduleLanguageFields(kind, SurfView.State.draftEntity.language)
+            fields: moduleLanguageFields(SurfView.State.draftEntity.language)
         });
         section.classList.add('module-localized-panel');
         section.dataset.moduleLocalizedPanel = '';
@@ -462,45 +498,35 @@ SurfView.Module = (() => {
         return section;
     }
 
-    function moduleLanguageFields(kind, language) {
+    function moduleLanguageFields(language) {
         const values = SurfView.State.draftEntity.languageValues[language]
-            || Object.fromEntries(moduleLocalizedFields(kind).map(field => [field, '']));
+            || Object.fromEntries(moduleLocalizedFields().map(field => [field, '']));
         const fields = [
             fieldLabelHtml('Name', 'text', 'name', values.name || '', {required: true}, 'full-width'),
             fieldLabelHtml('Description', 'textarea', 'description', values.description || '', {
                 required: true
             }, 'full-width'),
             fieldLabelHtml('Admission requirements', 'textarea', 'admissionRequirements', values.admissionRequirements || '', {}, 'full-width'),
-            fieldLabelHtml('Qualification requirements', 'textarea', 'qualificationRequirements', values.qualificationRequirements || '', {}, 'full-width')
+            fieldLabelHtml('Qualification requirements', 'textarea', 'qualificationRequirements', values.qualificationRequirements || '', {}, 'full-width'),
+            fieldLabelHtml('Enrollment', 'textarea', 'enrollment', values.enrollment || '', {}, 'full-width'),
+            fieldLabelHtml('Assessment', 'textarea', 'assessment', values.assessment || '', {}, 'full-width'),
+            fieldLabelHtml('Learning outcomes', 'textarea', 'learningOutcomes', values.learningOutcomes || '', {}, 'full-width')
         ];
-        if (kind === 'course') {
-            fields.push(
-                fieldLabelHtml('Enrollment', 'textarea', 'enrollment', values.enrollment || '', {}, 'full-width'),
-                fieldLabelHtml('Assessment', 'textarea', 'assessment', values.assessment || '', {}, 'full-width'),
-                fieldLabelHtml('Learning outcomes', 'textarea', 'learningOutcomes', values.learningOutcomes || '', {}, 'full-width')
-            );
-        }
         return fields;
     }
 
-    function moduleLocalizedFields(kind) {
-        const fields = ['name', 'description', 'admissionRequirements', 'qualificationRequirements'];
-        return kind === 'course'
-            ? [...fields, 'enrollment', 'assessment', 'learningOutcomes']
-            : fields;
+    function moduleLocalizedFields() {
+        return ['name', 'description', 'admissionRequirements', 'qualificationRequirements', 'enrollment', 'assessment', 'learningOutcomes'];
     }
 
     const moduleDraftLanguageController = createDraftLanguageController({
         prefix: 'module',
         state: () => SurfView.State.draftEntity,
         form: () => document.getElementById('entity-edit-form'),
-        fields: source => moduleLocalizedFields(source?.kind || document.getElementById('entity-edit-form')?.dataset.entityKind || SurfView.State.currentModalKind),
+        fields: moduleLocalizedFields,
         languageSource: source => source?.module,
         value: (source, field, language) => localizedFieldValue(source.module[field], language),
-        renderPanel: () => {
-            const form = document.getElementById('entity-edit-form');
-            renderModuleLanguagePanel(form?.dataset.entityKind || SurfView.State.currentModalKind);
-        },
+        renderPanel: renderModuleLanguagePanel,
         focusField: 'name'
     });
 
@@ -518,9 +544,9 @@ SurfView.Module = (() => {
         deleteAttribute: 'data-delete-module-address-index'
     });
 
-    function renderModuleLanguagePanel(kind) {
+    function renderModuleLanguagePanel() {
         const panel = document.querySelector('[data-module-localized-panel]');
-        const replacement = moduleLanguagePanel(kind, SurfView.State.currentModalEntity || {});
+        const replacement = moduleLanguagePanel();
         panel?.replaceWith(replacement);
     }
 
@@ -575,6 +601,9 @@ SurfView.Module = (() => {
             description: [],
             admissionRequirements: [],
             qualificationRequirements: [],
+            enrollment: [],
+            assessment: [],
+            learningOutcomes: [],
             teachingLanguage: 'eng',
             modeOfDelivery: [],
             studyLoad: {value: null, studyLoadUnit: 'ects'},
@@ -586,11 +615,7 @@ SurfView.Module = (() => {
             }]
         };
 
-        if (kind === 'course') {
-            module.enrollment = [];
-            module.assessment = [];
-            module.learningOutcomes = [];
-        } else if (kind === 'program') {
+        if (kind === 'program') {
             module.programType = 'program';
         }
 
@@ -645,7 +670,7 @@ SurfView.Module = (() => {
             method: mode === 'create' ? 'POST' : 'PUT',
             savingText: mode === 'edit' ? 'Saving...' : 'Adding...',
             successText: mode === 'edit' ? 'Saved' : 'Added',
-            preserveArrayFields: moduleLocalizedFields(kind),
+            preserveArrayFields: moduleLocalizedFields(),
             errorMessage: mode === 'edit' ? `Unable to save ${kind}` : `Unable to add ${kind}`,
             onSuccess: async ({payload, updatedEntity: updatedModule}) => {
                 const id = entityId(kind, updatedModule) || entityId(kind, payload);
@@ -689,7 +714,7 @@ SurfView.Module = (() => {
 
         payload[`${kind}Id`] = value(`${kind}Id`);
         payload.primaryCode = primaryCodePayloadFromFormData(formData);
-        moduleLocalizedFields(kind).forEach(field => {
+        moduleLocalizedFields().forEach(field => {
             payload[field] = field === 'learningOutcomes'
                 ? localizedContent[field].map(item => [item])
                 : localizedContent[field];
@@ -774,7 +799,40 @@ SurfView.Module = (() => {
         alliance.jointPartnerCodes = moduleArrayValues(row, 'jointPartnerCodes');
         alliance.modeOfDelivery = value('allianceModeOfDelivery');
         alliance.level = value('allianceLevel');
+        alliance.supplementaryInformation = moduleSupplementaryInformationFromRow(row, originalAlliance?.supplementaryInformation);
         return alliance;
+    }
+
+    function moduleSupplementaryInformationFromRow(row, originalItems = []) {
+        const urlField = row.querySelector('[name="supplementaryUrl"]');
+        if (!urlField) {
+            return [];
+        }
+
+        const value = name => row.querySelector(`[name="${name}"]`).value.trim();
+        const url = urlField.value.trim();
+        if (!url || !urlField.checkValidity()) {
+            throw new Error('Enter a valid URL for the promotional video.');
+        }
+
+        const role = value('supplementaryRole');
+        const type = value('supplementaryType');
+        const language = value('supplementaryLanguage');
+        if (!role || !type || !language) {
+            throw new Error('Enter a role, type and language for the supplementary URL.');
+        }
+
+        const originalItem = originalItems?.[0];
+        return [{
+            ...structuredClone(originalItem || {}),
+            role,
+            type,
+            value: [{
+                ...structuredClone(originalItem?.value?.[0] || {}),
+                language,
+                value: url
+            }]
+        }];
     }
 
     function moduleArrayValues(row, fieldName) {
@@ -790,6 +848,16 @@ SurfView.Module = (() => {
             '[data-delete-module-language]': button => moduleDraftLanguageController.deleteLanguage(button.dataset.deleteModuleLanguage),
             '[data-module-language-code]': button => moduleDraftLanguageController.switchLanguage(button.dataset.moduleLanguageCode),
             '[data-delete-module-array-value]': button => button.closest('.module-array-chip')?.remove(),
+            '[data-add-module-video]': button => {
+                const panel = button.closest('.module-supplementary-panel');
+                setModuleVideo(panel, {});
+                panel.querySelector('[name="supplementaryUrl"]').focus();
+            },
+            '[data-remove-module-video]': button => {
+                const panel = button.closest('.module-supplementary-panel');
+                setModuleVideo(panel, null);
+                panel.querySelector('[data-add-module-video]').focus();
+            },
             '[data-add-module-coordinator]': button => addModuleCoordinator(button),
             '[data-delete-module-coordinator]': button => deleteModuleCoordinator(button),
             '[data-open-nested-offering="module-address"]': () => openNestedAddressModal(moduleAddressListPanel.target()),
