@@ -380,6 +380,25 @@
                 <button type="button" data-tm-attribute="buttonLabel:aria-label" data-delete-module-coordinator>x</button>
             </span>
         </template>
+        <template id="module-programs-panel-template">
+            <section class="nested-item-panel module-programs-panel">
+                <div class="nested-item-head"><h3>Programs</h3></div>
+                <div class="module-array-chips full-width" data-module-program-list></div>
+                <div class="module-program-controls full-width">
+                    <label>
+                        <span class="label-text">Add program</span>
+                        <select data-module-program-select></select>
+                    </label>
+                    <button class="detail-action-button" type="button" data-add-module-program>Add</button>
+                </div>
+            </section>
+        </template>
+        <template id="module-program-chip-template">
+            <span class="module-array-chip module-program-chip" data-tm-attribute="id:data-program-id">
+                <span data-tm-text="label"></span>
+                <button type="button" data-tm-attribute="buttonLabel:aria-label" data-delete-module-program>x</button>
+            </span>
+        </template>
         <template id="module-array-field-template">
             <label class="full-width module-array-field">
                 <span class="label-text" data-tm-text="labelName"></span>
@@ -418,6 +437,7 @@
         <script src="js/surfview/academic_sessions.js" defer></script>
         <script src="js/surfview/organizations.js" defer></script>
         <script src="js/surfview/persons.js" defer></script>
+        <script src="js/surfview/programs.js" defer></script>
         <script src="js/surfview/module.js" defer></script>
         <script src="js/surfview/surfView.js" defer></script>
         <script src="js/surfview/init.js" defer></script>

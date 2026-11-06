@@ -1057,11 +1057,13 @@ td {
     grid-column: 1 / -1;
 }
 
-.module-coordinators-panel {
+.module-coordinators-panel,
+.module-programs-panel {
     grid-column: 1 / -1;
 }
 
-.module-coordinator-controls {
+.module-coordinator-controls,
+.module-program-controls {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px;
@@ -1253,7 +1255,8 @@ td {
 }
 
 .consumer-panel,
-.module-coordinators-panel {
+.module-coordinators-panel,
+.module-programs-panel {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px 18px;
@@ -1264,7 +1267,8 @@ td {
 }
 
 .consumer-panel .nested-item-head,
-.module-coordinators-panel .nested-item-head {
+.module-coordinators-panel .nested-item-head,
+.module-programs-panel .nested-item-head {
     grid-column: 1 / -1;
     margin-bottom: 0;
 }

@@ -39,7 +39,7 @@ function moduleKindRegistryEntry(kind) {
         submitForm: form => SurfView.Module.submitModuleForm(form),
         payloadFromForm: (form, entity, kind) => SurfView.Module.modulePayloadFromForm(kind, form, entity),
         openCreate: () => SurfView.Module.openCreateModuleModal(kind),
-        preloadDetails: () => preloadLookups([organizationsById, personById]),
+        preloadDetails: () => preloadLookups([organizationsById, personById, ...(kind === 'course' ? [programById] : [])]),
         loadOfferings: true
     };
 }

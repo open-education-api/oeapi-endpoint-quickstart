@@ -72,6 +72,31 @@ SurfView.Module = (() => {
         const overview = detailSectionElement('module-overview', 'Overview');
         const details = detailGridElement();
         details.append(...fields.map(([label, value]) => detailFieldElement(label, value)));
+        if (kind === 'course') {
+            const field = detailFieldElement('Programs', '');
+            const value = field.querySelector('.detail-value');
+            const programs = module.programs ?? [];
+            if (programs.length) {
+                value.replaceChildren();
+                programs.forEach((id, index) => {
+                    if (index) value.append(document.createTextNode(', '));
+                    // Keep filters in the href so opening it in a new tab matches in-app navigation.
+                    const params = new URLSearchParams(languageHrefQuery('program', id, SurfView.State.currentModalLanguage || ''));
+                    params.set('tab', 'programs');
+                    params.delete('section');
+                    params.delete('action');
+                    if (!SurfView.State.currentModalLanguage) {
+                        params.delete('lang');
+                    }
+                    value.append(createElement('a', {
+                        text: SurfView.Programs.programLabelById(id),
+                        dataset: {programLink: id},
+                        attributes: {href: `?${params}`}
+                    }));
+                });
+            }
+            details.append(field);
+        }
         overview.append(details);
         content.append(overview);
 
@@ -303,6 +328,7 @@ SurfView.Module = (() => {
             moduleAddressListPanel.panel(),
             moduleArrayField('Resources', 'resources', module.resources),
             coordinatorsPanel,
+            ...(kind === 'course' ? [courseProgramsPanel(module)] : []),
             moduleConsumersPanel(module),
             entityEditFormActions(mode === 'edit' ? 'Save' : 'Add')
         );
@@ -366,6 +392,42 @@ SurfView.Module = (() => {
         if (panel) {
             refreshCoordinatorSelect(panel);
         }
+    }
+
+    function courseProgramsPanel(course) {
+        return cloneTemplate('module-programs-panel-template', section => {
+            const list = section.querySelector('[data-module-program-list]');
+            (course.programs ?? []).forEach(id => list.append(courseProgramChip(id)));
+            refreshProgramSelect(section);
+        });
+    }
+
+    function courseProgramChip(id) {
+        const label = SurfView.Programs.programLabelById(id);
+        return cloneTemplate('module-program-chip-template', null, {id, label, buttonLabel: `Remove ${label}`});
+    }
+
+    function courseProgramValues(scope) {
+        return [...scope.querySelectorAll('.module-program-chip')].map(chip => chip.dataset.programId);
+    }
+
+    function refreshProgramSelect(panel) {
+        rebuildLookupSelect(panel.querySelector('[data-module-program-select]'), '');
+    }
+
+    function addCourseProgram(button) {
+        const panel = button.closest('.module-programs-panel');
+        const id = panel.querySelector('[data-module-program-select]').value;
+        if (id) {
+            panel.querySelector('[data-module-program-list]').append(courseProgramChip(id));
+        }
+        refreshProgramSelect(panel);
+    }
+
+    function deleteCourseProgram(button) {
+        const panel = button.closest('.module-programs-panel');
+        button.closest('.module-program-chip').remove();
+        refreshProgramSelect(panel);
     }
 
     function moduleConsumersPanel(module) {
@@ -561,7 +623,7 @@ SurfView.Module = (() => {
             return;
         }
 
-        await preloadLookups([organizationsById, personById]);
+        await preloadLookups([organizationsById, personById, ...(kind === 'course' ? [programById] : [])]);
 
         const module = defaultModule(kind);
         SurfView.State.currentModalKind = kind;
@@ -614,7 +676,7 @@ SurfView.Module = (() => {
             return;
         }
 
-        await preloadLookups([organizationsById, personById]);
+        await preloadLookups([organizationsById, personById, ...(SurfView.State.currentModalKind === 'course' ? [programById] : [])]);
 
         resetDraftEntity();
         modalBody.replaceChildren(moduleEditFormHtml(SurfView.State.currentModalKind, SurfView.State.currentModalEntity, 'edit'));
@@ -726,6 +788,9 @@ SurfView.Module = (() => {
 
         const cleanedPayload = removeEmptyPayloadValues(payload);
         cleanedPayload.coordinators = payload.coordinators;
+        if (kind === 'course') {
+            cleanedPayload.programs = courseProgramValues(form);
+        }
         return cleanedPayload;
     }
 
@@ -824,8 +889,24 @@ SurfView.Module = (() => {
             .filter(Boolean);
     }
 
+    /** Opens a program from a course's detail view without reloading the page. */
+    async function openProgramLink(link) {
+        selectTab('programs', {load: false});
+        await loadCurrentPage();
+        await openEntityById('program', link.dataset.programLink, {pushHistory: true});
+    }
+
     /** Registers course and program event handlers. */
     function initEventListeners() {
+        modalBody.addEventListener('click', event => {
+            const link = event.target.closest?.('a[data-program-link]');
+            // Leave modified clicks to the browser so the link can open in a new tab or window.
+            if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+                return;
+            }
+            event.preventDefault();
+            openProgramLink(link);
+        });
         delegateClick(modalBody, {
             '[data-add-module-language]': () => moduleDraftLanguageController.add(),
             '[data-delete-module-language]': button => moduleDraftLanguageController.deleteLanguage(button.dataset.deleteModuleLanguage),
@@ -841,6 +922,8 @@ SurfView.Module = (() => {
                 setModuleVideo(panel, null);
                 panel.querySelector('[data-add-module-video]').focus();
             },
+            '[data-add-module-program]': button => addCourseProgram(button),
+            '[data-delete-module-program]': button => deleteCourseProgram(button),
             '[data-add-module-coordinator]': button => addModuleCoordinator(button),
             '[data-delete-module-coordinator]': button => deleteModuleCoordinator(button),
             '[data-open-nested-offering="module-address"]': () => openNestedAddressModal(moduleAddressListPanel.target()),
@@ -865,6 +948,7 @@ SurfView.Module = (() => {
         modulePayloadFromForm,
         submitModuleForm,
         moduleCoordinatorValues,
+        courseProgramValues,
         initEventListeners
     };
 

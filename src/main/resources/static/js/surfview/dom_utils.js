@@ -908,6 +908,16 @@ const lookupDropdowns = [
                 addButton.disabled = options.length <= 1;
             }
         }
+    },
+    {
+        selector: 'select[data-module-program-select]',
+        load: () => programById.load(),
+        options: select => SurfView.Programs.programOptionEntries(
+            SurfView.Module.courseProgramValues(select.closest('.module-programs-panel'))
+        ),
+        afterRebuild: (select, options) => {
+            select.closest('.module-programs-panel').querySelector('[data-add-module-program]').disabled = options.length <= 1;
+        }
     }
 ];
 
