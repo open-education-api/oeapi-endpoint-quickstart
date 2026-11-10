@@ -299,7 +299,7 @@ SurfView.Module = (() => {
             fieldLabelHtml('Organization', 'select', 'organization', organizationIdValue(module.organization), {
                 options: SurfView.Organizations.organizationOptionEntries(organizationIdValue(module.organization))
             }),
-            fieldLabelHtml('Link', 'url', 'link', module.link, {placeholder: 'https://'}, 'full-width'),
+            fieldLabelHtml('Link', 'url', 'link', module.link, {}, 'full-width'),
             moduleAddressListPanel.panel(),
             moduleArrayField('Resources', 'resources', module.resources),
             coordinatorsPanel,
@@ -445,8 +445,7 @@ SurfView.Module = (() => {
                     placeholder: 'en or en-GB'
                 }),
                 fieldLabelHtml('URL', 'url', 'supplementaryUrl', value.value, {
-                    required: true,
-                    placeholder: 'https://'
+                    required: true
                 })
             );
         }

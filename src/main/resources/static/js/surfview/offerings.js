@@ -42,7 +42,7 @@ SurfView.Offerings = (() => {
             fieldLabelHtml('Result value type', 'select', 'resultValueType', offering.resultValueType || '1-10', {
                 options: Constants.enumOptions.resultValueType
             }),
-            fieldLabelHtml('Link', 'url', 'link', offering.link, {placeholder: 'https://'}, 'full-width'),
+            fieldLabelHtml('Link', 'url', 'link', offering.link, {}, 'full-width'),
             fieldLabelHtml('Organization', 'select', 'organization', organizationIdValue(offering.organization), {
                 options: SurfView.Organizations.organizationOptionEntries(organizationIdValue(offering.organization))
             }),
@@ -72,8 +72,8 @@ SurfView.Offerings = (() => {
                 }),
                 fieldLabelHtml('Enrollment start time', 'time', 'consumerEnrollStartTime', alliance.enrollStartTime, {step: 1}),
                 fieldLabelHtml('Enrollment end time', 'time', 'consumerEnrollEndTime', alliance.enrollEndTime, {step: 1}),
-                fieldLabelHtml('Enrollment URL for guests', 'url', 'consumerEnrollmentUrlForGuests', alliance.enrollmentUrlForGuests, {placeholder: 'https://'}, 'full-width'),
-                fieldLabelHtml('Enrollment URL', 'url', 'consumerEnrollmentUrl', alliance.enrollmentUrl, {placeholder: 'https://'}, 'full-width'),
+                fieldLabelHtml('Enrollment URL for guests', 'url', 'consumerEnrollmentUrlForGuests', alliance.enrollmentUrlForGuests, {}, 'full-width'),
+                fieldLabelHtml('Enrollment URL', 'url', 'consumerEnrollmentUrl', alliance.enrollmentUrl, {}, 'full-width'),
                 fieldLabelHtml('Date comment', 'textarea', 'consumerDateComment', alliance.dateComment, {}, 'full-width'),
                 fieldLabelHtml('Queued students', 'number', 'consumerQueuedNumberStudents', alliance.queuedNumberStudents ?? '', {min: 0}),
                 fieldLabelHtml('Max queued students', 'number', 'consumerMaxQueuedNumberStudents', alliance.maxQueuedNumberStudents ?? '', {min: 0}),

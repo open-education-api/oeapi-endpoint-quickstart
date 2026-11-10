@@ -558,6 +558,9 @@ function languageSwitcherHtml({
 
 /** Builds a labeled form field. */
 function fieldLabelHtml(labelName, type, name, value = '', options = {}, className = '') {
+    if (type === 'url') {
+        options = {placeholder: 'https://example.com/', ...options};
+    }
     const label = document.createElement('label');
     if (className) {
         label.className = className;
