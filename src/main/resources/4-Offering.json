@@ -1,10 +1,9 @@
 {
-  "offeringId": "123e4567-e89b-12d3-a456-134564174000",
+  "courseOfferingId": "123e4567-e89b-12d3-a456-134564174000",
   "primaryCode": {
     "codeType": "identifier",
     "code": "221110-CourseOferring"
   },
-  "offeringType": "course",
   "name": [
     {
       "language": "en-GB",
@@ -18,16 +17,18 @@
       "value": ""
     }
   ],
-  "teachingLanguage": "nld",
-  "modeOfDelivery": [
-    "situated"
+  "teachingLanguages": [
+    "nl"
+  ],
+  "modesOfDelivery": [
+    "presential"
   ],
   "maxNumberStudents": 200,
   "enrolledNumberStudents": 150,
   "pendingNumberStudents": 50,
   "minNumberStudents": 15,
   "resultExpected": true,
-  "resultValueType": "1-10",
+  "resultValueType": "grade_0_10",
   "link": "https://your_course_url...",
   "otherCodes": [
     {
@@ -44,12 +45,10 @@
       "modeOfDelivery": "coaching"
     }
   ],
-  "startDate": "2019-08-21",
-  "endDate": "2019-10-23",
-  "enrollStartDate": "2019-05-01",
-  "enrollEndDate": "2019-08-01",
-  "flexibleEntryPeriodStart": "2019-08-24",
-  "flexibleEntryPeriodEnd": "2019-08-24",
+  "startDateTime": "2019-08-21T00:00:00Z",
+  "endDateTime": "2019-10-23T00:00:00Z",
+  "flexibleEntryPeriodStartDateTime": "2019-08-24T00:00:00Z",
+  "flexibleEntryPeriodEndDateTime": "2019-08-24T00:00:00Z",
   "addresses": [
     {
       "addressType": "postal",
@@ -70,5 +69,11 @@
       }
     }
   ],
-  "course": "1668dd09-660f-4303-a2bf-14bea154b39d"
+  "courseId": "1668dd09-660f-4303-a2bf-14bea154b39d",
+  "enrolmentPeriods": [
+    {
+      "startDateTime": "2019-05-01T00:00:00Z",
+      "endDateTime": "2019-08-01T00:00:00Z"
+    }
+  ]
 }

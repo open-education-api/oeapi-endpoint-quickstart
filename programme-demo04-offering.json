@@ -1,12 +1,10 @@
 {
-  "programme": "58095060-d18c-fcd2-04df-c20b156736f6",
-  "offeringType": "programme",
+  "programmeId": "58095060-d18c-fcd2-04df-c20b156736f6",
   "primaryCode": {
     "codeType": "offeringIdentifier",
     "code": "null"
   },
   "maxNumberStudents": 166,
-  "enrollEndDate": "2019-01-31",
   "name": [
     {
       "language": "en-GB",
@@ -43,20 +41,27 @@
   ],
   "enrolledNumberStudents": 47,
   "minNumberStudents": 3,
-  "offeringId": "aa7d22b0-6290-2ed7-9029-ee7efaa6ef92",
+  "programmeOfferingId": "aa7d22b0-6290-2ed7-9029-ee7efaa6ef92",
   "resultExpected": true,
-  "flexibleEntryPeriodStart": "2003-09-01",
-  "resultValueType": "UK letter",
-  "modeOfDelivery": [
+  "flexibleEntryPeriodStartDateTime": "2003-09-01T00:00:00Z",
+  "resultValueType": "uk_letter",
+  "modesOfDelivery": [
     "online",
-    "on campus"
+    "presential"
   ],
   "abbreviation": "OADE",
   "pendingNumberStudents": 10,
   "addresses": null,
-  "teachingLanguage": "eng",
-  "enrollStartDate": "2003-09-01",
-  "endDate": "2019-01-31",
-  "startDate": "2003-09-01",
-  "flexibleEntryPeriodEnd": "2019-01-31"
+  "teachingLanguages": [
+    "en"
+  ],
+  "endDateTime": "2019-01-31T00:00:00Z",
+  "startDateTime": "2003-09-01T00:00:00Z",
+  "flexibleEntryPeriodEndDateTime": "2019-01-31T00:00:00Z",
+  "enrolmentPeriods": [
+    {
+      "startDateTime": "2003-09-01T00:00:00Z",
+      "endDateTime": "2019-01-31T00:00:00Z"
+    }
+  ]
 }

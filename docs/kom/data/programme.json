@@ -1,12 +1,16 @@
 {
     "fieldsOfStudy": "0715",
-    "teachingLanguage": "eng",
-    "studyLoad": {
-        "value": 179,
-        "studyLoadUnit": "ects"
-    },
-    "organisation": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
-    "level": "associate degree",
+    "teachingLanguages": [
+        "en"
+    ],
+    "studyLoad": [
+        {
+            "value": 179,
+            "studyLoadUnit": "ects"
+        }
+    ],
+    "organisationId": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "level": "associate_degree",
     "name": [
         {
             "language": "en-GB",
@@ -22,10 +26,10 @@
         "codeType": "crohoCreboCode",
         "code": "49106"
     },
-    "modeOfDelivery": [
-        "on campus"
+    "modesOfDelivery": [
+        "presential"
     ],
-    "coordinators": [
+    "coordinatorIds": [
         "3542f2d3-3ba4-381a-00c4-eefe0c81c3f6"
     ],
     "otherCodes": [
@@ -50,23 +54,32 @@
             "alliances": [
                 {
                     "name": "kom",
-                    "themes": ["theme1", "theme2"],
+                    "themes": [
+                        "theme1",
+                        "theme2"
+                    ],
                     "selection": false,
-                    "instructorNames": ["Instructor1", "Instructor2"],
+                    "instructorNames": [
+                        "Instructor1",
+                        "Instructor2"
+                    ],
                     "contactHours": 3.5,
                     "activities": "lectures and practises",
                     "visibleForOwnStudents": false,
                     "enrollmentForOwnStudents": "broker",
                     "visibleForGuests": true,
                     "enrollmentForGuests": "broker",
-                    "jointPartnerCodes": ["11PE", "12PE"]
+                    "jointPartnerCodes": [
+                        "11PE",
+                        "12PE"
+                    ]
                 }
             ],
             "consumerKey": "eduxchange"
         }
     ],
     "programmeId": "a8138341-d39e-55f8-fb77-4bf7a0ae7a52",
-    "firstStartDate": "2020-04-04",
+    "firstStartDateTime": "2020-04-04T00:00:00Z",
     "resources": [
         "(2014). A reader will be announced in Brightspace. Literature and exercises will be handed out during the course.",
         "Introduction Atmosphere. . (2017).",
@@ -83,7 +96,7 @@
             "value": "NL VERTALING: FNP-11806 Forest, Nature, Society and builds on the statistical data analysis of breeding trials.It is necessary to have basic knowledge on Human Nutrition (FCH-11306 Nutritional Aspects of Bio-interactions [ENT30306]). . You must meet the following requirements - Enrolled for a degree programme of faculty Faculty of Humanities."
         }
     ],
-    "enrollment": [
+    "enrolment": [
         {
             "language": "en-GB",
             "value": "EN TRANSLATION: . . Osiris."
@@ -161,5 +174,5 @@
             ]
         }
     ],
-    "parent": "abe67694-a727-4d3f-8e2b-435189e670d1"
+    "parentId": "abe67694-a727-4d3f-8e2b-435189e670d1"
 }

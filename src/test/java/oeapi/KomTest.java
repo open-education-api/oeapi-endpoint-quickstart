@@ -37,6 +37,8 @@ class KomTest {
 
     ObjectMapper mapper = new ObjectMapper();
 
+    static final String OEAPI_JSON = "application/vnd.oeapi+json;version=6.0";
+
     @Test
     void all() throws Exception {
         doAll("/organisations", "organisation");
@@ -45,12 +47,12 @@ class KomTest {
         doAll("/programmes", "programme");
         doAll("/academic-sessions", "academicSession");
         doAll("/courses", "course");
-        doAll("/offerings", "offering");
+        doAll("/programme-offerings", "programmeOffering", "offering");
 
         logger.info("GET /programme/{id}?expand=organisation");
         mockMvc.perform(get("/programmes/" + extractId("programme") + "?expand=organisation"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
+            .andExpect(content().contentType(OEAPI_JSON))
             .andExpect(jsonPath("$.organisation.organisationType").value("root"));
     }
 
@@ -70,8 +72,8 @@ class KomTest {
         mockMvc.perform(post(resourcePath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"));
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(content().contentType(OEAPI_JSON));
     }
 
     private void doGet(String resourcePath, String resource, String altResource) throws Exception {
@@ -83,7 +85,7 @@ class KomTest {
 
         String json = mockMvc.perform(get(path))
             .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
+            .andExpect(content().contentType(OEAPI_JSON))
             .andReturn().getResponse().getContentAsString();
 
         assertEquals(mapper.readTree(content), mapper.readTree(json));

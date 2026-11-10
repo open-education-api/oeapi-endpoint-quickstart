@@ -8,7 +8,7 @@
         {
             "language": "en-GB",
             "value": "Course Example"
-        },	
+        },
         {
             "language": "es-ES",
             "value": "Ejemplo de Curso"
@@ -16,17 +16,19 @@
     ],
     "abbreviation": "COURSEEX",
     "level": "bachelor",
-    "organisation": "333e4567-e89b-12d3-a456-123514174eee",
+    "organisationId": "333e4567-e89b-12d3-a456-123514174eee",
     "link": "https://openonderwijsapi.nl/#/",
-    "studyLoad": {
-        "studyLoadUnit": "ects",
-        "value": 6
-    },
-    "modeOfDelivery": [
-        "on campus",
+    "studyLoad": [
+        {
+            "studyLoadUnit": "ects",
+            "value": 6
+        }
+    ],
+    "modesOfDelivery": [
+        "presential",
         "online"
     ],
-    "firstStartDate": "2024-11-02",
+    "firstStartDate": "2024-11-02T00:00:00Z",
     "description": [
         {
             "language": "en-GB",
@@ -37,7 +39,9 @@
             "value": "\n <p>Conjuntos de números. Operaciones básicas con números reales y complejos.</p> \n <p>Funciones, límites, continuidad, derivabilidad, integrabilidad. Conceptos básicos sobre funciones escalares de una variable real. Funciones<br>elementales. Límites. Continuidad de una función en un punto. Propiedades de funciones continuas. Derivación, aplicaciones de la derivada.<br>Integrales definidas e indefinidas, aplicaciones de las integrales</p> \n <p>Espacios vectoriales sobre R: Subespacios. Base y dimensión</p> \n <p>Espacio euclídeo: producto escalar y norma euclídea, bases ortonormales,ortogonalización de Gram-Schmidt.</p> \n <p>Diagonalización de matrices: valores y vectores propios. Subespacios fundamentales. Aproximación por mínimos cuadrados.</p> \n <p>Matrices: matriz inversa, sistemas lineales, Teorema de Rouché-Frobenius.</p> \n <p>Determinantes</p>\n"
         }
     ],
-    "teachingLanguage": "spa",
+    "teachingLanguages": [
+        "es"
+    ],
     "admissionRequirements": [
         {
             "language": "en-GB",
@@ -58,7 +62,7 @@
             "value": "<p>Consulta los requisitos que debes cumplir en esta <a href='#' title='Criterios Generales de los candidatos.'><strong>página</strong></a></p>"
         }
     ],
-    "enrollment": [
+    "enrolment": [
         {
             "language": "en-GB",
             "value": "<p>Enrollment criteria will be....</p>"
@@ -171,7 +175,7 @@
             ]
         }
     ],
-    "programmes": [
+    "programmeIds": [
         "123e4567-e89b-12d3-a456-426614174000"
     ]
 }

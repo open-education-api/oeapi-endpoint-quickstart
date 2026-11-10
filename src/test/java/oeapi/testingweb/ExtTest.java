@@ -123,12 +123,19 @@ class ExtTest {
                 .replace("--COURSE_ID_TOBEINFORMED--", courseId);
 
         logStep("Create Offering [" + offeringId + "] carrying ext");
-        post("/offerings", offeringPayload)
-                .jsonPath("$.offeringId").isEqualTo(offeringId);
-        TUCudRest.track("offerings", offeringId);
+        webTestClient.post()
+                .uri("/course-offerings")
+                .header("Authorization", TU.authHeaderForTest())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(offeringPayload)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.courseOfferingId").isEqualTo(offeringId);
+        TUCudRest.track("course-offerings", offeringId);
 
         logStep("Read Offering [" + offeringId + "] back and check ext survived the database");
-        assertExt(get("/offerings/" + offeringId), "Pamplona", offeringCode);
+        assertExt(get("/course-offerings/" + offeringId), "Pamplona", offeringCode);
     }
 
     /**

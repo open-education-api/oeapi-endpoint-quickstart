@@ -37,7 +37,9 @@
                 "longitude": 4.883333
             },
             "ext": {
-                "hello": { "world": true }
+                "hello": {
+                    "world": true
+                }
             }
         }
     ],

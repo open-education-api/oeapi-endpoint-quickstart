@@ -36,7 +36,7 @@ import org.junit.jupiter.api.AfterAll;
  *   - "$.programmes[0]" is a String WITH expand -> the expansion did not fire at all; check that
  *     the field is public, since oeapiDTOMapper.toJSON() resolves expandables with
  *     Class.getField();
- *   - "$.programmes[0].organisation" missing WITH expand -> the elements were serialized as
+ *   - "$.programmes[0].organisationId" missing WITH expand -> the elements were serialized as
  *     entities rather than mapped to their DTO. Programme.organisation is a @JsonBackReference,
  *     so the entity does not serialize it at all, while ProgrammeDTO publishes it as the
  *     organisationId - which makes it a reliable tell for which of the two shapes came back.
@@ -100,17 +100,17 @@ class CourseExpandProgrammesTest {
         // added here rather than by editing files several other tests depend on.
         ObjectNode programme = (ObjectNode) objectMapper
                 .readTree(TU.getPayload("programme_template", "PROG", progId, progCode));
-        programme.put("organisation", orgId);
+        programme.put("organisationId", orgId);
 
         post("/programmes", objectMapper.writeValueAsString(programme))
                 .jsonPath("$.programmeId").isEqualTo(progId)
-                .jsonPath("$.organisation").isEqualTo(orgId);
+                .jsonPath("$.organisationId").isEqualTo(orgId);
 
         logStep("Create Course [" + courseId + "] belonging to that Programme");
 
         ObjectNode course = (ObjectNode) objectMapper
                 .readTree(TU.getPayload("course_template", "COURSE", courseId, courseCode));
-        course.putArray("programmes").add(progId);
+        course.putArray("programmeIds").add(progId);
 
         post("/courses", objectMapper.writeValueAsString(course))
                 .jsonPath("$.courseId").isEqualTo(courseId);
@@ -126,9 +126,9 @@ class CourseExpandProgrammesTest {
         logStep("Read Course [" + courseId + "] without expand");
 
         get("/courses/" + courseId)
-                .jsonPath("$.programmes.length()").isEqualTo(1)
-                .jsonPath("$.programmes[0]").isEqualTo(progId)
-                .jsonPath("$.programmes[0]")
+                .jsonPath("$.programmeIds.length()").isEqualTo(1)
+                .jsonPath("$.programmeIds[0]").isEqualTo(progId)
+                .jsonPath("$.programmeIds[0]")
                         .value((Object programme) -> assertThat(programme, Matchers.instanceOf(String.class)));
     }
 
@@ -158,7 +158,7 @@ class CourseExpandProgrammesTest {
         logStep("Read Course [" + courseId + "] with ?expand=programmes: OOAPI shape");
 
         get("/courses/" + courseId + "?expand=programmes")
-                .jsonPath("$.programmes[0].organisation").isEqualTo(orgId);
+                .jsonPath("$.programmes[0].organisationId").isEqualTo(orgId);
     }
 
     private WebTestClient.BodyContentSpec post(String uri, String payload) {

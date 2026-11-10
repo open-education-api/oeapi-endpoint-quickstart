@@ -1,20 +1,16 @@
 {
   "academicSessionId": "--AC_ID_TOBEINFORMED--",
-
   "academicSessionType": "semester",
-
   "primaryCode": {
     "codeType": "identifier",
     "code": "--AC_CODE_TOBEINFORMED--"
   },
-
   "name": [
     {
       "language": "en-GB",
       "value": "Test EN"
     }
   ],
-
-  "startDate": "2026-06-01",
-  "endDate": "2026-06-30"
+  "startDateTime": "2026-06-01T00:00:00Z",
+  "endDateTime": "2026-06-30T00:00:00Z"
 }

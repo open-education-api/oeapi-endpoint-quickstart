@@ -5,16 +5,16 @@
             "code": "fdfe2ddd-30ba-f9be-6d01-cfede449f454"
         }
     ],
-    "coordinators": [
+    "coordinatorIds": [
         "3542f2d3-3ba4-381a-00c4-eefe0c81c3f6"
     ],
     "level": "undivided",
     "resources": [
         "(2013). Furthermore, several in depth case studies will be made available through WUR-shop. Seeskin (eds.), The Cambridge Companion to Muhammad."
     ],
-    "organisation": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
-    "modeOfDelivery": [
-        "situated"
+    "organisationId": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "modesOfDelivery": [
+        "presential"
     ],
     "addresses": [
         {
@@ -42,7 +42,7 @@
     ],
     "duration": "P1DT30H4S",
     "abbreviation": "ITGPEM",
-    "enrollment": [
+    "enrolment": [
         {
             "language": "en-GB",
             "value": "EN TRANSLATION: . . ."
@@ -52,7 +52,9 @@
             "value": "NL VERTALING: . . ."
         }
     ],
-    "teachingLanguage": "nld",
+    "teachingLanguages": [
+        "nl"
+    ],
     "assessment": [
         {
             "language": "en-GB",
@@ -63,7 +65,7 @@
             "value": "NL VERTALING: - written exam counts for 75% and the research project (33%). The final mark will then be an assistant professor, associate professor or full professor. A mark equal or higher for the exam will be in the tutorial (25%)."
         }
     ],
-    "firstStartDate": "2021-12-17",
+    "firstStartDate": "2021-12-17T00:00:00Z",
     "learningOutcomes": [
         [
             {
@@ -138,26 +140,37 @@
             "alliances": [
                 {
                     "name": "kom",
-                    "themes": ["theme1", "theme2"],
+                    "themes": [
+                        "theme1",
+                        "theme2"
+                    ],
                     "selection": false,
-                    "instructorNames": ["Instructor1", "Instructor2"],
+                    "instructorNames": [
+                        "Instructor1",
+                        "Instructor2"
+                    ],
                     "contactHours": 3.5,
                     "activities": "lectures and practises",
                     "visibleForOwnStudents": false,
                     "enrollmentForOwnStudents": "broker",
                     "visibleForGuests": true,
                     "enrollmentForGuests": "broker",
-                    "jointPartnerCodes": ["11PE", "12PE"]
+                    "jointPartnerCodes": [
+                        "11PE",
+                        "12PE"
+                    ]
                 }
             ],
             "consumerKey": "eduxchange"
         }
     ],
-    "studyLoad": {
-        "value": 178,
-        "studyLoadUnit": "ects"
-    },
-    "programmes": [
+    "studyLoad": [
+        {
+            "value": 178,
+            "studyLoadUnit": "ects"
+        }
+    ],
+    "programmeIds": [
         "a8138341-d39e-55f8-fb77-4bf7a0ae7a52"
     ]
 }

@@ -134,23 +134,22 @@ public class OfferingsTest {
                 StandardCharsets.UTF_8);
 
         webTestClient.post()
-            .uri("/offerings")
+            .uri("/course-offerings")
             .header("Authorization",TU.authHeaderForTest())
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(courseOfferingPayload.replace("--OFFERING_ID_TOBEINFORMED--", offeringId)
                        .replace("--COURSE_ID_TOBEINFORMED--", courseId)
                        .replace("--OFFERING_CODE_TOBEINFORMED--", TU.genRandomCode()))
             .exchange()
-            .expectStatus().isOk();
+            .expectStatus().isCreated();
 
         webTestClient.get()
-            .uri("/offerings/{offeringId}", offeringId)
+            .uri("/course-offerings/{offeringId}", offeringId)
             .header("Authorization",TU.authHeaderForTest())
             .exchange().expectStatus().isOk().expectBody()
-            .jsonPath("$.offeringId").isEqualTo(offeringId)
-            .jsonPath("$.offeringType").isEqualTo("course")
-            .jsonPath("$.course").isEqualTo(courseId)
-            .jsonPath("$.programme").doesNotExist();
+            .jsonPath("$.courseOfferingId").isEqualTo(offeringId)
+            .jsonPath("$.courseId").isEqualTo(courseId)
+            .jsonPath("$.programmeId").doesNotExist();
     }
 
     @Test
@@ -163,28 +162,27 @@ public class OfferingsTest {
                     StandardCharsets.UTF_8);
 
             webTestClient.post()
-                    .uri("/offerings")
+                    .uri("/programme-offerings")
                     .header("Authorization", TU.authHeaderForTest())
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(programmeOfferingPayload.replace("--OFFERING_ID_TOBEINFORMED--", offeringId)
                             .replace("--PROG_ID_TOBEINFORMED--", programmeId)
                             .replace("--OFFERING_CODE_TOBEINFORMED--", TU.genRandomCode()))
-                    .exchange().expectStatus().isOk();
+                    .exchange().expectStatus().isCreated();
 
             webTestClient.get()
-                    .uri("/offerings/{offeringId}", offeringId)
+                    .uri("/programme-offerings/{offeringId}", offeringId)
                     .header("Authorization", TU.authHeaderForTest())
                     .exchange().expectStatus().isOk().expectBody()
-                    .jsonPath("$.offeringId").isEqualTo(offeringId)
-                    .jsonPath("$.offeringType").isEqualTo("programme")
-                    .jsonPath("$.programme").isEqualTo(programmeId)
-                    .jsonPath("$.course").doesNotExist();
+                    .jsonPath("$.programmeOfferingId").isEqualTo(offeringId)
+                    .jsonPath("$.programmeId").isEqualTo(programmeId)
+                    .jsonPath("$.courseId").doesNotExist();
         } finally {
             offeringService.delete(offeringId);
         }
     }
 
-    void expandAcademicSessionTest(String payload) throws Exception {
+    void expandAcademicSessionTest(String payload, String resource, String idProperty) throws Exception {
         String offeringId = UUID.randomUUID().toString();
         String academicSessionId = UUID.randomUUID().toString();
 
@@ -203,30 +201,30 @@ public class OfferingsTest {
             academicSession = academicSessionService.getById(academicSessionId).get();
 
             webTestClient.post()
-                .uri("/offerings")
+                .uri("/" + resource)
                 .header("Authorization", TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(payload)
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isCreated();
 
             Offering offering = offeringService.getById(offeringId).get();
             assert (academicSessionId.equals(offering.getAcademicSession().getAcademicSessionId()));
 
             // without expand
             webTestClient.get()
-                    .uri("/offerings/{offeringId}", offeringId)
+                    .uri("/" + resource + "/{offeringId}", offeringId)
                     .header("Authorization", TU.authHeaderForTest())
                     .exchange().expectStatus().isOk().expectBody()
-                    .jsonPath("$.offeringId").isEqualTo(offeringId)
-                    .jsonPath("$.academicSession").isEqualTo(academicSessionId);
+                    .jsonPath("$." + idProperty).isEqualTo(offeringId)
+                    .jsonPath("$.academicSessionId").isEqualTo(academicSessionId);
 
             // with expand
             webTestClient.get()
-                    .uri("/offerings/{offeringId}?expand=academicSession", offeringId)
+                    .uri("/" + resource + "/{offeringId}?expand=academic_session", offeringId)
                     .header("Authorization", TU.authHeaderForTest())
                     .exchange().expectStatus().isOk().expectBody()
-                    .jsonPath("$.offeringId").isEqualTo(offeringId)
+                    .jsonPath("$." + idProperty).isEqualTo(offeringId)
                     .jsonPath("$.academicSession.academicSessionId").isEqualTo(academicSessionId)
                     .jsonPath("$.academicSession.name[0].language").isEqualTo(name.get(0).getLanguage())
                     .jsonPath("$.academicSession.name[0].value").isEqualTo(name.get(0).getValue());
@@ -241,7 +239,7 @@ public class OfferingsTest {
         String payload = new String(Files.readAllBytes(Paths.get("src/test/resources/courseOfferingWithAcademicSession_template.json")),
                                     StandardCharsets.UTF_8)
             .replace("--COURSE_ID_TOBEINFORMED--", courseId);
-        expandAcademicSessionTest(payload);
+        expandAcademicSessionTest(payload, "course-offerings", "courseOfferingId");
     }
 
     @Test
@@ -249,7 +247,7 @@ public class OfferingsTest {
         String payload = new String(Files.readAllBytes(Paths.get("src/test/resources/programmeOfferingWithAcademicSession_template.json")),
                                     StandardCharsets.UTF_8)
             .replace("--PROGRAMME_ID_TOBEINFORMED--", programmeId);
-        expandAcademicSessionTest(payload);
+        expandAcademicSessionTest(payload, "programme-offerings", "programmeOfferingId");
     }
 
     @Test

@@ -30,9 +30,9 @@ class AcademicSessionTest {
     void DeserializeAcademicSessionInsertPayloadWithName() {
         String payload = """
                 {
-                  "endDate": "2030-01-04",
+                  "endDateTime": "2030-01-04T00:00:00Z",
                   "academicSessionType": "quarter",
-                  "startDate": "2029-09-01",
+                  "startDateTime": "2029-09-01T00:00:00Z",
                   "name": [
                     {
                       "language": "en-GB",
@@ -56,6 +56,8 @@ class AcademicSessionTest {
         assertEquals("quarter", academicSession.getAcademicSessionType());
         assertEquals("en-GB", academicSession.getName().get(0).getLanguage());
         assertEquals("nl-NL", academicSession.getName().get(1).getLanguage());
+        assertEquals(java.time.LocalDate.of(2029, 9, 1), academicSession.getStartDate());
+        assertEquals(java.time.LocalDate.of(2030, 1, 4), academicSession.getEndDate());
     }
 
     @Autowired

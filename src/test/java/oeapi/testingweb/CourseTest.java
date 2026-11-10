@@ -111,7 +111,7 @@ class CourseTest {
 
         String randomCode = TU.genRandomCode();
         String levelRandom = TU.genRandomValue("levelType");
-        String teachingLanguage = "spa";
+        String teachingLanguage = "es";
 
         logStep("CourseTest testFilterCourse: with Code: "+randomCode+" level: "+levelRandom+ " teachingLanguage: "+teachingLanguage);
 
@@ -139,7 +139,7 @@ class CourseTest {
 
         String randomCode = TU.genRandomCode();
         String levelRandom = TU.genRandomValue("levelType");
-        String teachingLanguage = "spa";
+        String teachingLanguage = "es";
 
         logger.info("Course [" + randomCode + "] load...");
 

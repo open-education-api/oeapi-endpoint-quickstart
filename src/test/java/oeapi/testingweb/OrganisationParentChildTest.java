@@ -123,13 +123,13 @@ class OrganisationParentChildTest {
 
         post("/organisations", childPayload(childAId, childACode, rootId))
                 .jsonPath("$.organisationId").isEqualTo(childAId)
-                .jsonPath("$.parent").isEqualTo(rootId);
+                .jsonPath("$.parentId").isEqualTo(rootId);
 
         logStep("Create child Organisation [" + childBId + "] under [" + rootId + "]");
 
         post("/organisations", childPayload(childBId, childBCode, rootId))
                 .jsonPath("$.organisationId").isEqualTo(childBId)
-                .jsonPath("$.parent").isEqualTo(rootId);
+                .jsonPath("$.parentId").isEqualTo(rootId);
     }
 
     /**
@@ -143,9 +143,9 @@ class OrganisationParentChildTest {
 
         get("/organisations/" + rootId)
                 .jsonPath("$.organisationId").isEqualTo(rootId)
-                .jsonPath("$.children").exists()
-                .jsonPath("$.children.length()").isEqualTo(2)
-                .jsonPath("$.children")
+                .jsonPath("$.childIds").exists()
+                .jsonPath("$.childIds.length()").isEqualTo(2)
+                .jsonPath("$.childIds")
                         .value((List<String> children) -> assertThat(children, Matchers.hasItems(childAId, childBId)));
     }
 
@@ -178,8 +178,8 @@ class OrganisationParentChildTest {
 
         get("/organisations/" + childAId)
                 .jsonPath("$.organisationId").isEqualTo(childAId)
-                .jsonPath("$.parent").isEqualTo(rootId)
-                .jsonPath("$.children").doesNotExist();
+                .jsonPath("$.parentId").isEqualTo(rootId)
+                .jsonPath("$.childIds").doesNotExist();
     }
 
     /**
@@ -198,7 +198,7 @@ class OrganisationParentChildTest {
                 .jsonPath("$.children[*].organisationId")
                         .value((List<String> ids) -> assertThat(ids, Matchers.hasItems(childAId, childBId)))
                 .jsonPath("$.children[0].primaryCode.code").exists()
-                .jsonPath("$.children[0].parent").isEqualTo(rootId)
+                .jsonPath("$.children[0].parentId").isEqualTo(rootId)
                 // Enum-backed fields must be resolved on the expanded objects too, not left
                 // as the raw enumeration id. These are nested DTOs that ModelMapper builds
                 // inside the root mapping, which is the case a root-only fixup misses.
@@ -232,7 +232,7 @@ class OrganisationParentChildTest {
         logStep("Read child [" + childAId + "] without expand");
 
         get("/organisations/" + childAId)
-                .jsonPath("$.parent")
+                .jsonPath("$.parentId")
                         .value((Object parent) -> assertThat(parent, Matchers.instanceOf(String.class)));
     }
 

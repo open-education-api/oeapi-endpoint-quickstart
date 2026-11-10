@@ -189,15 +189,15 @@ public class CourseFullTest {
         String offeringPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/courseOffering_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
-                .uri("/offerings")
+                .uri("/course-offerings")
                 .header("Authorization",TU.authHeaderForTest() )
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId)
                         .replace("--COURSE_ID_TOBEINFORMED--", randomCourseId))
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.offeringId").isEqualTo(randomOfferingId);
+                .jsonPath("$.courseOfferingId").isEqualTo(randomOfferingId);
     }
 
     
@@ -258,7 +258,7 @@ public class CourseFullTest {
      */
     @AfterAll
     void cleanUpCreatedData() {
-        TUCudRest.deleteQuiet("offerings", randomOfferingId, webTestClient);
+        TUCudRest.deleteQuiet("course-offerings", randomOfferingId, webTestClient);
         TUCudRest.deleteQuiet("courses", randomCourseId, webTestClient);
         TUCudRest.deleteQuiet("programmes", randomProgId, webTestClient);
         TUCudRest.deleteQuiet("persons", randomPersonId, webTestClient);

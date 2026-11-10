@@ -21,9 +21,7 @@
         "studyLoadUnit": "ects",
         "value": 6
     },
-    "modeOfDelivery":
-            "on campus"
-    ,
+    "modeOfDelivery": "on campus",
     "firstStartDate": "2024-11-02",
     "description": [
         {
@@ -82,11 +80,9 @@
         }
     ],
     "learningOutcomes": [
-
         {
             "language": "en-GB",
             "value": "<p>Description of the learning outcomes</p>"
         }
-
     ]
 }

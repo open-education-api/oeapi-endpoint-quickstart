@@ -82,10 +82,9 @@ class ProgrammeTest {
         String randomCode = TU.genRandomCode();
         String levelRandom = TU.genRandomValue("levelType");
         String programmeTypeRandom = TU.genRandomValue("programmeType");
-        String sectorRandom = TU.genRandomValue("sectorType");
         String qualificationAwardedRandom = TU.genRandomValue("qualificationAwardedType");
         String levelOfQualificationRandom = TU.genRandomValue("levelOfQualificationType");
-        String teachingLanguage = "spa";
+        String teachingLanguage = "es";
 
         logStep("Programme [" + randomCode + "] load...");
 
@@ -94,7 +93,6 @@ class ProgrammeTest {
         String payload = programmePayload.replace("--" + templateAbrev + "_CODE_TOBEINFORMED--", randomCode)
                 .replace("--" + templateAbrev + "_level--", levelRandom)
                 .replace("--" + templateAbrev + "_programmeType--", programmeTypeRandom)
-                .replace("--" + templateAbrev + "_sector--", sectorRandom)
                 .replace("--" + templateAbrev + "_teachingLanguage--", teachingLanguage)
                 .replace("--" + templateAbrev + "_levelOfQualification--", levelOfQualificationRandom)
                 .replace("--" + templateAbrev + "_qualificationAwarded--", qualificationAwardedRandom);
@@ -104,7 +102,6 @@ class ProgrammeTest {
         Map<String, String> filterMap = new HashMap<>();
         filterMap.put("programmeType", programmeTypeRandom);
         filterMap.put("teachingLanguage", teachingLanguage);
-        filterMap.put("sector", sectorRandom);
         filterMap.put("qualificationAwarded", qualificationAwardedRandom);
         filterMap.put("levelOfQualification", levelOfQualificationRandom);
 
@@ -120,10 +117,9 @@ class ProgrammeTest {
         String randomCode = TU.genRandomCode();
         String levelRandom = TU.genRandomValue("levelType");
         String programmeTypeRandom = TU.genRandomValue("programmeType");
-        String sectorRandom = TU.genRandomValue("sectorType");
         String qualificationAwardedRandom = TU.genRandomValue("qualificationAwardedType");
         String levelOfQualificationRandom = TU.genRandomValue("levelOfQualificationType");
-        String teachingLanguage = "spa";
+        String teachingLanguage = "es";
 
         logStep("Programme [" + randomCode + "] load...");
 
@@ -132,7 +128,6 @@ class ProgrammeTest {
         String payload = programmePayload.replace("--" + templateAbrev + "_CODE_TOBEINFORMED--", randomCode)
                 .replace("--" + templateAbrev + "_level--", levelRandom)
                 .replace("--" + templateAbrev + "_programmeType--", programmeTypeRandom)
-                .replace("--" + templateAbrev + "_sector--", sectorRandom)
                 .replace("--" + templateAbrev + "_teachingLanguage--", teachingLanguage)
                 .replace("--" + templateAbrev + "_levelOfQualification--", levelOfQualificationRandom)
                 .replace("--" + templateAbrev + "_qualificationAwarded--", qualificationAwardedRandom);

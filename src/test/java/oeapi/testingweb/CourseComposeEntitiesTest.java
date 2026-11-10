@@ -43,7 +43,7 @@ class CourseComposeEntitiesTest {
         // Testing Components
         logger.info("Course [" + randomId + "] load...");
       // Spec v6  String uri = "/" + restResource + "/" + randomId + "/learning-components";
-        String uri = "/" + restResource + "/" + randomId + "/components";
+        String uri = "/" + restResource + "/" + randomId + "/learning-components";
         logger.info("Testing components ..." + uri);
         TUGetRest.getPages_testTotalPages(uri, webTestClient);
         
@@ -58,8 +58,7 @@ class CourseComposeEntitiesTest {
 
         String randomId = TUCudRest.whenPost_testOk(restResource, entity, templateAbrev, webTestClient);
         logger.info("Course [" + randomId + "] load...");
-        // Spec v6   String uri = "/" + restResource + "/" + randomId + "/course-offerings";
-        String uri = "/" + restResource + "/" + randomId + "/offerings";
+        String uri = "/" + restResource + "/" + randomId + "/course-offerings";
         logger.info("Testing offerings ..." + uri);
         TUGetRest.getPages_testTotalPages(uri, webTestClient);
 

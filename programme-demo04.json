@@ -1,11 +1,15 @@
 {
   "fieldsOfStudy": "0913",
-  "teachingLanguage": "nld",
-  "studyLoad": {
-    "value": 131,
-    "studyLoadUnit": "ects"
-  },
-  "level": "secondary vocational education 4",
+  "teachingLanguages": [
+    "nl"
+  ],
+  "studyLoad": [
+    {
+      "value": 131,
+      "studyLoadUnit": "ects"
+    }
+  ],
+  "level": "secondary_vocational_education_4",
   "name": [
     {
       "language": "en-GB",
@@ -16,8 +20,7 @@
       "value": "NL VERTALING: Opleiding tot Oefentherapeut-Mensendieck"
     }
   ],
-  "sector": "university education",
-  "validFrom": "1994-05-04",
+  "validFrom": "1994-05-04T00:00:00Z",
   "addresses": [
     {
       "countryCode": "NL",
@@ -38,8 +41,8 @@
     "codeType": "crohoCreboCode",
     "code": "34572"
   },
-  "modeOfDelivery": [
-    "on campus"
+  "modesOfDelivery": [
+    "presential"
   ],
   "duration": "P1DT30H4S",
   "qualificationAwarded": "Phd",
@@ -100,7 +103,7 @@
     }
   ],
   "programmeId": "58095060-d18c-fcd2-04df-c20b156736f6",
-  "firstStartDate": "2021-02-20",
+  "firstStartDateTime": "2021-02-20T00:00:00Z",
   "resources": [
     "Items: Artikelen (elektronisch toegankelijk of aangeboden via Blackboard). Answers to exercises.Selected scientific papers. .",
     "Catalysis, Concepts and Practice. Book: To be announced. Martell, Luke (2016).",
@@ -169,7 +172,7 @@
       "value": "NL VERTALING: To get access to the MSc thesis before starting with the application of statistical methods to ecological data (e.g., REG-31806 Ecological Methods I. Course Guide BSc Thesis Communicatie and Life Sciences. ."
     }
   ],
-  "enrollment": [
+  "enrolment": [
     {
       "language": "en-GB",
       "value": "EN TRANSLATION: Osiris. . ."

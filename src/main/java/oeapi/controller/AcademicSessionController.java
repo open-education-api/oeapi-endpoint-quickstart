@@ -66,8 +66,10 @@ public class AcademicSessionController extends oeapiController<AcademicSession> 
 
         ObjectMapper mapper = oeapiUtils.ooapiObjectMapper();
         ObjectNode node = mapper.valueToTree(session);
-        ArrayNode childIds = node.putArray("childIds");
-        children.forEach(child -> childIds.add(child.getAcademicSessionId()));
+        if (!children.isEmpty()) {
+            ArrayNode childIds = node.putArray("childIds");
+            children.forEach(child -> childIds.add(child.getAcademicSessionId()));
+        }
 
         if (expand != null) {
             for (String value : expand.split(",")) {

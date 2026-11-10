@@ -18,10 +18,14 @@
       "value": "This programme is made for testing "
     }
   ],
-  "teachingLanguage": "eng",
-  "studyLoad": {
-    "studyLoadUnit": "ects",
-    "value": 3
-  },
+  "teachingLanguages": [
+    "en"
+  ],
+  "studyLoad": [
+    {
+      "studyLoadUnit": "ects",
+      "value": 3
+    }
+  ],
   "level": "bachelor"
 }

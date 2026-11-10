@@ -88,35 +88,35 @@ public class ProgrammeOfferingsTest {
         String offeringPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/programmeOffering_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
-                .uri("/offerings")
+                .uri("/programme-offerings")
                 .header("Authorization", TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId)
                         .replace("--PROG_ID_TOBEINFORMED--", randomProgId)
                         .replace("--OFFERING_CODE_TOBEINFORMED--", randomOfferingCode))
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.offeringId").isEqualTo(randomOfferingId);
+                .jsonPath("$.programmeOfferingId").isEqualTo(randomOfferingId);
 
         logStep("Adding second ProgrammeOffering [" + randomOfferingId2 + "] ...");
 
         webTestClient.post()
-                .uri("/offerings")
+                .uri("/programme-offerings")
                 .header("Authorization", TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId2)
                         .replace("--PROG_ID_TOBEINFORMED--", randomProgId)
                         .replace("--OFFERING_CODE_TOBEINFORMED--", randomOfferingCode2))
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.offeringId").isEqualTo(randomOfferingId2);
+                .jsonPath("$.programmeOfferingId").isEqualTo(randomOfferingId2);
 
         logStep("Updating second ProgrammeOffering [" + randomOfferingId2 + "] ...");
 
         webTestClient.put()
-                .uri("/offerings")
+                .uri("/programme-offerings/{offeringId}", randomOfferingId2)
                 .header("Authorization", TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId2)
@@ -125,13 +125,13 @@ public class ProgrammeOfferingsTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.offeringId").isEqualTo(randomOfferingId2)
+                .jsonPath("$.programmeOfferingId").isEqualTo(randomOfferingId2)
                 .jsonPath("$.primaryCode.code").isEqualTo(randomOfferingCode3);
 
         logStep("Fetching offerings for Programme [" + randomProgId + "] ...");
 
         webTestClient.get()
-                .uri("/programmes/{programmeId}/offerings", randomProgId)
+                .uri("/programmes/{programmeId}/programme-offerings", randomProgId)
                 .header("Authorization", TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isOk()
@@ -142,7 +142,7 @@ public class ProgrammeOfferingsTest {
                 .jsonPath("$.items").isArray()
                 .jsonPath("$.items.length()").isEqualTo(2)
                 // verify both added offerings are present
-                .jsonPath("$.items[*].offeringId").value(offeringIds -> {
+                .jsonPath("$.items[*].programmeOfferingId").value(offeringIds -> {
                     @SuppressWarnings("unchecked")
                     List<String> ids = (List<String>) offeringIds;
                     ids.forEach(id -> System.out.println("ProgrammeOfferings detected Offering ID: " + id));
@@ -152,7 +152,7 @@ public class ProgrammeOfferingsTest {
                             "Expected offeringId " + randomOfferingId2 + " not found in returned items");
                 })
                 // verify the programme reference round-trips (ProgrammeOfferingDTO serializes programme as programmeId)
-                .jsonPath("$.items[*].programme").value(programmes -> {
+                .jsonPath("$.items[*].programmeId").value(programmes -> {
                     @SuppressWarnings("unchecked")
                     List<String> progs = (List<String>) programmes;
                     assertTrue(!progs.isEmpty() && progs.stream().allMatch(randomProgId::equals),
@@ -162,13 +162,13 @@ public class ProgrammeOfferingsTest {
         logStep("Cleanup: deleting ProgrammeOfferings ...");
 
         webTestClient.delete()
-                .uri("/offerings/{offeringId}", randomOfferingId)
+                .uri("/programme-offerings/{offeringId}", randomOfferingId)
                 .header("Authorization", TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isOk();
 
         webTestClient.delete()
-                .uri("/offerings/{offeringId}", randomOfferingId2)
+                .uri("/programme-offerings/{offeringId}", randomOfferingId2)
                 .header("Authorization", TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isOk();
@@ -179,7 +179,7 @@ public class ProgrammeOfferingsTest {
 
     private void verifyOfferingIsDeleted(String offeringId) {
         webTestClient.get()
-                .uri("/offerings/{offeringId}", offeringId)
+                .uri("/programme-offerings/{offeringId}", offeringId)
                 .header("Authorization", TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isNotFound();
@@ -208,8 +208,8 @@ public class ProgrammeOfferingsTest {
      */
     @AfterAll
     void cleanUpCreatedData() {
-        TUCudRest.deleteQuiet("offerings", randomOfferingId, webTestClient);
-        TUCudRest.deleteQuiet("offerings", randomOfferingId2, webTestClient);
+        TUCudRest.deleteQuiet("programme-offerings", randomOfferingId, webTestClient);
+        TUCudRest.deleteQuiet("programme-offerings", randomOfferingId2, webTestClient);
         TUCudRest.deleteQuiet("programmes", randomProgId, webTestClient);
         TUCudRest.cleanupCreated(webTestClient);
     }

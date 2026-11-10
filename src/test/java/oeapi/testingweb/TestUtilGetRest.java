@@ -17,7 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 @Component
 public class TestUtilGetRest {
 
-    private static Integer pageSize = 3;
+    private static Integer pageSize = 10;   // OEAPI v6: 10, 20, 50, 100 or 250
 
     @Autowired
     private TestUtil TU;

@@ -18,11 +18,15 @@
             "value": "Descripcion [--PROG_ID_TOBEINFORMED--] ...."
         }
     ],
-    "teachingLanguage": "nld",
-    "studyLoad": {
-        "studyLoadUnit": "ects",
-        "value": 3
-    },
+    "teachingLanguages": [
+        "nl"
+    ],
+    "studyLoad": [
+        {
+            "studyLoadUnit": "ects",
+            "value": 3
+        }
+    ],
     "level": "master",
     "ext": {
         "unitaCampus": "Pamplona",

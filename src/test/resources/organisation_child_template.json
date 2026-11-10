@@ -18,5 +18,5 @@
             "value": "Child of --PARENT_ID_TOBEINFORMED--"
         }
     ],
-    "parent": "--PARENT_ID_TOBEINFORMED--"
+    "parentId": "--PARENT_ID_TOBEINFORMED--"
 }

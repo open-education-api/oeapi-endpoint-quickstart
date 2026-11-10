@@ -193,38 +193,38 @@ public class CourseOfferingsTest {
         String offeringPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/courseOffering_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
-                .uri("/offerings")
+                .uri("/course-offerings")
                 .header("Authorization",TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId)
                                           .replace("--COURSE_ID_TOBEINFORMED--", randomCourseId)
                                           .replace("--OFFERING_CODE_TOBEINFORMED--",randomOfferingCode))
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.offeringId").isEqualTo(randomOfferingId);
+                .jsonPath("$.courseOfferingId").isEqualTo(randomOfferingId);
 
 
 
         logStep("Adding Second Offering to Course [" + randomCourseId + "] load, OfferingID: " + randomOfferingId2);
 
         webTestClient.post()
-                .uri("/offerings")
+                .uri("/course-offerings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization",TU.authHeaderForTest())
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId2)
                                           .replace("--COURSE_ID_TOBEINFORMED--", randomCourseId)
                                           .replace("--OFFERING_CODE_TOBEINFORMED--",randomOfferingCode2))
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody()
-                .jsonPath("$.offeringId").isEqualTo(randomOfferingId2);
+                .jsonPath("$.courseOfferingId").isEqualTo(randomOfferingId2);
 
 
         logStep("Fetching offerings for Course [" + randomCourseId + "] ...");
 
         webTestClient.get()
-                .uri("/courses/{courseId}/offerings", randomCourseId)
+                .uri("/courses/{courseId}/course-offerings", randomCourseId)
                 .header("Authorization",TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isOk()
@@ -234,7 +234,7 @@ public class CourseOfferingsTest {
                 .jsonPath("$.pageNumber").exists()
                 .jsonPath("$.items").isArray()
                 // verify both added offerings exist in the returned list
-                .jsonPath("$.items[*].offeringId").value(offeringIds -> {
+                .jsonPath("$.items[*].courseOfferingId").value(offeringIds -> {
             List<String> ids = (List<String>) offeringIds;
             ids.forEach(id -> System.out.println("getOfferingsForCourseTest detected Offering ID: " + id));
             assertTrue(ids.contains(randomOfferingId),
@@ -247,7 +247,7 @@ public class CourseOfferingsTest {
 
         logStep("Course putCourseTest for CourseOffering [" + randomOfferingId + "] ...");
         webTestClient.put()
-                .uri("/offerings/{offeringId}", randomOfferingId)
+                .uri("/course-offerings/{offeringId}", randomOfferingId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization",TU.authHeaderForTest())
                 .bodyValue(offeringPayload.replace("--OFFERING_ID_TOBEINFORMED--", randomOfferingId)
@@ -256,7 +256,7 @@ public class CourseOfferingsTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.offeringId").isEqualTo(randomOfferingId)
+                .jsonPath("$.courseOfferingId").isEqualTo(randomOfferingId)
                 .jsonPath("$.primaryCode.code").isEqualTo(randomOfferingCode3);
 
 
@@ -265,7 +265,7 @@ public class CourseOfferingsTest {
 
 //        // --- Step 2: query offerings for deleted course ---
 //        webTestClient.get()
-//                .uri("/courses/{courseId}/offerings", randomCourseId)
+//                .uri("/courses/{courseId}/course-offerings", randomCourseId)
 //                .exchange()
 //                .expectStatus().isOk()
 //                .expectBody()
@@ -275,7 +275,7 @@ public class CourseOfferingsTest {
 
         // --- Step 2: query offerings should now return 404 ---
         webTestClient.get()
-                .uri("/courses/{courseId}/offerings", randomCourseId)
+                .uri("/courses/{courseId}/course-offerings", randomCourseId)
                 .header("Authorization",TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isNotFound();
@@ -286,7 +286,7 @@ public class CourseOfferingsTest {
 
     private void verifyOfferingIsDeleted(String offeringId) {
         webTestClient.get()
-                .uri("/offerings/{offeringId}", offeringId)
+                .uri("/course-offerings/{offeringId}", offeringId)
                 .header("Authorization",TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isNotFound();
@@ -342,8 +342,8 @@ public class CourseOfferingsTest {
      */
     @AfterAll
     void cleanUpCreatedData() {
-        TUCudRest.deleteQuiet("offerings", randomOfferingId, webTestClient);
-        TUCudRest.deleteQuiet("offerings", randomOfferingId2, webTestClient);
+        TUCudRest.deleteQuiet("course-offerings", randomOfferingId, webTestClient);
+        TUCudRest.deleteQuiet("course-offerings", randomOfferingId2, webTestClient);
         TUCudRest.deleteQuiet("courses", randomCourseId, webTestClient);
         TUCudRest.deleteQuiet("programmes", randomProgId, webTestClient);
         TUCudRest.deleteQuiet("persons", randomPersonId, webTestClient);

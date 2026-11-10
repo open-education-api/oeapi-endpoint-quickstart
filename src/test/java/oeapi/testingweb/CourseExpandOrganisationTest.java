@@ -96,11 +96,11 @@ class CourseExpandOrganisationTest {
         // than by editing a file several other tests depend on.
         ObjectNode course = (ObjectNode) objectMapper
                 .readTree(TU.getPayload("course_template", "COURSE", courseId, courseCode));
-        course.put("organisation", orgId);
+        course.put("organisationId", orgId);
 
         post("/courses", objectMapper.writeValueAsString(course))
                 .jsonPath("$.courseId").isEqualTo(courseId)
-                .jsonPath("$.organisation").isEqualTo(orgId);
+                .jsonPath("$.organisationId").isEqualTo(orgId);
     }
 
     /**
@@ -113,8 +113,8 @@ class CourseExpandOrganisationTest {
         logStep("Read Course [" + courseId + "] without expand");
 
         get("/courses/" + courseId)
-                .jsonPath("$.organisation").isEqualTo(orgId)
-                .jsonPath("$.organisation")
+                .jsonPath("$.organisationId").isEqualTo(orgId)
+                .jsonPath("$.organisationId")
                         .value((Object organisation) -> assertThat(organisation, Matchers.instanceOf(String.class)));
     }
 
