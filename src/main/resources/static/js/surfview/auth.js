@@ -207,13 +207,17 @@ async function callEndpoint(url, options = {}) {
     const resolvedUrl = url.startsWith('http://') || url.startsWith('https://')
         ? url
         : new URL(url, window.location.origin).toString();
-    const response = await fetch(resolvedUrl, {
+    // OEAPI v6: translate between the dashboard model and the v6 payloads (oeapi_v6.js)
+    const body = typeof OeapiV6 !== 'undefined' ? OeapiV6.requestBody(resolvedUrl, options.body) : options.body;
+    const rawResponse = await fetch(resolvedUrl, {
         ...options,
+        body,
         headers: {
             ...options.headers,
             ...authorizationHeader()
         }
     });
+    const response = typeof OeapiV6 !== 'undefined' ? await OeapiV6.response(resolvedUrl, rawResponse) : rawResponse;
 
     if (response.status === 401) {
         window.localStorage.removeItem('jwt');

@@ -64,7 +64,7 @@ Constants.tabs = {
         kind: 'programme',
         idField: 'programmeId',
         detailEndpoint: id => `/programmes/${encodeURIComponent(id)}`,
-        offeringsEndpoint: id => `/programmes/${encodeURIComponent(id)}/offerings`,
+        offeringsEndpoint: id => `/programmes/${encodeURIComponent(id)}/programme-offerings`,
         columns: [
             ['Name', entity => entityLinkValue('programme', entity)],
             ['Code', entity => codeValue(entity.primaryCode)],
@@ -79,7 +79,7 @@ Constants.tabs = {
         kind: 'course',
         idField: 'courseId',
         detailEndpoint: id => `/courses/${encodeURIComponent(id)}`,
-        offeringsEndpoint: id => `/courses/${encodeURIComponent(id)}/offerings`,
+        offeringsEndpoint: id => `/courses/${encodeURIComponent(id)}/course-offerings`,
         columns: [
             ['Name', entity => entityLinkValue('course', entity)],
             ['Code', entity => codeValue(entity.primaryCode)],
@@ -104,102 +104,109 @@ Constants.enumOptions = {
         ['school', 'School']
     ],
     teachingLanguage: [
-        ['eng', 'English'],
-        ['nld', 'Dutch'],
-        ['spa', 'Spanish'],
-        ['deu', 'German'],
-        ['fra', 'French'],
-        ['ara', 'Arabic'],
-        ['chi', 'Chinese'],
-        ['hrv', 'Croatian'],
-        ['ita', 'Italian'],
-        ['jpn', 'Japanese'],
-        ['nor', 'Norwegian'],
+        ['en', 'English'],
+        ['nl', 'Dutch'],
+        ['es', 'Spanish'],
+        ['eu', 'Basque'],
+        ['de', 'German'],
+        ['fr', 'French'],
+        ['ar', 'Arabic'],
+        ['zh', 'Chinese'],
+        ['hr', 'Croatian'],
+        ['it', 'Italian'],
+        ['ja', 'Japanese'],
+        ['no', 'Norwegian'],
         ['pap', 'Papiamento'],
-        ['pol', 'Polish'],
-        ['por', 'Portuguese'],
-        ['ron', 'Romanian'],
-        ['rus', 'Russian'],
-        ['swe', 'Swedish'],
-        ['tur', 'Turkish']
+        ['pl', 'Polish'],
+        ['pt', 'Portuguese'],
+        ['ro', 'Romanian'],
+        ['ru', 'Russian'],
+        ['sv', 'Swedish'],
+        ['tr', 'Turkish']
     ],
     modeOfDelivery: [
-        ['distance-learning', 'Distance learning'],
+        ['presential', 'Presential'],
         ['online', 'Online'],
-        ['on campus', 'On campus'],
         ['hybrid', 'Hybrid'],
-        ['situated', 'Situated']
+        ['blended', 'Blended'],
+        ['coil', 'COIL'],
+        ['joint_delivery', 'Joint delivery'],
+        ['project_based', 'Project based'],
+        ['research_lab_based', 'Research lab based'],
+        ['work_based', 'Work based']
     ],
     costType: [
-        ['total costs', 'Total costs'],
-        ['STAP eligible', 'STAP eligible'],
-        ['additional costs', 'Additional costs']
+        ['total_costs', 'Total costs'],
+        ['stap_eligible', 'STAP eligible']
     ],
     addressType: [
         ['postal', 'Postal'],
         ['visit', 'Visit'],
         ['deliveries', 'Deliveries'],
-        ['billing', 'Billing'],
+        ['invoicing', 'Invoicing'],
         ['teaching', 'Teaching']
     ],
     resultValueType: [
-        ['pass-or-fail', 'Pass or fail'],
-        ['US letter', 'US letter'],
-        ['UK letter', 'UK letter'],
-        ['0-100', '0-100'],
-        ['1-10', '1-10']
+        ['pass_or_fail', 'Pass or fail'],
+        ['insufficient_satisfactory_good', 'Insufficient / satisfactory / good'],
+        ['us_letter', 'US letter'],
+        ['uk_letter', 'UK letter'],
+        ['de_grade', 'German grade'],
+        ['grade_0_100', '0-100'],
+        ['grade_0_10', '0-10'],
+        ['grade_0_10_one_decimal', '0-10 (one decimal)'],
+        ['reference_level_europass', 'Europass reference level'],
+        ['other', 'Other']
     ],
     codeType: [
         ['identifier', 'Identifier'],
-        ['otherType', 'Other type'],
         ['uuid', 'UUID'],
-        ['brin', 'BRIN'],
-        ['crohoCreboCode', 'CROHO/Crebo code'],
-        ['offeringIdentifier', 'Offering identifier'],
-        ['nationalIdentityNumber', 'National identity number']
+        ['institution_code', 'Institution code'],
+        ['programme_code', 'Programme code'],
+        ['component_code', 'Component code'],
+        ['offering_code', 'Offering code'],
+        ['organisation_id', 'Organisation id'],
+        ['national_identity_number', 'National identity number']
     ],
     academicSessionType: [
-        ['academic year', 'Academic year'],
+        ['academic_year', 'Academic year'],
         ['semester', 'Semester'],
         ['trimester', 'Trimester'],
         ['quarter', 'Quarter'],
-        ['testing period', 'Testing period'],
+        ['testing_period', 'Testing period'],
         ['period', 'Period']
     ],
     programmeType: [
         ['programme', 'Programme'],
         ['minor', 'Minor'],
         ['honours', 'Honours'],
-        ['specialization', 'Specialization'],
+        ['specialisation', 'Specialisation'],
         ['track', 'Track'],
         ['specification', 'Specification']
     ],
     level: [
-        ['secondary vocational education', 'Secondary vocational education'],
-        ['secondary vocational education 1', 'Secondary vocational education 1'],
-        ['secondary vocational education 2', 'Secondary vocational education 2'],
-        ['secondary vocational education 3', 'Secondary vocational education 3'],
-        ['secondary vocational education 4', 'Secondary vocational education 4'],
-        ['associate degree', 'Associate degree'],
+        ['pre_vocational', 'Pre-vocational'],
+        ['secondary_vocational_education', 'Secondary vocational education'],
+        ['secondary_vocational_education_1', 'Secondary vocational education 1'],
+        ['secondary_vocational_education_2', 'Secondary vocational education 2'],
+        ['secondary_vocational_education_3', 'Secondary vocational education 3'],
+        ['secondary_vocational_education_4', 'Secondary vocational education 4'],
+        ['associate_degree', 'Associate degree'],
         ['bachelor', 'Bachelor'],
         ['master', 'Master'],
         ['doctoral', 'Doctoral'],
-        ['microcredential', 'Microcredential'],
+        ['post_doctoral', 'Post-doctoral'],
         ['undefined', 'Undefined'],
         ['undivided', 'Undivided'],
-        ['nt2-1', 'NT2-1'],
-        ['nt2-2', 'NT2-2']
+        ['nt2_1', 'NT2-1'],
+        ['nt2_2', 'NT2-2']
     ],
     studyLoadType: [
-        ['contacttime', 'Contact time'],
+        ['contact_time', 'Contact time'],
         ['ects', 'ECTS'],
         ['sbu', 'SBU'],
-        ['sp hour', 'SP hour']
-    ],
-    sector: [
-        ['secondary vocational education', 'Secondary vocational education'],
-        ['higher professional education', 'Higher professional education'],
-        ['university education', 'University education']
+        ['sp', 'SP'],
+        ['hour', 'Hour']
     ]
 };
 

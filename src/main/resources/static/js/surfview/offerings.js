@@ -23,7 +23,7 @@ SurfView.Offerings = (() => {
                     fieldLabelHtml('Description', 'textarea', 'description', SurfView.State.draftOffering.languageValues[SurfView.State.draftOffering.language]?.description || '', {required: true}, 'full-width')
                 ]
             }),
-            fieldLabelHtml('Teaching language', 'select', 'teachingLanguage', offering.teachingLanguage || 'eng', {
+            fieldLabelHtml('Teaching language', 'select', 'teachingLanguage', offering.teachingLanguage || 'en', {
                 options: Constants.enumOptions.teachingLanguage,
                 showValue: true
             }),
@@ -39,7 +39,7 @@ SurfView.Offerings = (() => {
             fieldLabelHtml('Result expected', 'select', 'resultExpected', String(offering.resultExpected ?? true), {
                 options: Constants.booleanOptions
             }),
-            fieldLabelHtml('Result value type', 'select', 'resultValueType', offering.resultValueType || '1-10', {
+            fieldLabelHtml('Result value type', 'select', 'resultValueType', offering.resultValueType || 'grade_0_10', {
                 options: Constants.enumOptions.resultValueType
             }),
             fieldLabelHtml('Link', 'url', 'link', offering.link || '', {placeholder: 'https://'}, 'full-width'),
@@ -88,7 +88,7 @@ SurfView.Offerings = (() => {
     function priceFormHtml(price = {}) {
         const fragment = document.createDocumentFragment();
         fragment.append(
-            fieldLabelHtml('Cost type', 'select', 'costType', price.costType || 'total costs', {
+            fieldLabelHtml('Cost type', 'select', 'costType', price.costType || 'total_costs', {
                 required: true,
                 options: Constants.enumOptions.costType
             }),
@@ -270,7 +270,7 @@ SurfView.Offerings = (() => {
             name: languageValue(`${baseName} offering`, SurfView.State.currentModalLanguage || 'en-GB'),
             abbreviation: `${String(baseName).slice(0, 18)} offer`,
             description: languageValue(`Offering for ${baseName}`, SurfView.State.currentModalLanguage || 'en-GB'),
-            teachingLanguage: 'eng',
+            teachingLanguage: 'en',
             modeOfDelivery: ['online'],
             startDate: today,
             endDate: nextMonth.toISOString().slice(0, 10),
@@ -279,7 +279,7 @@ SurfView.Offerings = (() => {
             minNumberStudents: 1,
             maxNumberStudents: 30,
             resultExpected: true,
-            resultValueType: '1-10',
+            resultValueType: 'grade_0_10',
             organisation: organisationIdValue(entity.organisation)
         };
     }
@@ -529,9 +529,10 @@ SurfView.Offerings = (() => {
             status,
             submitButton,
             payload: () => offeringPayloadFromForm(kind, parentId),
+            // OEAPI v6: one resource per offering type (/course-offerings, /programme-offerings)
             endpoint: payload => mode === 'edit'
-                ? `/offerings/${encodeURIComponent(offeringId(payload))}`
-                : kind === 'programme' ? '/offerings/programmeOffering' : '/offerings',
+                ? `/${kind}-offerings/${encodeURIComponent(offeringId(payload))}`
+                : `/${kind}-offerings`,
             method: mode === 'edit' ? 'PUT' : 'POST',
             savingText: mode === 'edit' ? 'Saving...' : 'Adding...',
             successText: mode === 'edit' ? 'Saved' : 'Added',
@@ -631,7 +632,7 @@ SurfView.Offerings = (() => {
         await deleteCurrentEntity({
             kind: 'offering',
             id: offeringId,
-            endpoint: id => `/offerings/${encodeURIComponent(id)}`,
+            endpoint: id => `/${SurfView.State.currentModalKind}-offerings/${encodeURIComponent(id)}`,
             confirmMessage: 'Are you sure you want to delete this offering?',
             cacheMap: null,
             onSuccess: async () => {

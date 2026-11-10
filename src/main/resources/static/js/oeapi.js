@@ -80,11 +80,17 @@ const API = (function() {
         console.debug('API request', {path, params, method: options.method ?? 'GET'})
 
         const url = `${endpointURL}/${path}${toQueryString(params)}`
-        const res = await window.fetch(
+        // OEAPI v6 payload translation, see js/surfview/oeapi_v6.js
+        const v6 = typeof OeapiV6 !== 'undefined'
+        if (v6 && options.body) {
+            options.body = OeapiV6.requestBody(new URL(url, window.location.href).toString(), options.body)
+        }
+        const rawRes = await window.fetch(
             url,
             addHeaders(options, {'Content-Type': 'application/json',
                                  'Authorization': getAuthorizationHeader()})
         )
+        const res = v6 ? await OeapiV6.response(new URL(url, window.location.href).toString(), rawRes) : rawRes
 
         if (!res.ok) {
             const err = {status: res.status}
@@ -180,8 +186,9 @@ const API = (function() {
         const p = `${path}/${encodeURIComponent(id)}`;
         return (await get(sub ? `${p}/${sub}` : p, params)).json()
     }
+    // OEAPI v6 pages default to 10 items; ask for the largest page allowed
     const makeItemsGetter = (path) => async (params) => (
-        (await (await get(path, params)).json()).items
+        (await (await get(path, {pageSize: 250, ...params})).json()).items
     )
     const makeDeleter = (path) => (id, params) => (
         destroy(`${path}/${encodeURIComponent(id)}`, params)
@@ -203,12 +210,12 @@ const API = (function() {
         createCourse: makeCreator('courses'),
         updateCourse: makeUpdater('courses'),
         deleteCourse: makeDeleter('courses'),
-        getCourseOfferings: async (...args) => (await (makeGetter('courses', 'offerings'))(...args)).items,
+        getCourseOfferings: async (...args) => (await (makeGetter('courses', 'course-offerings'))(...args)).items,
 
         getFieldsOfStudy: makeItemsGetter('fieldsofstudy'),
 
-        createOffering: makeCreator('offerings'),
-        updateOffering: makeUpdater('offerings'),
+        createOffering: makeCreator('course-offerings'),
+        updateOffering: makeUpdater('course-offerings'),
 
         getOrganisations: makeItemsGetter('organisations'),
 

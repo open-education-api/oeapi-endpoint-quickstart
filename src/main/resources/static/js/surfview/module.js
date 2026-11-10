@@ -277,7 +277,7 @@ SurfView.Module = (() => {
         coordinatorsPanel.dataset.moduleFormSection = 'coordinators';
 
         fields.push(
-            fieldLabelHtml('Teaching language', 'select', 'teachingLanguage', module.teachingLanguage || 'eng', {
+            fieldLabelHtml('Teaching language', 'select', 'teachingLanguage', module.teachingLanguage || 'en', {
                 options: Constants.enumOptions.teachingLanguage,
                 showValue: true
             }),
@@ -293,9 +293,6 @@ SurfView.Module = (() => {
                 options: Constants.enumOptions.modeOfDelivery
             }),
             fieldLabelHtml('First start date', 'date', 'firstStartDate', module.firstStartDate || ''),
-            fieldLabelHtml('Sector', 'select', 'sector', module.sector || '', {
-                options: [['', 'None'], ...Constants.enumOptions.sector]
-            }),
             fieldLabelHtml('Organisation', 'select', 'organisation', organisationIdValue(module.organisation), {
                 options: SurfView.Organisations.organisationOptionEntries(organisationIdValue(module.organisation))
             }),
@@ -563,7 +560,7 @@ SurfView.Module = (() => {
             description: [],
             admissionRequirements: [],
             qualificationRequirements: [],
-            teachingLanguage: 'eng',
+            teachingLanguage: 'en',
             modeOfDelivery: [],
             studyLoad: {value: null, studyLoadUnit: 'ects'},
             consumers: [{
@@ -693,7 +690,6 @@ SurfView.Module = (() => {
             : null;
         payload.modeOfDelivery = modeOfDelivery ? [modeOfDelivery] : [];
         payload.firstStartDate = value('firstStartDate');
-        payload.sector = value('sector');
         payload.organisation = value('organisation');
         payload.link = value('link');
         payload.addresses = structuredClone(SurfView.State.draftEntity.addresses);
