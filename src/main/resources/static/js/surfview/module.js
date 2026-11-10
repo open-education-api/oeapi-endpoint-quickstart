@@ -431,11 +431,10 @@ SurfView.Module = (() => {
         panel.querySelector('[data-remove-module-video]').classList.toggle('hidden', !item);
         if (item) {
             const value = item.value?.[0] || {};
+            const role = detailFieldElement('Role', 'Promo');
+            role.append(fieldHtml('hidden', 'supplementaryRole', 'promo'));
             fields.append(
-                fieldLabelHtml('Role', 'datalist', 'supplementaryRole', item.role || 'promo', {
-                    required: true,
-                    options: [['promo', 'Promo']]
-                }),
+                role,
                 fieldLabelHtml('Type', 'datalist', 'supplementaryType', item.type || 'video', {
                     required: true,
                     options: [['video', 'Video'], ['image', 'Image'], ['text_plain', 'Plain text']]
