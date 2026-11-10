@@ -558,12 +558,15 @@ function languageSwitcherHtml({
 
 /** Builds a labeled form field. */
 function fieldLabelHtml(labelName, type, name, value = '', options = {}, className = '') {
+    if (type === 'url') {
+        options = {placeholder: 'https://example.com/', ...options};
+    }
     const label = document.createElement('label');
     if (className) {
         label.className = className;
     }
     label.append(labelTextElement(labelName, Boolean(options.required)));
-    label.append(fieldHtml(type, name, value, options));
+    label.append(fieldHtml(type, name, value ?? '', options));
     return label;
 }
 
@@ -581,15 +584,18 @@ function fieldHtml(type, name, value = '', options = {}) {
         const wrapper = cloneTemplate('datalist-combobox-template');
 
         field = wrapper.querySelector('input');
-        field.name = name;
-        field.value = fieldValue;
-        field.setAttribute('value', fieldValue);
+        const submittedField = document.createElement('input');
+        submittedField.type = 'hidden';
+        submittedField.name = name;
+        submittedField.value = fieldValue;
+        submittedField.dataset.datalistSubmittedValue = '';
+        wrapper.append(submittedField);
 
         const list = wrapper.querySelector('.datalist-options');
         list.id = `${name}-options-${++datalistId}`;
         field.setAttribute('aria-controls', list.id);
 
-        (options.options || []).forEach(([valueOption, label]) => {
+        sortOptionsByLabel(options.options || []).forEach(([valueOption, label]) => {
             if (valueOption === '') {
                 return;
             }
@@ -600,6 +606,16 @@ function fieldHtml(type, name, value = '', options = {}) {
             option.setAttribute('role', 'option');
             option.textContent = options.showValue && label ? `${label} (${valueOption})` : label || valueOption;
             list.append(option);
+        });
+
+        const selectedOption = [...list.children].find(option => option.dataset.datalistValue === String(fieldValue));
+        field.value = selectedOption ? selectedOption.textContent : fieldValue;
+        field.setAttribute('value', field.value);
+        field.addEventListener('input', () => {
+            const enteredValue = field.value.trim();
+            const matchingOption = [...list.children].find(option =>
+                option.textContent === enteredValue || option.dataset.datalistValue === enteredValue);
+            submittedField.value = matchingOption ? matchingOption.dataset.datalistValue : field.value;
         });
 
         fieldOptionsHtml(field, options);
@@ -724,7 +740,7 @@ function selectDatalistOption(input, option) {
         lookupSelect.dispatchEvent(new Event('change', {bubbles: true}));
         input.value = textContent;
     } else {
-        input.value = datalistValue || textContent;
+        input.value = textContent;
         input.dispatchEvent(new Event('input', {bubbles: true}));
         input.dispatchEvent(new Event('change', {bubbles: true}));
     }
@@ -847,8 +863,13 @@ function fieldOptionsHtml(field, options = {}) {
     });
 }
 
+function sortOptionsByLabel(options) {
+    return [...options].sort(([valueA, labelA], [valueB, labelB]) =>
+        String(labelA || valueA).localeCompare(String(labelB || valueB)));
+}
+
 function enumOptionsHtml(options, selectedValue, optionsConfig = {}) {
-    return options.map(([value, label]) => {
+    return sortOptionsByLabel(options).map(([value, label]) => {
         const displayLabel = optionsConfig.showValue ? `${label} (${value})` : label;
         const option = createElement('option', {text: displayLabel});
         option.value = value;
