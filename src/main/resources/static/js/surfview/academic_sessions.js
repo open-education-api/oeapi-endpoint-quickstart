@@ -92,8 +92,8 @@ SurfView.AcademicSessions = (() => {
                 options: Constants.enumOptions.academicSessionType
             }, 'full-width'),
             ...primaryCodeFields.slice(1),
-            fieldLabelHtml('Start date', 'date', 'startDate', academicSession.startDate || '', {required: true}),
-            fieldLabelHtml('End date', 'date', 'endDate', academicSession.endDate || '', {required: true}),
+            fieldLabelHtml('Start date', 'date', 'startDate', academicSession.startDate, {required: true}),
+            fieldLabelHtml('End date', 'date', 'endDate', academicSession.endDate, {required: true}),
             academicSessionLocalizedPanel(academicSession)
         ];
     }
@@ -121,7 +121,7 @@ SurfView.AcademicSessions = (() => {
     function academicSessionLanguageFields(language) {
         const values = SurfView.State.draftEntity.languageValues[language] || academicSessionEmptyLanguageValues();
         return [
-            fieldLabelHtml('Name', 'text', 'academicSessionName', values.name || '', {required: true}, 'full-width')
+            fieldLabelHtml('Name', 'text', 'academicSessionName', values.name, {required: true}, 'full-width')
         ];
     }
 

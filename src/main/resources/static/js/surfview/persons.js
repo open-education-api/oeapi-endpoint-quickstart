@@ -32,10 +32,10 @@ SurfView.Persons = (() => {
                 idValue: person.personId,
                 primaryCode: person.primaryCode
             }),
-            fieldLabelHtml('Given name', 'text', 'givenName', person.givenName || '', {required: true}),
-            fieldLabelHtml('Surname', 'text', 'surname', person.surname || '', {required: true}),
-            fieldLabelHtml('Display name', 'text', 'displayName', person.displayName || '', {required: true}, 'full-width'),
-            fieldLabelHtml('Email', 'email', 'mail', person.mail || '', {required: true}, 'full-width'),
+            fieldLabelHtml('Given name', 'text', 'givenName', person.givenName, {required: true}),
+            fieldLabelHtml('Surname', 'text', 'surname', person.surname, {required: true}),
+            fieldLabelHtml('Display name', 'text', 'displayName', person.displayName, {required: true}, 'full-width'),
+            fieldLabelHtml('Email', 'email', 'mail', person.mail, {required: true}, 'full-width'),
             fieldLabelHtml('Active enrollment', 'select', 'activeEnrollment', String(person.activeEnrollment ?? false), {
                 options: Constants.booleanOptions
             }),

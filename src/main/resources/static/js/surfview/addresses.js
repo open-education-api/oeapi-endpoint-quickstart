@@ -18,10 +18,10 @@ function addressFieldElements(address = {}) {
             required: true,
             options: Constants.enumOptions.addressType
         }),
-        fieldLabelHtml('Street', 'text', 'street', address.street || ''),
-        fieldLabelHtml('Street number', 'text', 'streetNumber', address.streetNumber || ''),
-        fieldLabelHtml('Postal code', 'text', 'postalCode', address.postalCode || ''),
-        fieldLabelHtml('City', 'text', 'city', address.city || ''),
+        fieldLabelHtml('Street', 'text', 'street', address.street),
+        fieldLabelHtml('Street number', 'text', 'streetNumber', address.streetNumber),
+        fieldLabelHtml('Postal code', 'text', 'postalCode', address.postalCode),
+        fieldLabelHtml('City', 'text', 'city', address.city),
         fieldLabelHtml('Country code', 'text', 'countryCode', address.countryCode || 'NL', {required: true}),
         fieldLabelHtml('Latitude', 'number', 'latitude', geolocation.latitude ?? '', {step: 0.000001}),
         fieldLabelHtml('Longitude', 'number', 'longitude', geolocation.longitude ?? '', {step: 0.000001})
@@ -65,7 +65,7 @@ function addressFormHtml(address = {}) {
             label: 'Address language',
             languages: Object.keys(nestedAddressDraft.languageValues),
             fields: [
-                fieldLabelHtml('Additional information', 'textarea', 'additional', nestedAddressDraft.languageValues[nestedAddressDraft.language]?.additional || '', {}, 'full-width')
+                fieldLabelHtml('Additional information', 'textarea', 'additional', nestedAddressDraft.languageValues[nestedAddressDraft.language]?.additional, {}, 'full-width')
             ]
         }),
         nestedFormActionsFragment('Add')

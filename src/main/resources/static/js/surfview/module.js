@@ -261,7 +261,7 @@ SurfView.Module = (() => {
                 primaryCode: module.primaryCode
             }),
             moduleLanguagePanel(),
-            fieldLabelHtml('Abbreviation', 'text', 'abbreviation', module.abbreviation || '', {
+            fieldLabelHtml('Abbreviation', 'text', 'abbreviation', module.abbreviation, {
                 required: kind === 'program'
             })
         ];
@@ -281,7 +281,7 @@ SurfView.Module = (() => {
                 options: Constants.enumOptions.teachingLanguage,
                 showValue: true
             }),
-            fieldLabelHtml('Level', 'datalist', 'level', module.level || '', {
+            fieldLabelHtml('Level', 'datalist', 'level', module.level, {
                 required: kind === 'program',
                 options: Constants.enumOptions.level
             }),
@@ -289,17 +289,17 @@ SurfView.Module = (() => {
             fieldLabelHtml('Study load unit', 'select', 'studyLoadUnit', studyLoadUnit, {
                 options: Constants.enumOptions.studyLoadType
             }),
-            fieldLabelHtml('Mode of delivery', 'datalist', 'modeOfDelivery', modeOfDelivery || '', {
+            fieldLabelHtml('Mode of delivery', 'datalist', 'modeOfDelivery', modeOfDelivery, {
                 options: Constants.enumOptions.modeOfDelivery
             }),
-            fieldLabelHtml('First start date', 'date', 'firstStartDate', module.firstStartDate || ''),
-            fieldLabelHtml('Sector', 'select', 'sector', module.sector || '', {
+            fieldLabelHtml('First start date', 'date', 'firstStartDate', module.firstStartDate),
+            fieldLabelHtml('Sector', 'select', 'sector', module.sector, {
                 options: [['', 'None'], ...Constants.enumOptions.sector]
             }),
             fieldLabelHtml('Organization', 'select', 'organization', organizationIdValue(module.organization), {
                 options: SurfView.Organizations.organizationOptionEntries(organizationIdValue(module.organization))
             }),
-            fieldLabelHtml('Link', 'url', 'link', module.link || '', {placeholder: 'https://'}, 'full-width'),
+            fieldLabelHtml('Link', 'url', 'link', module.link, {placeholder: 'https://'}, 'full-width'),
             moduleAddressListPanel.panel(),
             moduleArrayField('Resources', 'resources', module.resources),
             coordinatorsPanel,
@@ -387,30 +387,30 @@ SurfView.Module = (() => {
         });
 
         row.append(
-            fieldLabelHtml('Alliance name', 'text', 'allianceName', alliance.name || '', {required: true}),
+            fieldLabelHtml('Alliance name', 'text', 'allianceName', alliance.name, {required: true}),
             moduleArrayField('Themes', 'themes', alliance.themes),
             fieldLabelHtml('Selection', 'select', 'selection', booleanFormValue(alliance.selection), {
                 options: Constants.booleanOptions
             }),
-            fieldLabelHtml('Type', 'text', 'type', alliance.type || ''),
+            fieldLabelHtml('Type', 'text', 'type', alliance.type),
             moduleArrayField('Instructor names', 'instructorNames', alliance.instructorNames),
             fieldLabelHtml('Contact hours', 'number', 'contactHours', alliance.contactHours ?? '', {min: 0, step: 0.01}),
-            fieldLabelHtml('Activities', 'textarea', 'activities', alliance.activities || '', {}, 'full-width'),
-            fieldLabelHtml('Microcredential', 'text', 'microcredential', alliance.microcredential || ''),
-            fieldLabelHtml('Target group', 'text', 'targetGroup', alliance.targetGroup || ''),
+            fieldLabelHtml('Activities', 'textarea', 'activities', alliance.activities, {}, 'full-width'),
+            fieldLabelHtml('Microcredential', 'text', 'microcredential', alliance.microcredential),
+            fieldLabelHtml('Target group', 'text', 'targetGroup', alliance.targetGroup),
             fieldLabelHtml('Visible for own students', 'select', 'visibleForOwnStudents', booleanFormValue(alliance.visibleForOwnStudents), {
                 options: Constants.booleanOptions
             }),
-            fieldLabelHtml('Enrollment for own students', 'text', 'enrollmentForOwnStudents', alliance.enrollmentForOwnStudents || ''),
+            fieldLabelHtml('Enrollment for own students', 'text', 'enrollmentForOwnStudents', alliance.enrollmentForOwnStudents),
             fieldLabelHtml('Visible for guests', 'select', 'visibleForGuests', booleanFormValue(alliance.visibleForGuests), {
                 options: Constants.booleanOptions
             }),
-            fieldLabelHtml('Enrollment for guests', 'text', 'enrollmentForGuests', alliance.enrollmentForGuests || ''),
+            fieldLabelHtml('Enrollment for guests', 'text', 'enrollmentForGuests', alliance.enrollmentForGuests),
             moduleArrayField('Joint partner codes', 'jointPartnerCodes', alliance.jointPartnerCodes),
-            fieldLabelHtml('Mode of delivery', 'datalist', 'allianceModeOfDelivery', alliance.modeOfDelivery || '', {
+            fieldLabelHtml('Mode of delivery', 'datalist', 'allianceModeOfDelivery', alliance.modeOfDelivery, {
                 options: Constants.enumOptions.modeOfDelivery
             }),
-            fieldLabelHtml('Level', 'datalist', 'allianceLevel', alliance.level || '', {
+            fieldLabelHtml('Level', 'datalist', 'allianceLevel', alliance.level, {
                 options: Constants.enumOptions.level
             }),
             moduleSupplementaryInformationPanel(alliance.supplementaryInformation)
@@ -444,7 +444,7 @@ SurfView.Module = (() => {
                     options: Object.entries(Constants.languageNames).map(([code, label]) => [code, `${label} (${code})`]),
                     placeholder: 'en or en-GB'
                 }),
-                fieldLabelHtml('URL', 'url', 'supplementaryUrl', value.value || '', {
+                fieldLabelHtml('URL', 'url', 'supplementaryUrl', value.value, {
                     required: true,
                     placeholder: 'https://'
                 })
@@ -492,15 +492,15 @@ SurfView.Module = (() => {
         const values = SurfView.State.draftEntity.languageValues[language]
             || Object.fromEntries(moduleLocalizedFields().map(field => [field, '']));
         const fields = [
-            fieldLabelHtml('Name', 'text', 'name', values.name || '', {required: true}, 'full-width'),
-            fieldLabelHtml('Description', 'textarea', 'description', values.description || '', {
+            fieldLabelHtml('Name', 'text', 'name', values.name, {required: true}, 'full-width'),
+            fieldLabelHtml('Description', 'textarea', 'description', values.description, {
                 required: true
             }, 'full-width'),
-            fieldLabelHtml('Admission requirements', 'textarea', 'admissionRequirements', values.admissionRequirements || '', {}, 'full-width'),
-            fieldLabelHtml('Qualification requirements', 'textarea', 'qualificationRequirements', values.qualificationRequirements || '', {}, 'full-width'),
-            fieldLabelHtml('Enrollment', 'textarea', 'enrollment', values.enrollment || '', {}, 'full-width'),
-            fieldLabelHtml('Assessment', 'textarea', 'assessment', values.assessment || '', {}, 'full-width'),
-            fieldLabelHtml('Learning outcomes', 'textarea', 'learningOutcomes', values.learningOutcomes || '', {}, 'full-width')
+            fieldLabelHtml('Admission requirements', 'textarea', 'admissionRequirements', values.admissionRequirements, {}, 'full-width'),
+            fieldLabelHtml('Qualification requirements', 'textarea', 'qualificationRequirements', values.qualificationRequirements, {}, 'full-width'),
+            fieldLabelHtml('Enrollment', 'textarea', 'enrollment', values.enrollment, {}, 'full-width'),
+            fieldLabelHtml('Assessment', 'textarea', 'assessment', values.assessment, {}, 'full-width'),
+            fieldLabelHtml('Learning outcomes', 'textarea', 'learningOutcomes', values.learningOutcomes, {}, 'full-width')
         ];
         return fields;
     }

@@ -13,14 +13,14 @@ SurfView.Offerings = (() => {
                 idValue: offeringId(offering),
                 primaryCode: offering.primaryCode
             }),
-            fieldLabelHtml('Abbreviation', 'text', 'abbreviation', textValueLocalizedAttribute(offering.abbreviation) || ''),
+            fieldLabelHtml('Abbreviation', 'text', 'abbreviation', textValueLocalizedAttribute(offering.abbreviation)),
             languageSpecificSectionFragment({
                 activeLanguage: SurfView.State.draftOffering.language,
                 buttonAttribute: 'data-offering-language-code',
                 label: 'Offering language',
                 fields: [
-                    fieldLabelHtml('Name', 'text', 'name', SurfView.State.draftOffering.languageValues[SurfView.State.draftOffering.language]?.name || '', {required: true}),
-                    fieldLabelHtml('Description', 'textarea', 'description', SurfView.State.draftOffering.languageValues[SurfView.State.draftOffering.language]?.description || '', {required: true}, 'full-width')
+                    fieldLabelHtml('Name', 'text', 'name', SurfView.State.draftOffering.languageValues[SurfView.State.draftOffering.language]?.name, {required: true}),
+                    fieldLabelHtml('Description', 'textarea', 'description', SurfView.State.draftOffering.languageValues[SurfView.State.draftOffering.language]?.description, {required: true}, 'full-width')
                 ]
             }),
             fieldLabelHtml('Teaching language', 'select', 'teachingLanguage', offering.teachingLanguage || 'eng', {
@@ -30,10 +30,10 @@ SurfView.Offerings = (() => {
             fieldLabelHtml('Mode of delivery', 'datalist', 'modeOfDelivery', modeOfDelivery || 'online', {
                 options: Constants.enumOptions.modeOfDelivery
             }),
-            fieldLabelHtml('Start date', 'date', 'startDate', offering.startDate || '', {required: true}),
-            fieldLabelHtml('End date', 'date', 'endDate', offering.endDate || '', {required: true}),
-            fieldLabelHtml('Enrollment start', 'date', 'enrollStartDate', offering.enrollStartDate || ''),
-            fieldLabelHtml('Enrollment end', 'date', 'enrollEndDate', offering.enrollEndDate || ''),
+            fieldLabelHtml('Start date', 'date', 'startDate', offering.startDate, {required: true}),
+            fieldLabelHtml('End date', 'date', 'endDate', offering.endDate, {required: true}),
+            fieldLabelHtml('Enrollment start', 'date', 'enrollStartDate', offering.enrollStartDate),
+            fieldLabelHtml('Enrollment end', 'date', 'enrollEndDate', offering.enrollEndDate),
             fieldLabelHtml('Min students', 'number', 'minNumberStudents', offering.minNumberStudents ?? '', {min: 0}),
             fieldLabelHtml('Max students', 'number', 'maxNumberStudents', offering.maxNumberStudents ?? '', {min: 0}),
             fieldLabelHtml('Result expected', 'select', 'resultExpected', String(offering.resultExpected ?? true), {
@@ -42,7 +42,7 @@ SurfView.Offerings = (() => {
             fieldLabelHtml('Result value type', 'select', 'resultValueType', offering.resultValueType || '1-10', {
                 options: Constants.enumOptions.resultValueType
             }),
-            fieldLabelHtml('Link', 'url', 'link', offering.link || '', {placeholder: 'https://'}, 'full-width'),
+            fieldLabelHtml('Link', 'url', 'link', offering.link, {placeholder: 'https://'}, 'full-width'),
             fieldLabelHtml('Organization', 'select', 'organization', organizationIdValue(offering.organization), {
                 options: SurfView.Organizations.organizationOptionEntries(organizationIdValue(offering.organization))
             }),
@@ -70,11 +70,11 @@ SurfView.Offerings = (() => {
                 fieldLabelHtml('Alliance name', 'select', 'consumerAllianceName', consumerAllianceName(alliance.name), {
                     options: consumerAllianceOptions()
                 }),
-                fieldLabelHtml('Enrollment start time', 'time', 'consumerEnrollStartTime', alliance.enrollStartTime || '', {step: 1}),
-                fieldLabelHtml('Enrollment end time', 'time', 'consumerEnrollEndTime', alliance.enrollEndTime || '', {step: 1}),
-                fieldLabelHtml('Enrollment URL for guests', 'url', 'consumerEnrollmentUrlForGuests', alliance.enrollmentUrlForGuests || '', {placeholder: 'https://'}, 'full-width'),
-                fieldLabelHtml('Enrollment URL', 'url', 'consumerEnrollmentUrl', alliance.enrollmentUrl || '', {placeholder: 'https://'}, 'full-width'),
-                fieldLabelHtml('Date comment', 'textarea', 'consumerDateComment', alliance.dateComment || '', {}, 'full-width'),
+                fieldLabelHtml('Enrollment start time', 'time', 'consumerEnrollStartTime', alliance.enrollStartTime, {step: 1}),
+                fieldLabelHtml('Enrollment end time', 'time', 'consumerEnrollEndTime', alliance.enrollEndTime, {step: 1}),
+                fieldLabelHtml('Enrollment URL for guests', 'url', 'consumerEnrollmentUrlForGuests', alliance.enrollmentUrlForGuests, {placeholder: 'https://'}, 'full-width'),
+                fieldLabelHtml('Enrollment URL', 'url', 'consumerEnrollmentUrl', alliance.enrollmentUrl, {placeholder: 'https://'}, 'full-width'),
+                fieldLabelHtml('Date comment', 'textarea', 'consumerDateComment', alliance.dateComment, {}, 'full-width'),
                 fieldLabelHtml('Queued students', 'number', 'consumerQueuedNumberStudents', alliance.queuedNumberStudents ?? '', {min: 0}),
                 fieldLabelHtml('Max queued students', 'number', 'consumerMaxQueuedNumberStudents', alliance.maxQueuedNumberStudents ?? '', {min: 0}),
                 fieldLabelHtml('Has student queue', 'select', 'consumerHasStudentQueue', String(alliance.hasStudentQueue ?? true), {
@@ -101,8 +101,8 @@ SurfView.Offerings = (() => {
                 buttonAttribute: 'data-price-language-code',
                 label: 'Price language',
                 fields: [
-                    fieldLabelHtml('Display amount', 'text', 'displayAmount', SurfView.State.draftOffering.nestedPriceLanguageValues[SurfView.State.draftOffering.nestedPriceLanguage]?.displayAmount || '', {placeholder: '€340.84'}, 'full-width'),
-                    fieldLabelHtml('Description', 'textarea', 'description', SurfView.State.draftOffering.nestedPriceLanguageValues[SurfView.State.draftOffering.nestedPriceLanguage]?.description || '', {placeholder: 'Describe what this price covers'}, 'full-width')
+                    fieldLabelHtml('Display amount', 'text', 'displayAmount', SurfView.State.draftOffering.nestedPriceLanguageValues[SurfView.State.draftOffering.nestedPriceLanguage]?.displayAmount, {placeholder: '€340.84'}, 'full-width'),
+                    fieldLabelHtml('Description', 'textarea', 'description', SurfView.State.draftOffering.nestedPriceLanguageValues[SurfView.State.draftOffering.nestedPriceLanguage]?.description, {placeholder: 'Describe what this price covers'}, 'full-width')
                 ]
             }),
             nestedFormActionsFragment('Add')

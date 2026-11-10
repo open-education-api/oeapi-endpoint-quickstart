@@ -563,7 +563,7 @@ function fieldLabelHtml(labelName, type, name, value = '', options = {}, classNa
         label.className = className;
     }
     label.append(labelTextElement(labelName, Boolean(options.required)));
-    label.append(fieldHtml(type, name, value, options));
+    label.append(fieldHtml(type, name, value ?? '', options));
     return label;
 }
 

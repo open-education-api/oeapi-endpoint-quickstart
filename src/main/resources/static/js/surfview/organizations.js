@@ -105,10 +105,10 @@ SurfView.Organizations = (() => {
                 required: true,
                 options: Constants.enumOptions.organizationType
             }),
-            fieldLabelHtml('Short name', 'text', 'shortName', organization.shortName || '', {required: true}),
+            fieldLabelHtml('Short name', 'text', 'shortName', organization.shortName, {required: true}),
             organizationLocalizedPanel(organization),
-            fieldLabelHtml('Link', 'url', 'link', organization.link || '', {placeholder: 'https://'}, 'full-width'),
-            fieldLabelHtml('Logo', 'url', 'logo', organization.logo || '', {placeholder: 'https://'}, 'full-width'),
+            fieldLabelHtml('Link', 'url', 'link', organization.link, {placeholder: 'https://'}, 'full-width'),
+            fieldLabelHtml('Logo', 'url', 'logo', organization.logo, {placeholder: 'https://'}, 'full-width'),
             organizationCodesPanel(organization.otherCodes),
             organizationAddressesPanel(),
             organizationConsumerPanel(organization),
@@ -123,7 +123,7 @@ SurfView.Organizations = (() => {
         const allianceRow = createElement('div.organization-alliance-row', {
             attributes: {'data-original-alliance-index': allianceIndex}
         });
-        allianceRow.append(fieldLabelHtml('Alliance name', 'text', 'organizationAllianceName', alliance.name || '', {required: true}, 'full-width'));
+        allianceRow.append(fieldLabelHtml('Alliance name', 'text', 'organizationAllianceName', alliance.name, {required: true}, 'full-width'));
 
         return consumerPanelFragment(
             consumer,
@@ -156,8 +156,8 @@ SurfView.Organizations = (() => {
     function organizationLanguageFields(language) {
         const values = SurfView.State.draftEntity.languageValues[language] || {name: '', description: ''};
         return [
-            fieldLabelHtml('Name', 'text', 'organizationName', values.name || '', {required: true}, 'full-width'),
-            fieldLabelHtml('Description', 'textarea', 'organizationDescription', values.description || '', {}, 'full-width')
+            fieldLabelHtml('Name', 'text', 'organizationName', values.name, {required: true}, 'full-width'),
+            fieldLabelHtml('Description', 'textarea', 'organizationDescription', values.description, {}, 'full-width')
         ];
     }
 
@@ -202,7 +202,7 @@ SurfView.Organizations = (() => {
                     required: true,
                     options: Constants.enumOptions.codeType
                 }),
-                fieldLabelHtml('Code', 'text', 'otherCode', code.code || '', {required: true})
+                fieldLabelHtml('Code', 'text', 'otherCode', code.code, {required: true})
             );
         }, {index});
     }
