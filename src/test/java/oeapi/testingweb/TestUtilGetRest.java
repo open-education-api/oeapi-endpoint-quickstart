@@ -25,7 +25,7 @@ public class TestUtilGetRest {
     public void get_primaryCode(String restResource, String code, WebTestClient webTestClient) {
 
         webTestClient.get()
-                .uri("/" + restResource + "?pageNumber=0&primaryCode=" + code)
+                .uri("/" + restResource + "?pageNumber=1&primaryCode=" + code)
                 .header("Authorization",TU.authHeaderForTest())
                 .exchange()
                 .expectStatus().isOk()

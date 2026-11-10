@@ -70,6 +70,7 @@ public class oeapiUtils {
                     // and remains disabled by default in Jackson 3 - stated rather than
                     // assumed, because this mapper writes the JSON columns.
                     .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+                    .addModule(OeapiDateTime.module())
                     .build();
         }
         return customObjectMapper;

@@ -15,14 +15,16 @@
     ],
     "abbreviation": "MATH-UNITA",
     "level": "bachelor",
-    "organisation": "UNITA",
+    "organisationId": "UNITA",
     "link": "https://univ-unita.eu/",
-    "studyLoad": {
-        "studyLoadUnit": "ects",
-        "value": 6
-    },
-    "modeOfDelivery": "on campus",
-    "firstStartDate": "2024-11-02",
+    "studyLoad": [
+        {
+            "studyLoadUnit": "ects",
+            "value": 6
+        }
+    ],
+    "modesOfDelivery": "on campus",
+    "firstStartDateTime": "2024-11-02T00:00:00Z",
     "description": [
         {
             "language": "es-ES",
@@ -33,7 +35,9 @@
             "value": "<p>Description of the course. This course will be: <ul><li>Nice</li><li>Interesting...</li></ul></p>"
         }
     ],
-    "teachingLanguage": "spa",
+    "teachingLanguages": [
+        "es"
+    ],
     "admissionRequirements": [
         {
             "language": "es-ES",
@@ -54,7 +58,7 @@
             "value": "<p>Check the general access and admission criteria on this <a href='https://www.unavarra.es/sites/estudios/acceso-y-admision.html' title='General Access and Admission Criteria.'><strong>page</strong></a></p>"
         }
     ],
-    "enrollment": [
+    "enrolment": [
         {
             "language": "es-ES",
             "value": "<p>Las condiciones de matrícula pueden consultarse en....</p>"

@@ -88,6 +88,10 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
 
     private <E, D> oeapiDTOMapper<E, D> typedMapper(Class<E> entity, Class<D> dto) {
         oeapiDTOMapper<E, D> mapper = new oeapiDTOMapper<>(entity, dto, null, Arrays.asList());
+        // Offering.setId() is an alias of setOfferingId(): every *Id getter of the DTO
+        // (courseId, organisationId...) is a candidate for it. Skip what is ambiguous;
+        // offeringId itself is matched exactly.
+        mapper.getModelMapper().getConfiguration().setAmbiguityIgnored(true);
         mapper.mapperService = typedMapperService;
         if (typedMapperService != null) {
             typedMapperService.register(mapper);

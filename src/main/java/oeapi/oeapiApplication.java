@@ -242,6 +242,7 @@ public class oeapiApplication {
                 ooapiDateFormats.addDeserializer(LocalTime.class, new LocalTimeDeserializer(timeFormatter));
 
                 builder.addModule(ooapiDateFormats);
+                builder.addModule(OeapiDateTime.module());
             }
         };
     }
