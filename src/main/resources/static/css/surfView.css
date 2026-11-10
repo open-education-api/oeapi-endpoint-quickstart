@@ -1133,23 +1133,23 @@ td {
     outline-offset: 1px;
 }
 
-.organization-nested-panel {
+.organisation-nested-panel {
     grid-column: 1 / -1;
 }
 
-.organization-code-list {
+.organisation-code-list {
     display: grid;
     gap: 14px;
 }
 
-.organization-code-row {
+.organisation-code-row {
     display: grid;
     grid-template-columns: minmax(160px, 0.7fr) minmax(220px, 1fr) auto;
     gap: 12px;
     align-items: end;
 }
 
-.organization-row-delete {
+.organisation-row-delete {
     min-height: 38px;
 }
 
@@ -1493,7 +1493,7 @@ td {
         grid-template-columns: 1fr;
     }
 
-    .organization-code-row {
+    .organisation-code-row {
         grid-template-columns: 1fr;
     }
 

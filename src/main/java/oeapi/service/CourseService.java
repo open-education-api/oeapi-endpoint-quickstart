@@ -22,9 +22,9 @@ import oeapi.model.Component;
 import oeapi.model.CourseOffering;
 
 import oeapi.model.ModeOfDelivery;
-import oeapi.model.Organization;
+import oeapi.model.Organisation;
 import oeapi.model.Person;
-import oeapi.model.Program;
+import oeapi.model.Programme;
 import oeapi.model.StudyLoad;
 import oeapi.model.oeapiFieldsOfStudy;
 import oeapi.model.oeapiIdentifierEntry;
@@ -51,10 +51,10 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
     Logger logger = LoggerFactory.getLogger(CourseService.class);
 
     @Autowired
-    private OrganizationService organizationService;
+    private OrganisationService organisationService;
 
     @Autowired
-    private ProgramService programService;
+    private ProgrammeService programmeService;
 
     @Autowired
     private PersonService personService;
@@ -187,9 +187,9 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
         if (!(modeOfDelivery == null) && !modeOfDelivery.isEmpty()) {
             course.getModeOfDelivery().clear();
         }
-        List<Program> programs = course.getPrograms();
-        if (!programs.isEmpty()) {
-            course.getPrograms().clear();
+        List<Programme> programmes = course.getProgrammes();
+        if (!programmes.isEmpty()) {
+            course.getProgrammes().clear();
         }
 
         course.getCoordinators().clear();
@@ -202,16 +202,16 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
     public Course checkRelations(Course course) {
 
         try {
-            logger.debug("+CourseService checkRelations: programList..");
-            List<Program> programList = (course.getPrograms() != null) ? course.getPrograms() : new ArrayList<>();
-            List<Program> relatedPrograms = programService.manageRelated(programList);
-            course.setPrograms(relatedPrograms);
+            logger.debug("+CourseService checkRelations: programmeList..");
+            List<Programme> programmeList = (course.getProgrammes() != null) ? course.getProgrammes() : new ArrayList<>();
+            List<Programme> relatedProgrammes = programmeService.manageRelated(programmeList);
+            course.setProgrammes(relatedProgrammes);
 
-            logger.debug("+CourseService checkRelations: Organization...");
-            Optional<Organization> orgExisting = (course.getOrganization() != null) ? organizationService.manageRelated(course.getOrganization()) : organizationService.getDefault();
+            logger.debug("+CourseService checkRelations: Organisation...");
+            Optional<Organisation> orgExisting = (course.getOrganisation() != null) ? organisationService.manageRelated(course.getOrganisation()) : organisationService.getDefault();
             if (orgExisting.isPresent()) {
-                logger.debug("++CourseService checkRelations: Organization set to: id=" + orgExisting.get().getOrganizationId() + " ShortName: " + orgExisting.get().getShortName());
-                course.setOrganization(orgExisting.get());
+                logger.debug("++CourseService checkRelations: Organisation set to: id=" + orgExisting.get().getOrganisationId() + " ShortName: " + orgExisting.get().getShortName());
+                course.setOrganisation(orgExisting.get());
             }
 
             logger.debug("+CourseService checkRelations: Coordinators personList...");
@@ -235,10 +235,10 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
     public Course create(Course course) {
         
         logger.debug("*>-CourseService Crete(course): Revising relations and normalizing attributes...");
-        logger.debug("*>-CourseService Crete(course): Organization at START: " + ((course.getOrganization() != null) ? course.getOrganization().getOrganizationId() : "None"));        
+        logger.debug("*>-CourseService Crete(course): Organisation at START: " + ((course.getOrganisation() != null) ? course.getOrganisation().getOrganisationId() : "None"));        
         Course managedCourse = checkRelations(course);
         Course normalizedCourse = normalizeAttributes(managedCourse);
-        logger.debug("*>-CourseService Crete(course): Organization at END:" + ((course.getOrganization() != null) ? course.getOrganization().getOrganizationId() : "None"));
+        logger.debug("*>-CourseService Crete(course): Organisation at END:" + ((course.getOrganisation() != null) ? course.getOrganisation().getOrganisationId() : "None"));
         logger.debug("*>-CourseService Crete(course): Calling super");
         return super.create(normalizedCourse);
     }
@@ -253,17 +253,17 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
     }
 
     // Method related to RequestDTOtoEntity TODO used? => remove it
-    public List<Program> getPrograms(List<String> programs) {
-        List<Program> newProgramList = new ArrayList<>();
+    public List<Programme> getProgrammes(List<String> programmes) {
+        List<Programme> newProgrammeList = new ArrayList<>();
 
-        for (String programId : programs) {
-            Optional<Program> progExisting = programService.getById(programId);
+        for (String programmeId : programmes) {
+            Optional<Programme> progExisting = programmeService.getById(programmeId);
             if (!progExisting.isPresent()) {
-                throw new oeapiException(HttpStatus.BAD_REQUEST, "Check list of programs. Program not found", "Program [" + programId + "] not found");
+                throw new oeapiException(HttpStatus.BAD_REQUEST, "Check list of programmes. Programme not found", "Programme [" + programmeId + "] not found");
             }
-            newProgramList.add(progExisting.get());
+            newProgrammeList.add(progExisting.get());
         }
-        return newProgramList;
+        return newProgrammeList;
 
     }
 
@@ -283,27 +283,27 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
         }
     }
 
-    public List<Course> findByProgram(String code) {
+    public List<Course> findByProgramme(String code) {
 
         return ((List<Course>) repository.findAll()).stream()
-                .filter(course -> course.getPrograms() != null && course.getPrograms().contains(code))
+                .filter(course -> course.getProgrammes() != null && course.getProgrammes().contains(code))
                 .collect(Collectors.toList());
     }
 
-    public List<Course> getCoursesByProgramId(String program) {
+    public List<Course> getCoursesByProgrammeId(String programme) {
 
-        return repository.findByPrograms_ProgramId(program);
+        return repository.findByProgrammes_ProgrammeId(programme);
     }
 
-    public Page<CourseDTO> getByOrganizationId(String id, Pageable pageable) {
+    public Page<CourseDTO> getByOrganisationId(String id, Pageable pageable) {
 
-        return this.toDTOPages(repository.findByOrganization_OrganizationId(id, pageable));
+        return this.toDTOPages(repository.findByOrganisation_OrganisationId(id, pageable));
 
     }
 
-    public Page<CourseDTO> getByOrganizationId(String id, Map.Entry<String, String> filter, Pageable pageable) {
+    public Page<CourseDTO> getByOrganisationId(String id, Map.Entry<String, String> filter, Pageable pageable) {
 
-        String sufixMethod = "Organization_OrganizationId";
+        String sufixMethod = "Organisation_OrganisationId";
         return this.toDTOPages(super.findByDynamicMethod(sufixMethod, id, filter, pageable));
 
     }

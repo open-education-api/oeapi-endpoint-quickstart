@@ -65,5 +65,5 @@ mvn -DskipTests=false test
 ### Running a single test
 
 ```sh
-mvn -DskipTests=false -Dtest=oeapi.testingweb.OrganizationTest test
+mvn -DskipTests=false -Dtest=oeapi.testingweb.OrganisationTest test
 ```

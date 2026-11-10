@@ -74,10 +74,10 @@ public class Course extends oeapiEducation {
     @JoinTable
     private List<Person> coordinators;
 
-    @JsonProperty("programs")
+    @JsonProperty("programmes")
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable
-    private List<Program> programs;
+    private List<Programme> programmes;
 
     @JsonProperty("educationSpecification")
     @ManyToOne
@@ -85,12 +85,12 @@ public class Course extends oeapiEducation {
     //@JsonBackReference
     private EducationSpecification educationSpecification;
 
-    @JsonProperty("organization")
+    @JsonProperty("organisation")
     @ManyToOne
-    @JoinColumn(name = "organization_id", nullable = true)
+    @JoinColumn(name = "organisation_id", nullable = true)
     //@JsonBackReference
-    @JsonBackReference("courseOrganization")
-    private Organization organization;
+    @JsonBackReference("courseOrganisation")
+    private Organisation organisation;
 
     // To do
     // Manage TimelineOverrideCourse attribute
@@ -146,17 +146,17 @@ public class Course extends oeapiEducation {
     }
 
     /**
-     * @return the programs
+     * @return the programmes
      */
-    public List<Program> getPrograms() {
-        return programs;
+    public List<Programme> getProgrammes() {
+        return programmes;
     }
 
     /**
-     * @param programs the programs to set
+     * @param programmes the programmes to set
      */
-    public void setPrograms(List<Program> programs) {
-        this.programs = programs;
+    public void setProgrammes(List<Programme> programmes) {
+        this.programmes = programmes;
     }
 
     /**
@@ -174,17 +174,17 @@ public class Course extends oeapiEducation {
     }
 
     /**
-     * @return the organization
+     * @return the organisation
      */
-    public Organization getOrganization() {
-        return organization;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
     /**
-     * @param organization the organization to set
+     * @param organisation the organisation to set
      */
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
     }
 
     /**

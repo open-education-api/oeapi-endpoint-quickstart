@@ -10,7 +10,7 @@ let ooapiDefaultCountry;
 let ooapiDefaultLogo;
 let ooapiDefaultShortUnivName;
 let ooapiDefaultUnivName;
-let ooapiDefaultOrganizationId;
+let ooapiDefaultOrganisationId;
 let ooapiDefaultEndpointURL;
 let ooapiDefaultCourseConsumers;
 let ooapiDefaultOfferingConsumers;
@@ -22,13 +22,13 @@ function init(config) {
   ooapiDefaultLogo = config.ooapiDefaultLogo;
   ooapiDefaultShortUnivName = config.ooapiDefaultShortUnivName;
   ooapiDefaultUnivName = config.ooapiDefaultUnivName;
-  ooapiDefaultOrganizationId = config.ooapiDefaultOrganizationId;
+  ooapiDefaultOrganisationId = config.ooapiDefaultOrganisationId;
   ooapiDefaultEndpointURL = config.ooapiDefaultEndpointURL || window.location.origin;
   ooapiDefaultCourseConsumers = config.ooapiDefaultCourseConsumers;
   ooapiDefaultOfferingConsumers = config.ooapiDefaultOfferingConsumers;
 
-  if (!ooapiDefaultOrganizationId) {
-    alert('No organizations loaded!');
+  if (!ooapiDefaultOrganisationId) {
+    alert('No organisations loaded!');
   }
 }
 

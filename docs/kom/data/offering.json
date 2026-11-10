@@ -1,6 +1,6 @@
 {
-    "program": "a8138341-d39e-55f8-fb77-4bf7a0ae7a52",
-    "offeringType": "program",
+    "programme": "a8138341-d39e-55f8-fb77-4bf7a0ae7a52",
+    "offeringType": "programme",
     "primaryCode": {
         "codeType": "identifier",
         "code": "49106"
@@ -72,7 +72,7 @@
         }
     ],
     "enrolledNumberStudents": 115,
-    "organization": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "organisation": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
     "minNumberStudents": 3,
     "offeringId": "f3a49e21-4670-9cb0-3d97-59eb8902be7e",
     "resultExpected": true,

@@ -18,15 +18,15 @@ public interface CourseRepository extends oeapiUnitaRepositoryBase<Course> {
 
     Optional<Course> findByCourseId(String courseId);
 
-    // Si le damos un programId
-    public List<Course> findByPrograms_ProgramId(String programId);
+    // Si le damos un programmeId
+    public List<Course> findByProgrammes_ProgrammeId(String programmeId);
 
     public List<Course> findByModeOfDelivery_Name(String modelOfdeliveryName);
 
-    Page<Course> findByOrganization_OrganizationId(String organizationId, Pageable pageable);
+    Page<Course> findByOrganisation_OrganisationId(String organisationId, Pageable pageable);
 
-    //Page<Course> findByLevelAndOrganization_OrganizationId(String level, String organizationId, Pageable pageable);
-    Page<Course> findByTeachingLanguageAndOrganization_OrganizationId(String teachingLanguage, String organizationId, Pageable pageable);
+    //Page<Course> findByLevelAndOrganisation_OrganisationId(String level, String organisationId, Pageable pageable);
+    Page<Course> findByTeachingLanguageAndOrganisation_OrganisationId(String teachingLanguage, String organisationId, Pageable pageable);
 
     //Page<Course> findByLevel(String level, Pageable pageable);
     Page<Course> findByTeachingLanguage(String teachingLanguage, Pageable pageable);

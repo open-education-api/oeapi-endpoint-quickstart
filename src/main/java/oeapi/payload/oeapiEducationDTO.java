@@ -12,7 +12,7 @@ import oeapi.model.Address;
 import oeapi.model.Consumer;
 import oeapi.model.Ext;
 import oeapi.model.ModeOfDelivery;
-import oeapi.model.Organization;
+import oeapi.model.Organisation;
 import oeapi.model.PrimaryCode;
 import oeapi.model.oeapiIdentifierEntry;
 import oeapi.model.oeapiLanguageTypedString;
@@ -180,41 +180,41 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
         this.otherCodes = otherCodes;
     }
 
-    // organization
+    // organisation
 
-    @JsonProperty("organization")
-    private String organizationId;
+    @JsonProperty("organisation")
+    private String organisationId;
 
     @JsonIgnore
     @oeapiDTOExpandable
-    public Organization organization;
+    public Organisation organisation;
 
-    public Organization getOrganization() {
-        return organization;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-        this.organizationId = organization == null ? null : organization.getOrganizationId();
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
+        this.organisationId = organisation == null ? null : organisation.getOrganisationId();
     }
 
-    public String getOrganizationId() {
-        return organizationId;
+    public String getOrganisationId() {
+        return organisationId;
     }
 
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
+    public void setOrganisationId(String organisationId) {
+        this.organisationId = organisationId;
 
-        if (organizationId == null) {
-            this.organization = null;
-        } else if (this.organization == null
-                || !organizationId.equals(this.organization.getOrganizationId())) {
+        if (organisationId == null) {
+            this.organisation = null;
+        } else if (this.organisation == null
+                || !organisationId.equals(this.organisation.getOrganisationId())) {
             // Reference stub, so an id alone is enough on input. Never rebuild it over an
-            // organization already mapped for this id: on a read ModelMapper supplies the
-            // real one through setOrganization(), and replacing it would reduce
-            // ?expand=organization to a bare organizationId. The guard used "!=", which
+            // organisation already mapped for this id: on a read ModelMapper supplies the
+            // real one through setOrganisation(), and replacing it would reduce
+            // ?expand=organisation to a bare organisationId. The guard used "!=", which
             // compares String references rather than contents and was therefore always true.
-            this.organization = new Organization(organizationId);
+            this.organisation = new Organisation(organisationId);
         }
     }
 

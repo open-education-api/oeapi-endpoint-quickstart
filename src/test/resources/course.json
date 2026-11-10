@@ -16,7 +16,7 @@
     ],
     "abbreviation": "MATH-UNITA",
     "level": "bachelor",
-    "organization": "UNITA",
+    "organisation": "UNITA",
     "link": "https://univ-unita.eu/",
     "studyLoad": {
         "studyLoadUnit": "ects",
@@ -167,7 +167,7 @@
             ]
         }
     ],
-    "programs": [
+    "programmes": [
         "801"
     ],
     "coordinators": [

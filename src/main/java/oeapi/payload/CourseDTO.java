@@ -18,7 +18,7 @@ import jakarta.persistence.Convert;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.model.EducationSpecification;
 import oeapi.model.Person;
-import oeapi.model.Program;
+import oeapi.model.Programme;
 import oeapi.model.StudyLoad;
 import oeapi.model.oeapiLanguageTypedString;
 import oeapi.validation.ValidEnumYaml;
@@ -32,12 +32,12 @@ public class CourseDTO extends oeapiEducationDTO {
     @JsonProperty(value = "courseId")
     private String courseId = UUID.randomUUID().toString();
 
-    @JsonProperty("programs")
-    private List<String> programIds;
+    @JsonProperty("programmes")
+    private List<String> programmeIds;
 
     @JsonIgnore
     @oeapiDTOExpandable
-    public List<Program> programs;
+    public List<Programme> programmes;
 
     @JsonProperty("educationSpecification")
     private String educationSpecificationId;
@@ -103,19 +103,19 @@ public class CourseDTO extends oeapiEducationDTO {
     }
 
     /**
-     * @return the programs
+     * @return the programmes
      */
-    public List<Program> getPrograms() {
-        return programs;
+    public List<Programme> getProgrammes() {
+        return programmes;
     }
 
-    public void setPrograms(List<Program> programs) {
-        this.programs = programs;
-        List<String> programIds = new ArrayList<String>();
-        for (Program program : programs) {
-            programIds.add(program.getProgramId());
+    public void setProgrammes(List<Programme> programmes) {
+        this.programmes = programmes;
+        List<String> programmeIds = new ArrayList<String>();
+        for (Programme programme : programmes) {
+            programmeIds.add(programme.getProgrammeId());
         }
-        this.programIds = programIds;
+        this.programmeIds = programmeIds;
 
     }
 
@@ -137,17 +137,17 @@ public class CourseDTO extends oeapiEducationDTO {
         this.setCourseId(UUID.randomUUID().toString());
     }
 
-    public List<String> getProgramIds() {
-        return programIds;
+    public List<String> getProgrammeIds() {
+        return programmeIds;
     }
 
-    public void setProgramIds(List<String> programIds) {
-        this.programIds = programIds;
-        List<Program> programs = new ArrayList<Program>();
-        for (String id : programIds) {
-            programs.add(new Program(id));
+    public void setProgrammeIds(List<String> programmeIds) {
+        this.programmeIds = programmeIds;
+        List<Programme> programmes = new ArrayList<Programme>();
+        for (String id : programmeIds) {
+            programmes.add(new Programme(id));
         }
-        this.programs = programs;
+        this.programmes = programmes;
     }
 
     /**

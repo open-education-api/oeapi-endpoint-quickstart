@@ -40,15 +40,15 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import oeapi.model.Organization;
+import oeapi.model.Organisation;
 import oeapi.model.Role;
 import oeapi.model.User;
 import oeapi.model.oeapiFieldsOfStudy;
-import oeapi.payload.OrganizationDTO;
+import oeapi.payload.OrganisationDTO;
 import oeapi.repository.RoleRepository;
 import oeapi.repository.UserRepository;
 import oeapi.repository.oeapiFieldsOfStudyRepository;
-import oeapi.service.OrganizationService;
+import oeapi.service.OrganisationService;
 
 /**
  * The type Ooapi unita application.
@@ -157,25 +157,25 @@ public class oeapiApplication {
     }
 
 
-    @Value("${quickdashboard.auto-create-file.organizations:}")
-    private String createOrganizationsFile;
+    @Value("${quickdashboard.auto-create-file.organisations:}")
+    private String createOrganisationsFile;
 
     @Bean
-    public CommandLineRunner createOrganizations(OrganizationService orgService) {
+    public CommandLineRunner createOrganisations(OrganisationService orgService) {
         return (args) -> {
-            if (createOrganizationsFile.isEmpty()) return;
+            if (createOrganisationsFile.isEmpty()) return;
 
-            logger.info("-->Inserting/Updating organizations from: {}", createOrganizationsFile);
+            logger.info("-->Inserting/Updating organisations from: {}", createOrganisationsFile);
 
             ObjectMapper mapper = new ObjectMapper();
-            InputStream inputStream = new FileInputStream(createOrganizationsFile);
-            List<OrganizationDTO> organizations = mapper.readValue(
+            InputStream inputStream = new FileInputStream(createOrganisationsFile);
+            List<OrganisationDTO> organisations = mapper.readValue(
                     inputStream,
-                    new TypeReference<List< OrganizationDTO>>() {
+                    new TypeReference<List< OrganisationDTO>>() {
             });
 
-            for (OrganizationDTO dto : organizations) {
-                Organization org = orgService.toEntity(dto);
+            for (OrganisationDTO dto : organisations) {
+                Organisation org = orgService.toEntity(dto);
                 if (!orgService.exists(org)) {
                     orgService.create(org);
                 }

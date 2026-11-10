@@ -43,8 +43,8 @@ public class oeapiDTOMapperService {
      * collection. Never throws - a type with no registered mapper is returned unchanged - so
      * it is safe to call on any expandable field.
      *
-     * A to-many relation is why this exists. ?expand=programs and ?expand=coordinators on a
-     * course, and ?expand=children on a program, hand over a List (a Hibernate PersistentBag,
+     * A to-many relation is why this exists. ?expand=programmes and ?expand=coordinators on a
+     * course, and ?expand=children on a programme, hand over a List (a Hibernate PersistentBag,
      * in fact), and a List's own class will never have a mapper, so looking the value up
      * directly finds nothing and the expansion answers with entity-shaped elements. Each
      * element has to be converted individually.

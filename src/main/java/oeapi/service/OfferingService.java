@@ -13,9 +13,9 @@ import oeapi.model.Course;
 import oeapi.model.CourseOffering;
 import oeapi.model.ModeOfDelivery;
 import oeapi.model.Offering;
-import oeapi.model.Organization;
-import oeapi.model.Program;
-import oeapi.model.ProgramOffering;
+import oeapi.model.Organisation;
+import oeapi.model.Programme;
+import oeapi.model.ProgrammeOffering;
 import oeapi.oeapiException;
 import oeapi.oeapiUtils;
 import oeapi.payload.OfferingDTO;
@@ -46,10 +46,10 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
     private ModeOfDeliveryRepository modeOfDeliveryRepository;
 
     @Autowired
-    private OrganizationService organizationService;
+    private OrganisationService organisationService;
 
     @Autowired
-    private ProgramService programService;
+    private ProgrammeService programmeService;
 
     @Autowired
     private CourseService courseService;
@@ -88,8 +88,8 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
         return repository.findByCourse_CourseId(id);
     }
 
-    public List<ProgramOffering> getByProgramId(String id) {
-        return repository.findByProgram_ProgramId(id);
+    public List<ProgrammeOffering> getByProgrammeId(String id) {
+        return repository.findByProgramme_ProgrammeId(id);
     }
 
     @Override
@@ -167,17 +167,17 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
         this.deleteByCourseId(course.getCourseId());
     }
 
-    public void deleteByProgramId(String programId) {
-        List<ProgramOffering> offerings = repository.findByProgram_ProgramId(programId);
+    public void deleteByProgrammeId(String programmeId) {
+        List<ProgrammeOffering> offerings = repository.findByProgramme_ProgrammeId(programmeId);
 
-        for (ProgramOffering offering : offerings) {
-            logger.debug("*>-Offering deleteByProgram: Deleting Offering with ID" + offering.getOfferingId());
+        for (ProgrammeOffering offering : offerings) {
+            logger.debug("*>-Offering deleteByProgramme: Deleting Offering with ID" + offering.getOfferingId());
             this.delete(offering.getOfferingId());
         }
     }
 
-    public void deleteByProgram(Program program) {
-        this.deleteByProgramId(program.getProgramId());
+    public void deleteByProgramme(Programme programme) {
+        this.deleteByProgrammeId(programme.getProgrammeId());
     }
 
     public Offering clearRelations(Offering offering) {
@@ -191,13 +191,13 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
 
     }
 
-    public Offering checkRelations(Offering offering, boolean mandatoryOrganization) {
+    public Offering checkRelations(Offering offering, boolean mandatoryOrganisation) {
 
-        logger.debug("+(Course) Offering service checkRelations: Organization...");
-        Optional<Organization> orgExisting = (offering.getOrganization() != null) ? organizationService.manageRelated(offering.getOrganization()) : organizationService.getDefault();
+        logger.debug("+(Course) Offering service checkRelations: Organisation...");
+        Optional<Organisation> orgExisting = (offering.getOrganisation() != null) ? organisationService.manageRelated(offering.getOrganisation()) : organisationService.getDefault();
         if (orgExisting.isPresent()) {
-            logger.debug("++(Course) Offering service checkRelations: Organization set to: id=" + orgExisting.get().getOrganizationId() + " ShortName: " + orgExisting.get().getShortName());
-            offering.setOrganization(orgExisting.get());
+            logger.debug("++(Course) Offering service checkRelations: Organisation set to: id=" + orgExisting.get().getOrganisationId() + " ShortName: " + orgExisting.get().getShortName());
+            offering.setOrganisation(orgExisting.get());
         }
 
         return offering;
@@ -238,8 +238,8 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
     public Offering validateOffering(Offering object) {
 
         logger.debug("*>-Offering validate: Revising relations and normalizing attributes...");
-        logger.debug("*>--Offering validate: Organization at START: {}",
-                (object.getOrganization() != null) ? object.getOrganization().getOrganizationId() : "None");
+        logger.debug("*>--Offering validate: Organisation at START: {}",
+                (object.getOrganisation() != null) ? object.getOrganisation().getOrganisationId() : "None");
 
         // Handle common logic for all types of offerings
         Offering managedOffering = checkRelations(object, defaultAutoCreateOrgIfNotExists);
@@ -276,34 +276,34 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
             }
 
             revisedOffering = courseOffering;
-        } else if (revisedOffering instanceof ProgramOffering) {
-            ProgramOffering programOffering = (ProgramOffering) revisedOffering;
-            logger.debug("*>-- Detected ProgramOffering, applying program-specific logic");
+        } else if (revisedOffering instanceof ProgrammeOffering) {
+            ProgrammeOffering programmeOffering = (ProgrammeOffering) revisedOffering;
+            logger.debug("*>-- Detected ProgrammeOffering, applying programme-specific logic");
 
-            programOffering.setOfferingType("program");
-            programOffering.setProgram(((ProgramOffering) object).getProgram());
+            programmeOffering.setOfferingType("programme");
+            programmeOffering.setProgramme(((ProgrammeOffering) object).getProgramme());
 
-            boolean hasValidProgram = false;
+            boolean hasValidProgramme = false;
 
-            if (programOffering.getProgram() != null) {
-                logger.debug("+(Program) Offering service checkRelations: program...");
-                Optional<Program> progExisting = programService.manageRelated(programOffering.getProgram());
+            if (programmeOffering.getProgramme() != null) {
+                logger.debug("+(Programme) Offering service checkRelations: programme...");
+                Optional<Programme> progExisting = programmeService.manageRelated(programmeOffering.getProgramme());
                 if (progExisting.isPresent()) {
-                    logger.debug("++(Course) Offering service checkRelations: programOffering set to: id=" + progExisting.get().getProgramId() + "Name: " + progExisting.get().getName());
-                    programOffering.setProgram(progExisting.get());
-                    hasValidProgram = true;
+                    logger.debug("++(Course) Offering service checkRelations: programmeOffering set to: id=" + progExisting.get().getProgrammeId() + "Name: " + progExisting.get().getName());
+                    programmeOffering.setProgramme(progExisting.get());
+                    hasValidProgramme = true;
                 }
             }
 
-            if (!hasValidProgram) {
-                throw new oeapiException(HttpStatus.BAD_REQUEST, "(Program) Offering not created", "The parent program does not exists or invalid! Program :" + programOffering.getProgram());
+            if (!hasValidProgramme) {
+                throw new oeapiException(HttpStatus.BAD_REQUEST, "(Programme) Offering not created", "The parent programme does not exists or invalid! Programme :" + programmeOffering.getProgramme());
             }
 
-            revisedOffering = programOffering;
+            revisedOffering = programmeOffering;
         }
 
-        logger.debug("*>-Offering Create: Organization at END: {}",
-                (revisedOffering.getOrganization() != null) ? revisedOffering.getOrganization().getOrganizationId() : "None");
+        logger.debug("*>-Offering Create: Organisation at END: {}",
+                (revisedOffering.getOrganisation() != null) ? revisedOffering.getOrganisation().getOrganisationId() : "None");
         logger.debug("*>--Offering Create: Checked and normalized offering {}", revisedOffering);
 
         return revisedOffering;
@@ -318,7 +318,7 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
         offering.setDescription(oeapiUtils.defaultDescription());
         offering.setAbbreviation("Autogenerated Offering for Id: " + id);
         offering.setPrimaryCode(oeapiUtils.defaultPrimaryCode("identifier", id + "-AutoGenerated"));
-        offering.setOfferingType("course");  // ToDo Fine tune this, it could be also program or component depending on which uses it
+        offering.setOfferingType("course");  // ToDo Fine tune this, it could be also programme or component depending on which uses it
         offering.setTeachingLanguage("eng");
         offering.setResultExpected(false);
         ArrayList<ModeOfDelivery> modesOfDelivery = new ArrayList<ModeOfDelivery>();

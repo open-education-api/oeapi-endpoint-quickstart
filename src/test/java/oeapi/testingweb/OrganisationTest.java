@@ -1,0 +1,101 @@
+package oeapi.testingweb;
+
+import java.io.IOException;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.web.reactive.server.WebTestClient;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.AfterAll;
+
+@AutoConfigureWebTestClient
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class OrganisationTest {
+
+    Logger logger = LoggerFactory.getLogger(OrganisationTest.class);
+
+    String restResource = "organisations";
+    String entity = "organisation";
+    String templateAbrev = "ORG";
+
+    @Autowired
+    private WebTestClient webTestClient;
+
+    @Autowired
+    private TestUtil TU;
+    
+    @Autowired    
+    private TestUtilCUDRest TUCudRest;    
+    
+    @Autowired    
+    private TestUtilGetRest TUGetRest;      
+     
+    @Test
+    void CreateOrganisation() throws IOException {
+
+        logStep("Create Organisation");
+
+        TUCudRest.whenPost_test(restResource, entity, templateAbrev, webTestClient);
+    }
+
+    @Test
+    void FilterOrganisationPrimaryCode() throws IOException {
+
+        logStep("Filter Organisation by PrimaryCode");
+
+        String randomCode = TUCudRest.whenPost_testCode(restResource, entity, templateAbrev, webTestClient);
+        TUGetRest.get_primaryCode(restResource, randomCode, webTestClient);
+
+    }
+
+    @Test
+    void FilterOrganisation() throws IOException {
+
+        logStep("Filter Organisation");
+
+        String organisationTypeRandom = TU.genRandomValue("organisationType");
+        logger.info("Organisation Type [" + organisationTypeRandom + "] filter...");
+        String randomCode = TUCudRest.whenPost_testCode(restResource, entity, templateAbrev, webTestClient);
+
+        logger.info("Organisation [" + randomCode + "] filter...");
+        // Testing other filters
+        Map<String, String> filterMap = new HashMap<>();
+        filterMap.put("organisationType", organisationTypeRandom);
+        TUGetRest.get_filter(restResource, filterMap, webTestClient);
+
+    }
+
+    private void logStep(String title) {
+        logger.info("\n\n"
+                + "############################################################\n"
+                + "#                                                          #\n"
+                + "#  STEP: " + String.format("%-50s", title) + " #\n"
+                + "#                                                          #\n"
+                + "############################################################\n");
+    }
+
+
+    /**
+     * Teardown. Tests in this class used to leave their entities in the database:
+     *
+     * This runs even when a test fails, and it never asserts - teardown must not turn a
+     * passing run red.
+     */
+    @AfterAll
+    void cleanUpCreatedData() {
+        TUCudRest.cleanupCreated(webTestClient);
+    }
+
+}

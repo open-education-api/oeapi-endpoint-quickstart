@@ -2,7 +2,7 @@ package oeapi.controller;
 
 import oeapi.controller.requestparameters.oeapiCourseRequestParam;
 import oeapi.controller.requestparameters.oeapiEducationSpecificationRequestParam;
-import oeapi.controller.requestparameters.oeapiProgramRequestParam;
+import oeapi.controller.requestparameters.oeapiProgrammeRequestParam;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +51,8 @@ public class EducationSpecificationController extends oeapiController<EducationS
         return super.getResponse(requestParam.toPageable(), new ArrayList());
     }
 
-    @GetMapping(value = "/{id}/programs", produces = "application/json")
-    public ResponseEntity<?> getPrograms(@PathVariable String id, @ModelAttribute oeapiProgramRequestParam requestParam) {
+    @GetMapping(value = "/{id}/programmes", produces = "application/json")
+    public ResponseEntity<?> getProgrammes(@PathVariable String id, @ModelAttribute oeapiProgrammeRequestParam requestParam) {
 
         Map.Entry<String, String> filter = requestParam.getFilter(false);
         return super.getResponse(requestParam.toPageable(), new ArrayList());

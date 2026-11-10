@@ -15,10 +15,10 @@ properties:
       properties:
         name:
           type: string
-          description: the name of the program this enrollment is for
+          description: the name of the programme this enrollment is for
         crohoCreboCode:
           type: string
-          description: the crohoCreboCode for this program
+          description: the crohoCreboCode for this programme
         phase:
           type: string
           enum: ["bachelor","master"]

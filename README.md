@@ -49,7 +49,7 @@ Once the endpoint has been configured, `docker compose up` works as usual - or u
 
 Using the default configuration the service is accesible at http://localhost:57075
 
-File `src/main/resources/application.properties` comes with default (testing) values to get started. In this file you can customize the options for your organization. Do not worry, the installer does it for you. You can see the process in the section [customize your installation for development or production](./docs/customize_your_installation_for_development_or_production.md),
+File `src/main/resources/application.properties` comes with default (testing) values to get started. In this file you can customize the options for your organisation. Do not worry, the installer does it for you. You can see the process in the section [customize your installation for development or production](./docs/customize_your_installation_for_development_or_production.md),
 
 ### Docker with devel version of OEAPI
 
@@ -139,14 +139,14 @@ The best way to understand how it works and learn what is required to load your 
 
 Before proceeding, it’s important to note that certain relationships must exist among the data you load.
 
-The most fundamental relationship is that a course must belong to a program (e.g., degree, master’s program), and a program should belong to an organization (e.g., university, learning center).
+The most fundamental relationship is that a course must belong to a programme (e.g., degree, master’s programme), and a programme should belong to an organisation (e.g., university, learning center).
   
 
 ```mermaid
 
 graph LR
 
-A[Organization] -- has --> B((Program))
+A[Organisation] -- has --> B((Programme))
 
 B -- has --> C(course a)
 
@@ -156,16 +156,16 @@ B -- has --> D(course b)
 
 At src/main/resources you can find a sample JSONs of them for you try. The order you should follow is:
   
-1. Load the organization
+1. Load the organisation
 ```bash
 
-curl -v -H "Content-Type: application/json" -d @src/main/resources/1-Organization.json http://localhost:57075/organizations
+curl -v -H "Content-Type: application/json" -d @src/main/resources/1-Organisation.json http://localhost:57075/organizations
 
 ```
-2. Load the program
+2. Load the programme
 ```bash
 
-curl -v -H "Content-Type: application/json" -d @src/main/resources/2-Program.json http://localhost:57075/programs
+curl -v -H "Content-Type: application/json" -d @src/main/resources/2-Programme.json http://localhost:57075/programs
 
 ```
 3. Load the course
@@ -296,7 +296,7 @@ Any other methods, depending on institutional needs
 
 #### Which option would be used or is the best choice? Probably, it would be a mix.
 
-For degrees and master's programs, the most likely way would be using option 3. However, for less formal courses—such as BIPs, microcredentials, and similar programs—a form-based frontend (within a CMS or similar system) would probably be more suitable.  
+For degrees and master's programmes, the most likely way would be using option 3. However, for less formal courses—such as BIPs, microcredentials, and similar programmes—a form-based frontend (within a CMS or similar system) would probably be more suitable.  
   
 Regardless of the approach, all options ultimately come down to one simple action: sending a standardized JSON to your OEAPI. This allows us to share our tools for loading courses with other universities, even if we don't have the same infrastructure (servers, databases, etc.).
 
@@ -316,7 +316,7 @@ The "right way" should be using a tool for testing APIs like HTTPie, Postman, et
 A small built‑in frontend is included to help you view and check the data in your OEAPI instance. You can access it at:
 http://localhost:57075/oeapi-td.html
 
-There is also an alternative frontend, made by SURFnet, but not specific to SURFnet, or Dutch institutes. It is a SPA which allows creating, viewing and editing persons, academic sessions, organizations, programs, courses and offerings. You can access it at http://localhost:57075/surfView.html. It uses the Spring API and respects the security mode defined in application.properties.
+There is also an alternative frontend, made by SURFnet, but not specific to SURFnet, or Dutch institutes. It is a SPA which allows creating, viewing and editing persons, academic sessions, organisations, programmes, courses and offerings. You can access it at http://localhost:57075/surfView.html. It uses the Spring API and respects the security mode defined in application.properties.
 
 
 # Configuration

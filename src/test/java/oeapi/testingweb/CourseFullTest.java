@@ -102,20 +102,20 @@ public class CourseFullTest {
                 
         logStep("Course Entering fullCourseTest. Security Enabled? "+securityEnabled);
         logStep("Course Entering fullCourseTest. Authorization Header? "+TU.authHeaderForTest());        
-        logStep("Course fullCourseTest add parent Organization [" + randomOrgId + "] load...");
+        logStep("Course fullCourseTest add parent Organisation [" + randomOrgId + "] load...");
 
-        String organizationPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/organization_template.json")), StandardCharsets.UTF_8);
+        String organisationPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/organisation_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
-                .uri("/organizations")
+                .uri("/organisations")
                 .header("Authorization",TU.authHeaderForTest())
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(organizationPayload.replace("--ORG_ID_TOBEINFORMED--", randomOrgId)
+                .bodyValue(organisationPayload.replace("--ORG_ID_TOBEINFORMED--", randomOrgId)
                         .replace("--ORG_CODE_TOBEINFORMED--", randomOrgCode))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.organizationId").isEqualTo(randomOrgId);
+                .jsonPath("$.organisationId").isEqualTo(randomOrgId);
 
         logStep("Course fullCourseTest add Coordinator [" + randomPersonId + "] load...");
 
@@ -129,21 +129,21 @@ public class CourseFullTest {
                         .replace("--PERSON_ID_TOBEINFORMED--", randomPersonId))
                 .exchange();
 
-        logStep("Course fullCourseTest add Program [" + randomProgId + "] load...");
+        logStep("Course fullCourseTest add Programme [" + randomProgId + "] load...");
 
-        String programPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/program_template.json")), StandardCharsets.UTF_8);
+        String programmePayload = new String(Files.readAllBytes(Paths.get("src/test/resources/programme_template.json")), StandardCharsets.UTF_8);
 
         webTestClient.post()
-                .uri("/programs")
+                .uri("/programmes")
                 .header("Authorization",TU.authHeaderForTest() )
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(programPayload.replace("--PROG_ID_TOBEINFORMED--", randomProgId)
+                .bodyValue(programmePayload.replace("--PROG_ID_TOBEINFORMED--", randomProgId)
                         .replace("--PROG_CODE_TOBEINFORMED--", randomProgCode))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.primaryCode.code").isEqualTo(randomProgCode)
-                .jsonPath("$.programId").isEqualTo(randomProgId);
+                .jsonPath("$.programmeId").isEqualTo(randomProgId);
 
         logStep("Course fullCourseTest add Course [" + randomCourseId + "] load...");
 
@@ -218,7 +218,7 @@ public class CourseFullTest {
               
         logStep("Course deleteOrgTest delete Org [" + randomOrgId + "] delete...");
                 
-        TUCudRest.delete_test("organizations", randomOrgId, webTestClient);
+        TUCudRest.delete_test("organisations", randomOrgId, webTestClient);
     }
 
     @Test
@@ -232,11 +232,11 @@ public class CourseFullTest {
     
     @Test
     @Order(6)
-    void deleteProgramTest() throws Exception {
+    void deleteProgrammeTest() throws Exception {
               
-        logStep("Course deleteProgramTest delete Program [" + randomProgId + "] delete...");
+        logStep("Course deleteProgrammeTest delete Programme [" + randomProgId + "] delete...");
                 
-        TUCudRest.delete_test("programs", randomProgId, webTestClient);
+        TUCudRest.delete_test("programmes", randomProgId, webTestClient);
     }        
     
     
@@ -260,9 +260,9 @@ public class CourseFullTest {
     void cleanUpCreatedData() {
         TUCudRest.deleteQuiet("offerings", randomOfferingId, webTestClient);
         TUCudRest.deleteQuiet("courses", randomCourseId, webTestClient);
-        TUCudRest.deleteQuiet("programs", randomProgId, webTestClient);
+        TUCudRest.deleteQuiet("programmes", randomProgId, webTestClient);
         TUCudRest.deleteQuiet("persons", randomPersonId, webTestClient);
-        TUCudRest.deleteQuiet("organizations", randomOrgId, webTestClient);
+        TUCudRest.deleteQuiet("organisations", randomOrgId, webTestClient);
         TUCudRest.cleanupCreated(webTestClient);
     }
 

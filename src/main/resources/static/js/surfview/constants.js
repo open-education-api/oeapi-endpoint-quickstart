@@ -27,18 +27,18 @@ Constants.tabs = {
             ['Active enrollment', entity => entity.activeEnrollment ? 'Yes' : 'No']
         ]
     },
-    organizations: {
-        title: 'All organizations',
-        noun: 'organizations',
-        endpoint: '/organizations',
-        kind: 'organization',
-        idField: 'organizationId',
-        detailEndpoint: id => `/organizations/${encodeURIComponent(id)}`,
+    organisations: {
+        title: 'All organisations',
+        noun: 'organisations',
+        endpoint: '/organisations',
+        kind: 'organisation',
+        idField: 'organisationId',
+        detailEndpoint: id => `/organisations/${encodeURIComponent(id)}`,
         columns: [
-            ['Name', entity => entityLinkValue('organization', entity)],
+            ['Name', entity => entityLinkValue('organisation', entity)],
             ['Code', entity => codeValue(entity.primaryCode)],
             ['Short name', entity => entity.shortName],
-            ['Type', entity => entity.organizationType],
+            ['Type', entity => entity.organisationType],
             ['City', entity => entity.addresses?.[0]?.city || '']
         ]
     },
@@ -57,16 +57,16 @@ Constants.tabs = {
             ['End date', entity => entity.endDate]
         ]
     },
-    programs: {
-        title: 'All programs',
-        noun: 'programs',
-        endpoint: '/programs',
-        kind: 'program',
-        idField: 'programId',
-        detailEndpoint: id => `/programs/${encodeURIComponent(id)}`,
-        offeringsEndpoint: id => `/programs/${encodeURIComponent(id)}/offerings`,
+    programmes: {
+        title: 'All programmes',
+        noun: 'programmes',
+        endpoint: '/programmes',
+        kind: 'programme',
+        idField: 'programmeId',
+        detailEndpoint: id => `/programmes/${encodeURIComponent(id)}`,
+        offeringsEndpoint: id => `/programmes/${encodeURIComponent(id)}/offerings`,
         columns: [
-            ['Name', entity => entityLinkValue('program', entity)],
+            ['Name', entity => entityLinkValue('programme', entity)],
             ['Code', entity => codeValue(entity.primaryCode)],
             ['Level', entity => entity.level],
             ['Study load', entity => studyLoadValue(entity.studyLoad)]
@@ -94,7 +94,7 @@ Constants.enumOptions = {
         ['employee', 'Employee'],
         ['guest', 'Guest']
     ],
-    organizationType: [
+    organisationType: [
         ['root', 'Root'],
         ['institute', 'Institute'],
         ['department', 'Department'],
@@ -166,8 +166,8 @@ Constants.enumOptions = {
         ['testing period', 'Testing period'],
         ['period', 'Period']
     ],
-    programType: [
-        ['program', 'Program'],
+    programmeType: [
+        ['programme', 'Programme'],
         ['minor', 'Minor'],
         ['honours', 'Honours'],
         ['specialization', 'Specialization'],

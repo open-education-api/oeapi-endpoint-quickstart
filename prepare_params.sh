@@ -79,29 +79,29 @@ echo
 echo
 echo "This section is dedicated to configuring the institution that will use the endpoint. Here you can specify the name of your institution, your primary language, the institution’s UUID, and other related details."
 echo
-echo "The UUID of your organization or institution must be unique among all institutions that may use the OEAPI specification. You can generate a random UUID for this purpose, or it may be provided externally—for example, by an alliance or consortium you belong to."
+echo "The UUID of your organisation or institution must be unique among all institutions that may use the OEAPI specification. You can generate a random UUID for this purpose, or it may be provided externally—for example, by an alliance or consortium you belong to."
 echo
 
 ORG_NAME=$(prompt_validate \
-    "---> Organization name (default OEAPI Test Organization): " \
-    "OEAPI Test Organization" \
+    "---> Organisation name (default OEAPI Test Organisation): " \
+    "OEAPI Test Organisation" \
     "^.{1,200}$" \
     "Name cannot be empty.")
 
 ORG_SHORT=$(prompt_validate \
-    "---> Organization short name (default OEAPI_TEST): " \
+    "---> Organisation short name (default OEAPI_TEST): " \
     "OEAPI_TEST" \
     "^[A-Za-z0-9_-]{2,50}$" \
     "Short name: letters, numbers, _ or - only.")
 
 ORG_CODE=$(prompt_validate \
-    "---> Organization UUID code (default 0): " \
+    "---> Organisation UUID code (default 0): " \
     "0" \
     "^[A-Za-z0-9._-]+$" \
     "Invalid code format.")
 
 ORG_URL=$(prompt_validate \
-    "---> Organization URL (default https://example.com): " \
+    "---> Organisation URL (default https://example.com): " \
     "https://example.com" \
     "^https?://.+$" \
     "URL must start with http:// or https://")
@@ -331,7 +331,7 @@ ooapi.config.defaultTeachingLanguage=$TEACH_LANG
 ooapi.config.autoCreateByDefault=false
 ooapi.config.autoCreateOfferingIfNotExists=false
 ooapi.config.autoCreateOrgIfNotExists=false
-ooapi.config.autoCreateProgramIfNotExists=false
+ooapi.config.autoCreateProgrammeIfNotExists=false
 ooapi.config.autoCreateCoordinatorIfNotExists=false
 
 ooapi.config.autoCreateOrg_Name=$ORG_NAME
@@ -358,10 +358,10 @@ quickdashboard.config.ooapiDefaultLogo=$LOGO
 quickdashboard.config.ooapiDefaultShortUnivName=$ORG_SHORT
 quickdashboard.config.ooapiDefaultUnivName=$ORG_NAME
 quickdashboard.config.ooapiDefaultEndpointURL=$ENDPOINT
-quickdashboard.config.ooapiDefaultOrganizationId=$ORG_CODE
+quickdashboard.config.ooapiDefaultOrganisationId=$ORG_CODE
 
 # On deployment config/dev or config/prod will be mapped to config on Docker
-quickdashboard.auto-create-file.organizations=config/initial_org.json
+quickdashboard.auto-create-file.organisations=config/initial_org.json
 
 app.jwt.secret=$JWT_SECRET
 
@@ -377,12 +377,12 @@ generate_initial_org_json() {
 
 cat <<EOF > "$TARGET_DIR/initial_org.json"
 [{
-    "organizationId": "$ORG_CODE",
+    "organisationId": "$ORG_CODE",
     "primaryCode": {
         "codeType": "identifier",
         "code": "$ORG_NAME"
     },
-    "organizationType": "root",
+    "organisationType": "root",
     "name": [
         {
             "language": "en-GB",

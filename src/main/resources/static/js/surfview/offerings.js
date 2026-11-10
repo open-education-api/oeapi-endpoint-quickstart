@@ -43,8 +43,8 @@ SurfView.Offerings = (() => {
                 options: Constants.enumOptions.resultValueType
             }),
             fieldLabelHtml('Link', 'url', 'link', offering.link || '', {placeholder: 'https://'}, 'full-width'),
-            fieldLabelHtml('Organization', 'select', 'organization', organizationIdValue(offering.organization), {
-                options: SurfView.Organizations.organizationOptionEntries(organizationIdValue(offering.organization))
+            fieldLabelHtml('Organisation', 'select', 'organisation', organisationIdValue(offering.organisation), {
+                options: SurfView.Organisations.organisationOptionEntries(organisationIdValue(offering.organisation))
             }),
             fieldLabelHtml('Academic session', 'select', 'academicSessionId', academicSessionId, {
                 options: SurfView.AcademicSessions.academicSessionOptionEntries(academicSessionId)
@@ -119,7 +119,7 @@ SurfView.Offerings = (() => {
     }
 
     function offeringId(offering) {
-        return offering.offeringId || offering.courseOfferingId || offering.programOfferingId || '';
+        return offering.offeringId || offering.courseOfferingId || offering.programmeOfferingId || '';
     }
 
     /** Builds an offering read-only detail section. */
@@ -234,7 +234,7 @@ SurfView.Offerings = (() => {
         if (isReadOnlyMode()) {
             return;
         }
-        await preloadLookups([organizationsById, academicSessionsById]);
+        await preloadLookups([organisationsById, academicSessionsById]);
         const mode = options.mode || 'add';
         resetDraftOffering();
         SurfView.State.draftOffering.addresses = Array.isArray(offering.addresses) ? structuredClone(offering.addresses) : [];
@@ -280,7 +280,7 @@ SurfView.Offerings = (() => {
             maxNumberStudents: 30,
             resultExpected: true,
             resultValueType: '1-10',
-            organization: organizationIdValue(entity.organization)
+            organisation: organisationIdValue(entity.organisation)
         };
     }
 
@@ -341,7 +341,7 @@ SurfView.Offerings = (() => {
         languages: () => SurfView.State.currentModalLanguages.length ? [...SurfView.State.currentModalLanguages] : ['en-GB'],
         value: (offering, field, language) => textValueForLanguage(offering[field], language),
         afterSwitch: form => {
-            ['organization', 'academicSessionId'].forEach(name => {
+            ['organisation', 'academicSessionId'].forEach(name => {
                 if (form.elements[name]) {
                     rebuildLookupSelect(form.elements[name]);
                 }
@@ -531,7 +531,7 @@ SurfView.Offerings = (() => {
             payload: () => offeringPayloadFromForm(kind, parentId),
             endpoint: payload => mode === 'edit'
                 ? `/offerings/${encodeURIComponent(offeringId(payload))}`
-                : kind === 'program' ? '/offerings/programOffering' : '/offerings',
+                : kind === 'programme' ? '/offerings/programmeOffering' : '/offerings',
             method: mode === 'edit' ? 'PUT' : 'POST',
             savingText: mode === 'edit' ? 'Saving...' : 'Adding...',
             successText: mode === 'edit' ? 'Saved' : 'Added',
@@ -574,7 +574,7 @@ SurfView.Offerings = (() => {
             endDate: value('endDate'),
             enrollStartDate: value('enrollStartDate'),
             enrollEndDate: value('enrollEndDate'),
-            organization: value('organization'),
+            organisation: value('organisation'),
             academicSessionId: value('academicSessionId'),
             priceInformation: SurfView.State.draftOffering.priceInformation,
             addresses: SurfView.State.draftOffering.addresses,
@@ -640,7 +640,7 @@ SurfView.Offerings = (() => {
         });
     }
 
-    /** Loads offerings for a course or program. */
+    /** Loads offerings for a course or programme. */
     async function loadEntityOfferings(kind, id) {
         if (!id) {
             return [];

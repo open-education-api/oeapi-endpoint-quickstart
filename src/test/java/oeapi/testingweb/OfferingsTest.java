@@ -28,9 +28,9 @@ import oeapi.model.oeapiLanguageTypedString;
 import oeapi.service.AcademicSessionService;
 import oeapi.service.CourseService;
 import oeapi.service.OfferingService;
-import oeapi.service.OrganizationService;
+import oeapi.service.OrganisationService;
 import oeapi.service.PersonService;
-import oeapi.service.ProgramService;
+import oeapi.service.ProgrammeService;
 
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -42,11 +42,11 @@ public class OfferingsTest {
     @Autowired
     private CourseService courseService;
     @Autowired
-    private ProgramService programService;
+    private ProgrammeService programmeService;
     @Autowired
     private PersonService personService;
     @Autowired
-    private OrganizationService organizationService;
+    private OrganisationService organisationService;
     @Autowired
     private AcademicSessionService academicSessionService;
 
@@ -58,23 +58,23 @@ public class OfferingsTest {
 
     Logger logger = LoggerFactory.getLogger(OfferingsTest.class);
 
-    private String organizationId;
-    private String programId;
+    private String organisationId;
+    private String programmeId;
     private String courseId;
     private String personId;
 
     @BeforeEach
     void beforeEach() throws Exception {
-        organizationId = UUID.randomUUID().toString();
-        String organizationPayload =
-            new String(Files.readAllBytes(Paths.get("src/test/resources/organization_template.json")),
+        organisationId = UUID.randomUUID().toString();
+        String organisationPayload =
+            new String(Files.readAllBytes(Paths.get("src/test/resources/organisation_template.json")),
                        StandardCharsets.UTF_8);
         webTestClient.post()
-            .uri("/organizations")
+            .uri("/organisations")
             .header("Authorization",TU.authHeaderForTest())
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(organizationPayload
-                           .replace("--ORG_ID_TOBEINFORMED--", organizationId)
+            .bodyValue(organisationPayload
+                           .replace("--ORG_ID_TOBEINFORMED--", organisationId)
                            .replace("--ORG_CODE_TOBEINFORMED--", TU.genRandomCode()))
             .exchange().expectStatus().isOk();
 
@@ -90,15 +90,15 @@ public class OfferingsTest {
                        .replace("--PERSON_CODE_TOBEINFORMED--", TU.genRandomCode()))
             .exchange().expectStatus().isOk();
 
-        programId = UUID.randomUUID().toString();
-        String programPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/program_template.json")),
+        programmeId = UUID.randomUUID().toString();
+        String programmePayload = new String(Files.readAllBytes(Paths.get("src/test/resources/programme_template.json")),
                                            StandardCharsets.UTF_8);
         webTestClient.post()
-            .uri("/programs")
+            .uri("/programmes")
             .header("Authorization",TU.authHeaderForTest())
             .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(programPayload
-                       .replace("--PROG_ID_TOBEINFORMED--", programId)
+            .bodyValue(programmePayload
+                       .replace("--PROG_ID_TOBEINFORMED--", programmeId)
                        .replace("--PROG_CODE_TOBEINFORMED--", TU.genRandomCode()))
             .exchange().expectStatus().isOk();
 
@@ -111,20 +111,20 @@ public class OfferingsTest {
             .contentType(MediaType.APPLICATION_JSON)
             .bodyValue(coursePayload.replace("--COURSE_ID_TOBEINFORMED--", courseId)
                        .replace("--COURSE_CODE_TOBEINFORMED--", TU.genRandomCode())
-                       .replace("--PROG_ID_TOBEINFORMED--", programId)
+                       .replace("--PROG_ID_TOBEINFORMED--", programmeId)
                        .replace("--PERSON_ID_TOBEINFORMED--", personId)
-                       .replace("--ORG_ID_TOBEINFORMED--", organizationId))
+                       .replace("--ORG_ID_TOBEINFORMED--", organisationId))
             .exchange().expectStatus().isOk();
     }
 
     @AfterEach
     void afterEach() {
         offeringService.deleteByCourseId(courseId);
-        offeringService.deleteByProgramId(programId);
+        offeringService.deleteByProgrammeId(programmeId);
         courseService.delete(courseId);
-        programService.delete(programId);
+        programmeService.delete(programmeId);
         personService.delete(personId);
-        organizationService.delete(organizationId);
+        organisationService.delete(organisationId);
     }
 
     @Test
@@ -150,24 +150,24 @@ public class OfferingsTest {
             .jsonPath("$.offeringId").isEqualTo(offeringId)
             .jsonPath("$.offeringType").isEqualTo("course")
             .jsonPath("$.course").isEqualTo(courseId)
-            .jsonPath("$.program").doesNotExist();
+            .jsonPath("$.programme").doesNotExist();
     }
 
     @Test
-    void programOfferingTest() throws Exception {
+    void programmeOfferingTest() throws Exception {
         String offeringId = UUID.randomUUID().toString();
 
         try {
-            String programOfferingPayload = new String(
-                    Files.readAllBytes(Paths.get("src/test/resources/programOffering_template.json")),
+            String programmeOfferingPayload = new String(
+                    Files.readAllBytes(Paths.get("src/test/resources/programmeOffering_template.json")),
                     StandardCharsets.UTF_8);
 
             webTestClient.post()
                     .uri("/offerings")
                     .header("Authorization", TU.authHeaderForTest())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(programOfferingPayload.replace("--OFFERING_ID_TOBEINFORMED--", offeringId)
-                            .replace("--PROG_ID_TOBEINFORMED--", programId)
+                    .bodyValue(programmeOfferingPayload.replace("--OFFERING_ID_TOBEINFORMED--", offeringId)
+                            .replace("--PROG_ID_TOBEINFORMED--", programmeId)
                             .replace("--OFFERING_CODE_TOBEINFORMED--", TU.genRandomCode()))
                     .exchange().expectStatus().isOk();
 
@@ -176,8 +176,8 @@ public class OfferingsTest {
                     .header("Authorization", TU.authHeaderForTest())
                     .exchange().expectStatus().isOk().expectBody()
                     .jsonPath("$.offeringId").isEqualTo(offeringId)
-                    .jsonPath("$.offeringType").isEqualTo("program")
-                    .jsonPath("$.program").isEqualTo(programId)
+                    .jsonPath("$.offeringType").isEqualTo("programme")
+                    .jsonPath("$.programme").isEqualTo(programmeId)
                     .jsonPath("$.course").doesNotExist();
         } finally {
             offeringService.delete(offeringId);
@@ -245,17 +245,17 @@ public class OfferingsTest {
     }
 
     @Test
-    void programOfferingExpandAcademicSessionTest() throws Exception {
-        String payload = new String(Files.readAllBytes(Paths.get("src/test/resources/programOfferingWithAcademicSession_template.json")),
+    void programmeOfferingExpandAcademicSessionTest() throws Exception {
+        String payload = new String(Files.readAllBytes(Paths.get("src/test/resources/programmeOfferingWithAcademicSession_template.json")),
                                     StandardCharsets.UTF_8)
-            .replace("--PROGRAM_ID_TOBEINFORMED--", programId);
+            .replace("--PROGRAMME_ID_TOBEINFORMED--", programmeId);
         expandAcademicSessionTest(payload);
     }
 
     @Test
-    void deleteOrganizationTriggerBadRequest() throws Exception {
+    void deleteOrganisationTriggerBadRequest() throws Exception {
         webTestClient.delete()
-            .uri("/organizations/{organizationId}", organizationId)
+            .uri("/organisations/{organisationId}", organisationId)
             .header("Authorization", TU.authHeaderForTest())
             .exchange()
             .expectStatus().isEqualTo(409)

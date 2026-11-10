@@ -521,14 +521,14 @@ async function populateSelect(selector, asyncOptions) {
     }
 }
 
-// Populate <select> elements from `selector` with OEAPI organizations.
-async function populateSelectOrganization(selector) {
+// Populate <select> elements from `selector` with OEAPI organisations.
+async function populateSelectOrganisation(selector) {
     populateSelect(
         selector,
         asyncItemsToOptions(
-            sortAsyncItemsByName(API.getOrganizations()),
-            'organizationId',
-            ooapiDefaultOrganizationId
+            sortAsyncItemsByName(API.getOrganisations()),
+            'organisationId',
+            ooapiDefaultOrganisationId
         )
     );
 }
@@ -929,7 +929,7 @@ async function postCourse(listCoordinators) {
         value: $('#studyLoad').val()
     } : null;
 
-    orgToBePosted = $('#orgUniversity').val() ? $('#orgUniversity').val() : ooapiDefaultOrganizationId;
+    orgToBePosted = $('#orgUniversity').val() ? $('#orgUniversity').val() : ooapiDefaultOrganisationId;
 
 
     // Build the courseData JSON
@@ -946,7 +946,7 @@ async function postCourse(listCoordinators) {
         abbreviation: $('#abbreviation').val(),
         link: $('#link_to_more_info').val(),
         teachingLanguage: $('#teachingLanguage').val(),
-        organization: orgToBePosted,
+        organisation: orgToBePosted,
         level: $('#level').val(),
         coordinators: listCoordinators,
         validFrom: $('#validStartDate').val(),
@@ -1116,7 +1116,7 @@ async function postPhysicalComponentOffering(courseId, offeringGroupId) {
         enrollEndDate: $('#endEnrollDate').val(),
         modeOfDelivery: ["on campus"],
         addresses: [courseAddress],
-        organization: $('#physicalUniversity').val(),
+        organisation: $('#physicalUniversity').val(),
         course: courseId,
         otherCodes:  otherCodesOffering,
         consumers: ooapiDefaultOfferingConsumers
@@ -1248,21 +1248,21 @@ async function loadCourseForEdit(courseId) {
 
     resetAllMultilingualFields();
 
-    let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(courseId);
+    let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgrammesList} = await loadAsyncCourseData(courseId);
 
     switch (formCourseType) {
 
         case "stdCourse":
-            populateCourseForm(courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList);
+            populateCourseForm(courseJSON, offeringsJSON, resultCoordinatorsList, resultProgrammesList);
             break;
         case "BIPCourse":
-            populateBIPCourseForm(courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList);
+            populateBIPCourseForm(courseJSON, offeringsJSON, resultCoordinatorsList, resultProgrammesList);
             break;
     }
 }
 
 
-async function populateCourseForm(course, offerings, courseCoordinators, programs) {
+async function populateCourseForm(course, offerings, courseCoordinators, programmes) {
 
     console.log("populateCourseForm: loading course...");
 
@@ -1329,7 +1329,7 @@ async function populateCourseForm(course, offerings, courseCoordinators, program
     updateCoordinatorList();
     console.log(coordinators);
 
-    // Programs are still to be handled in the form
+    // Programmes are still to be handled in the form
 
 }
 
@@ -1340,7 +1340,7 @@ async function populateCourseForm(course, offerings, courseCoordinators, program
 let physicalOfferingIdEd;
 let virtualOfferingIdEd;
 
-async function populateBIPCourseForm(course, offerings, courseCoordinators, programs) {
+async function populateBIPCourseForm(course, offerings, courseCoordinators, programmes) {
 
     console.log("populateBIPCourseForm: loading course...");
 

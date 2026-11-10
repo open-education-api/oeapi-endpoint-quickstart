@@ -3,7 +3,7 @@ package oeapi.repository;
 import java.util.List;
 import java.util.Optional;
 import oeapi.model.AcademicSession;
-import oeapi.model.Organization;
+import oeapi.model.Organisation;
 import oeapi.model.oeapiFieldsOfStudy;
 
 import org.springframework.data.domain.Page;

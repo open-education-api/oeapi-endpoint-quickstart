@@ -1,0 +1,27 @@
+{
+  "programmeId": "123e4567-e89b-12d3-a456-426614174000",
+  "primaryCode": {
+    "codeType": "identifier",
+    "code": "Programme 000"
+  },
+  "programmeType": "programme",
+  "name": [
+    {
+      "language": "en-GB",
+      "value": "Programme made for testing"
+    }
+  ],
+  "abbreviation": "PGTEST",
+  "description": [
+    {
+      "language": "en-GB",
+      "value": "This programme is made for testing "
+    }
+  ],
+  "teachingLanguage": "eng",
+  "studyLoad": {
+    "studyLoadUnit": "ects",
+    "value": 3
+  },
+  "level": "bachelor"
+}

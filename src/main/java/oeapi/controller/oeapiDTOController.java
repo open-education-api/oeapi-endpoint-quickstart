@@ -152,7 +152,7 @@ public class oeapiDTOController<T, S> {
 
         Errors errors = new BeanPropertyBindingResult(requestBody, requestBody.getClass().getName().toLowerCase());
         T updated;
-        //validator.validate(program,errors)
+        //validator.validate(programme,errors)
         // Just for debugging, see how the parsed JSON looks like
         logger.debug("ooapiDTOController (super): Entering Update with this JSON: " + requestBody);
 
@@ -198,7 +198,7 @@ public class oeapiDTOController<T, S> {
     public ResponseEntity<?> updateDTO(@RequestBody @Valid S requestBody, oeapiDTOServiceInterface<T, S> service) {
         ResponseEntity finalResponse = null;
         T updated;
-        //validator.validate(program,errors)
+        //validator.validate(programme,errors)
         // Just for debugging, see how the parsed JSON looks like
 
         try {

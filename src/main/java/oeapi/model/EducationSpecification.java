@@ -79,11 +79,11 @@ public class EducationSpecification extends PrimaryCode {
     private EducationSpecification parent;
 
     // Children : EducationSpecification[] managed at service
-    @JsonProperty("organization")
+    @JsonProperty("organisation")
     @ManyToOne
-    @JoinColumn(name = "organization_id", nullable = true)
-    @JsonBackReference("educationSpecificationOrganization")
-    private Organization organization;
+    @JoinColumn(name = "organisation_id", nullable = true)
+    @JsonBackReference("educationSpecificationOrganisation")
+    private Organisation organisation;
 
     @JsonProperty("consumers")
     @Column(columnDefinition = "text")
@@ -313,12 +313,12 @@ public class EducationSpecification extends PrimaryCode {
         this.fieldOfStudy = fieldOfStudy;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
     }
 
     /**

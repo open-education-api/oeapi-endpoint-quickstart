@@ -1,0 +1,39 @@
+{
+    "offeringId": "--OFFERING_ID_TOBEINFORMED--",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--OFFERING_CODE_TOBEINFORMED--"
+    },
+    "offeringType": "programme",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "Programme Offering"
+        }
+    ],
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "Offering for this programme"
+        }
+    ],
+    "teachingLanguage": "spa",
+    "resultExpected": true,
+    "startDate": "2025-09-17",
+    "endDate": "2025-12-18",
+    "programme": "--PROG_ID_TOBEINFORMED--",
+    "ext": {
+        "unitaCampus": "Pamplona",
+        "unitaCredits": 4,
+        "unitaWeight": 4.5,
+        "unitaActive": true,
+        "unitaTags": [
+            "alpha",
+            "beta"
+        ],
+        "unitaNested": {
+            "code": "--OFFERING_CODE_TOBEINFORMED--",
+            "depth": 2
+        }
+    }
+}

@@ -27,7 +27,7 @@ import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
 import oeapi.model.Course;
 import oeapi.model.CourseOffering;
 import oeapi.model.Offering;
-import oeapi.model.ProgramOffering;
+import oeapi.model.ProgrammeOffering;
 import oeapi.payload.OfferingDTO;
 import oeapi.service.CourseService;
 import oeapi.service.OfferingService;
@@ -94,12 +94,12 @@ public class OfferingController extends oeapiDTOController<Offering, OfferingDTO
         return super.create(courseOffering, offeringService);
     }
 
-    @PostMapping(value = "/programOffering", produces = "application/json")
-    public ResponseEntity<?> createProgramOffering(@RequestBody ProgramOffering programOffering) {
+    @PostMapping(value = "/programmeOffering", produces = "application/json")
+    public ResponseEntity<?> createProgrammeOffering(@RequestBody ProgrammeOffering programmeOffering) {
 
-        logger.debug("Creating ProgramOffering...");
+        logger.debug("Creating ProgrammeOffering...");
 
-        return super.create(programOffering, offeringService);
+        return super.create(programmeOffering, offeringService);
     }
 
     @Deprecated

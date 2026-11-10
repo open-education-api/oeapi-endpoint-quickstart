@@ -5,7 +5,7 @@
         "value": 179,
         "studyLoadUnit": "ects"
     },
-    "organization": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "organisation": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
     "level": "associate degree",
     "name": [
         {
@@ -17,7 +17,7 @@
             "value": "NL VERTALING: Type and Media"
         }
     ],
-    "programType": "minor",
+    "programmeType": "minor",
     "primaryCode": {
         "codeType": "crohoCreboCode",
         "code": "49106"
@@ -65,7 +65,7 @@
             "consumerKey": "eduxchange"
         }
     ],
-    "programId": "abe67694-a727-4d3f-8e2b-435189e670d1",
+    "programmeId": "abe67694-a727-4d3f-8e2b-435189e670d1",
     "firstStartDate": "2020-04-04",
     "resources": [
         "(2014). A reader will be announced in Brightspace. Literature and exercises will be handed out during the course.",

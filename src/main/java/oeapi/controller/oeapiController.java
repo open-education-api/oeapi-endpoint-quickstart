@@ -191,7 +191,7 @@ public class oeapiController<T> {
         ResponseEntity<T> finalResponse = null;
         Errors errors = new BeanPropertyBindingResult(requestBody, requestBody.getClass().getName().toLowerCase());
         T created;
-        //validator.validate(program,errors)
+        //validator.validate(programme,errors)
         // Just for debugging, see how the parsed JSON looks like
         logger.debug("ooapiController create, requestBody: " + oeapiUtils.debugJSON(requestBody));
 

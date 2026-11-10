@@ -860,14 +860,14 @@ function enumOptionsHtml(options, selectedValue, optionsConfig = {}) {
     });
 }
 
-// Another user or browser window may create an organization, person or academic
+// Another user or browser window may create an organisation, person or academic
 // session after this page loads. Reload when a dropdown opens; the cache decides
 // whether its data is still fresh enough.
 const lookupDropdowns = [
     {
-        selector: 'select[name="organization"]',
-        load: () => organizationsById.load(),
-        options: (select, selected) => SurfView.Organizations.organizationOptionEntries(selected)
+        selector: 'select[name="organisation"]',
+        load: () => organisationsById.load(),
+        options: (select, selected) => SurfView.Organisations.organisationOptionEntries(selected)
     },
     {
         selector: 'select[name="academicSessionId"]',

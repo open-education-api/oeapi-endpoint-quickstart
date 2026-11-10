@@ -3,7 +3,7 @@
 
 As mentioned earlier, this OEAPI endpoint can be updated using REST calls (for example, by sending a JSON object via POST or PUT). While this greatly simplifies course maintenance, you should not forget to secure it to prevent unwanted or unauthorized updates
 
-Understanding in depth how to secure a networked resource is beyond the scope of this guide, and the security officers in your organization should provide the appropriate guidance. Nevertheless, additionally to that, we also offer a minimal set of recommendations that may help you.
+Understanding in depth how to secure a networked resource is beyond the scope of this guide, and the security officers in your organisation should provide the appropriate guidance. Nevertheless, additionally to that, we also offer a minimal set of recommendations that may help you.
 
 The way your endpoint is intended to be used largely determines the security measures you should apply. For example, if it is only accessed from an internal network, you can block all internet access. If it is exposed to the internet, the implementation allows you to configure whether it provides read‑only access to courses or also allows adding courses, and so on.
 

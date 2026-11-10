@@ -44,12 +44,12 @@ If options 2 or 3 are selected, the installer guides the user through an interac
 
 This section is dedicated to configuring the institution that will use the endpoint. Here you can specify the name of your institution, your primary language, the institution’s UUID, and other related details.
 
-The UUID of your organization or institution must be unique among all institutions that may use the OEAPI specification. You can generate a random UUID for this purpose, or it may be provided externally—for example, by an alliance or consortium you belong to.
+The UUID of your organisation or institution must be unique among all institutions that may use the OEAPI specification. You can generate a random UUID for this purpose, or it may be provided externally—for example, by an alliance or consortium you belong to.
 
 ```console
----> University/Organization organization name (default: 'OEAPI Test Organization'):
----> University/Organization short name (default: 'OEAPI_TEST'):
----> Organization UUID code (default 0):
+---> University/Organisation organisation name (default: 'OEAPI Test Organisation'):
+---> University/Organisation short name (default: 'OEAPI_TEST'):
+---> Organisation UUID code (default 0):
 ---> Default country [NL, EN, CH, IT, FR, PT, ES, RO...] (default EN):
 ---> Teaching language ISO 639-2 [nld, eng, spa, fra, ita, por, ron... ](default eng)::
 ```

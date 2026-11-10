@@ -33,7 +33,7 @@ properties:
         value:
           type: string
       required: ["language", "value"]
-  programId:
+  programmeId:
     type: string
     format: uuid # Validate UUID format
   teachingLanguage:
@@ -42,6 +42,6 @@ properties:
     type: string
   level:
     type: string
-  programType:
+  programmeType:
     type: string
-required: ["primaryCode", "name","programType","teachingLanguage","abbreviation","description","level"]
+required: ["primaryCode", "name","programmeType","teachingLanguage","abbreviation","description","level"]

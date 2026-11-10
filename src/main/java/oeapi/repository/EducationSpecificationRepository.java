@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EducationSpecificationRepository extends oeapiUnitaRepositoryBase<EducationSpecification> {
 
-    List<EducationSpecification> findByOrganization_OrganizationId(String organizationId);
+    List<EducationSpecification> findByOrganisation_OrganisationId(String organisationId);
 
     Page<EducationSpecification> findByEducationSpecificationType(String educationSpecificationType, Pageable pageable);
 

@@ -20,7 +20,7 @@ properties:
         value:
           type: string
       required: ["language", "value"]
-  programId:
+  programmeId:
     type: string
     format: uuid # Validate UUID format
-required: ["primaryCode", "name", "programId"]
+required: ["primaryCode", "name", "programmeId"]

@@ -10,14 +10,14 @@ const entityKindRegistry = {
         openCreate: () => SurfView.AcademicSessions.openCreateAcademicSessionModal(),
         createLabel: 'academic session'
     },
-    organization: {
-        detailsHtml: entity => SurfView.Organizations.organizationDetailsHtml(entity),
-        openEditForm: entity => SurfView.Organizations.openOrganizationEditForm(entity),
-        submitForm: form => SurfView.Organizations.submitOrganizationForm(form),
-        payloadFromForm: (form, entity) => SurfView.Organizations.organizationPayloadFromForm(form, entity),
-        deleteCurrent: () => SurfView.Organizations.deleteCurrentOrganization(),
-        openCreate: () => SurfView.Organizations.openCreateOrganizationModal(),
-        createLabel: 'organization'
+    organisation: {
+        detailsHtml: entity => SurfView.Organisations.organisationDetailsHtml(entity),
+        openEditForm: entity => SurfView.Organisations.openOrganisationEditForm(entity),
+        submitForm: form => SurfView.Organisations.submitOrganisationForm(form),
+        payloadFromForm: (form, entity) => SurfView.Organisations.organisationPayloadFromForm(form, entity),
+        deleteCurrent: () => SurfView.Organisations.deleteCurrentOrganisation(),
+        openCreate: () => SurfView.Organisations.openCreateOrganisationModal(),
+        createLabel: 'organisation'
     },
     person: {
         detailsHtml: entity => SurfView.Persons.personDetailsHtml(entity),
@@ -29,7 +29,7 @@ const entityKindRegistry = {
         createLabel: 'person'
     },
     course: moduleKindRegistryEntry('course'),
-    program: moduleKindRegistryEntry('program')
+    programme: moduleKindRegistryEntry('programme')
 };
 
 function moduleKindRegistryEntry(kind) {
@@ -39,7 +39,7 @@ function moduleKindRegistryEntry(kind) {
         submitForm: form => SurfView.Module.submitModuleForm(form),
         payloadFromForm: (form, entity, kind) => SurfView.Module.modulePayloadFromForm(kind, form, entity),
         openCreate: () => SurfView.Module.openCreateModuleModal(kind),
-        preloadDetails: () => preloadLookups([organizationsById, personById]),
+        preloadDetails: () => preloadLookups([organisationsById, personById]),
         loadOfferings: true
     };
 }

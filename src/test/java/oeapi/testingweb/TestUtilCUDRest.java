@@ -28,7 +28,7 @@ public class TestUtilCUDRest {
     /**
      * Everything created through this helper, most recent first.
      *
-     * Tests used to leave their courses, programs, organizations and persons in the
+     * Tests used to leave their courses, programmes, organisations and persons in the
      * database. That is invisible in CI, where every job gets a fresh database, but it
      * accumulates against a development database and eventually breaks the suite: a
      * retained row keeps its primaryCode, and create() refuses a duplicate one.

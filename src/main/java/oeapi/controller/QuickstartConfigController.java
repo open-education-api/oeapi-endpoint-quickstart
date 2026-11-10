@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import oeapi.model.Organization;
-import oeapi.service.OrganizationService;
+import oeapi.model.Organisation;
+import oeapi.service.OrganisationService;
 
 @RestController
 public class QuickstartConfigController {
@@ -34,8 +34,8 @@ public class QuickstartConfigController {
     @Value("${quickdashboard.config.ooapiDefaultUnivName:DUMMY}")
     private String ooapiDefaultUnivName;
 
-    @Value("${quickdashboard.config.ooapiDefaultOrganizationId:78ca90e6-7257-4721-aae3-94addbed42fc}")
-    private String ooapiDefaultOrganizationId;
+    @Value("${quickdashboard.config.ooapiDefaultOrganisationId:78ca90e6-7257-4721-aae3-94addbed42fc}")
+    private String ooapiDefaultOrganisationId;
 
     @Value("${quickdashboard.config.ooapiDefaultEndpointURL:http://localhost:57075}")
     private String ooapiDefaultEndpointURL;
@@ -47,7 +47,7 @@ public class QuickstartConfigController {
     private String ooapiDefaultOfferingConsumersJsonFile;
 
     @Autowired
-    private OrganizationService organizationService;
+    private OrganisationService organisationService;
 
     private final ObjectMapper objectMapper;
 
@@ -62,9 +62,9 @@ public class QuickstartConfigController {
     public String getQuickstartConfig(@RequestParam(value = "callback",
                                                     required = false) String callback)
             throws IOException {
-        if (ooapiDefaultOrganizationId.isEmpty()) {
-            Optional<Organization> org = organizationService.getDefault();
-            ooapiDefaultOrganizationId = org.isPresent() ? org.get().getOrganizationId() : "";
+        if (ooapiDefaultOrganisationId.isEmpty()) {
+            Optional<Organisation> org = organisationService.getDefault();
+            ooapiDefaultOrganisationId = org.isPresent() ? org.get().getOrganisationId() : "";
         }
 
         Map<String, Object> data = new HashMap<>();
@@ -72,7 +72,7 @@ public class QuickstartConfigController {
                 "ooapiDefaultLogo", ooapiDefaultLogo,
                 "ooapiDefaultShortUnivName", ooapiDefaultShortUnivName,
                 "ooapiDefaultUnivName", ooapiDefaultUnivName,
-                "ooapiDefaultOrganizationId", ooapiDefaultOrganizationId,
+                "ooapiDefaultOrganisationId", ooapiDefaultOrganisationId,
                 "ooapiDefaultEndpointURL", ooapiDefaultEndpointURL));
 
         if (!ooapiDefaultCourseConsumersJsonFile.isEmpty()) {

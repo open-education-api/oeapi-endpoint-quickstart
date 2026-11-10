@@ -15,7 +15,7 @@ public interface GroupRepository extends oeapiUnitaRepositoryBase<Group> {
 
     List<Group> findByMembers_PersonId(String personId);
 
-    List<Group> findByOrganization_OrganizationId(String organizationId);
+    List<Group> findByOrganisation_OrganisationId(String organisationId);
 
     Page<Group> findByGroupType(String groupType, Pageable pageable);
 

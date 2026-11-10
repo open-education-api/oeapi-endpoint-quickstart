@@ -12,7 +12,7 @@
     "resources": [
         "(2013). Furthermore, several in depth case studies will be made available through WUR-shop. Seeskin (eds.), The Cambridge Companion to Muhammad."
     ],
-    "organization": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
+    "organisation": "1ccdc93b-ff5b-0522-9f8e-d798966873ac",
     "modeOfDelivery": [
         "situated"
     ],
@@ -157,7 +157,7 @@
         "value": 178,
         "studyLoadUnit": "ects"
     },
-    "programs": [
+    "programmes": [
         "a8138341-d39e-55f8-fb77-4bf7a0ae7a52"
     ]
 }

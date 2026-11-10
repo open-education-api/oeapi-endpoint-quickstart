@@ -21,7 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import oeapi.repository.OrganizationRepository;
+import oeapi.repository.OrganisationRepository;
 
 @Transactional
 @AutoConfigureMockMvc
@@ -33,25 +33,25 @@ class KomTest {
     MockMvc mockMvc;
 
     @Autowired
-    OrganizationRepository organizationRepository;
+    OrganisationRepository organisationRepository;
 
     ObjectMapper mapper = new ObjectMapper();
 
     @Test
     void all() throws Exception {
-        doAll("/organizations", "organization");
+        doAll("/organisations", "organisation");
         doAll("/persons", "person");
-        doAll("/programs", "program", "parent");
-        doAll("/programs", "program");
+        doAll("/programmes", "programme", "parent");
+        doAll("/programmes", "programme");
         doAll("/academic-sessions", "academicSession");
         doAll("/courses", "course");
         doAll("/offerings", "offering");
 
-        logger.info("GET /program/{id}?expand=organization");
-        mockMvc.perform(get("/programs/" + extractId("program") + "?expand=organization"))
+        logger.info("GET /programme/{id}?expand=organisation");
+        mockMvc.perform(get("/programmes/" + extractId("programme") + "?expand=organisation"))
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.organization.organizationType").value("root"));
+            .andExpect(jsonPath("$.organisation.organisationType").value("root"));
     }
 
     private void doAll(String path, String resource, String altResource) throws Exception {

@@ -263,8 +263,8 @@ async function submitLoginForm(event) {
         window.localStorage.setItem('jwt', data.token);
         await loadAuthStatus();
         hideLoginModal();
-        organizationsById.load().catch(() => {
-            // Organization dropdowns fall back to the current entity organization id.
+        organisationsById.load().catch(() => {
+            // Organisation dropdowns fall back to the current entity organisation id.
         });
         loadCurrentPageAndEntity();
     } catch (error) {

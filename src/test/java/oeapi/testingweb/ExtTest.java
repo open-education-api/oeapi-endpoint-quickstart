@@ -52,39 +52,39 @@ class ExtTest {
     private TestUtilCUDRest TUCudRest;
 
     @Test
-    void ProgramExtRoundTrip() throws Exception {
+    void ProgrammeExtRoundTrip() throws Exception {
 
         String id = UUID.randomUUID().toString();
         String code = TU.genRandomCode();
 
-        logStep("Create Program [" + id + "] carrying ext");
-        post("/programs", TU.getPayload("program_template", "PROG", id, code))
-                .jsonPath("$.programId").isEqualTo(id);
-        TUCudRest.track("programs", id);
+        logStep("Create Programme [" + id + "] carrying ext");
+        post("/programmes", TU.getPayload("programme_template", "PROG", id, code))
+                .jsonPath("$.programmeId").isEqualTo(id);
+        TUCudRest.track("programmes", id);
 
-        logStep("Read Program [" + id + "] back and check ext survived the database");
-        assertExt(get("/programs/" + id), "Pamplona", code);
+        logStep("Read Programme [" + id + "] back and check ext survived the database");
+        assertExt(get("/programmes/" + id), "Pamplona", code);
     }
 
     @Test
-    void ProgramExtUpdate() throws Exception {
+    void ProgrammeExtUpdate() throws Exception {
 
         String id = UUID.randomUUID().toString();
         String code = TU.genRandomCode();
 
-        logStep("Create Program [" + id + "] carrying ext");
-        post("/programs", TU.getPayload("program_template", "PROG", id, code))
-                .jsonPath("$.programId").isEqualTo(id);
-        TUCudRest.track("programs", id);
+        logStep("Create Programme [" + id + "] carrying ext");
+        post("/programmes", TU.getPayload("programme_template", "PROG", id, code))
+                .jsonPath("$.programmeId").isEqualTo(id);
+        TUCudRest.track("programmes", id);
 
         String newCode = TU.genRandomCode();
 
-        logStep("Update Program [" + id + "] with a different ext");
-        put("/programs/" + id, TU.getPayload("updateprogram_template", "PROG", id, newCode))
+        logStep("Update Programme [" + id + "] with a different ext");
+        put("/programmes/" + id, TU.getPayload("updateprogramme_template", "PROG", id, newCode))
                 .jsonPath("$.primaryCode.code").isEqualTo(newCode);
 
-        logStep("Read Program [" + id + "] back: ext must be replaced, not appended to");
-        assertExt(get("/programs/" + id), "Tudela", newCode);
+        logStep("Read Programme [" + id + "] back: ext must be replaced, not appended to");
+        assertExt(get("/programmes/" + id), "Tudela", newCode);
     }
 
     @Test
@@ -189,7 +189,7 @@ class ExtTest {
     }
 
     /**
-     * Teardown. These tests used to leave their programs, courses and offerings behind;
+     * Teardown. These tests used to leave their programmes, courses and offerings behind;
      * 
      * Runs even when a test fails, and never asserts.
      */

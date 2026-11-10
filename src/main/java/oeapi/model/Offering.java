@@ -45,7 +45,7 @@ import oeapi.validation.ValidLanguageTypedString;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = CourseOffering.class,    name = "course"),
     @JsonSubTypes.Type(value = ComponentOffering.class, name = "component"),    
-    @JsonSubTypes.Type(value = ProgramOffering.class,   name = "program")
+    @JsonSubTypes.Type(value = ProgrammeOffering.class,   name = "programme")
 })
 @Entity(name = "offering")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -118,8 +118,8 @@ public class Offering extends PrimaryCode {
     private AcademicSession academicSession;
 
     @ManyToOne
-    @JoinColumn(name = "organization_id", nullable = true)
-    private Organization organization;
+    @JoinColumn(name = "organisation_id", nullable = true)
+    private Organisation organisation;
 
     //@OneToMany(mappedBy = "offering")
     //@JsonManagedReference("associationOfferingReference")
@@ -486,17 +486,17 @@ public class Offering extends PrimaryCode {
     }
 
     /**
-     * @return the organization
+     * @return the organisation
      */
-    public Organization getOrganization() {
-        return organization;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
     /**
-     * @param organization the organization to set
+     * @param organisation the organisation to set
      */
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
     }
 
     /**

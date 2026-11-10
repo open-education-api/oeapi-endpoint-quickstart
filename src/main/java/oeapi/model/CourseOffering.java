@@ -21,10 +21,10 @@ public class CourseOffering extends Offering {
     @JoinColumn(name = "course_id", unique = false, nullable = true)
     private Course course;
 
-    @JsonProperty("programOffering")
+    @JsonProperty("programmeOffering")
     @ManyToOne
-    @JoinColumn(name = "program_offering_id", unique = false, nullable = true)
-    private ProgramOffering programOffering;
+    @JoinColumn(name = "programme_offering_id", unique = false, nullable = true)
+    private ProgrammeOffering programmeOffering;
 
     
     @Override
@@ -48,17 +48,17 @@ public class CourseOffering extends Offering {
     }
 
     /**
-     * @return the programOffering
+     * @return the programmeOffering
      */
-    public ProgramOffering getProgramOffering() {
-        return programOffering;
+    public ProgrammeOffering getProgrammeOffering() {
+        return programmeOffering;
     }
 
     /**
-     * @param programOffering the programOffering to set
+     * @param programmeOffering the programmeOffering to set
      */
-    public void setProgramOffering(ProgramOffering programOffering) {
-        this.programOffering = programOffering;
+    public void setProgrammeOffering(ProgrammeOffering programmeOffering) {
+        this.programmeOffering = programmeOffering;
     }
 
 }

@@ -63,7 +63,7 @@ case $choice in
     mkdir -p "$TARGET_DIR" 
 
     cp "$CONF_SRC/application.properties" "$TARGET_DIR/application-custom.properties"
-    cp "./examples/organizations.json"    "$TARGET_DIR/initial_org.json"
+    cp "./examples/organisations.json"    "$TARGET_DIR/initial_org.json"
     
     # Change datasource to be follow pattern oeapi_qs_MODE, 
     # So each MODE could have distinct dedicated volume in the container allowing switching and isolation
@@ -72,7 +72,7 @@ case $choice in
     # By default no orgs are loaded, let's put a default one. 
     # initial_org.json usually stores a real org for DEV or PROD, which data is captured on guided install.
     # In this case we previously put on initial_org.json use some orgs from ./examples
-    echo "quickdashboard.auto-create-file.organizations=${CONFIG_TARGET_DIR}/initial_org.json" >> "$TARGET_DIR/application-custom.properties"
+    echo "quickdashboard.auto-create-file.organisations=${CONFIG_TARGET_DIR}/initial_org.json" >> "$TARGET_DIR/application-custom.properties"
 
     ENV_TARGET=test
     SERVER_PORT=57075

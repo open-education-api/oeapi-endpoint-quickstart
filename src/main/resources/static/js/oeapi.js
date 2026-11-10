@@ -210,13 +210,13 @@ const API = (function() {
         createOffering: makeCreator('offerings'),
         updateOffering: makeUpdater('offerings'),
 
-        getOrganizations: makeItemsGetter('organizations'),
+        getOrganisations: makeItemsGetter('organisations'),
 
         getPerson: makeGetter('persons'),
         getPersons: makeItemsGetter('persons'),
         createPerson: makeCreator('persons'),
 
-        getProgram: makeGetter('programs'),
+        getProgramme: makeGetter('programmes'),
 
         addDOMEventListeners,
         isAdmin,
@@ -336,7 +336,7 @@ async function loadFullCourseData(univShortName, courseID) {
 
 
     try {
-        let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList} = await loadAsyncCourseData(courseID);
+        let {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgrammesList} = await loadAsyncCourseData(courseID);
 
         courseJSONData = courseJSON;  // To have visibility of during HTML some async rendering
 
@@ -377,7 +377,7 @@ async function loadFullCourseData(univShortName, courseID) {
 
         }
 
-        console.log("Async call results:", courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList);
+        console.log("Async call results:", courseJSON, offeringsJSON, resultCoordinatorsList, resultProgrammesList);
 
         const oneCourseElement =
                 oneCourseCard.replace(/{imgSrc}/gi, htmltizeLogo(courseJSON))
@@ -477,7 +477,7 @@ async function loadAsyncCourseData(courseID) {
 
         // Get other values/keys
         const coordinators = courseJSON.coordinators || [];
-        const programs = courseJSON.programs || [];
+        const programmes = courseJSON.programmes || [];
         // Prepare requests
 
 
@@ -487,23 +487,23 @@ async function loadAsyncCourseData(courseID) {
         });
 
 
-        const getProgramsArray = programs.map(programId => API.getProgram(programId));
+        const getProgrammesArray = programmes.map(programmeId => API.getProgramme(programmeId));
 
         // Await all fetch calls
-        const [coordinatorResponses, programResponses] = await Promise.all([
+        const [coordinatorResponses, programmeResponses] = await Promise.all([
             Promise.all(getCoordinatorsArray),
-            Promise.all(getProgramsArray)
+            Promise.all(getProgrammesArray)
         ]);
 
         const resultCoordinatorsList = coordinatorResponses;
-        const resultProgramsList = programResponses;
+        const resultProgrammesList = programmeResponses;
 
         console.log('Course:', courseJSON);
         console.log('OfferingsJSON:', offeringsJSON);
         console.log('Coordinators:', resultCoordinatorsList);
-        console.log('Programs:', resultProgramsList);
+        console.log('Programmes:', resultProgrammesList);
 
-        return {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgramsList};
+        return {courseJSON, offeringsJSON, resultCoordinatorsList, resultProgrammesList};
 
     } catch (error) {
         console.error('Error during API call sequence:', error);

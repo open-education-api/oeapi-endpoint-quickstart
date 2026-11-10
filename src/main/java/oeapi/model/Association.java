@@ -64,12 +64,12 @@ public class Association extends PrimaryCode {
     @ValidObjectYaml(yamlfile = "result.yaml")
     private Result result;
 
-    private Organization issuer;
+    private Organisation issuer;
 
 //    @ManyToOne
-//    @JoinColumn(name = "organization_id", nullable = true)
+//    @JoinColumn(name = "organisation_id", nullable = true)
 //    //@JsonBackReference
-//    private Organization organization;
+//    private Organisation organisation;
     /**
      * @return the associationId
      */

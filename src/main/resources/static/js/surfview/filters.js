@@ -91,7 +91,7 @@ function entityLanguageFilters(entity) {
 
 /** Returns whether the active tab shows filters. */
 function activeTabUsesEducationFilters() {
-    return ['course', 'program'].includes(Constants.tabs[SurfView.State.tab]?.kind);
+    return ['course', 'programme'].includes(Constants.tabs[SurfView.State.tab]?.kind);
 }
 
 function activeTabUsesPersonFilters() {

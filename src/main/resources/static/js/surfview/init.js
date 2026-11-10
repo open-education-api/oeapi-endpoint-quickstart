@@ -27,7 +27,7 @@ const entityMaps = Object.fromEntries(Object.entries(Constants.tabs).map(([tabKe
     idOf: entity => entityId(tab.kind, entity)
 })]));
 const courseById = entityMaps.courses;
-const organizationsById = entityMaps.organizations;
+const organisationsById = entityMaps.organisations;
 const personById = entityMaps.persons;
 const academicSessionsById = entityMaps.academicSessions;
 const levelFilterInputs = [...document.querySelectorAll('[data-level-filter]')];
@@ -122,8 +122,8 @@ async function startSurfView() {
     if (privateLoginRequired()) {
         return;
     }
-    organizationsById.load().catch(() => {
-        // Organization dropdowns fall back to the current entity organization id.
+    organisationsById.load().catch(() => {
+        // Organisation dropdowns fall back to the current entity organisation id.
     });
 
     if (initialTab === 'users' && SurfView.UserAdmin.isAvailable()) {

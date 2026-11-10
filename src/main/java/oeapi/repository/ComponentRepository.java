@@ -16,7 +16,7 @@ public interface ComponentRepository extends oeapiUnitaRepositoryBase<Component>
 
     Page<Component> findByCourse_CourseId(String courseId, Pageable pageable);
 
-    Page<Component> findByOrganization_OrganizationId(String organizationId, Pageable pageable);
+    Page<Component> findByOrganisation_OrganisationId(String organisationId, Pageable pageable);
 
     Page<Component> findByComponentTypeId(Long componentTypeId, Pageable pageable);
     

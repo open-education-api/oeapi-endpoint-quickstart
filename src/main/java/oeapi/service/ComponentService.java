@@ -16,7 +16,7 @@ import oeapi.model.Component;
 import oeapi.model.ComponentOffering;
 import oeapi.model.Course;
 import oeapi.model.ModeOfDelivery;
-import oeapi.model.Organization;
+import oeapi.model.Organisation;
 import oeapi.oeapiException;
 import oeapi.oeapiUtils;
 import oeapi.payload.ComponentDTO;
@@ -48,7 +48,7 @@ public class ComponentService extends oeapiEndpointDTOService<Component, Compone
     private CourseService courseService;
 
     @Autowired
-    private OrganizationService organizationService;    
+    private OrganisationService organisationService;    
     
     @Autowired
     private ModeOfDeliveryRepository modeOfDeliveryRepository;
@@ -66,7 +66,7 @@ public class ComponentService extends oeapiEndpointDTOService<Component, Compone
         logger.debug("*>-CourseService Create(component): Revising relations and normalizing attributes...");
         Component managed = checkRelations(component);
         Component normalized = normalizeAttributes(managed);
-        logger.debug("*>-CourseService Crete(component): Organization at END:" + component.getCourse().getCourseId());
+        logger.debug("*>-CourseService Crete(component): Organisation at END:" + component.getCourse().getCourseId());
         logger.debug("*>-CourseComponent Crete(component): Calling super");
         return super.create(normalized);
     }
@@ -108,12 +108,12 @@ public class ComponentService extends oeapiEndpointDTOService<Component, Compone
         return super.findByDynamicMethod(capitalizedMethodName, value, id, pageable);
     }
 
-    public Page<Component> getByOrganizationId(String id, Map.Entry<String, String> filter, Pageable pageable) {
+    public Page<Component> getByOrganisationId(String id, Map.Entry<String, String> filter, Pageable pageable) {
 
         String capitalizedMethodName;
 
         String findBy = "findBy";
-        String sufixMethod = "Organization_OrganizationId";
+        String sufixMethod = "Organisation_OrganisationId";
         if (filter == null) {
             capitalizedMethodName = findBy + sufixMethod;
             return super.findByDynamicMethod(capitalizedMethodName, id, pageable);
@@ -157,11 +157,11 @@ public class ComponentService extends oeapiEndpointDTOService<Component, Compone
     public Component checkRelations(Component component) {
  
        try {
-            logger.debug("+ComponentService checkRelations: Organization...");
-            Optional<Organization> orgExisting = (component.getOrganization() != null) ? organizationService.manageRelated(component.getOrganization()) : organizationService.getDefault();
+            logger.debug("+ComponentService checkRelations: Organisation...");
+            Optional<Organisation> orgExisting = (component.getOrganisation() != null) ? organisationService.manageRelated(component.getOrganisation()) : organisationService.getDefault();
             if (orgExisting.isPresent()) {
-                logger.debug("++ComponentService checkRelations: Organization set to: id=" + orgExisting.get().getOrganizationId() + " ShortName: " + orgExisting.get().getShortName());
-                component.setOrganization(orgExisting.get());
+                logger.debug("++ComponentService checkRelations: Organisation set to: id=" + orgExisting.get().getOrganisationId() + " ShortName: " + orgExisting.get().getShortName());
+                component.setOrganisation(orgExisting.get());
             }
 
             logger.debug("+ComponentService checkRelations: Course...");
@@ -189,7 +189,7 @@ public class ComponentService extends oeapiEndpointDTOService<Component, Compone
         // Manage array of ModeOfDelivery, check if exists
         if (component.getModeOfDelivery() != null) {
 
-            logger.debug("Program service, normalizing: checking array ModeOfDelivery... ");
+            logger.debug("Programme service, normalizing: checking array ModeOfDelivery... ");
             List<ModeOfDelivery> deliveries = component.getModeOfDelivery();
             List<ModeOfDelivery> newModeList = new ArrayList<>();
 
@@ -200,7 +200,7 @@ public class ComponentService extends oeapiEndpointDTOService<Component, Compone
 
                 if (existingMode.isPresent()) {
                     newModeList.add(existingMode.get());
-                    logger.debug("Program service, normalizing: ModeOfDelivery already exists. Attaching it");
+                    logger.debug("Programme service, normalizing: ModeOfDelivery already exists. Attaching it");
                 } else {
                     newMode = new ModeOfDelivery();
                     newMode.setName(name);
@@ -216,7 +216,7 @@ public class ComponentService extends oeapiEndpointDTOService<Component, Compone
     @Override
     public Optional<Component> manageRelated(Component related) {
         
-        logger.debug("--> ComponentService, manageRelated: Searching for the supplied Program.. ["+related+"]");
+        logger.debug("--> ComponentService, manageRelated: Searching for the supplied Programme.. ["+related+"]");
         
         String id = related.getComponentId();
         

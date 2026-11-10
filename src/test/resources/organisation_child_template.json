@@ -1,0 +1,22 @@
+{
+    "organisationId": "--ORG_ID_TOBEINFORMED--",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "--ORG_CODE_TOBEINFORMED--"
+    },
+    "organisationType": "department",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "Child Organisation [--ORG_CODE_TOBEINFORMED--]"
+        }
+    ],
+    "shortName": "CHILD",
+    "description": [
+        {
+            "language": "en-GB",
+            "value": "Child of --PARENT_ID_TOBEINFORMED--"
+        }
+    ],
+    "parent": "--PARENT_ID_TOBEINFORMED--"
+}

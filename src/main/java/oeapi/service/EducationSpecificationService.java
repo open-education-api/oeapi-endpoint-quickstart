@@ -25,9 +25,9 @@ public class EducationSpecificationService extends oeapiEndpointService<Educatio
         super();
     }
 
-    public List<EducationSpecification> getByOrganizationId(String id) {
+    public List<EducationSpecification> getByOrganisationId(String id) {
 
-        return repository.findByOrganization_OrganizationId(id);
+        return repository.findByOrganisation_OrganisationId(id);
     }
 
     @Override

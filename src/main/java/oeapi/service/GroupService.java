@@ -27,9 +27,9 @@ public class GroupService extends oeapiEndpointService<Group, GroupRepository> i
         return repository.findByMembers_PersonId(id);
     }
 
-    public List<Group> getByOrganizationId(String id) {
+    public List<Group> getByOrganisationId(String id) {
 
-        return repository.findByOrganization_OrganizationId(id);
+        return repository.findByOrganisation_OrganisationId(id);
 
     }
 

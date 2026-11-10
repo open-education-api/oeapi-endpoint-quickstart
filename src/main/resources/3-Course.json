@@ -16,7 +16,7 @@
     ],
     "abbreviation": "COURSEEX",
     "level": "bachelor",
-    "organization": "333e4567-e89b-12d3-a456-123514174eee",
+    "organisation": "333e4567-e89b-12d3-a456-123514174eee",
     "link": "https://openonderwijsapi.nl/#/",
     "studyLoad": {
         "studyLoadUnit": "ects",
@@ -171,7 +171,7 @@
             ]
         }
     ],
-    "programs": [
+    "programmes": [
         "123e4567-e89b-12d3-a456-426614174000"
     ]
 }

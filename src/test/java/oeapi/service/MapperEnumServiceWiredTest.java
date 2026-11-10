@@ -18,9 +18,9 @@ import org.springframework.test.annotation.DirtiesContext;
  * and oeapiDTOMapperService does it for every expanded value.
  *
  * The symptom was an enum-backed field answering with its raw enumeration id -
- * GET /organizations/{id} returning "organizationType": "2" instead of "root" - and whether it
+ * GET /organisations/{id} returning "organisationType": "2" instead of "root" - and whether it
  * happened depended on whether an earlier request had repaired the mapper by accident. Listing
- * /organizations first made the next single GET correct, which is what made it look
+ * /organisations first made the next single GET correct, which is what made it look
  * intermittent.
  *
  * @DirtiesContext is what makes this a regression test rather than a formality: the assertion
@@ -36,19 +36,19 @@ import org.springframework.test.annotation.DirtiesContext;
 class MapperEnumServiceWiredTest {
 
     @Autowired
-    private OrganizationService organizationService;
+    private OrganisationService organisationService;
 
     @Autowired
     private CourseService courseService;
 
     @Autowired
-    private ProgramService programService;
+    private ProgrammeService programmeService;
 
     @Test
-    void OrganizationMapperHasItsEnumServiceAfterStartup() {
+    void OrganisationMapperHasItsEnumServiceAfterStartup() {
 
-        assertNotNull(organizationService.getMapper().getEnumService(),
-                      "the Organization mapper cannot resolve organizationType without it");
+        assertNotNull(organisationService.getMapper().getEnumService(),
+                      "the Organisation mapper cannot resolve organisationType without it");
     }
 
     @Test
@@ -59,9 +59,9 @@ class MapperEnumServiceWiredTest {
     }
 
     @Test
-    void ProgramMapperHasItsEnumServiceAfterStartup() {
+    void ProgrammeMapperHasItsEnumServiceAfterStartup() {
 
-        assertNotNull(programService.getMapper().getEnumService(),
-                      "the Program mapper cannot resolve its enum fields without it");
+        assertNotNull(programmeService.getMapper().getEnumService(),
+                      "the Programme mapper cannot resolve its enum fields without it");
     }
 }

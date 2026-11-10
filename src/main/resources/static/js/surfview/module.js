@@ -17,7 +17,7 @@ SurfView.Module = (() => {
         return params.toString();
     }
 
-    /** Builds a course or program read-only detail view. */
+    /** Builds a course or programme read-only detail view. */
     function moduleDetailsHtml(kind, module, {offerings, loadingOfferings} = {}) {
         offerings ||= [];
         loadingOfferings ||= false;
@@ -27,10 +27,10 @@ SurfView.Module = (() => {
             ['Level', module.level],
             ['Study load', studyLoadValue(module.studyLoad)],
             ['Abbreviation', module.abbreviation],
-            [kind === 'program' ? 'Program type' : 'Teaching language', kind === 'program' ? module.programType : module.teachingLanguage],
+            [kind === 'programme' ? 'Programme type' : 'Teaching language', kind === 'programme' ? module.programmeType : module.teachingLanguage],
             ['Delivery', listValue(module.modeOfDelivery)],
             ['First start date', module.firstStartDate],
-            ['Organization', SurfView.Organizations.organizationValue(module.organization)],
+            ['Organisation', SurfView.Organisations.organisationValue(module.organisation)],
             ['Coordinators', coordinatorLabels(module)],
             ['Link', module.link]
         ];
@@ -262,14 +262,14 @@ SurfView.Module = (() => {
             }),
             moduleLanguagePanel(kind, module),
             fieldLabelHtml('Abbreviation', 'text', 'abbreviation', module.abbreviation || '', {
-                required: kind === 'program'
+                required: kind === 'programme'
             })
         ];
 
-        if (kind === 'program') {
-            fields.push(fieldLabelHtml('Program type', 'select', 'programType', module.programType || 'program', {
+        if (kind === 'programme') {
+            fields.push(fieldLabelHtml('Programme type', 'select', 'programmeType', module.programmeType || 'programme', {
                 required: true,
-                options: Constants.enumOptions.programType
+                options: Constants.enumOptions.programmeType
             }));
         }
 
@@ -282,7 +282,7 @@ SurfView.Module = (() => {
                 showValue: true
             }),
             fieldLabelHtml('Level', 'datalist', 'level', module.level || '', {
-                required: kind === 'program',
+                required: kind === 'programme',
                 options: Constants.enumOptions.level
             }),
             fieldLabelHtml('Study load value', 'number', 'studyLoadValue', studyLoad.value ?? studyLoad.amount ?? '', {min: 0, step: 0.01}),
@@ -296,8 +296,8 @@ SurfView.Module = (() => {
             fieldLabelHtml('Sector', 'select', 'sector', module.sector || '', {
                 options: [['', 'None'], ...Constants.enumOptions.sector]
             }),
-            fieldLabelHtml('Organization', 'select', 'organization', organizationIdValue(module.organization), {
-                options: SurfView.Organizations.organizationOptionEntries(organizationIdValue(module.organization))
+            fieldLabelHtml('Organisation', 'select', 'organisation', organisationIdValue(module.organisation), {
+                options: SurfView.Organisations.organisationOptionEntries(organisationIdValue(module.organisation))
             }),
             fieldLabelHtml('Link', 'url', 'link', module.link || '', {placeholder: 'https://'}, 'full-width'),
             moduleAddressListPanel.panel(),
@@ -531,13 +531,13 @@ SurfView.Module = (() => {
         input.value = '';
     }
 
-    /** Opens the shared modal with a new course or program form. */
+    /** Opens the shared modal with a new course or programme form. */
     async function openCreateModuleModal(kind) {
         if (isReadOnlyMode()) {
             return;
         }
 
-        await preloadLookups([organizationsById, personById]);
+        await preloadLookups([organisationsById, personById]);
 
         const module = defaultModule(kind);
         SurfView.State.currentModalKind = kind;
@@ -578,20 +578,20 @@ SurfView.Module = (() => {
             module.enrollment = [];
             module.assessment = [];
             module.learningOutcomes = [];
-        } else if (kind === 'program') {
-            module.programType = 'program';
+        } else if (kind === 'programme') {
+            module.programmeType = 'programme';
         }
 
         return module;
     }
 
-    /** Opens the shared modal with a course or program edit form. */
+    /** Opens the shared modal with a course or programme edit form. */
     async function openModuleEditForm() {
         if (!SurfView.State.currentModalEntity || isReadOnlyMode()) {
             return;
         }
 
-        await preloadLookups([organizationsById, personById]);
+        await preloadLookups([organisationsById, personById]);
 
         resetDraftEntity();
         modalBody.replaceChildren(moduleEditFormHtml(SurfView.State.currentModalKind, SurfView.State.currentModalEntity, 'edit'));
@@ -599,7 +599,7 @@ SurfView.Module = (() => {
         modalBody.querySelector('.module-localized-panel input[name="name"]')?.focus();
     }
 
-    /** Closes the course or program edit form. */
+    /** Closes the course or programme edit form. */
     function closeModuleEditForm() {
         if (!SurfView.State.currentModalEntity) {
             return;
@@ -609,7 +609,7 @@ SurfView.Module = (() => {
         setEntityModalMode('details');
     }
 
-    /** Submits a course or program create or edit form. */
+    /** Submits a course or programme create or edit form. */
     async function submitModuleForm(form) {
         if (isReadOnlyMode()) {
             closeModuleEditForm();
@@ -652,7 +652,7 @@ SurfView.Module = (() => {
         });
     }
 
-    /** Reads a course or program API payload from a form. */
+    /** Reads a course or programme API payload from a form. */
     function modulePayloadFromForm(kind, form, originalModule) {
         form.querySelectorAll('[data-module-array-input]').forEach(input => addModuleArrayValue(input));
         moduleDraftLanguageController.save(form);
@@ -680,8 +680,8 @@ SurfView.Module = (() => {
                 : localizedContent[field];
         });
         payload.abbreviation = value('abbreviation');
-        if (kind === 'program') {
-            payload.programType = value('programType');
+        if (kind === 'programme') {
+            payload.programmeType = value('programmeType');
         }
         payload.teachingLanguage = value('teachingLanguage');
         payload.level = value('level');
@@ -694,7 +694,7 @@ SurfView.Module = (() => {
         payload.modeOfDelivery = modeOfDelivery ? [modeOfDelivery] : [];
         payload.firstStartDate = value('firstStartDate');
         payload.sector = value('sector');
-        payload.organization = value('organization');
+        payload.organisation = value('organisation');
         payload.link = value('link');
         payload.addresses = structuredClone(SurfView.State.draftEntity.addresses);
         payload.resources = moduleArrayValues(form, 'resources');
@@ -768,7 +768,7 @@ SurfView.Module = (() => {
             .filter(Boolean);
     }
 
-    /** Registers course and program event handlers. */
+    /** Registers course and programme event handlers. */
     function initEventListeners() {
         delegateClick(modalBody, {
             '[data-add-module-language]': () => moduleDraftLanguageController.add(),

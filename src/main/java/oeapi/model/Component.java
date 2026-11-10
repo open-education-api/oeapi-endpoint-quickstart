@@ -36,21 +36,21 @@ public class Component extends oeapiEducation {
     private Course course;
 
     @ManyToOne
-    @JoinColumn(name = "organization_id", nullable = true)
-    private Organization organization;
+    @JoinColumn(name = "organisation_id", nullable = true)
+    private Organisation organisation;
 
     /**
-     * @return the organization
+     * @return the organisation
      */
-    public Organization getOrganization() {
-        return organization;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
     /**
-     * @param organization the organization to set
+     * @param organisation the organisation to set
      */
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
     }
 
     /**

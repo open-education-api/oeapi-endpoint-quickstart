@@ -77,7 +77,7 @@ public class oeapiDTOMapper<T, S> {
         modelMapper.addConverter(localDateToString);
 
         // Resolve enum-backed fields during the mapping rather than afterwards. ModelMapper
-        // reuses this TypeMap for nested properties of the same pair - an organization's
+        // reuses this TypeMap for nested properties of the same pair - an organisation's
         // parent and children - so a post converter reaches every DTO in the graph, while
         // patching the result of map() only ever reached the root. That is what made
         // ?expand=children answer with the raw enumeration id instead of the value.
@@ -202,7 +202,7 @@ public class oeapiDTOMapper<T, S> {
 
                 // Only ever REPLACE a value that resolves. Never clear one: some entities keep
                 // a field the service lists as an enum as a plain String with no "<field>Id" at
-                // all - Program.level maps to the program_level column, while Course.levelId is
+                // all - Programme.level maps to the programme_level column, while Course.levelId is
                 // a real enumeration id - and for those the mapped value is already correct.
                 // The old code cleared them, and only got away with it because
                 // "finally { return dto; }" swallowed the NoSuchFieldException.

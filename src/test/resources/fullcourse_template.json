@@ -17,7 +17,7 @@
     "firstStartDate": "2024-11-02",
     "abbreviation": "MATHS-UNITA",
     "level": "doctoral",
-    "organization": "--ORG_ID_TOBEINFORMED--",
+    "organisation": "--ORG_ID_TOBEINFORMED--",
     "link": "https://univ-unita.eu/",
     "studyLoad": {
         "studyLoadUnit": "ects",
@@ -165,7 +165,7 @@
             ]
         }
     ],
-    "programs": [
+    "programmes": [
         "--PROG_ID_TOBEINFORMED--"
     ]
     ,

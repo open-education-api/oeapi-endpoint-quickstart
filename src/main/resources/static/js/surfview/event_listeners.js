@@ -78,7 +78,7 @@ addBackdropDismissListener(moduleModal, closeEntityModal);
 initNestedModalListeners();
 SurfView.Offerings.initEventListeners();
 SurfView.Module.initEventListeners();
-SurfView.Organizations.initEventListeners();
+SurfView.Organisations.initEventListeners();
 SurfView.AcademicSessions.initEventListeners();
 
 errorDetailsModal.close.addEventListener('click', closeErrorDetailsModal);

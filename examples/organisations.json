@@ -1,0 +1,46 @@
+[
+  {  
+    "organisationId": "333e4567-e89b-12d3-a456-123514174eee",
+    "primaryCode": {
+        "codeType": "identifier",
+        "code": "OEAPI Test Organisation"
+    },
+    "organisationType": "root",
+    "name": [
+        {
+            "language": "en-GB",
+            "value": "OEAPI Test Organisation"
+        }
+    ],
+    "shortName": "OEAPI-Test",
+    "addresses": [
+        {
+            "addressType": "postal",
+            "street": "Main Street, ...",
+            "streetNumber": "918",
+            "additional": [
+                {
+                    "language": "en-GB",
+                    "value": "From Central Station take bus..."
+                }
+            ],
+            "postalCode": "1109",
+            "city": "Amsterdam",
+            "countryCode": "NL",
+            "geolocation": {
+                "latitude": 52.366667,
+                "longitude": 4.883333
+            }
+        }
+    ],
+    "link": "https://openonderwijsapi.nl/#/",
+    "logo": "https://openonderwijsapi.nl/_media/OpenEducationApi_Logo.png",
+    "otherCodes": [
+        {
+            "codeType": "otherType",
+            "code": "This other code for this organisation"
+        }
+    ]
+ }
+
+]

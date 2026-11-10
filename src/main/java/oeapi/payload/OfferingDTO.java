@@ -34,9 +34,9 @@ import oeapi.model.Cost;
 import oeapi.model.CourseOffering;
 import oeapi.model.Ext;
 import oeapi.model.ModeOfDelivery;
-import oeapi.model.Organization;
+import oeapi.model.Organisation;
 import oeapi.model.PrimaryCode;
-import oeapi.model.ProgramOffering;
+import oeapi.model.ProgrammeOffering;
 import oeapi.model.oeapiIdentifierEntry;
 import oeapi.model.oeapiLanguageTypedString;
 
@@ -49,7 +49,7 @@ import oeapi.model.oeapiLanguageTypedString;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = CourseOffering.class, name = "course"),
     @JsonSubTypes.Type(value = ComponentOffering.class, name = "component"),
-    @JsonSubTypes.Type(value = ProgramOffering.class, name = "program")
+    @JsonSubTypes.Type(value = ProgrammeOffering.class, name = "programme")
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @DiscriminatorColumn(name = "offering_class", discriminatorType = DiscriminatorType.STRING)
@@ -471,11 +471,11 @@ public class OfferingDTO extends PrimaryCode {
     public String getCourseId() { return this.courseId; }
     public void setCourseId(String id) { this.courseId = id; }
 
-    // program
-    @JsonProperty("program")
-    private String programId;
-    public String getProgramId() { return this.programId; }
-    public void setProgramId(String id) { this.programId = id; }
+    // programme
+    @JsonProperty("programme")
+    private String programmeId;
+    public String getProgrammeId() { return this.programmeId; }
+    public void setProgrammeId(String id) { this.programmeId = id; }
 
     // component
     @JsonProperty("component")
@@ -488,8 +488,8 @@ public class OfferingDTO extends PrimaryCode {
     public String getOfferingType() {
         if (courseId != null) {
             return "course";
-        } else if (programId != null) {
-            return "program";
+        } else if (programmeId != null) {
+            return "programme";
         } else if (componentId != null) {
             return "component";
         }
@@ -501,33 +501,33 @@ public class OfferingDTO extends PrimaryCode {
         logger.warn("offeringType is determined automatically and cannot be set manually.");
     }
 
-    // organization
+    // organisation
 
-    @JsonProperty("organization")
-    private String organizationId;
+    @JsonProperty("organisation")
+    private String organisationId;
 
     @JsonIgnore
     @oeapiDTOExpandable
-    public Organization organization;
+    public Organisation organisation;
 
-    public Organization getOrganization() {
-        return organization;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-        this.organizationId = organization == null ? null : organization.getOrganizationId();
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
+        this.organisationId = organisation == null ? null : organisation.getOrganisationId();
     }
 
-    public String getOrganizationId() {
-        return organizationId;
+    public String getOrganisationId() {
+        return organisationId;
     }
 
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
+    public void setOrganisationId(String organisationId) {
+        this.organisationId = organisationId;
 
-        if (this.organization == null || this.organization.getOrganizationId() != organizationId) {
-            this.organization = organizationId == null ? null : new Organization(organizationId);
+        if (this.organisation == null || this.organisation.getOrganisationId() != organisationId) {
+            this.organisation = organisationId == null ? null : new Organisation(organisationId);
         }
     }
 

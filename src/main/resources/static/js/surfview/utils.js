@@ -37,8 +37,8 @@ function titleCase(value) {
     return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-/** Returns an organization id from a reference. */
-function organizationIdValue(value) {
+/** Returns an organisation id from a reference. */
+function organisationIdValue(value) {
     if (!value) {
         return '';
     }
@@ -47,7 +47,7 @@ function organizationIdValue(value) {
         return value;
     }
 
-    return value.organizationId || '';
+    return value.organisationId || '';
 }
 
 /** Returns an academic session id from a reference. */

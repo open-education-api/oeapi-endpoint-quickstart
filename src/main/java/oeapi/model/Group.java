@@ -50,9 +50,9 @@ public class Group extends PrimaryCode {
     private String groupType;
 
     @ManyToOne
-    @JoinColumn(name = "organization_id", nullable = true)
-    @JsonBackReference("groupOrganization")
-    private Organization organization;
+    @JoinColumn(name = "organisation_id", nullable = true)
+    @JsonBackReference("groupOrganisation")
+    private Organisation organisation;
 
     @ManyToMany(
             cascade = CascadeType.ALL,
@@ -218,17 +218,17 @@ public class Group extends PrimaryCode {
     }
 
     /**
-     * @return the organization
+     * @return the organisation
      */
-    public Organization getOrganization() {
-        return organization;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
     /**
-     * @param organization the organization to set
+     * @param organisation the organisation to set
      */
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
     }
 
     /**
