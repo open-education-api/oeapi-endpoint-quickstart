@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.validation.Valid;
 
-import oeapi.oeapiError;
+import oeapi.oeapiProblem;
 import oeapi.oeapiException;
 import oeapi.oeapiObjectsValidator;
 import oeapi.oeapiUtils;
@@ -243,12 +243,9 @@ public class oeapiController<T> {
     }
 
     @ExceptionHandler(oeapiException.class)
-    public ResponseEntity<oeapiError> handleOoapiUnitaException(oeapiException ex, WebRequest request) {
+    public ResponseEntity<oeapiProblem> handleOoapiUnitaException(oeapiException ex, WebRequest request) {
 
-        oeapiError error = new oeapiError(ex.getStatus().name(), ex.getTitle());
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
-                .body(error);
+        return oeapiAplicationExceptionHandler.response(ex.getStatus() == null ? HttpStatus.INTERNAL_SERVER_ERROR : ex.getStatus(),
+                ex.getTitle(), ex.getDetail(), request);
     }
 }

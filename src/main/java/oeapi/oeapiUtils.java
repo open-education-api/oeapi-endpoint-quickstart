@@ -104,13 +104,11 @@ public class oeapiUtils {
     // so responses in these cases have to be handled explicitly
     public static void sendJsonError(HttpServletResponse response, int status, String message) throws IOException {
         response.setStatus(status);
-        response.setContentType("application/json");
+        response.setContentType(OeapiMediaType.PROBLEM_JSON);
         response.setCharacterEncoding("UTF-8");
 
-        Map<String, Object> error = new HashMap<>();
-        error.put("error", HttpServletResponse.SC_UNAUTHORIZED == status ? "Unauthorized" : "Forbidden");
-        error.put("message", message);
-        error.put("status", status);
+        oeapiProblem error = new oeapiProblem(status,
+                HttpServletResponse.SC_UNAUTHORIZED == status ? "Unauthorized" : "Forbidden", message);
 
         new ObjectMapper().writeValue(response.getWriter(), error);
     }    

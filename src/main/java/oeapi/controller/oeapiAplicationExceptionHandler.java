@@ -2,22 +2,27 @@ package oeapi.controller;
 
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.everit.json.schema.ValidationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
+import oeapi.OeapiMediaType;
 import oeapi.oeapiException;
+import oeapi.oeapiProblem;
 
 /**
+ * Turns exceptions into OEAPI v6 error responses: RFC 7807 Problem Details
+ * served as application/problem+json with the real HTTP status.
  *
  * @author itziar.urrutia
  */
@@ -25,62 +30,50 @@ import oeapi.oeapiException;
 @ControllerAdvice
 public class oeapiAplicationExceptionHandler {
 
-    private static final Map<HttpStatus, String> httpStatusToContentType = new HashMap<>();
-
-    {
-        httpStatusToContentType.put(HttpStatus.OK, "application/json");
-        httpStatusToContentType.put(HttpStatus.CREATED, "application/json");
-        httpStatusToContentType.put(HttpStatus.BAD_REQUEST, "application/problem+json");
-        httpStatusToContentType.put(HttpStatus.NOT_FOUND, "application/problem+json");
-        httpStatusToContentType.put(HttpStatus.INTERNAL_SERVER_ERROR, "application/problem+json");
-        httpStatusToContentType.put(HttpStatus.ACCEPTED, "application/json");
-        httpStatusToContentType.put(HttpStatus.NO_CONTENT, "application/json");
-        httpStatusToContentType.put(HttpStatus.FOUND, "application/json");
-
-        // Add more mappings as needed
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<oeapiProblem> handleValidationException(MethodArgumentNotValidException ex, WebRequest request) {
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.toList());
 
-        return badRequestResponse("Failed in validation constraints", errors);
+        return response(HttpStatus.BAD_REQUEST, "Failed in validation constraints", String.join("; ", errors), request);
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<?> handleJsonValidationException(ValidationException ex) {
-        List<String> errors = ex.getAllMessages();
-        return badRequestResponse("JSON validation error", errors);
+    public ResponseEntity<oeapiProblem> handleJsonValidationException(ValidationException ex, WebRequest request) {
+        return response(HttpStatus.BAD_REQUEST, "JSON validation error", String.join("; ", ex.getAllMessages()), request);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<oeapiProblem> handleIllegalArgument(IllegalArgumentException ex, WebRequest request) {
+        return response(HttpStatus.BAD_REQUEST, "Invalid request parameters", ex.getMessage(), request);
+    }
 
     @ExceptionHandler(oeapiException.class)
-    public ResponseEntity<?> handleOoapiUnitaException(oeapiException ex) {
-        return response(ex.getStatus(), ex.getTitle(), ex.getDetail());
+    public ResponseEntity<oeapiProblem> handleOoapiUnitaException(oeapiException ex, WebRequest request) {
+        HttpStatus status = ex.getStatus() == null ? HttpStatus.INTERNAL_SERVER_ERROR : ex.getStatus();
+        String title = ex.getTitle() == null ? ex.getMessage() : ex.getTitle();
+        return response(status, title, ex.getDetail(), request);
     }
 
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public ResponseEntity<?> handleSQLIntegrityConstraintViolation(SQLIntegrityConstraintViolationException ex) {
-        return badRequestResponse("Can not update or delete entity", ex.getMessage());
+    /** OEAPI v6 answers 409 Conflict when a write clashes with the current state of the data. */
+    @ExceptionHandler({SQLIntegrityConstraintViolationException.class, DataIntegrityViolationException.class})
+    public ResponseEntity<oeapiProblem> handleSQLIntegrityConstraintViolation(Exception ex, WebRequest request) {
+        return response(HttpStatus.CONFLICT, "Can not update or delete entity", ex.getMessage(), request);
     }
 
-    private ResponseEntity<Object> response(HttpStatus status, String title, Object details) {
+    static ResponseEntity<oeapiProblem> response(HttpStatus status, String title, String detail, WebRequest request) {
+        oeapiProblem problem = new oeapiProblem(status.value(), title == null ? status.getReasonPhrase() : title, detail);
+
+        if (request instanceof ServletWebRequest servletRequest) {
+            problem.setInstance(servletRequest.getRequest().getRequestURL().toString());
+        }
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, httpStatusToContentType.get(status));
+        headers.add(HttpHeaders.CONTENT_TYPE, OeapiMediaType.PROBLEM_JSON);
 
-        Map<String, Object> body =
-            Map.of("status", status.value(),
-                   "title", title,
-                   "details", details);
-
-        return new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
-    }
-
-    private ResponseEntity<?> badRequestResponse(String title, Object detail) {
-        return response(HttpStatus.BAD_REQUEST, title, detail);
+        return new ResponseEntity<>(problem, headers, status);
     }
 }

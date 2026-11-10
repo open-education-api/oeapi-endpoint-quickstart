@@ -298,6 +298,7 @@ public class oeapiDTOController<T, S> {
 
     public ResponseEntity<ObjectNode> createErrorResponse(HttpStatus status, String title, String detail) {
         ObjectNode errorNode = JsonNodeFactory.instance.objectNode();
+        errorNode.put("type", oeapi.oeapiProblem.DEFAULT_TYPE);
         errorNode.put("status", status.value());
         errorNode.put("title", title);
 
@@ -314,6 +315,7 @@ public class oeapiDTOController<T, S> {
 
     public ResponseEntity<ObjectNode> createErrorResponse(HttpStatus status, String title, List<ObjectError> errors) {
         ObjectNode errorNode = JsonNodeFactory.instance.objectNode();
+        errorNode.put("type", oeapi.oeapiProblem.DEFAULT_TYPE);
         errorNode.put("status", status.value());
         errorNode.put("title", title);
         String detail = "";

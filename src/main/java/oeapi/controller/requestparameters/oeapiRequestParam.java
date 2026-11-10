@@ -21,8 +21,16 @@ public class oeapiRequestParam {
 
     static Logger logger = LoggerFactory.getLogger(oeapiController.class);
     
-    private Integer pageSize = 100;    // Unless said otherwise, 100 items per page
-    private Integer pageNumber = 0;    // In SpringBoot using pageable first page is 0
+    // OEAPI v6: pageSize is one of 10, 20, 50, 100, 250 (default 10) and
+    // pageNumber starts at 1. Spring's Pageable starts at 0, see toPageable().
+    public static final List<Integer> VALID_PAGE_SIZES = List.of(10, 20, 50, 100, 250);
+    public static final int DEFAULT_PAGE_SIZE = 10;
+
+    private Integer pageSize = DEFAULT_PAGE_SIZE;
+    private Integer pageNumber = 1;
+
+    // OEAPI v6 sparse fieldsets (?fields=a,b) and expansion (?expand=x,y)
+    private String fields;
     
     private String consumer;
     private String q;
@@ -131,22 +139,54 @@ public class oeapiRequestParam {
 
     }
     
-    public Pageable toPageable() {
-        this.pageNumber = Objects.requireNonNullElse(pageNumber, 1) < 1 ? 0 : Objects.requireNonNullElse(pageNumber, 1)-1;
-        this.pageSize   = Objects.requireNonNullElse(pageSize, 100) ;
-        
-        logger.debug("Using toPageable() with (page,size): ("+this.pageNumber+","+this.pageSize+")"); 
+    /**
+     * @return the fields (comma separated list of requested attributes)
+     */
+    public String getFields() {
+        return fields;
+    }
 
-        return PageRequest.of(this.pageNumber, this.pageSize);
+    /**
+     * @param fields the fields to set
+     */
+    public void setFields(String fields) {
+        this.fields = fields;
+    }
+
+    /** Zero based page index for Spring Data, validated against OEAPI v6 rules. */
+    private int zeroBasedPage() {
+        int page = Objects.requireNonNullElse(pageNumber, 1);
+        if (page < 1) {
+            throw new IllegalArgumentException("The query parameter 'pageNumber' must be 1 or greater.");
+        }
+        return page - 1;
+    }
+
+    /** Page size, validated against the values allowed by OEAPI v6. */
+    private int validPageSize() {
+        int size = Objects.requireNonNullElse(pageSize, DEFAULT_PAGE_SIZE);
+        if (!VALID_PAGE_SIZES.contains(size)) {
+            throw new IllegalArgumentException("The query parameter 'pageSize' must be one of: " + VALID_PAGE_SIZES + ".");
+        }
+        return size;
+    }
+
+    public Pageable toPageable() {
+        int page = zeroBasedPage();
+        int size = validPageSize();
+
+        logger.debug("Using toPageable() with (page,size): ("+page+","+size+")"); 
+
+        return PageRequest.of(page, size);
     }
 
 
     public Pageable toPageable(List<String> validSortAttributes) {
 
-        this.pageNumber = Objects.requireNonNullElse(pageNumber, 1) < 1 ? 0 : Objects.requireNonNullElse(pageNumber, 1)-1;
-        this.pageSize   = Objects.requireNonNullElse(pageSize, 100);
+        int page = zeroBasedPage();
+        int size = validPageSize();
         
-        logger.debug("Using toPageable(List<String> validSortAttributes) with (page,size): ("+this.pageNumber+","+this.pageSize+")");    
+        logger.debug("Using toPageable(List<String> validSortAttributes) with (page,size): ("+page+","+size+")");    
         
         if (this.sort != null)  {
             
@@ -172,10 +212,10 @@ public class oeapiRequestParam {
                 orders.add(Sort.Order.asc("name")); // Default sorting by name if no valid orders
             }
                         
-            return PageRequest.of(this.pageNumber, this.pageSize, Sort.by(orders));
+            return PageRequest.of(page, size, Sort.by(orders));
         }
         else 
-         {  return PageRequest.of(this.pageNumber, this.pageSize, Sort.unsorted()); }
+         {  return PageRequest.of(page, size, Sort.unsorted()); }
 
     }
 

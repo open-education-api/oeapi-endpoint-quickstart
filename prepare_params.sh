@@ -323,8 +323,8 @@ spring.jackson.default-property-inclusion=non-null
 spring.jpa.properties.hibernate.max_fetch_depth=2
 
 ooapi.metadata.contactEmail=$CONTACT_EMAIL
-ooapi.metadata.specification=https://openonderwijsapi.nl/
-ooapi.metadata.documentation=https://open-education-api.github.io/specification/v5/docs.html
+ooapi.metadata.specification=https://oeapi.eu/specification/v6.0/oeapi-6.0-rc.3.json
+ooapi.metadata.documentation=https://oeapi.eu/v6.0/
 
 ooapi.config.defaultTeachingLanguage=$TEACH_LANG
 

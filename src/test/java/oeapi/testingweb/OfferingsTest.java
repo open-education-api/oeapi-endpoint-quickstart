@@ -258,7 +258,7 @@ public class OfferingsTest {
             .uri("/organizations/{organizationId}", organizationId)
             .header("Authorization", TU.authHeaderForTest())
             .exchange()
-            .expectStatus().isBadRequest()
+            .expectStatus().isEqualTo(409)
             .expectBody()
             .jsonPath("$.title").isEqualTo("Can not update or delete entity");
     }
