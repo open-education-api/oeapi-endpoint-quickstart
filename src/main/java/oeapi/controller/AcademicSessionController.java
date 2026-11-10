@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import oeapi.oeapiException;
+import oeapi.oeapiUtils;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 import oeapi.controller.requestparameters.oeapiAcademicSessionRequestParam;
 import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
 import oeapi.model.AcademicSession;
@@ -43,9 +48,40 @@ public class AcademicSessionController extends oeapiController<AcademicSession> 
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<?> get(@PathVariable String id) {
-        return super.get(id, service);
+    public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand) {
+        Optional<AcademicSession> existing = service.getById(id);
+        if (!existing.isPresent()) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "There is no AcademicSession with Id: " + id);
+        }
+        AcademicSession session = existing.get();
+        List<AcademicSession> children = service.getChildren(id);
 
+        ObjectMapper mapper = oeapiUtils.ooapiObjectMapper();
+        ObjectNode node = mapper.valueToTree(session);
+        ArrayNode childIds = node.putArray("childIds");
+        children.forEach(child -> childIds.add(child.getAcademicSessionId()));
+
+        if (expand != null) {
+            for (String value : expand.split(",")) {
+                switch (value.trim()) {
+                    case "parent" ->
+                        expandReference(node, "parent", session.getParentId(), mapper);
+                    case "year" ->
+                        expandReference(node, "year", session.getYearId(), mapper);
+                    case "children" ->
+                        node.set("children", mapper.valueToTree(children));
+                    default -> {
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok(node);
+    }
+
+    private void expandReference(ObjectNode node, String name, String referencedId, ObjectMapper mapper) {
+        if (referencedId != null) {
+            service.getById(referencedId).ifPresent(referenced -> node.set(name, mapper.valueToTree(referenced)));
+        }
     }
 
     @GetMapping(value = "/{id}/offerings", produces = "application/json")

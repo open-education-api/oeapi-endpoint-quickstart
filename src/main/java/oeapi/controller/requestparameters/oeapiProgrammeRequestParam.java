@@ -15,7 +15,6 @@ public class oeapiProgrammeRequestParam extends oeapiRequestParam {
     private String programmeType;
     private String qualificationAwarded;
     private String levelOfQualification;
-    private String sector;
     private String fieldsOfStudy;
     private String teachingLanguage;
 
@@ -78,20 +77,6 @@ public class oeapiProgrammeRequestParam extends oeapiRequestParam {
     }
 
     /**
-     * @return the sector
-     */
-    public String getSector() {
-        return sector;
-    }
-
-    /**
-     * @param sector the sector to set
-     */
-    public void setSector(String sector) {
-        this.sector = sector;
-    }
-
-    /**
      * @return the fieldsOfStudy
      */
     public String getFieldsOfStudy() {
@@ -120,14 +105,11 @@ public class oeapiProgrammeRequestParam extends oeapiRequestParam {
         if (levelOfQualification != null) {
             return new AbstractMap.SimpleEntry<>("levelOfQualification", levelOfQualification);
         }
-        if (sector != null) {
-            return new AbstractMap.SimpleEntry<>("sector", sector);
-        }
         if (fieldsOfStudy != null) {
             return new AbstractMap.SimpleEntry<>("fieldsOfStudy", fieldsOfStudy);
         }
         if (teachingLanguage != null) {
-            return new AbstractMap.SimpleEntry<>("teachingLanguage", teachingLanguage);
+            return new AbstractMap.SimpleEntry<>("teachingLanguagesContaining", teachingLanguage);
         }
         if (hasPrimaryCodeFilter) {
             return super.getFilter();

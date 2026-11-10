@@ -113,10 +113,10 @@ COUNTRY=$(prompt_validate \
     "Country must be 2 letters (uppercase).")
 
 TEACH_LANG=$(prompt_validate \
-    "---> Teaching language ISO 639-2 [nld, eng, spa, fra, ita, por, ron... ](default eng): " \
-    "eng" \
-    "^[a-z]{3}$" \
-    "Language must be 3-letter ISO code. (lowercase)")
+    "---> Teaching language RFC 5646 [nl, en, en-GB, es, fr, it, pt, ro... ](default en): " \
+    "en" \
+    "^[a-z]{2,3}(-[A-Z]{2})?$" \
+    "Language must be an RFC 5646 tag such as en or en-GB.")
 
 # -------------------------------
 # Server settings

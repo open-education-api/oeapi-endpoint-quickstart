@@ -1,6 +1,6 @@
 package oeapi.payload;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.Convert;
 
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
-import oeapi.model.EducationSpecification;
 import oeapi.model.Person;
 import oeapi.model.Programme;
 import oeapi.model.StudyLoad;
@@ -24,7 +23,7 @@ import oeapi.model.oeapiLanguageTypedString;
 import oeapi.validation.ValidEnumYaml;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder({"courseId", "primaryCode", "name", "abbreviation", "description", "teachingLanguage", "level", "fieldsOfStudy"})
+@JsonPropertyOrder({"courseId", "primaryCode", "name", "abbreviation", "description", "teachingLanguages", "level", "fieldsOfStudy"})
 
 public class CourseDTO extends oeapiEducationDTO {
     static Logger logger = LoggerFactory.getLogger(CourseDTO.class);
@@ -32,19 +31,12 @@ public class CourseDTO extends oeapiEducationDTO {
     @JsonProperty(value = "courseId")
     private String courseId = UUID.randomUUID().toString();
 
-    @JsonProperty("programmes")
+    @JsonProperty("programmeIds")
     private List<String> programmeIds;
 
     @JsonIgnore
     @oeapiDTOExpandable
     public List<Programme> programmes;
-
-    @JsonProperty("educationSpecification")
-    private String educationSpecificationId;
-
-    @JsonIgnore
-    @oeapiDTOExpandable
-    public EducationSpecification educationSpecification;
 
     @JsonProperty("level")
     @ValidEnumYaml(yamlfile = "levelType.yml")
@@ -57,11 +49,10 @@ public class CourseDTO extends oeapiEducationDTO {
     private String duration;
     
 
-    private String sector;
     private String link;
 
     @JsonProperty("firstStartDate")
-    private LocalDate firstStartDate;
+    private OffsetDateTime firstStartDate;
 
     @JsonProperty("admissionRequirements")
     @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
@@ -71,36 +62,38 @@ public class CourseDTO extends oeapiEducationDTO {
     @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
     private List<oeapiLanguageTypedString> qualificationRequirements;
 
-    @JsonProperty("studyLoad")
+
+    // OEAPI v6: studyLoad is an array of StudyLoadDescriptor. This endpoint keeps one
+    // study load per resource; the JSON exposes it as a list of zero or one element.
+    @JsonIgnore
     private StudyLoad studyLoad;
 
-    @JsonProperty("coordinators")
+    @JsonIgnore
+    public StudyLoad getStudyLoad() {
+        return studyLoad;
+    }
+
+    @JsonIgnore
+    public void setStudyLoad(StudyLoad studyLoad) {
+        this.studyLoad = studyLoad;
+    }
+
+    @JsonProperty("studyLoad")
+    public java.util.List<StudyLoad> studyLoadAsList() {
+        return studyLoad == null ? null : java.util.List.of(studyLoad);
+    }
+
+    @JsonProperty("studyLoad")
+    public void studyLoadFromList(java.util.List<StudyLoad> studyLoads) {
+        this.studyLoad = (studyLoads == null || studyLoads.isEmpty()) ? null : studyLoads.get(0);
+    }
+
+    @JsonProperty("coordinatorIds")
     private List<String> coordinatorIds;
 
     @JsonIgnore
     @oeapiDTOExpandable
     public List<Person> coordinators;
-
-    /**
-     * @return the educationSpecificationId
-     */
-    public String getEducationSpecificationId() {
-        return educationSpecificationId;
-    }
-
-    /**
-     * @return the educationSpecification
-     */
-    public EducationSpecification getEducationSpecification() {
-        return educationSpecification;
-    }
-
-    /**
-     * @param educationSpecification the educationSpecification to set
-     */
-    public void setEducationSpecification(EducationSpecification educationSpecification) {
-        this.educationSpecification = educationSpecification;
-    }
 
     /**
      * @return the programmes
@@ -151,20 +144,6 @@ public class CourseDTO extends oeapiEducationDTO {
     }
 
     /**
-     * @return the modeOfDelivery
-     */
-    public StudyLoad getStudyLoad() {
-        return studyLoad;
-    }
-
-    /**
-     * @param studyLoad the studyLoad to set
-     */
-    public void setStudyLoad(StudyLoad studyLoad) {
-        this.studyLoad = studyLoad;
-    }
-
-    /**
      * @return the level
      */
     public String getLevel() {
@@ -193,20 +172,6 @@ public class CourseDTO extends oeapiEducationDTO {
     }
 
     /**
-     * @return the sector
-     */
-    public String getSector() {
-        return sector;
-    }
-
-    /**
-     * @param sector the sector to set
-     */
-    public void setSector(String sector) {
-        this.sector = sector;
-    }
-
-    /**
      * @return the link
      */
     public String getLink() {
@@ -223,14 +188,14 @@ public class CourseDTO extends oeapiEducationDTO {
     /**
      * @return the firstStartDate
      */
-    public LocalDate getFirstStartDate() {
+    public OffsetDateTime getFirstStartDate() {
         return firstStartDate;
     }
 
     /**
      * @param firstStartDate the firstStartDate to set
      */
-    public void setFirstStartDate(LocalDate firstStartDate) {
+    public void setFirstStartDate(OffsetDateTime firstStartDate) {
         this.firstStartDate = firstStartDate;
 
     }

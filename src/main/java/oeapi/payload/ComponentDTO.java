@@ -17,7 +17,7 @@ import oeapi.model.Course;
 import oeapi.validation.ValidEnumYaml;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder({"componentId", "primaryCode", "name", "abbreviation", "componentType", "teachingLanguage"})
+@JsonPropertyOrder({"componentId", "primaryCode", "name", "abbreviation", "componentType", "teachingLanguages"})
 public class ComponentDTO extends oeapiEducationDTO {
 
     @JsonProperty("componentId")
@@ -27,32 +27,36 @@ public class ComponentDTO extends oeapiEducationDTO {
     @ValidEnumYaml(yamlfile = "learningComponentType.yml")
     private String componentType;
 
-    @JsonProperty("course")
-    //@JsonIgnore
-    private Course course;
+    // OEAPI v6: "courseId" holds the id, "course" the object when ?expand=course
+    @JsonProperty("courseId")
+    private String courseId;
 
-    //@JsonProperty("course")
     @JsonIgnore
-    private String courseJSON;
+    @oeapiDTOExpandable
+    public Course course;
 
-    /**
-     * @return the course
-     */
+    @JsonIgnore
     public Course getCourse() {
         return course;
     }
 
-    /**
-     * @param course the course to set
-     */
+    @JsonIgnore
     public void setCourse(Course course) {
-
         this.course = course;
-        this.courseJSON = "";
-        if (course != null) {
-            this.courseJSON = course.getCourseId();
-        }
+        this.courseId = course == null ? null : course.getCourseId();
+    }
 
+    public String getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
+        if (courseId == null) {
+            this.course = null;
+        } else if (this.course == null || !courseId.equals(this.course.getCourseId())) {
+            this.course = new Course(courseId);
+        }
     }
 
     /**
@@ -96,16 +100,6 @@ public class ComponentDTO extends oeapiEducationDTO {
         }
 
         return jsonCourse;
-    }
-
-    /**
-     * @return the courseJSON
-     */
-    public String getCourseJSON() {
-        if (course != null) {
-            return course.getCourseId();
-        }
-        return "";
     }
 
 }

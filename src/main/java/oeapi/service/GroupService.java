@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import jakarta.transaction.Transactional;
-import oeapi.model.EducationSpecification;
 import oeapi.model.Group;
 import oeapi.oeapiUtils;
 import oeapi.repository.GroupRepository;

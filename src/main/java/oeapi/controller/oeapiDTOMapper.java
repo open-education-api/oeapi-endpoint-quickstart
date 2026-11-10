@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -72,9 +74,28 @@ public class oeapiDTOMapper<T, S> {
             }
         };
 
+        // OEAPI v6 exchanges date-time values while the entities keep dates:
+        // a date is published as midnight UTC and a date-time is stored as its UTC date.
+        Converter<LocalDate, OffsetDateTime> localDateToDateTime = new Converter<LocalDate, OffsetDateTime>() {
+            @Override
+            public OffsetDateTime convert(MappingContext<LocalDate, OffsetDateTime> context) {
+                return context.getSource() == null ? null : context.getSource().atStartOfDay().atOffset(ZoneOffset.UTC);
+            }
+        };
+
+        Converter<OffsetDateTime, LocalDate> dateTimeToLocalDate = new Converter<OffsetDateTime, LocalDate>() {
+            @Override
+            public LocalDate convert(MappingContext<OffsetDateTime, LocalDate> context) {
+                return context.getSource() == null ? null
+                        : context.getSource().withOffsetSameInstant(ZoneOffset.UTC).toLocalDate();
+            }
+        };
+
         // Add converters
         modelMapper.addConverter(stringToLocalDate);
         modelMapper.addConverter(localDateToString);
+        modelMapper.addConverter(localDateToDateTime);
+        modelMapper.addConverter(dateTimeToLocalDate);
 
         // Resolve enum-backed fields during the mapping rather than afterwards. ModelMapper
         // reuses this TypeMap for nested properties of the same pair - an organisation's
@@ -290,7 +311,8 @@ public class oeapiDTOMapper<T, S> {
         // promote requested expansions
         if (expand != null && !expand.isEmpty()) {
             String[] expandFields = expand.split(",");
-            for (String fieldName : expandFields) {
+            for (String expandValue : expandFields) {
+                String fieldName = snakeToCamel(expandValue.trim());
                 try {
                     Field field = dto.getClass().getField(fieldName);
                     if (field.isAnnotationPresent(oeapiDTOExpandable.class)) {
@@ -332,5 +354,20 @@ public class oeapiDTOMapper<T, S> {
 
         Field field = c.getField(fieldName);
         return field.get(obj);
+    }
+
+    /** OEAPI v6 expand values are snake_case (academic_session); DTO fields are camelCase. */
+    static String snakeToCamel(String value) {
+        StringBuilder sb = new StringBuilder();
+        boolean upper = false;
+        for (char c : value.toCharArray()) {
+            if (c == '_') {
+                upper = true;
+            } else {
+                sb.append(upper ? Character.toUpperCase(c) : c);
+                upper = false;
+            }
+        }
+        return sb.toString();
     }
 }

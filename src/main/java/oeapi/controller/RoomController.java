@@ -1,9 +1,17 @@
 package oeapi.controller;
 
 import oeapi.controller.requestparameters.ooapiRoomRequestParam;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 import oeapi.model.Room;
+import oeapi.oeapiException;
+import oeapi.oeapiUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestParam;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import oeapi.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +54,18 @@ public class RoomController extends oeapiController<Room> {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<?> get(@PathVariable String id) {
-        return super.get(id, service);
-
+    public ResponseEntity<?> get(@PathVariable String id, @RequestParam(required = false) String expand) {
+        Optional<Room> existing = service.getById(id);
+        if (!existing.isPresent()) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Room with Id: " + id);
+        }
+        Room room = existing.get();
+        ObjectMapper mapper = oeapiUtils.ooapiObjectMapper();
+        ObjectNode node = mapper.valueToTree(room);
+        if (expand != null && Arrays.asList(expand.split(",")).contains("building") && room.getBuilding() != null) {
+            node.set("building", mapper.valueToTree(room.getBuilding()));
+        }
+        return ResponseEntity.ok(node);
     }
 
     @PostMapping(produces = "application/json")

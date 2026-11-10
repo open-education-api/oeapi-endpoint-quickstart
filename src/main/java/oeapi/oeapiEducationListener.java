@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class oeapiEducationListener {
 
-    @Value("${ooapi.config.defaultTeachingLanguage:eng}")
+    @Value("${ooapi.config.defaultTeachingLanguage:en}")
     private String defaultTeachingLanguage;
 
     @PrePersist
     public void prePersist(oeapiEducationDTO entity) {
-        if (entity.getTeachingLanguage() == null) {
-            entity.setTeachingLanguage(defaultTeachingLanguage);
+        if (entity.getTeachingLanguages() == null || entity.getTeachingLanguages().isEmpty()) {
+            entity.setTeachingLanguages(java.util.List.of(defaultTeachingLanguage));
         }
     }
 

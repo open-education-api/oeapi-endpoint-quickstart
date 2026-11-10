@@ -25,7 +25,7 @@ public class oeapiOfferingRequestParam extends oeapiRequestParam {
 
     public Map.Entry<String, String> getFilter() {
         if (getTeachingLanguage() != null) {
-            return new AbstractMap.SimpleEntry<>("teachingLanguage", getTeachingLanguage());
+            return new AbstractMap.SimpleEntry<>("teachingLanguagesContaining", getTeachingLanguage());
         }
         if (getOfferingType() != null) {
             return new AbstractMap.SimpleEntry<>("offeringType", getOfferingType());

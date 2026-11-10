@@ -26,10 +26,10 @@ public interface CourseRepository extends oeapiUnitaRepositoryBase<Course> {
     Page<Course> findByOrganisation_OrganisationId(String organisationId, Pageable pageable);
 
     //Page<Course> findByLevelAndOrganisation_OrganisationId(String level, String organisationId, Pageable pageable);
-    Page<Course> findByTeachingLanguageAndOrganisation_OrganisationId(String teachingLanguage, String organisationId, Pageable pageable);
+    Page<Course> findByTeachingLanguagesContainingAndOrganisation_OrganisationId(String teachingLanguage, String organisationId, Pageable pageable);
 
     //Page<Course> findByLevel(String level, Pageable pageable);
-    Page<Course> findByTeachingLanguage(String teachingLanguage, Pageable pageable);
+    Page<Course> findByTeachingLanguagesContaining(String teachingLanguage, Pageable pageable);
 
     Page<Course> findByLevelId(Long levelId, Pageable pageable);
 

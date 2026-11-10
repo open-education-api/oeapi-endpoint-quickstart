@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class AcademicSessionService extends oeapiEndpointService<AcademicSession, AcademicSessionRepository> {
 
-    public Page<AcademicSession> getChildren(String parentId, Pageable pageable) {
-        return this.getByField("parent", parentId, pageable);
+    public List<AcademicSession> getChildren(String parentId) {
+        return repository.findByParent_AcademicSessionId(parentId);
     }
 
     public AcademicSessionService() {

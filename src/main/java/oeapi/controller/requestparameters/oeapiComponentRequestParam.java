@@ -38,7 +38,7 @@ public class oeapiComponentRequestParam extends oeapiRequestParam {
             return new AbstractMap.SimpleEntry<>("componentType", componentType);
         }
         if (teachingLanguage != null) {
-            return new AbstractMap.SimpleEntry<>("teachingLanguage", teachingLanguage);
+            return new AbstractMap.SimpleEntry<>("teachingLanguagesContaining", teachingLanguage);
         }
         return null;
     }

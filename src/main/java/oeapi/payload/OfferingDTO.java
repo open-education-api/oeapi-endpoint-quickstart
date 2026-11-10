@@ -78,9 +78,10 @@ public class OfferingDTO extends PrimaryCode {
     //private String endDateJSON;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
-    private String teachingLanguage;
+    @JsonProperty("teachingLanguages")
+    private List<String> teachingLanguages;
 
-    @JsonProperty("modeOfDelivery")
+    @JsonProperty("modesOfDelivery")
     private List<ModeOfDelivery> modeOfDelivery;
 
     private Integer maxNumberStudents;
@@ -216,28 +217,28 @@ public class OfferingDTO extends PrimaryCode {
     /**
      * @return the teachingLanguage
      */
-    public String getTeachingLanguage() {
-        return teachingLanguage;
+    public List<String> getTeachingLanguages() {
+        return teachingLanguages;
     }
 
     /**
      * @param teachingLanguage the teachingLanguage to set
      */
-    public void setTeachingLanguage(String teachingLanguage) {
-        this.teachingLanguage = teachingLanguage;
+    public void setTeachingLanguages(List<String> teachingLanguages) {
+        this.teachingLanguages = teachingLanguages;
     }
 
     /**
      * @return the modeOfDelivery
      */
-    public List<ModeOfDelivery> getModeOfDelivery() {
+    public List<ModeOfDelivery> getModesOfDelivery() {
         return modeOfDelivery;
     }
 
     /**
      * @param modeOfDelivery the modeOfDelivery to set
      */
-    public void setModeOfDelivery(List<ModeOfDelivery> modeOfDelivery) {
+    public void setModesOfDelivery(List<ModeOfDelivery> modeOfDelivery) {
         this.modeOfDelivery = modeOfDelivery;
     }
 

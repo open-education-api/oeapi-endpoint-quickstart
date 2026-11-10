@@ -88,13 +88,23 @@ public class ProgrammeController extends oeapiDTOController<Programme, Programme
     public ResponseEntity<?> getCourses(@PathVariable String id, @ModelAttribute oeapiCourseRequestParam requestParam) {
         Optional<Programme> existing = service.getById(id);
         if (existing.isPresent()) {
-            return super.getResponse(requestParam.toPageable(), courseService.getCoursesByProgrammeId(id));
+            return super.getResponse(requestParam.toPageable(), courseService.toDTOList(courseService.getCoursesByProgrammeId(id)));
         }
 
         throw new oeapiException(HttpStatus.NOT_FOUND, "There are not courses for Id: " + id);
     }
 
-    @GetMapping(value = "/{id}/offerings", produces = "application/json")
+    @GetMapping(value = "/{id}/programmes", produces = "application/json")
+    public ResponseEntity<?> getChildProgrammes(@PathVariable String id, @ModelAttribute oeapiProgrammeRequestParam requestParam) {
+        Optional<Programme> existing = service.getById(id);
+        if (!existing.isPresent()) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Programme with Id: " + id);
+        }
+        List<Programme> children = existing.get().getChildren();
+        return super.getResponse(requestParam.toPageable(), service.toDTOList(children == null ? new ArrayList<>() : children));
+    }
+
+    @GetMapping(value = "/{id}/programme-offerings", produces = "application/json")
     public ResponseEntity<?> getOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
 
         Optional<Programme> existing = service.getById(id);

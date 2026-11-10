@@ -64,9 +64,9 @@ public class OrganisationDTO extends PrimaryCode {
     @ValidAddresses(message = "Null or Invalid address string elements")
     private List<Address> addresses;
     
-    // "parent" is serialized as the parent's organisationId; the full object
+    // "parentId" is serialized as the parent's organisationId; the full object
     // replaces it only when ?expand=parent is requested.
-    @JsonProperty("parent")
+    @JsonProperty("parentId")
     private String parentId;
 
     // Must be public: oeapiDTOMapper.toJSON() resolves expandable fields with
@@ -75,9 +75,9 @@ public class OrganisationDTO extends PrimaryCode {
     @oeapiDTOExpandable
     public OrganisationDTO parent;
 
-    // "children" is serialized as an array of child organisationIds; the full
+    // "childIds" is serialized as an array of child organisationIds; the full
     // objects are available only via ?expand=children.
-    @JsonProperty("children")
+    @JsonProperty("childIds")
     private List<String> childrenIds;
 
     // Must be public, same reason as parent above.

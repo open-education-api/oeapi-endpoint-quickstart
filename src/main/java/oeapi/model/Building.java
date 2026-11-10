@@ -27,8 +27,15 @@ public class Building extends PrimaryCode {
 
     @Id
     @Column(name = "building_id")
-    @JsonProperty(value = "buildingId", access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(value = "buildingId")
     private String buildingId = UUID.randomUUID().toString();
+
+    public Building() {
+    }
+
+    public Building(String buildingId) {
+        this.buildingId = buildingId;
+    }
 
     @Column(columnDefinition = "text")
     @Convert(converter = oeapiAddressConverter.class)

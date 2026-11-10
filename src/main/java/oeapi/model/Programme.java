@@ -50,8 +50,6 @@ public class Programme extends oeapiEducation {
 
     private String fieldsOfStudyId;
 
-    private String sector;
-
     private String link;
 
     private LocalDate firstStartDate;
@@ -81,11 +79,6 @@ public class Programme extends oeapiEducation {
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable
     private List<Person> coordinators;
-
-    @JsonProperty("educationSpecification")
-    @ManyToOne
-    @JoinColumn(name = "education_specification_id", nullable = true)
-    private EducationSpecification educationSpecification;
 
     @JsonProperty("organisation")
     @ManyToOne
@@ -129,20 +122,6 @@ public class Programme extends oeapiEducation {
     }
 
     /**
-     * @return the educationSpecification
-     */
-    public EducationSpecification getEducationSpecification() {
-        return educationSpecification;
-    }
-
-    /**
-     * @param educationSpecification the educationSpecification to set
-     */
-    public void setEducationSpecification(EducationSpecification educationSpecification) {
-        this.educationSpecification = educationSpecification;
-    }
-
-    /**
      * @return the organisation
      */
     public Organisation getOrganisation() {
@@ -168,20 +147,6 @@ public class Programme extends oeapiEducation {
      */
     public void setLevel(String level) {
         this.level = level;
-    }
-
-    /**
-     * @return the sector
-     */
-    public String getSector() {
-        return sector;
-    }
-
-    /**
-     * @param sector the sector to set
-     */
-    public void setSector(String sector) {
-        this.sector = sector;
     }
 
     /**

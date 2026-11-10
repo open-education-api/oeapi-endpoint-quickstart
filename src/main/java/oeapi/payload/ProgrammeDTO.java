@@ -1,6 +1,6 @@
 package oeapi.payload;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,14 +11,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import oeapi.model.EducationSpecification;
 import oeapi.model.Person;
 import oeapi.model.Programme;
 import oeapi.model.StudyLoad;
+import oeapi.validation.ValidEnumYaml;
 import oeapi.model.oeapiLanguageTypedString;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonPropertyOrder({"programmeId", "primaryCode", "name", "abbreviation", "description", "programmeType", "teachingLanguage", "level", "parent", "children"})
+@JsonPropertyOrder({"programmeId", "primaryCode", "name", "abbreviation", "description", "programmeType", "teachingLanguages", "level", "parentId", "childIds"})
 
 public class ProgrammeDTO extends oeapiEducationDTO {
 
@@ -48,15 +48,57 @@ public class ProgrammeDTO extends oeapiEducationDTO {
         this.programmeType = programmeType;
     }
 
-    @JsonProperty("studyLoad")
+    // OEAPI v6: studyLoad is an array of StudyLoadDescriptor. This endpoint keeps one
+    // study load per resource; the JSON exposes it as a list of zero or one element.
+    @JsonIgnore
     private StudyLoad studyLoad;
 
+    @JsonIgnore
     public StudyLoad getStudyLoad() {
         return studyLoad;
     }
 
+    @JsonIgnore
     public void setStudyLoad(StudyLoad studyLoad) {
         this.studyLoad = studyLoad;
+    }
+
+    @JsonProperty("studyLoad")
+    public java.util.List<StudyLoad> studyLoadAsList() {
+        return studyLoad == null ? null : java.util.List.of(studyLoad);
+    }
+
+    @JsonProperty("studyLoad")
+    public void studyLoadFromList(java.util.List<StudyLoad> studyLoads) {
+        this.studyLoad = (studyLoads == null || studyLoads.isEmpty()) ? null : studyLoads.get(0);
+    }
+
+    // level of qualification (EQF / NLQF)
+
+    @JsonProperty("levelOfQualification")
+    @ValidEnumYaml(yamlfile = "levelOfQualificationType.yml")
+    private String levelOfQualification;
+
+    public String getLevelOfQualification() {
+        return levelOfQualification;
+    }
+
+    public void setLevelOfQualification(String levelOfQualification) {
+        this.levelOfQualification = levelOfQualification;
+    }
+
+    // qualification awarded
+
+    @JsonProperty("qualificationAwarded")
+    @ValidEnumYaml(yamlfile = "qualificationAwardedType.yml")
+    private String qualificationAwarded;
+
+    public String getQualificationAwarded() {
+        return qualificationAwarded;
+    }
+
+    public void setQualificationAwarded(String qualificationAwarded) {
+        this.qualificationAwarded = qualificationAwarded;
     }
 
     // mode of study
@@ -74,14 +116,14 @@ public class ProgrammeDTO extends oeapiEducationDTO {
 
     // first start date
 
-    @JsonProperty("firstStartDate")
-    private LocalDate firstStartDate;
+    @JsonProperty("firstStartDateTime")
+    private OffsetDateTime firstStartDate;
 
-    public LocalDate getFirstStartDate() {
+    public OffsetDateTime getFirstStartDate() {
         return firstStartDate;
     }
 
-    public void setFirstStartDate(LocalDate firstStartDate) {
+    public void setFirstStartDate(OffsetDateTime firstStartDate) {
         this.firstStartDate = firstStartDate;
     }
 
@@ -99,17 +141,6 @@ public class ProgrammeDTO extends oeapiEducationDTO {
     }
 
     // sector
-
-    @JsonProperty("sector")
-    private String sector;
-
-    public String getSector() {
-        return sector;
-    }
-
-    public void setSector(String sector) {
-        this.sector = sector;
-    }
 
     // fields of study
 
@@ -163,32 +194,9 @@ public class ProgrammeDTO extends oeapiEducationDTO {
 
     // education specification
 
-    @JsonIgnore
-    @oeapiDTOExpandable
-    public EducationSpecification educationSpecification;
-
-    public EducationSpecification getEducationSpecification() {
-        return educationSpecification;
-    }
-
-    public void setEducationSpecification(EducationSpecification educationSpecification) {
-        this.educationSpecification = educationSpecification;
-    }
-
-    @JsonProperty("educationSpecification")
-    private EducationSpecification educationSpecificationId;
-
-    public EducationSpecification getEducationSpecificationId() {
-        return educationSpecificationId;
-    }
-
-    public void setEducationSpecificationId(EducationSpecification educationSpecificationId) {
-        this.educationSpecificationId = educationSpecificationId;
-    }
-
     // coordinators
 
-    @JsonProperty("coordinators")
+    @JsonProperty("coordinatorIds")
     private List<String> coordinatorIds;
 
     public List<String> getCoordinatorIds() {
@@ -225,7 +233,7 @@ public class ProgrammeDTO extends oeapiEducationDTO {
 
     // parent and children
 
-    @JsonProperty("parent")
+    @JsonProperty("parentId")
     private String parentId;
 
     public String getParentId() {
@@ -250,7 +258,7 @@ public class ProgrammeDTO extends oeapiEducationDTO {
         this.parentId = parent == null ? null : parent.getProgrammeId();
     }
 
-    @JsonProperty("children")
+    @JsonProperty("childIds")
     private List<String> childrenIds;
 
     public List<String> getChildrenIds() {

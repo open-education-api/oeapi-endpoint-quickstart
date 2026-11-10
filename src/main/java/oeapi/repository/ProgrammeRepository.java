@@ -16,11 +16,9 @@ public interface ProgrammeRepository extends oeapiUnitaRepositoryBase<Programme>
 
     Page<Programme> findByOrganisation_OrganisationId(String organisationId, Pageable pageable);
 
-    Page<Programme> findBySectorAndOrganisation_OrganisationId(String sector, String organisationId, Pageable pageable);
-
     Page<Programme> findByProgrammeTypeAndOrganisation_OrganisationId(String programmeType, String organisationId, Pageable pageable);
 
-    Page<Programme> findByTeachingLanguageAndOrganisation_OrganisationId(String teachingLanguage, String organisationId, Pageable pageable);
+    Page<Programme> findByTeachingLanguagesContainingAndOrganisation_OrganisationId(String teachingLanguage, String organisationId, Pageable pageable);
 
     Page<Programme> findByQualificationAwardedAndOrganisation_OrganisationId(String qualificationAwarded, String organisationId, Pageable pageable);
 
@@ -32,10 +30,8 @@ public interface ProgrammeRepository extends oeapiUnitaRepositoryBase<Programme>
 
     Page<Programme> findByLevelOfQualification(String levelOfQualification, Pageable pageable);
 
-    Page<Programme> findBySector(String sector, Pageable pageable);
-
     Page<Programme> findByFieldsOfStudyId(String fieldsOfStudyId, Pageable pageable);
 
-    Page<Programme> findByTeachingLanguage(String teachingLanguage, Pageable pageable);
+    Page<Programme> findByTeachingLanguagesContaining(String teachingLanguage, Pageable pageable);
 
 }

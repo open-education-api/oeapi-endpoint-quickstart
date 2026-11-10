@@ -73,12 +73,14 @@ public class Offering extends PrimaryCode {
 
     private LocalDate startDate;
     private LocalDate endDate;
-    private String teachingLanguage;
+    // OEAPI v6 teachingLanguages (RFC 5646), stored comma separated
+    @Column(name = "teaching_languages")
+    private String teachingLanguages;
 
-    @JsonProperty("modeOfDelivery")
+    @JsonProperty("modesOfDelivery")
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable
-    private List<ModeOfDelivery> modeOfDelivery;
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "mode_of_delivery_id"))
+    private List<ModeOfDelivery> modesOfDelivery;
 
     private Integer maxNumberStudents;
     private Integer minNumberStudents;
@@ -247,32 +249,28 @@ public class Offering extends PrimaryCode {
         this.endDate = endDate;
     }
 
-    /**
-     * @return the teachingLanguage
-     */
-    public String getTeachingLanguage() {
-        return teachingLanguage;
+    @JsonProperty("teachingLanguages")
+    public List<String> getTeachingLanguages() {
+        return oeapi.oeapiUtils.splitCsv(teachingLanguages);
     }
 
-    /**
-     * @param teachingLanguage the teachingLanguage to set
-     */
-    public void setTeachingLanguage(String teachingLanguage) {
-        this.teachingLanguage = teachingLanguage;
+    @JsonProperty("teachingLanguages")
+    public void setTeachingLanguages(List<String> teachingLanguages) {
+        this.teachingLanguages = oeapi.oeapiUtils.joinCsv(teachingLanguages);
     }
 
     /**
      * @return the modeOfDelivery
      */
-    public List<ModeOfDelivery> getModeOfDelivery() {
-        return modeOfDelivery;
+    public List<ModeOfDelivery> getModesOfDelivery() {
+        return modesOfDelivery;
     }
 
     /**
      * @param modeOfDelivery the modeOfDelivery to set
      */
-    public void setModeOfDelivery(List<ModeOfDelivery> modeOfDelivery) {
-        this.modeOfDelivery = modeOfDelivery;
+    public void setModesOfDelivery(List<ModeOfDelivery> modesOfDelivery) {
+        this.modesOfDelivery = modesOfDelivery;
     }
 
     /**

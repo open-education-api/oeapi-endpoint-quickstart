@@ -1,6 +1,6 @@
 package oeapi.payload;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -65,15 +65,15 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
 
     // mode of delivery
 
-    @JsonProperty("modeOfDelivery")
-    private List<ModeOfDelivery> modeOfDelivery;
+    @JsonProperty("modesOfDelivery")
+    private List<ModeOfDelivery> modesOfDelivery;
 
-    public List<ModeOfDelivery> getModeOfDelivery() {
-        return modeOfDelivery;
+    public List<ModeOfDelivery> getModesOfDelivery() {
+        return modesOfDelivery;
     }
 
-    public void setModeOfDelivery(List<ModeOfDelivery> modeOfDelivery) {
-        this.modeOfDelivery = modeOfDelivery;
+    public void setModesOfDelivery(List<ModeOfDelivery> modesOfDelivery) {
+        this.modesOfDelivery = modesOfDelivery;
     }
 
     // duration
@@ -91,15 +91,15 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
 
     // teaching language
 
-    @JsonProperty("teachingLanguage")
-    private String teachingLanguage;
+    @JsonProperty("teachingLanguages")
+    private List<String> teachingLanguages;
 
-    public String getTeachingLanguage() {
-        return teachingLanguage;
+    public List<String> getTeachingLanguages() {
+        return teachingLanguages;
     }
 
-    public void setTeachingLanguage(String teachingLanguage) {
-        this.teachingLanguage = teachingLanguage;
+    public void setTeachingLanguages(List<String> teachingLanguages) {
+        this.teachingLanguages = teachingLanguages;
     }
 
     // learning outcomes
@@ -115,17 +115,17 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
         return learningOutcomes;
     }
 
-    // enrollment
+    // enrolment
 
-    @JsonProperty("enrollment")
-    private List<oeapiLanguageTypedString> enrollment;
+    @JsonProperty("enrolment")
+    private List<oeapiLanguageTypedString> enrolment;
 
-    public void setEnrollment(List<oeapiLanguageTypedString> enrollment) {
-        this.enrollment = enrollment;
+    public void setEnrolment(List<oeapiLanguageTypedString> enrolment) {
+        this.enrolment = enrolment;
     }
 
-    public List<oeapiLanguageTypedString> getEnrollment() {
-        return enrollment;
+    public List<oeapiLanguageTypedString> getEnrolment() {
+        return enrolment;
     }
 
     // resources
@@ -182,7 +182,7 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
 
     // organisation
 
-    @JsonProperty("organisation")
+    @JsonProperty("organisationId")
     private String organisationId;
 
     @JsonIgnore
@@ -234,24 +234,24 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
     // valid from to
 
     @JsonProperty("validFrom")
-    private LocalDate validFrom;
+    private OffsetDateTime validFrom;
 
     @JsonProperty("validTo")
-    private LocalDate validTo;
+    private OffsetDateTime validTo;
 
-    public LocalDate getValidFrom() {
+    public OffsetDateTime getValidFrom() {
         return validFrom;
     }
 
-    public void setValidFrom(LocalDate validFrom) {
+    public void setValidFrom(OffsetDateTime validFrom) {
         this.validFrom = validFrom;
     }
 
-    public LocalDate getValidTo() {
+    public OffsetDateTime getValidTo() {
         return validTo;
     }
 
-    public void setValidTo(LocalDate validTo) {
+    public void setValidTo(OffsetDateTime validTo) {
         this.validTo = validTo;
     }
 

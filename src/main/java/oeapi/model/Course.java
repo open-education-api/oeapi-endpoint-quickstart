@@ -79,12 +79,6 @@ public class Course extends oeapiEducation {
     @JoinTable
     private List<Programme> programmes;
 
-    @JsonProperty("educationSpecification")
-    @ManyToOne
-    @JoinColumn(name = "education_specification_id", nullable = true)
-    //@JsonBackReference
-    private EducationSpecification educationSpecification;
-
     @JsonProperty("organisation")
     @ManyToOne
     @JoinColumn(name = "organisation_id", nullable = true)
@@ -157,20 +151,6 @@ public class Course extends oeapiEducation {
      */
     public void setProgrammes(List<Programme> programmes) {
         this.programmes = programmes;
-    }
-
-    /**
-     * @return the educationSpecification
-     */
-    public EducationSpecification getEducationSpecification() {
-        return educationSpecification;
-    }
-
-    /**
-     * @param educationSpecification the educationSpecification to set
-     */
-    public void setEducationSpecification(EducationSpecification educationSpecification) {
-        this.educationSpecification = educationSpecification;
     }
 
     /**

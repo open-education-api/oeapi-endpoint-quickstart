@@ -56,7 +56,7 @@ public class oeapiCourseRequestParam extends oeapiRequestParam {
             return new AbstractMap.SimpleEntry<>("level", getLevel());
         }
         if (getTeachingLanguage() != null) {
-            return new AbstractMap.SimpleEntry<>("teachingLanguage", getTeachingLanguage());
+            return new AbstractMap.SimpleEntry<>("teachingLanguagesContaining", getTeachingLanguage());
         }
         if (getFieldsOfStudy() != null) {
             return new AbstractMap.SimpleEntry<>("fieldsOfStudy", getFieldsOfStudy());

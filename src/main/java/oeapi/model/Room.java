@@ -3,6 +3,7 @@ package oeapi.model;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -28,7 +29,7 @@ public class Room extends PrimaryCode {
 
     @Id
     @Column(name = "room_id")
-    @JsonProperty(value = "roomId", access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(value = "roomId")
     private String roomId = UUID.randomUUID().toString();
 
     @ValidEnumYaml(yamlfile = "roomType.yml")
@@ -42,7 +43,7 @@ public class Room extends PrimaryCode {
     @Convert(converter = oeapiGeolocationConverter.class)
     private Geolocation geolocation;
 
-    @JsonProperty("building")
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "building_id", nullable = true)
     //@JsonBackReference
@@ -216,6 +217,7 @@ public class Room extends PrimaryCode {
     /**
      * @return the building
      */
+    @JsonIgnore
     public Building getBuilding() {
         return building;
     }
@@ -223,6 +225,7 @@ public class Room extends PrimaryCode {
     /**
      * @param building the building to set
      */
+    @JsonIgnore
     public void setBuilding(Building building) {
         this.building = building;
     }
@@ -255,4 +258,15 @@ public class Room extends PrimaryCode {
         this.ext = ext;
     }
 
+
+    // OEAPI v6: the building is referenced by buildingId, ?expand=building gives the object
+    @JsonProperty("buildingId")
+    public String getBuildingId() {
+        return building == null ? null : building.getBuildingId();
+    }
+
+    @JsonProperty("buildingId")
+    public void setBuildingId(String buildingId) {
+        this.building = buildingId == null ? null : new Building(buildingId);
+    }
 }

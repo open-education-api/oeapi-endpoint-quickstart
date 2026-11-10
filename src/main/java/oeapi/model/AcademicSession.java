@@ -1,11 +1,14 @@
 package oeapi.model;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
@@ -30,7 +33,9 @@ public class AcademicSession extends PrimaryCode {
     @JsonProperty(value = "academicSessionId")
     private String academicSessionId = UUID.randomUUID().toString();
 
+    @JsonIgnore
     private LocalDate startDate;
+    @JsonIgnore
     private LocalDate endDate;
 
     @ValidEnumYaml(yamlfile = "academicSessionType.yml")
@@ -48,10 +53,10 @@ public class AcademicSession extends PrimaryCode {
     @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
-    @JsonProperty("year")
+    @JsonIgnore
     private AcademicSession year;
 
-    @JsonProperty("parent")
+    @JsonIgnore
     private AcademicSession parent;
 
     public AcademicSession() {
@@ -82,6 +87,7 @@ public class AcademicSession extends PrimaryCode {
     /**
      * @return the startDate
      */
+    @JsonIgnore
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -89,6 +95,7 @@ public class AcademicSession extends PrimaryCode {
     /**
      * @param startDate the startDate to set
      */
+    @JsonIgnore
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
@@ -96,6 +103,7 @@ public class AcademicSession extends PrimaryCode {
     /**
      * @return the endDate
      */
+    @JsonIgnore
     public LocalDate getEndDate() {
         return endDate;
     }
@@ -103,6 +111,7 @@ public class AcademicSession extends PrimaryCode {
     /**
      * @param endDate the endDate to set
      */
+    @JsonIgnore
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
@@ -166,6 +175,7 @@ public class AcademicSession extends PrimaryCode {
     /**
      * @return the parent
      */
+    @JsonIgnore
     public AcademicSession getParent() {
         return parent;
     }
@@ -173,6 +183,7 @@ public class AcademicSession extends PrimaryCode {
     /**
      * @param parent the parent to set
      */
+    @JsonIgnore
     public void setParent(AcademicSession parent) {
         this.parent = parent;
     }
@@ -180,6 +191,7 @@ public class AcademicSession extends PrimaryCode {
     /**
      * @return the year
      */
+    @JsonIgnore
     public AcademicSession getYear() {
         return year;
     }
@@ -187,8 +199,53 @@ public class AcademicSession extends PrimaryCode {
     /**
      * @param year the year to set
      */
+    @JsonIgnore
     public void setYear(AcademicSession year) {
         this.year = year;
     }
 
+
+    // ---- OEAPI v6 JSON view --------------------------------------------------
+    // Dates are published as date-times (midnight UTC); parent and year as ids,
+    // the full objects being available with ?expand=parent,year
+
+    @JsonProperty("startDateTime")
+    public OffsetDateTime getStartDateTime() {
+        return startDate == null ? null : startDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+    }
+
+    @JsonProperty("startDateTime")
+    public void setStartDateTime(OffsetDateTime startDateTime) {
+        this.startDate = startDateTime == null ? null : startDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate();
+    }
+
+    @JsonProperty("endDateTime")
+    public OffsetDateTime getEndDateTime() {
+        return endDate == null ? null : endDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+    }
+
+    @JsonProperty("endDateTime")
+    public void setEndDateTime(OffsetDateTime endDateTime) {
+        this.endDate = endDateTime == null ? null : endDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate();
+    }
+
+    @JsonProperty("parentId")
+    public String getParentId() {
+        return parent == null ? null : parent.getAcademicSessionId();
+    }
+
+    @JsonProperty("parentId")
+    public void setParentId(String parentId) {
+        this.parent = parentId == null ? null : new AcademicSession(parentId);
+    }
+
+    @JsonProperty("yearId")
+    public String getYearId() {
+        return year == null ? null : year.getAcademicSessionId();
+    }
+
+    @JsonProperty("yearId")
+    public void setYearId(String yearId) {
+        this.year = yearId == null ? null : new AcademicSession(yearId);
+    }
 }

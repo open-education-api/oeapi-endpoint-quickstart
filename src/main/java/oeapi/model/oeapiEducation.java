@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.MappedSuperclass;
@@ -30,15 +31,16 @@ import oeapi.validation.ValidLanguageTypedString;
 
 public abstract class oeapiEducation extends PrimaryCode {
 
-    @JsonProperty("teachingLanguage")
-    private String teachingLanguage;
+    // OEAPI v6 teachingLanguages (RFC 5646), stored comma separated
+    @Column(name = "teaching_languages")
+    private String teachingLanguages;
 
     //Non-Mandatory fields
-    @JsonProperty("enrollment")
+    @JsonProperty("enrolment")
     @Column(columnDefinition = "text")
     @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
     @ValidLanguageTypedString(isNull = true)
-    private List<oeapiLanguageTypedString> enrollment;
+    private List<oeapiLanguageTypedString> enrolment;
 
     @JsonProperty("learningOutcomes")
     @Column(columnDefinition = "text")
@@ -58,10 +60,10 @@ public abstract class oeapiEducation extends PrimaryCode {
     @ValidConsumer(yamlfile = "courseconsumer.yml")
     private List<Consumer> consumers;
 
-    @JsonProperty("modeOfDelivery")
+    @JsonProperty("modesOfDelivery")
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable
-    private List<ModeOfDelivery> modeOfDelivery;
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "mode_of_delivery_id"))
+    private List<ModeOfDelivery> modesOfDelivery;
 
     @Convert(converter = oeapiResourcesConverter.class)
     @Column(columnDefinition = "text")
@@ -149,32 +151,28 @@ public abstract class oeapiEducation extends PrimaryCode {
         this.abbreviation = abbreviation;
     }
 
-    /**
-     * @return the teachingLanguage
-     */
-    public String getTeachingLanguage() {
-        return teachingLanguage;
+    @JsonProperty("teachingLanguages")
+    public List<String> getTeachingLanguages() {
+        return oeapi.oeapiUtils.splitCsv(teachingLanguages);
+    }
+
+    @JsonProperty("teachingLanguages")
+    public void setTeachingLanguages(List<String> teachingLanguages) {
+        this.teachingLanguages = oeapi.oeapiUtils.joinCsv(teachingLanguages);
     }
 
     /**
-     * @param teachingLanguage the teachingLanguage to set
+     * @return the enrolment
      */
-    public void setTeachingLanguage(String teachingLanguage) {
-        this.teachingLanguage = teachingLanguage;
+    public List<oeapiLanguageTypedString> getEnrolment() {
+        return enrolment;
     }
 
     /**
-     * @return the enrollment
+     * @param enrolment the enrolment to set
      */
-    public List<oeapiLanguageTypedString> getEnrollment() {
-        return enrollment;
-    }
-
-    /**
-     * @param enrollment the enrollment to set
-     */
-    public void setEnrollment(List<oeapiLanguageTypedString> enrollment) {
-        this.enrollment = enrollment;
+    public void setEnrolment(List<oeapiLanguageTypedString> enrolment) {
+        this.enrolment = enrolment;
     }
 
     /**
@@ -222,15 +220,15 @@ public abstract class oeapiEducation extends PrimaryCode {
     /**
      * @return the modeOfDelivery
      */
-    public List<ModeOfDelivery> getModeOfDelivery() {
-        return modeOfDelivery;
+    public List<ModeOfDelivery> getModesOfDelivery() {
+        return modesOfDelivery;
     }
 
     /**
      * @param modeOfDelivery the modeOfDelivery to set
      */
-    public void setModeOfDelivery(List<ModeOfDelivery> modeOfDelivery) {
-        this.modeOfDelivery = modeOfDelivery;
+    public void setModesOfDelivery(List<ModeOfDelivery> modesOfDelivery) {
+        this.modesOfDelivery = modesOfDelivery;
     }
 
     /**

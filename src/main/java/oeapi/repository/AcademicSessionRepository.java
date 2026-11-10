@@ -1,5 +1,7 @@
 package oeapi.repository;
 
+import java.util.List;
+
 import oeapi.model.AcademicSession;
 
 import org.springframework.data.domain.Page;
@@ -15,5 +17,7 @@ import org.springframework.stereotype.Repository;
 public interface AcademicSessionRepository extends oeapiUnitaRepositoryBase<AcademicSession> {
 
     Page<AcademicSession> findByAcademicSessionType(String academicSessionType, Pageable pageable);
+
+    List<AcademicSession> findByParent_AcademicSessionId(String parentId);
 
 }

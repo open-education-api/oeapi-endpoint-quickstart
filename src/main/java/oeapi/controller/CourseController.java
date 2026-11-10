@@ -97,10 +97,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         return super.get(id, expand, courseService);
     }
 
-    //V6
-    //@GetMapping(value = "/{id}/course-offerings")
-    //V5
-    @GetMapping(value = "/{id}/offerings")
+    @GetMapping(value = "/{id}/course-offerings")
     public ResponseEntity<?> getOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
 
         Optional<Course> existing = courseService.getById(id);
@@ -133,10 +130,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
 
     }
 
-    //V6
-    //@GetMapping(value = "/{id}/learning-components")
-    //V5
-    @GetMapping(value = "/{id}/components")
+    @GetMapping(value = "/{id}/learning-components")
     public ResponseEntity<?> getComponents(@PathVariable String id, @ModelAttribute oeapiComponentRequestParam requestParam) {
 
         Map.Entry<String, String> filter = requestParam.getFilter();

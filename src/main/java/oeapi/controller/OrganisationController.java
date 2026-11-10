@@ -28,13 +28,11 @@ import oeapi.oeapiException;
 import oeapi.oeapiObjectsValidator;
 import oeapi.controller.requestparameters.oeapiComponentRequestParam;
 import oeapi.controller.requestparameters.oeapiCourseRequestParam;
-import oeapi.controller.requestparameters.oeapiEducationSpecificationRequestParam;
 import oeapi.controller.requestparameters.oeapiGroupRequestParam;
 import oeapi.controller.requestparameters.oeapiOrganisationRequestParam;
 import oeapi.controller.requestparameters.oeapiProgrammeRequestParam;
 import oeapi.controller.requestparameters.oeapiRequestParam;
 import oeapi.model.Component;
-import oeapi.model.EducationSpecification;
 import oeapi.model.Group;
 import oeapi.model.Organisation;
 import oeapi.model.Programme;
@@ -42,7 +40,6 @@ import oeapi.payload.CourseDTO;
 import oeapi.payload.OrganisationDTO;
 import oeapi.service.ComponentService;
 import oeapi.service.CourseService;
-import oeapi.service.EducationSpecificationService;
 import oeapi.service.GroupService;
 import oeapi.service.OrganisationService;
 import oeapi.service.ProgrammeService;
@@ -72,9 +69,6 @@ public class OrganisationController extends oeapiDTOController<Organisation, Org
 
     @Autowired
     private ComponentService componentService;
-
-    @Autowired
-    private EducationSpecificationService educationSpecificationService;
 
     @GetMapping
     public ResponseEntity<?> getAll(@ModelAttribute oeapiOrganisationRequestParam requestParam) {
@@ -156,22 +150,10 @@ public class OrganisationController extends oeapiDTOController<Organisation, Org
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organisation with Id: " + id);
         }
         Page<Programme> programmes = programmeService.getByOrganisationId(existing.get().getOrganisationId(), filter, pageable);
-        return super.getResponse(programmes);
+        return super.getResponse(programmeService.toDTOPages(programmes));
     }
 
-    @GetMapping(value = "/{id}/education-specifications", produces = "application/json")
-    public ResponseEntity<?> getEducationSpecifications(@PathVariable String id, oeapiEducationSpecificationRequestParam requestParam) {
-
-        Optional<Organisation> existing = organisationService.getById(id);
-        if (!existing.isPresent()) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organisation with Id: " + id);
-        }
-
-        List<EducationSpecification> educationSpecifications = educationSpecificationService.getByOrganisationId(id);
-        return super.getResponse(requestParam.toPageable(), educationSpecifications);
-    }
-
-    @GetMapping(value = "/{id}/components", produces = "application/json")
+    @GetMapping(value = "/{id}/learning-components", produces = "application/json")
     public ResponseEntity<?> getComponents(@PathVariable String id, oeapiComponentRequestParam requestParam) {
 
         Optional<Organisation> existing = organisationService.getById(id);
@@ -181,7 +163,7 @@ public class OrganisationController extends oeapiDTOController<Organisation, Org
         Pageable pageable = requestParam.toPageable();
         Map.Entry<String, String> filter = requestParam.getFilter();
         Page<Component> components = componentService.getByOrganisationId(id, filter, pageable);
-        return super.getResponse(components);
+        return super.getResponse(componentService.toDTOPages(components));
     }
 
     @PostMapping(produces = "application/json")

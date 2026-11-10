@@ -55,12 +55,12 @@ public class ProgrammeOfferingDTO extends OfferingDTO {
     }
 
     @Override
-    public String getTeachingLanguage() {
+    public java.util.List<String> getTeachingLanguages() {
 
-        if (super.getTeachingLanguage() == null) {
-            return (programme == null) ? null : programme.getTeachingLanguage();
+        if (super.getTeachingLanguages() == null || super.getTeachingLanguages().isEmpty()) {
+            return (programme == null) ? null : programme.getTeachingLanguages();
         }
-        return super.getTeachingLanguage();
+        return super.getTeachingLanguages();
 
     }
 

@@ -314,4 +314,27 @@ public class oeapiUtils {
         return chars.charAt(random.nextInt(chars.length()));
     }
 
+
+    /** Splits a comma separated column value into a list (empty list for null or blank). */
+    public static List<String> splitCsv(String value) {
+        List<String> result = new ArrayList<>();
+        if (value == null || value.isBlank()) {
+            return result;
+        }
+        for (String part : value.split(",")) {
+            if (!part.isBlank()) {
+                result.add(part.trim());
+            }
+        }
+        return result;
+    }
+
+    /** Joins a list into a comma separated column value (null for null or empty). */
+    public static String joinCsv(List<String> values) {
+        if (values == null || values.isEmpty()) {
+            return null;
+        }
+        return values.stream().filter(v -> v != null && !v.isBlank()).map(String::trim)
+                .collect(java.util.stream.Collectors.joining(","));
+    }
 }
