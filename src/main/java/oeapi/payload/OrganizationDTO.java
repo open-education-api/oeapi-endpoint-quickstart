@@ -32,7 +32,7 @@ public class OrganizationDTO extends PrimaryCode {
     private String organizationId = UUID.randomUUID().toString();
 
     @JsonProperty("organizationType")
-    @ValidEnumYaml(yamlfile = "organizationType.yml")
+    @ValidEnumYaml(yamlfile = "organisationType.yml")
     private String organizationType;
 
     @JsonProperty("shortName")

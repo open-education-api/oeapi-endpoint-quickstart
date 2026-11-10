@@ -1,3 +1,0 @@
-type: string
-enum: ["root","institute","department","faculty","branch","academy","school"]## YAML Template.
-

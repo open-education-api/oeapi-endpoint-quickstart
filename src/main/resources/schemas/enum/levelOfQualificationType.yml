@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-# mixing oeapi 5 and oeapi 6
-enum: ["eqf_1","eqf_2","equf_3","eqf_4","nlqf_4plus","eqf_5","eqf_6","eqf_7","eqf_8", "1", "2", "3", "4", "4+", "5", "6", "7", "8"]
+enum: ["eqf_0", "eqf_1", "eqf_2", "eqf_3", "eqf_4", "nlqf_4plus", "eqf_5", "eqf_6", "eqf_7", "eqf_8"]

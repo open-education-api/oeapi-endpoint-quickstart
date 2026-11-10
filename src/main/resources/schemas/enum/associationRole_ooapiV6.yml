@@ -1,3 +1,0 @@
-type: string
-enum: ["student","lecturer","teaching assistant","coordinator","guest","invigilator","assessor"]
-

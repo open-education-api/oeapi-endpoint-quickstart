@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum: ["general purpose","lecture room","computer room","laboratory","office","workspace","exam location", "study room","examination room","conference room"]## YAML Template.
-
+enum: ["general_purpose", "lecture_room", "computer_room", "laboratory", "office", "workspace", "exam_location", "study_room", "examination_room", "conference_room"]

@@ -1,2 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum: ["full-time","part-time","dual","self-paced"]
+enum: ["full_time", "part_time", "dual_training", "self_paced"]

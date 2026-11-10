@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum: ["presential","online","hybrid","blended","research_lab_based","work_based","project_based","x-coil_based"]## YAML Template.
-
+enum: ["blended", "coil", "hybrid", "joint_delivery", "online", "presential", "project_based", "research_lab_based", "work_based"]

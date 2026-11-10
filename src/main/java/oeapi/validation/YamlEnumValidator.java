@@ -28,15 +28,19 @@ public class YamlEnumValidator implements ConstraintValidator<ValidEnumYaml, Str
         if (t == null) {
             return true;
         }
+        // OEAPI v6 enumerations are extensible: custom values must start with "x-"
+        if (t.startsWith("x-") && t.length() > 2) {
+            return true;
+        }
         oeapiSchemaValidator validator = new oeapiSchemaValidator("/schemas/enum/" + this.yamlFile);
         try {
             validator.validate(t);
             return true;
 
         } catch (org.everit.json.schema.ValidationException ve) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to validate enumerator: " + ve.getMessage());
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Failed to validate enumerator: " + ve.getMessage());
         } catch (ConstraintViolationException e) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "Failed to validate [" + this.yamlFile + "] : " + e.getMessage());
+            throw new oeapiException(HttpStatus.BAD_REQUEST, "Failed to validate [" + this.yamlFile + "] : " + e.getMessage());
 
         }
     }

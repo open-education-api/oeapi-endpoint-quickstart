@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum: ["diploma","certificate","no_official_document","testimonial","school_advice"]
-
+enum: ["certificate", "diploma", "micro_credential_certificate", "school_advice", "testimonial", "no_official_document"]

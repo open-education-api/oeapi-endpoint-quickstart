@@ -57,7 +57,6 @@ public class CourseDTO extends oeapiEducationDTO {
     private String duration;
     
 
-    @ValidEnumYaml(yamlfile = "sectorType.yml")
     private String sector;
     private String link;
 

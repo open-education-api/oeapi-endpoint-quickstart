@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum: ["secondary vocational education","secondary vocational education 1","secondary vocational education 2","secondary vocational education 3","secondary vocational education 4","associate degree","bachelor","master","doctoral","microcredential","undefined","undivided","nt2-1","nt2-2"]
-
+enum: ["pre_vocational", "secondary_vocational_education", "secondary_vocational_education_1", "secondary_vocational_education_2", "secondary_vocational_education_3", "secondary_vocational_education_4", "associate_degree", "bachelor", "master", "doctoral", "post_doctoral", "undefined", "undivided", "nt2_1", "nt2_2"]

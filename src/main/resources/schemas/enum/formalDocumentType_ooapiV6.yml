@@ -1,3 +1,0 @@
-type: string
-enum: ["diploma","certificate","no_official_document","testimonial","school_advice"]
-

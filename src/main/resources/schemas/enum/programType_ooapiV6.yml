@@ -1,3 +1,0 @@
-type: string
-enum: ["program","minor","honours","specialization","track","specification"]
-

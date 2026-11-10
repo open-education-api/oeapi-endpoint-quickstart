@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum: ["student","lecturer","teaching assistant","coordinator","guest","invigilator","assessor"]
-
+enum: ["student", "lecturer", "teaching_assistant", "coordinator", "invigilator", "assessor", "guest"]

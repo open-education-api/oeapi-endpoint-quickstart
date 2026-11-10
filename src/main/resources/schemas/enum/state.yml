@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum: ["pending","canceled","denied","associated","queued","finished"]
-
+enum: ["pending", "cancelled", "denied", "associated", "queued", "finished"]

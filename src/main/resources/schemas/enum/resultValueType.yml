@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum: ["pass-or-fail","US letter","UK letter","0-100","1-10"]## YAML Template.
-
+enum: ["pass_or_fail", "insufficient_satisfactory_good", "us_letter", "uk_letter", "de_grade", "grade_0_100", "grade_0_10", "grade_0_10_one_decimal", "reference_level_europass", "other"]

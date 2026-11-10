@@ -35,7 +35,7 @@ public class Program extends oeapiEducation {
     private String programId = UUID.randomUUID().toString();
 
     @JsonProperty("programType")
-    @ValidEnumYaml(yamlfile = "programType.yml")
+    @ValidEnumYaml(yamlfile = "programmeType.yml")
     private String programType;
 
     @ValidEnumYaml(yamlfile = "levelType.yml")
@@ -50,7 +50,6 @@ public class Program extends oeapiEducation {
 
     private String fieldsOfStudyId;
 
-    @ValidEnumYaml(yamlfile = "sectorType.yml")
     private String sector;
 
     private String link;

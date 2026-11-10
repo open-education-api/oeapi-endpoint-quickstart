@@ -1,3 +1,4 @@
+# OEAPI v6 extensible enumeration (x-ooapi-extensible-enum).
+# Values outside this list are accepted only when prefixed with 'x-'.
 type: string
-enum:  ["brin", "identifier", "uuid"]
-example: identifier
+enum: ["account_id", "bag_id", "building_id", "component_code", "eckid", "email_address", "esi", "group_code", "group_type_code", "identifier", "institution_code", "isbn", "issn", "kvk_organisation_id", "kvk_establishment_id", "leerbedrijf_id", "offering_code", "organisation_id", "orcid", "product_id", "programme_code", "room_code", "schac_home", "student_number", "studielink_number", "system_id", "username", "uuid", "national_identity_number"]

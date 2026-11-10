@@ -24,7 +24,7 @@ public class ComponentDTO extends oeapiEducationDTO {
     private String componentId = UUID.randomUUID().toString();
 
     @JsonProperty("componentType")
-    @ValidEnumYaml(yamlfile = "componentType.yml")
+    @ValidEnumYaml(yamlfile = "learningComponentType.yml")
     private String componentType;
 
     @JsonProperty("course")
