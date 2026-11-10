@@ -309,7 +309,7 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
     }
 
     public List<Course> getCoursesByModeOfDeliveryName(String modelOfdeliveryName) {
-        return repository.findByModeOfDelivery_Name(modelOfdeliveryName);
+        return repository.findByModesOfDelivery_Name(modelOfdeliveryName);
     }
 
     /* Check relations with other entities and avoid duplicates on JPA automatic save or cascade */

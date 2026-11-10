@@ -21,7 +21,7 @@ public interface CourseRepository extends oeapiUnitaRepositoryBase<Course> {
     // Si le damos un programmeId
     public List<Course> findByProgrammes_ProgrammeId(String programmeId);
 
-    public List<Course> findByModeOfDelivery_Name(String modelOfdeliveryName);
+    public List<Course> findByModesOfDelivery_Name(String modelOfdeliveryName);
 
     Page<Course> findByOrganisation_OrganisationId(String organisationId, Pageable pageable);
 

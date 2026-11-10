@@ -16,7 +16,7 @@
     <description>OEAPI Quickstart Endpoint</description>
 
     <properties>
-        <skipTests>true</skipTests>
+        <skipTests>false</skipTests>
 
     <!--
       No java.version was set, so the release level was whatever the parent
