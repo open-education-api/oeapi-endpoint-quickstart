@@ -31,12 +31,17 @@ properties:
   componentId:
     type: string
     format: uuid # Validate UUID format
-  teachingLanguage:
-    type: string
+  teachingLanguages:
+    type: array
+    items:
+      type: string
+      pattern: '^([a-z]{2,3})(-([A-Z]{2}|[0-9]{3}))?(-([a-z]{4}))?(-([a-z]{2}|[0-9]{3}))*(-[a-z0-9]{2,8})*(-x(-[a-z0-9]{1,8})+)?$'
   abbreviation:
     type: string
-  modeOfDelivery:
-    type: string
+  modesOfDelivery:
+    type: array
+    items:
+      type: string
   componentType:
     type: string
-required: ["primaryCode", "name","teachingLanguage","componentType","abbreviation"]
+required: ["primaryCode", "name","teachingLanguages","componentType","abbreviation"]

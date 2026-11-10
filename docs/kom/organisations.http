@@ -5,17 +5,17 @@
 @organisation_id=1ccdc93b-ff5b-0522-9f8e-d798966873ac
 
 ### GET all
-GET http://{{host}}/organizations
+GET http://{{host}}/organisations
 
 ### GET one
-GET http://{{host}}/organizations/{{organization_id}}
+GET http://{{host}}/organisations/{{organisation_id}}
 
 ### POST organisation with id 1ccdc93b-ff5b-0522-9f8e-d798966873ac
-POST http://{{host}}/organizations
+POST http://{{host}}/organisations
 Content-Type: application/json
 
 < ./data/organisation.json
 
 
 ### DELETE organisation
-DELETE http://{{host}}/organizations/{{organization_id}}
+DELETE http://{{host}}/organisations/{{organisation_id}}

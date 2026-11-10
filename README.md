@@ -10,8 +10,11 @@ This project provides the OEAPI/OOAPI infrastructure (the Endpoint itself) and g
 The Open Education API is known in Dutch as the “Open Onderwijs API” (OOAPI), which is why the term “OOAPI” is sometimes also used throughout this implementation.
 
 We recommend that you take at least a quick look at the [Open Education API](https://openonderwijsapi.nl/#/) specification to familiarize yourself with the basic concepts of OEAPI/OOAPI and its purpose. 
-This implementation is based on version 5 of the Open Education API specification (https://openonderwijsapi.nl/specification/v5/docs.html
-).
+This implementation is based on version 6 of the Open Education API specification (https://oeapi.eu/v6.0/, OpenAPI document: https://oeapi.eu/specification/v6.0/oeapi-6.0-rc.3.json).
+
+Requests may ask for the version explicitly with `Accept: application/vnd.oeapi+json;version=6.0`; responses are served as `application/vnd.oeapi+json;version=6.0` and errors as `application/problem+json`. A request for another major version is answered with `406 Not Acceptable`.
+
+Upgrading an existing installation built on OEAPI v5? Read [docs/migration-v5-to-v6.md](./docs/migration-v5-to-v6.md) and run [docs/sql/v5-to-v6-migration.sql](./docs/sql/v5-to-v6-migration.sql) on your database before starting the new version.
 
 ## Installing the OEAPI EndPoint
 
@@ -159,13 +162,13 @@ At src/main/resources you can find a sample JSONs of them for you try. The order
 1. Load the organisation
 ```bash
 
-curl -v -H "Content-Type: application/json" -d @src/main/resources/1-Organisation.json http://localhost:57075/organizations
+curl -v -H "Content-Type: application/json" -d @src/main/resources/1-Organisation.json http://localhost:57075/organisations
 
 ```
 2. Load the programme
 ```bash
 
-curl -v -H "Content-Type: application/json" -d @src/main/resources/2-Programme.json http://localhost:57075/programs
+curl -v -H "Content-Type: application/json" -d @src/main/resources/2-Programme.json http://localhost:57075/programmes
 
 ```
 3. Load the course
@@ -180,7 +183,7 @@ curl -v -H "Content-Type: application/json" -d @src/main/resources/3-Course.json
 
 ```bash
 
-curl -v -H "Content-Type: application/json" -d @src/main/resources/4-Offering.json http://localhost:57075/offerings
+curl -v -H "Content-Type: application/json" -d @src/main/resources/4-Offering.json http://localhost:57075/course-offerings
 
 ```
    
@@ -257,7 +260,7 @@ It is not complicated to create a form like the image below that push a course t
                 name: [{ language: "en-GB", value: document.getElementById('name').value }],
                 description: [{ language: "en-GB", value: document.getElementById('description').value }],
                 abbreviation: document.getElementById('abbreviation').value,
-                teachingLanguage: document.getElementById('language').value,
+                teachingLanguages: [document.getElementById('language').value],
                 level: document.getElementById('level').value
             };
             

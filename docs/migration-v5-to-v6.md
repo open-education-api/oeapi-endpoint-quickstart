@@ -1,11 +1,38 @@
 # Migrating oeapi-endpoint-quickstart from OEAPI v5 to v6
 
-Status: analysis (branch `spec_v6`, base commit `c05f247`)
+Status: first migration pass done on branch `spec_v6` (base commit `c05f247`), see section 0
 Sources: v6 spec `https://oeapi.eu/specification/v6.0/oeapi-6.0-rc.3.json` (OpenAPI 3.1.1, info.version `6.0-rc.3`,
 79 paths, 114 schemas), "Major changes" page `https://oeapi.eu/v6.0/#/technical/major-changes`,
 versioning and error pages of the v6 docs, and the current code base (which implements v5.0.0).
 
 > v6 is still a **release candidate** (rc.3). Field names below are taken from rc.3 and may still move before 6.0 final.
+
+## 0. Status on branch `spec_v6`
+
+First pass ("core catalogue") done, v6 only (v5 is no longer served), with entities, tables and
+columns renamed to British English. Existing databases: run `docs/sql/v5-to-v6-migration.sql` first.
+
+| Area | State |
+|---|---|
+| `vnd.oeapi+json` media type, Accept version check (406), problem+json errors, 409 on integrity violations | done |
+| Pagination (`pageSize` 10/20/50/100/250, `pageNumber` from 1), Service document (`GET /`) | done |
+| Enumerations (v6 values, `x-` extensions accepted) | done |
+| Organisations, programmes, courses, learning components: names, id/object split, expand, dates, `teachingLanguages`, `modesOfDelivery`, `enrolment`, `studyLoad[]` | done |
+| Course / programme / learning component offerings as typed resources + all offering sub-lists | done |
+| Academic sessions (`startDateTime`, `parentId`, `yearId`, `childIds`, expand), rooms (`buildingId`, expand) | done |
+| Education specifications, `sector` | removed |
+| Dashboard (SURF view) and legacy pages | adapted through `static/js/surfview/oeapi_v6.js` |
+| `consumers[]` → v6 `consumer` (single object selected by `?consumer=`) | **pending** – still published as `consumers` |
+| `learningOutcomes` as resource (`/learning-outcomes`, `learningOutcomeIds`) | **pending** – still the v5 inline list |
+| Test components and test component offerings | **pending** |
+| Typed associations (+ attempts), persons v6 shape, groups/memberships | **pending** (still v5) |
+| `filter_query`, `fields`, `PATCH` on offerings, `supportedConsumers` configuration | **pending** (`fields` accepted but ignored) |
+| `rootId`, `instructorIds`, `supplementaryInformation`, `timelineOverrides`, `qualificationDesignations` | **pending** (optional in v6) |
+
+Storage simplifications kept on purpose (the JSON is v6, the entity keeps one value):
+`studyLoad` (one descriptor), `enrolmentPeriods` (one period), `programmeOfferingIds` of a course offering,
+`roomIds` and `courseOfferingIds` of a learning component offering (one each). Dates are stored as dates and
+published as midnight UTC date-times.
 
 ---
 

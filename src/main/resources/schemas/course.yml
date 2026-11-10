@@ -31,14 +31,15 @@ properties:
   courseId:
     type: string
     format: uuid # Validate UUID format
-  teachingLanguage:
-    type: string
-    pattern: '^[a-z]{3}$'
+  teachingLanguages:
+    type: array
+    items:
+      type: string
+      pattern: '^([a-z]{2,3})(-([A-Z]{2}|[0-9]{3}))?(-([a-z]{4}))?(-([a-z]{2}|[0-9]{3}))*(-[a-z0-9]{2,8})*(-x(-[a-z0-9]{1,8})+)?$'
   abbreviation:
     type: string
   level:
-    type: string
-    enum: ["secondary vocational education","secondary vocational education 1","secondary vocational education 2","secondary vocational education 3","secondary vocational education 4","associate degree","bachelor","master","doctoral","microcredential","undefined","undivided","nt2-1","nt2-2"]
+    type: string   # OEAPI v6 extensible enumeration, see enum/levelType.yml
   fieldsOfStudy:
     type: string
-required: ["primaryCode", "name","teachingLanguage","abbreviation","description","level"]
+required: ["primaryCode", "name","teachingLanguages","abbreviation","description","level"]

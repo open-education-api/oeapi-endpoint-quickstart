@@ -7,24 +7,24 @@
 @parent_id=abe67694-a727-4d3f-8e2b-435189e670d1
 
 ### GET all
-GET http://{{host}}/programs
+GET http://{{host}}/programmes
 
 ### GET one
-GET http://{{host}}/programs/{{program_id}}
+GET http://{{host}}/programmes/{{programme_id}}
 
 ### POST programme with id abe67694-a727-4d3f-8e2b-435189e670d1
-POST http://{{host}}/programs
+POST http://{{host}}/programmes
 Content-Type: application/json
 
 < ./data/parent.json
 
 
 ### POST programme with id a8138341-d39e-55f8-fb77-4bf7a0ae7a52
-POST http://{{host}}/programs
+POST http://{{host}}/programmes
 Content-Type: application/json
 
 < ./data/programme.json
 
 
 ### DELETE programme
-DELETE http://{{host}}/programs/{{program_id}}
+DELETE http://{{host}}/programmes/{{programme_id}}

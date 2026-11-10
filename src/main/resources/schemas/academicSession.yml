@@ -3,7 +3,7 @@ properties:
 
   academicSessionType:
     type: string
-    enum: ["academic year","semester","trimester","quarter","testing period","period"]
+    # OEAPI v6 extensible enumeration, see enum/academicSessionType.yml
   primaryCode:
     type: object
     properties:
@@ -13,12 +13,12 @@ properties:
       code:
         type: string
     required: ["codeType", "code"]
-  startDate:
+  startDateTime:
     type: string
-    format: date
-  endDate:
+    format: date-time
+  endDateTime:
     type: string
-    format: date
+    format: date-time
   name:
     type: array
     items:
@@ -29,4 +29,4 @@ properties:
         value:
           type: string
       required: ["language", "value"]
-required: ["startDate","name", "endDate"]
+required: ["startDateTime","name", "endDateTime"]

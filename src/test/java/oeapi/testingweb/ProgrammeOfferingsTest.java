@@ -24,9 +24,9 @@ import org.junit.jupiter.api.AfterAll;
 
 /*
  * Integration test for the programmeOffering endpoints, modeled on CourseOfferingsTest:
- *   - POST /offerings/programmeOffering   (create)
- *   - GET  /programmes/{id}/offerings      (list by programme)
- *   - GET  /offerings/{id}               (single fetch / delete verification)
+ *   - POST /programme-offerings            (create)
+ *   - GET  /programmes/{id}/programme-offerings (list by programme)
+ *   - GET  /programme-offerings/{id}       (single fetch / delete verification)
  */
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

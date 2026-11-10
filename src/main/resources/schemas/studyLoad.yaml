@@ -3,7 +3,7 @@ description: The amount of effort to complete this education in the specified un
 properties:
   studyLoadUnit:
     type: string
-    enum: ["contacttime","ects","sbu","sp","hour"]
+    enum: ["contact_time","ects","sbu","sp","hour"]
   value:
     type: number
 required:
