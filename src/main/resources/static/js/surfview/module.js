@@ -793,15 +793,15 @@ SurfView.Module = (() => {
             return [];
         }
 
-        const value = name => row.querySelector(`[name="${name}"]`).value.trim();
+        const getValue = name => row.querySelector(`[name="${name}"]`).value.trim();
         const url = urlField.value.trim();
         if (!url || !urlField.checkValidity()) {
             throw new Error('Enter a valid URL for the promotional video.');
         }
 
-        const role = value('supplementaryRole');
-        const type = value('supplementaryType');
-        const language = value('supplementaryLanguage');
+        const role = getValue('supplementaryRole');
+        const type = getValue('supplementaryType');
+        const language = getValue('supplementaryLanguage');
         if (!role || !type || !language) {
             throw new Error('Enter a role, type and language for the supplementary URL.');
         }
