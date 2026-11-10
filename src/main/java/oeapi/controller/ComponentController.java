@@ -50,6 +50,9 @@ public class ComponentController extends oeapiDTOController<Component, Component
     @Autowired
     private ComponentService service;
 
+    @Autowired
+    private oeapi.service.OfferingService offeringService;
+
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAll(@ModelAttribute oeapiRequestParam requestParam) {
 
@@ -64,7 +67,7 @@ public class ComponentController extends oeapiDTOController<Component, Component
 
     @PutMapping(value = "/{id}", produces = "application/json")
     @Override
-    public ResponseEntity<?> updateFromDTO(@PathVariable String componentId, @Valid @RequestBody ComponentDTO dto) {
+    public ResponseEntity<?> updateFromDTO(@PathVariable("id") String componentId, @Valid @RequestBody ComponentDTO dto) {
         dto.setComponentId(componentId);
         Errors errors = new BeanPropertyBindingResult(dto, "component");
         validator.validate(dto, errors);
@@ -85,7 +88,8 @@ public class ComponentController extends oeapiDTOController<Component, Component
             throw new oeapiException(HttpStatus.NOT_FOUND, "There are learning-component-offeringso for Id: " + id);
 
         }
-        return super.getResponse(requestParam.toPageable(Arrays.asList("offeringId", "name")), new ArrayList());
+        return oeapiOfferingLists.page(requestParam,
+                offeringService.learningComponentOfferingMapper().toDTOList(offeringService.getByLearningComponentId(id)));
 
     }
 

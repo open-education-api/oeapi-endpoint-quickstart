@@ -121,11 +121,7 @@ public class ProgrammeController extends oeapiDTOController<Programme, Programme
             }
             return super.getResponse(requestParam, offerings);
         }
-        oeapiDTOMapper<ProgrammeOffering, ProgrammeOfferingDTO> mapper =
-                new oeapiDTOMapper<ProgrammeOffering, ProgrammeOfferingDTO>(ProgrammeOffering.class,
-                        ProgrammeOfferingDTO.class,
-                        enumService,
-                        Arrays.asList());
+        oeapiDTOMapper<ProgrammeOffering, ProgrammeOfferingDTO> mapper = offeringService.programmeOfferingMapper();
 
         List<ProgrammeOfferingDTO> dtos = mapper.toDTOList(programmeOfferings);
         Pageable pageable = requestParam.toPageable();

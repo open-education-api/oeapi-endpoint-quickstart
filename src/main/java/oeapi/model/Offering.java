@@ -90,6 +90,13 @@ public class Offering extends PrimaryCode {
 
     @ValidEnumYaml(yamlfile = "resultValueType.yml")
     private String resultValueType;
+
+    // OEAPI v6 offering state (concept, cancelled, active, inactive) and rostering state
+    @ValidEnumYaml(yamlfile = "offeringState.yml")
+    private String state;
+
+    @ValidEnumYaml(yamlfile = "rosteringState.yml")
+    private String rosteringState;
     private String link;
     private LocalDate enrollStartDate;
     private LocalDate enrollEndDate;
@@ -540,4 +547,20 @@ public class Offering extends PrimaryCode {
 
     
     
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getRosteringState() {
+        return rosteringState;
+    }
+
+    public void setRosteringState(String rosteringState) {
+        this.rosteringState = rosteringState;
+    }
 }

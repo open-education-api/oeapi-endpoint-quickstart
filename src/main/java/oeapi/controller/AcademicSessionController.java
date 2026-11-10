@@ -27,6 +27,11 @@ import tools.jackson.databind.node.ObjectNode;
 import oeapi.controller.requestparameters.oeapiAcademicSessionRequestParam;
 import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
 import oeapi.model.AcademicSession;
+import oeapi.model.ComponentOffering;
+import oeapi.model.CourseOffering;
+import oeapi.model.Offering;
+import oeapi.model.ProgrammeOffering;
+import oeapi.service.OfferingService;
 import oeapi.service.AcademicSessionService;
 
 /**
@@ -39,6 +44,9 @@ public class AcademicSessionController extends oeapiController<AcademicSession> 
 
     @Autowired
     private AcademicSessionService service;
+
+    @Autowired
+    private OfferingService offeringService;
 
     @GetMapping(produces = "application/json")
     public ResponseEntity<?> getAll(@ModelAttribute oeapiAcademicSessionRequestParam requestParam) {
@@ -84,13 +92,29 @@ public class AcademicSessionController extends oeapiController<AcademicSession> 
         }
     }
 
-    @GetMapping(value = "/{id}/offerings", produces = "application/json")
-    public ResponseEntity<?> getOfferings(@PathVariable String id, oeapiOfferingRequestParam requestParam) {
-        Optional<AcademicSession> existing = service.getById(id);
-        if (!existing.isPresent()) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, "There are not offerings for Id: " + id);
+    @GetMapping(value = "/{id}/course-offerings", produces = "application/json")
+    public ResponseEntity<?> getCourseOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
+        return oeapiOfferingLists.page(requestParam, offeringService.courseOfferingMapper()
+                .toDTOList(OfferingService.ofType(offeringsOf(id), CourseOffering.class)));
+    }
+
+    @GetMapping(value = "/{id}/programme-offerings", produces = "application/json")
+    public ResponseEntity<?> getProgrammeOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
+        return oeapiOfferingLists.page(requestParam, offeringService.programmeOfferingMapper()
+                .toDTOList(OfferingService.ofType(offeringsOf(id), ProgrammeOffering.class)));
+    }
+
+    @GetMapping(value = "/{id}/learning-component-offerings", produces = "application/json")
+    public ResponseEntity<?> getLearningComponentOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
+        return oeapiOfferingLists.page(requestParam, offeringService.learningComponentOfferingMapper()
+                .toDTOList(OfferingService.ofType(offeringsOf(id), ComponentOffering.class)));
+    }
+
+    private List<Offering> offeringsOf(String id) {
+        if (!service.getById(id).isPresent()) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "There is no AcademicSession with Id: " + id);
         }
-        return super.getResponse(requestParam.toPageable(), new ArrayList<AcademicSession>());
+        return offeringService.getByAcademicSessionId(id);
     }
 
     @PostMapping(produces = "application/json")

@@ -18,4 +18,8 @@ public interface OfferingRepository extends oeapiUnitaRepositoryBase<Offering> {
 
     List<ProgrammeOffering> findByProgramme_ProgrammeId(String programmeId);
 
+    List<Offering> findByOrganisation_OrganisationId(String organisationId);
+
+    List<Offering> findByAcademicSession_AcademicSessionId(String academicSessionId);
+
 }

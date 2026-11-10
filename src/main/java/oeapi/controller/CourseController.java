@@ -115,11 +115,7 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
             }
             return super.getResponse(requestParam, offerings);
         }
-        oeapiDTOMapper<CourseOffering, CourseOfferingDTO> mapper =
-                new oeapiDTOMapper<CourseOffering, CourseOfferingDTO>(CourseOffering.class,
-                        CourseOfferingDTO.class,
-                        enumService,
-                        Arrays.asList());
+        oeapiDTOMapper<CourseOffering, CourseOfferingDTO> mapper = offeringService.courseOfferingMapper();
 
         List<CourseOfferingDTO> dtos = mapper.toDTOList(courseOfferings);
         Pageable pageable = requestParam.toPageable();

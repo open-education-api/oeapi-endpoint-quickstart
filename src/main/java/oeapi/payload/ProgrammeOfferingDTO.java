@@ -1,67 +1,91 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package oeapi.payload;
+
+import java.time.OffsetDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import oeapi.model.Programme;
 
 /**
+ * OEAPI v6 ProgrammeOffering.
  *
- * @author michiel.de.mare
+ * @author itziar.urrutia
  */
+@JsonPropertyOrder({"programmeOfferingId", "primaryCode", "programmeId"})
 public class ProgrammeOfferingDTO extends OfferingDTO {
 
-    @JsonProperty("programme")
-    private String programmeJSON;
+    @JsonProperty("programmeId")
+    private String programmeId;
 
     @JsonIgnore
-    private Programme programme;
+    @oeapiDTOExpandable
+    public Programme programme;
 
+    @JsonProperty("flexibleEntryPeriodStartDateTime")
+    private OffsetDateTime flexibleEntryPeriodStart;
 
-    /**
-     * @return the programmeJSON
-     */
-    public String getProgrammeJSON() {
-        return (programme == null) ? null : programme.getProgrammeId();
+    @JsonProperty("flexibleEntryPeriodEndDateTime")
+    private OffsetDateTime flexibleEntryPeriodEnd;
+
+    @JsonProperty("programmeOfferingId")
+    // Not named getProgrammeOfferingId(): ModelMapper must not see a second candidate for offeringId
+    public String programmeOfferingId() {
+        return getOfferingId();
     }
 
-    /**
-     * @param programmeJSON the programmeJSON to set
-     */
-    public void setProgrammeJSON(String programmeJSON) {
-        this.programmeJSON = programmeJSON;
+    @JsonProperty("programmeOfferingId")
+    public void programmeOfferingId(String id) {
+        setOfferingId(id);
     }
 
-    /**
-     * @return the programme
-     */
+    @JsonIgnore
     public Programme getProgramme() {
         return programme;
     }
 
-    /**
-     * @param programme the programme to set
-     */
+    @JsonIgnore
     public void setProgramme(Programme programme) {
         this.programme = programme;
+        this.programmeId = programme == null ? null : programme.getProgrammeId();
+    }
+
+    public String getProgrammeId() {
+        return programmeId;
+    }
+
+    public void setProgrammeId(String programmeId) {
+        this.programmeId = programmeId;
+        if (programmeId == null) {
+            this.programme = null;
+        } else if (this.programme == null || !programmeId.equals(this.programme.getProgrammeId())) {
+            this.programme = new Programme(programmeId);
+        }
+    }
+
+    public OffsetDateTime getFlexibleEntryPeriodStart() {
+        return flexibleEntryPeriodStart;
+    }
+
+    public void setFlexibleEntryPeriodStart(OffsetDateTime flexibleEntryPeriodStart) {
+        this.flexibleEntryPeriodStart = flexibleEntryPeriodStart;
+    }
+
+    public OffsetDateTime getFlexibleEntryPeriodEnd() {
+        return flexibleEntryPeriodEnd;
+    }
+
+    public void setFlexibleEntryPeriodEnd(OffsetDateTime flexibleEntryPeriodEnd) {
+        this.flexibleEntryPeriodEnd = flexibleEntryPeriodEnd;
     }
 
     @Override
-    public String getOfferingType() {
-        return "programme";
-    }
-
-    @Override
-    public java.util.List<String> getTeachingLanguages() {
-
+    public List<String> getTeachingLanguages() {
         if (super.getTeachingLanguages() == null || super.getTeachingLanguages().isEmpty()) {
             return (programme == null) ? null : programme.getTeachingLanguages();
         }
         return super.getTeachingLanguages();
-
     }
-
 }

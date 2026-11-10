@@ -1,520 +1,383 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package oeapi.payload;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.persistence.Convert;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorType;
-import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
-import oeapi.converter.oeapiUnitaListConsumerConverter;
-import oeapi.converter.oeapiUnitaListCostConverter;
-import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
 import oeapi.model.AcademicSession;
 import oeapi.model.Address;
-import oeapi.model.ComponentOffering;
 import oeapi.model.Consumer;
 import oeapi.model.Cost;
-import oeapi.model.CourseOffering;
 import oeapi.model.Ext;
 import oeapi.model.ModeOfDelivery;
 import oeapi.model.Organisation;
 import oeapi.model.PrimaryCode;
-import oeapi.model.ProgrammeOffering;
 import oeapi.model.oeapiIdentifierEntry;
 import oeapi.model.oeapiLanguageTypedString;
+import oeapi.validation.ValidEnumYaml;
 
 /**
+ * Properties shared by the four OEAPI v6 offering types (OfferingProperties in
+ * the specification). There is no generic offering resource in v6: each
+ * subclass publishes its own id (courseOfferingId, programmeOfferingId...).
+ *
+ * Property names follow the entity so ModelMapper can map them; the v6 JSON
+ * names are given with {@code @JsonProperty} where they differ.
  *
  * @author itziar.urrutia
  */
-// To know how serialize it uses field offeringType
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "offeringType")
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = CourseOffering.class, name = "course"),
-    @JsonSubTypes.Type(value = ComponentOffering.class, name = "component"),
-    @JsonSubTypes.Type(value = ProgrammeOffering.class, name = "programme")
-})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@DiscriminatorColumn(name = "offering_class", discriminatorType = DiscriminatorType.STRING)
-@JsonPropertyOrder({"offeringId", "primaryCode", "offeringType", "name", "description", "teachingLanguage", "resultExpected", "modeOfDelivery"})
-
-
+@JsonPropertyOrder({"primaryCode", "name", "abbreviation", "description", "state", "rosteringState",
+    "teachingLanguages", "modesOfDelivery", "startDateTime", "endDateTime", "enrolmentPeriods"})
 public class OfferingDTO extends PrimaryCode {
-    static Logger logger = LoggerFactory.getLogger(OfferingDTO.class);
 
-    @JsonProperty(value = "offeringId")
+    /** Internal id, published by the subclasses under their own v6 name. */
+    @JsonIgnore
     private String offeringId;
 
-    @JsonProperty("otherCodes")
-    @Convert(converter = oeapiUnitaListIdentifierEntryConverter.class)
-    private List<oeapiIdentifierEntry> otherCodes;
-
-    @JsonProperty("ext")
-    private Ext ext;
-
-    //@JsonIgnore
-    //private String startDateJSON;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")    
-    private LocalDate startDate;
-
-    //@JsonIgnore
-    //private String endDateJSON;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate endDate;
-    @JsonProperty("teachingLanguages")
-    private List<String> teachingLanguages;
-
-    @JsonProperty("modesOfDelivery")
-    private List<ModeOfDelivery> modeOfDelivery;
-
-    private Integer maxNumberStudents;
-    private Integer minNumberStudents;
-    private Integer enrolledNumberStudents;
-    private Integer pendingNumberStudents;
-    private Boolean resultExpected;
-    private String resultValueType;
-    private String link;
-    private LocalDate enrollStartDate;
-    private LocalDate enrollEndDate;
-    private LocalDate flexibleEntryPeriodStart;
-    private LocalDate flexibleEntryPeriodEnd;
-
-    // Si usa aqui (y esta bien para el JSON) no se puede usar como @DiscriminatorColumn
-//    @JsonProperty("offeringType")
-//    private String offeringType;
-    @JsonProperty("addresses")
-    private List<Address> addresses;
-
-    @JsonProperty("priceInformation")
-    @Convert(converter = oeapiUnitaListCostConverter.class)
-    private List<Cost> priceInformation;
-
-    @JsonProperty("consumers")
-    @Convert(converter = oeapiUnitaListConsumerConverter.class)
-    private List<Consumer> consumers;
+    @JsonProperty("name")
+    private List<oeapiLanguageTypedString> name;
 
     @JsonProperty("abbreviation")
     private String abbreviation;
 
-    @JsonProperty("name")
-    @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
-    private List<oeapiLanguageTypedString> name;
-
     @JsonProperty("description")
-    @Convert(converter = oeapiUnitaLanguageTypedStringConverter.class)
     private List<oeapiLanguageTypedString> description;
 
-    /**
-     * @return the name
-     */
-    public List<oeapiLanguageTypedString> getName() {
-        return name;
-    }
+    @JsonProperty("state")
+    @ValidEnumYaml(yamlfile = "offeringState.yml")
+    private String state;
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(List<oeapiLanguageTypedString> name) {
-        this.name = name;
-    }
+    @JsonProperty("rosteringState")
+    @ValidEnumYaml(yamlfile = "rosteringState.yml")
+    private String rosteringState;
 
-    /**
-     * @return the description
-     */
-    public List<oeapiLanguageTypedString> getDescription() {
-        return description;
-    }
+    @JsonProperty("teachingLanguages")
+    private List<String> teachingLanguages;
 
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(List<oeapiLanguageTypedString> description) {
-        this.description = description;
-    }
+    @JsonProperty("modesOfDelivery")
+    private List<ModeOfDelivery> modesOfDelivery;
 
-    /**
-     * @return the abbreviation
-     */
-    public String getAbbreviation() {
-        return abbreviation;
-    }
+    @JsonProperty("startDateTime")
+    private OffsetDateTime startDate;
 
-    /**
-     * @param abbreviation the abbreviation to set
-     */
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
-    }
+    @JsonProperty("endDateTime")
+    private OffsetDateTime endDate;
 
-    public OfferingDTO() {
-    }
+    // Enrolment period: the entity keeps one; v6 publishes a list (enrolmentPeriods)
+    @JsonIgnore
+    private OffsetDateTime enrollStartDate;
 
-    // Mantain Id if supplied. Useful if only id is given
-    @JsonCreator
-    public OfferingDTO(String id) {
-        this.offeringId = id;
-    }
+    @JsonIgnore
+    private OffsetDateTime enrollEndDate;
 
-    /**
-     * @return the offeringId
-     */
-    public String getOfferingId() {
-        return offeringId;
-    }
+    private Integer maxNumberStudents;
+    private Integer enrolledNumberStudents;
+    private Integer pendingNumberStudents;
+    private Integer minNumberStudents;
+    private Boolean resultExpected;
 
-    /**
-     * @param offeringId the offeringId to set
-     */
-    public void setOfferingId(String offeringId) {
-        this.offeringId = offeringId;
-    }
+    @ValidEnumYaml(yamlfile = "resultValueType.yml")
+    private String resultValueType;
 
-    /**
-     * @return the startDate
-     */
-    public LocalDate getStartDate() {
-        return startDate;
-    }
+    private String link;
 
-    /**
-     * @param startDate the startDate to set
-     */
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
+    @JsonProperty("addresses")
+    private List<Address> addresses;
 
-    /**
-     * @return the endDate
-     */
-    public LocalDate getEndDate() {
-        return endDate;
-    }
+    @JsonProperty("priceInformation")
+    private List<Cost> priceInformation;
 
-    /**
-     * @param endDate the endDate to set
-     */
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
+    @JsonProperty("otherCodes")
+    private List<oeapiIdentifierEntry> otherCodes;
 
-    /**
-     * @return the teachingLanguage
-     */
-    public List<String> getTeachingLanguages() {
-        return teachingLanguages;
-    }
+    @JsonProperty("consumers")
+    private List<Consumer> consumers;
 
-    /**
-     * @param teachingLanguage the teachingLanguage to set
-     */
-    public void setTeachingLanguages(List<String> teachingLanguages) {
-        this.teachingLanguages = teachingLanguages;
-    }
-
-    /**
-     * @return the modeOfDelivery
-     */
-    public List<ModeOfDelivery> getModesOfDelivery() {
-        return modeOfDelivery;
-    }
-
-    /**
-     * @param modeOfDelivery the modeOfDelivery to set
-     */
-    public void setModesOfDelivery(List<ModeOfDelivery> modeOfDelivery) {
-        this.modeOfDelivery = modeOfDelivery;
-    }
-
-    /**
-     * @return the maxNumberStudents
-     */
-    public Integer getMaxNumberStudents() {
-        return maxNumberStudents;
-    }
-
-    /**
-     * @param maxNumberStudents the maxNumberStudents to set
-     */
-    public void setMaxNumberStudents(Integer maxNumberStudents) {
-        this.maxNumberStudents = maxNumberStudents;
-    }
-
-    /**
-     * @return the minNumberStudents
-     */
-    public Integer getMinNumberStudents() {
-        return minNumberStudents;
-    }
-
-    /**
-     * @param minNumberStudents the minNumberStudents to set
-     */
-    public void setMinNumberStudents(Integer minNumberStudents) {
-        this.minNumberStudents = minNumberStudents;
-    }
-
-    /**
-     * @return the enrolledNumberStudents
-     */
-    public Integer getEnrolledNumberStudents() {
-        return enrolledNumberStudents;
-    }
-
-    /**
-     * @param enrolledNumberStudents the enrolledNumberStudents to set
-     */
-    public void setEnrolledNumberStudents(Integer enrolledNumberStudents) {
-        this.enrolledNumberStudents = enrolledNumberStudents;
-    }
-
-    /**
-     * @return the pendingNumberStudents
-     */
-    public Integer getPendingNumberStudents() {
-        return pendingNumberStudents;
-    }
-
-    /**
-     * @param pendingNumberStudents the pendingNumberStudents to set
-     */
-    public void setPendingNumberStudents(Integer pendingNumberStudents) {
-        this.pendingNumberStudents = pendingNumberStudents;
-    }
-
-    /**
-     * @return the resultExpected
-     */
-    public Boolean getResultExpected() {
-        return resultExpected;
-    }
-
-    /**
-     * @param resultExpected the resultExpected to set
-     */
-    public void setResultExpected(Boolean resultExpected) {
-        this.resultExpected = resultExpected;
-    }
-
-    /**
-     * @return the resultValueType
-     */
-    public String getResultValueType() {
-        return resultValueType;
-    }
-
-    /**
-     * @param resultValueType the resultValueType to set
-     */
-    public void setResultValueType(String resultValueType) {
-        this.resultValueType = resultValueType;
-    }
-
-    /**
-     * @return the link
-     */
-    public String getLink() {
-        return link;
-    }
-
-    /**
-     * @param link the link to set
-     */
-    public void setLink(String link) {
-        this.link = link;
-    }
-
-    /**
-     * @return the enrollStartDate
-     */
-    public LocalDate getEnrollStartDate() {
-        return enrollStartDate;
-    }
-
-    /**
-     * @param enrollStartDate the enrollStartDate to set
-     */
-    public void setEnrollStartDate(LocalDate enrollStartDate) {
-        this.enrollStartDate = enrollStartDate;
-    }
-
-    /**
-     * @return the enrollEndDate
-     */
-    public LocalDate getEnrollEndDate() {
-        return enrollEndDate;
-    }
-
-    /**
-     * @param enrollEndDate the enrollEndDate to set
-     */
-    public void setEnrollEndDate(LocalDate enrollEndDate) {
-        this.enrollEndDate = enrollEndDate;
-    }
-
-    /**
-     * @return the flexibleEntryPeriodStart
-     */
-    public LocalDate getFlexibleEntryPeriodStart() {
-        return flexibleEntryPeriodStart;
-    }
-
-    /**
-     * @param flexibleEntryPeriodStart the flexibleEntryPeriodStart to set
-     */
-    public void setFlexibleEntryPeriodStart(LocalDate flexibleEntryPeriodStart) {
-        this.flexibleEntryPeriodStart = flexibleEntryPeriodStart;
-    }
-
-    /**
-     * @return the flexibleEntryPeriodEnd
-     */
-    public LocalDate getFlexibleEntryPeriodEnd() {
-        return flexibleEntryPeriodEnd;
-    }
-
-    /**
-     * @param flexibleEntryPeriodEnd the flexibleEntryPeriodEnd to set
-     */
-    public void setFlexibleEntryPeriodEnd(LocalDate flexibleEntryPeriodEnd) {
-        this.flexibleEntryPeriodEnd = flexibleEntryPeriodEnd;
-    }
-
-    /**
-     * @return the addresses
-     */
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    /**
-     * @param addresses the addresses to set
-     */
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
-    }
-
-    /**
-     * @return the priceInformation
-     */
-    public List<Cost> getPriceInformation() {
-        return priceInformation;
-    }
-
-    /**
-     * @param priceInformation the priceInformation to set
-     */
-    public void setPriceInformation(List<Cost> priceInformation) {
-        this.priceInformation = priceInformation;
-    }
-
-    /**
-     * @return the consumers
-     */
-    public List<Consumer> getConsumers() {
-        return consumers;
-    }
-
-    /**
-     * @param consumers the consumers to set
-     */
-    public void setConsumers(List<Consumer> consumers) {
-        this.consumers = consumers;
-    }
-
-    /**
-     * @return the otherCodes
-     */
-    public List<oeapiIdentifierEntry> getOtherCodes() {
-        return otherCodes;
-    }
-
-    /**
-     * @param otherCodes the otherCodes to set
-     */
-    public void setOtherCodes(List<oeapiIdentifierEntry> otherCodes) {
-        this.otherCodes = otherCodes;
-    }
-
-    /**
-     * @return the ext
-     */
-    public Ext getExt() {
-        return ext;
-    }
-
-    /**
-     * @param ext the ext to set
-     */
-    public void setExt(Ext ext) {
-        this.ext = ext;
-    }
-
-    // course
-    @JsonProperty("course")
-    private String courseId;
-    public String getCourseId() { return this.courseId; }
-    public void setCourseId(String id) { this.courseId = id; }
-
-    // programme
-    @JsonProperty("programme")
-    private String programmeId;
-    public String getProgrammeId() { return this.programmeId; }
-    public void setProgrammeId(String id) { this.programmeId = id; }
-
-    // component
-    @JsonProperty("component")
-    private String componentId;
-    public String getComponentId() { return this.componentId; }
-    public void setComponentId(String id) { this.componentId = id; }
-
-    // Since OfferingType cannot be declared as property as Jackson automatically creates it, set/get methods are special
-    // Extended classes override this response for each type
-    public String getOfferingType() {
-        if (courseId != null) {
-            return "course";
-        } else if (programmeId != null) {
-            return "programme";
-        } else if (componentId != null) {
-            return "component";
-        }
-
-        throw new RuntimeException("Unknown offering type");
-    }
-
-    public void setOfferingType(String offeringType) {
-        logger.warn("offeringType is determined automatically and cannot be set manually.");
-    }
+    @JsonProperty("ext")
+    private Ext ext;
 
     // organisation
 
-    @JsonProperty("organisation")
+    @JsonProperty("organisationId")
     private String organisationId;
 
     @JsonIgnore
     @oeapiDTOExpandable
     public Organisation organisation;
 
+    // academic session
+
+    @JsonProperty("academicSessionId")
+    private String academicSessionId;
+
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public AcademicSession academicSession;
+
+    /** One element of enrolmentPeriods. */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class EnrolmentPeriod {
+
+        private OffsetDateTime startDateTime;
+        private OffsetDateTime endDateTime;
+
+        public EnrolmentPeriod() {
+        }
+
+        public EnrolmentPeriod(OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
+            this.startDateTime = startDateTime;
+            this.endDateTime = endDateTime;
+        }
+
+        public OffsetDateTime getStartDateTime() {
+            return startDateTime;
+        }
+
+        public void setStartDateTime(OffsetDateTime startDateTime) {
+            this.startDateTime = startDateTime;
+        }
+
+        public OffsetDateTime getEndDateTime() {
+            return endDateTime;
+        }
+
+        public void setEndDateTime(OffsetDateTime endDateTime) {
+            this.endDateTime = endDateTime;
+        }
+    }
+
+    @JsonProperty("enrolmentPeriods")
+    public List<EnrolmentPeriod> enrolmentPeriodList() {
+        List<EnrolmentPeriod> periods = new ArrayList<>();
+        if (enrollStartDate != null) {
+            periods.add(new EnrolmentPeriod(enrollStartDate, enrollEndDate));
+        }
+        return periods;
+    }
+
+    @JsonProperty("enrolmentPeriods")
+    public void enrolmentPeriodsFromList(List<EnrolmentPeriod> periods) {
+        if (periods == null || periods.isEmpty()) {
+            this.enrollStartDate = null;
+            this.enrollEndDate = null;
+        } else {
+            this.enrollStartDate = periods.get(0).getStartDateTime();
+            this.enrollEndDate = periods.get(0).getEndDateTime();
+        }
+    }
+
+    // ---- accessors ----------------------------------------------------------
+
+    @JsonIgnore
+    public String getOfferingId() {
+        return offeringId;
+    }
+
+    @JsonIgnore
+    public void setOfferingId(String offeringId) {
+        this.offeringId = offeringId;
+    }
+
+    public List<oeapiLanguageTypedString> getName() {
+        return name;
+    }
+
+    public void setName(List<oeapiLanguageTypedString> name) {
+        this.name = name;
+    }
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
+
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
+    }
+
+    public List<oeapiLanguageTypedString> getDescription() {
+        return description;
+    }
+
+    public void setDescription(List<oeapiLanguageTypedString> description) {
+        this.description = description;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getRosteringState() {
+        return rosteringState;
+    }
+
+    public void setRosteringState(String rosteringState) {
+        this.rosteringState = rosteringState;
+    }
+
+    public List<String> getTeachingLanguages() {
+        return teachingLanguages;
+    }
+
+    public void setTeachingLanguages(List<String> teachingLanguages) {
+        this.teachingLanguages = teachingLanguages;
+    }
+
+    public List<ModeOfDelivery> getModesOfDelivery() {
+        return modesOfDelivery;
+    }
+
+    public void setModesOfDelivery(List<ModeOfDelivery> modesOfDelivery) {
+        this.modesOfDelivery = modesOfDelivery;
+    }
+
+    public OffsetDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(OffsetDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public OffsetDateTime getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(OffsetDateTime endDate) {
+        this.endDate = endDate;
+    }
+
+    @JsonIgnore
+    public OffsetDateTime getEnrollStartDate() {
+        return enrollStartDate;
+    }
+
+    @JsonIgnore
+    public void setEnrollStartDate(OffsetDateTime enrollStartDate) {
+        this.enrollStartDate = enrollStartDate;
+    }
+
+    @JsonIgnore
+    public OffsetDateTime getEnrollEndDate() {
+        return enrollEndDate;
+    }
+
+    @JsonIgnore
+    public void setEnrollEndDate(OffsetDateTime enrollEndDate) {
+        this.enrollEndDate = enrollEndDate;
+    }
+
+    public Integer getMaxNumberStudents() {
+        return maxNumberStudents;
+    }
+
+    public void setMaxNumberStudents(Integer maxNumberStudents) {
+        this.maxNumberStudents = maxNumberStudents;
+    }
+
+    public Integer getEnrolledNumberStudents() {
+        return enrolledNumberStudents;
+    }
+
+    public void setEnrolledNumberStudents(Integer enrolledNumberStudents) {
+        this.enrolledNumberStudents = enrolledNumberStudents;
+    }
+
+    public Integer getPendingNumberStudents() {
+        return pendingNumberStudents;
+    }
+
+    public void setPendingNumberStudents(Integer pendingNumberStudents) {
+        this.pendingNumberStudents = pendingNumberStudents;
+    }
+
+    public Integer getMinNumberStudents() {
+        return minNumberStudents;
+    }
+
+    public void setMinNumberStudents(Integer minNumberStudents) {
+        this.minNumberStudents = minNumberStudents;
+    }
+
+    public Boolean getResultExpected() {
+        return resultExpected;
+    }
+
+    public void setResultExpected(Boolean resultExpected) {
+        this.resultExpected = resultExpected;
+    }
+
+    public String getResultValueType() {
+        return resultValueType;
+    }
+
+    public void setResultValueType(String resultValueType) {
+        this.resultValueType = resultValueType;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public List<Cost> getPriceInformation() {
+        return priceInformation;
+    }
+
+    public void setPriceInformation(List<Cost> priceInformation) {
+        this.priceInformation = priceInformation;
+    }
+
+    public List<oeapiIdentifierEntry> getOtherCodes() {
+        return otherCodes;
+    }
+
+    public void setOtherCodes(List<oeapiIdentifierEntry> otherCodes) {
+        this.otherCodes = otherCodes;
+    }
+
+    public List<Consumer> getConsumers() {
+        return consumers;
+    }
+
+    public void setConsumers(List<Consumer> consumers) {
+        this.consumers = consumers;
+    }
+
+    public Ext getExt() {
+        return ext;
+    }
+
+    public void setExt(Ext ext) {
+        this.ext = ext;
+    }
+
+    @JsonIgnore
     public Organisation getOrganisation() {
         return organisation;
     }
 
+    @JsonIgnore
     public void setOrganisation(Organisation organisation) {
         this.organisation = organisation;
         this.organisationId = organisation == null ? null : organisation.getOrganisationId();
@@ -526,25 +389,19 @@ public class OfferingDTO extends PrimaryCode {
 
     public void setOrganisationId(String organisationId) {
         this.organisationId = organisationId;
-
-        if (this.organisation == null || this.organisation.getOrganisationId() != organisationId) {
-            this.organisation = organisationId == null ? null : new Organisation(organisationId);
+        if (organisationId == null) {
+            this.organisation = null;
+        } else if (this.organisation == null || !organisationId.equals(this.organisation.getOrganisationId())) {
+            this.organisation = new Organisation(organisationId);
         }
     }
 
-    // academic session
-
-    @JsonProperty("academicSession")
-    private String academicSessionId;
-
     @JsonIgnore
-    @oeapiDTOExpandable
-    public AcademicSession academicSession;
-
     public AcademicSession getAcademicSession() {
         return academicSession;
     }
 
+    @JsonIgnore
     public void setAcademicSession(AcademicSession academicSession) {
         this.academicSession = academicSession;
         this.academicSessionId = academicSession == null ? null : academicSession.getAcademicSessionId();
@@ -556,9 +413,10 @@ public class OfferingDTO extends PrimaryCode {
 
     public void setAcademicSessionId(String academicSessionId) {
         this.academicSessionId = academicSessionId;
-
-        if (this.academicSession == null || this.academicSession.getAcademicSessionId() != academicSessionId) {
-            this.academicSession = academicSessionId == null ? null : new AcademicSession(academicSessionId);
+        if (academicSessionId == null) {
+            this.academicSession = null;
+        } else if (this.academicSession == null || !academicSessionId.equals(this.academicSession.getAcademicSessionId())) {
+            this.academicSession = new AcademicSession(academicSessionId);
         }
     }
 }

@@ -18,7 +18,15 @@ import oeapi.model.Programme;
 import oeapi.model.ProgrammeOffering;
 import oeapi.oeapiException;
 import oeapi.oeapiUtils;
+import oeapi.model.ComponentOffering;
+import oeapi.payload.CourseOfferingDTO;
+import oeapi.payload.LearningComponentOfferingDTO;
 import oeapi.payload.OfferingDTO;
+import oeapi.payload.ProgrammeOfferingDTO;
+import oeapi.repository.ComponentOfferingRepository;
+import jakarta.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import oeapi.repository.ModeOfDeliveryRepository;
 import oeapi.repository.OfferingRepository;
 
@@ -56,6 +64,90 @@ public class OfferingService extends oeapiEndpointDTOService<Offering, OfferingR
 
     @Value("${ooapi.config.autoCreateOrgIfNotExists:false}")
     private boolean defaultAutoCreateOrgIfNotExists;
+
+    @Autowired
+    private ComponentOfferingRepository componentOfferingRepository;
+
+    @Autowired
+    private oeapiDTOMapperService typedMapperService;
+
+    // ---- OEAPI v6 typed offerings ---------------------------------------------
+    // v6 has no generic offering resource: course, programme and learning
+    // component offerings are published with their own DTO and id.
+
+    private oeapiDTOMapper<CourseOffering, CourseOfferingDTO> courseOfferingMapper;
+    private oeapiDTOMapper<ProgrammeOffering, ProgrammeOfferingDTO> programmeOfferingMapper;
+    private oeapiDTOMapper<ComponentOffering, LearningComponentOfferingDTO> learningComponentOfferingMapper;
+
+    @PostConstruct
+    public void registerTypedMappers() {
+        courseOfferingMapper();
+        programmeOfferingMapper();
+        learningComponentOfferingMapper();
+    }
+
+    private <E, D> oeapiDTOMapper<E, D> typedMapper(Class<E> entity, Class<D> dto) {
+        oeapiDTOMapper<E, D> mapper = new oeapiDTOMapper<>(entity, dto, null, Arrays.asList());
+        mapper.mapperService = typedMapperService;
+        if (typedMapperService != null) {
+            typedMapperService.register(mapper);
+        }
+        return mapper;
+    }
+
+    public synchronized oeapiDTOMapper<CourseOffering, CourseOfferingDTO> courseOfferingMapper() {
+        if (courseOfferingMapper == null) {
+            courseOfferingMapper = typedMapper(CourseOffering.class, CourseOfferingDTO.class);
+        }
+        return courseOfferingMapper;
+    }
+
+    public synchronized oeapiDTOMapper<ProgrammeOffering, ProgrammeOfferingDTO> programmeOfferingMapper() {
+        if (programmeOfferingMapper == null) {
+            programmeOfferingMapper = typedMapper(ProgrammeOffering.class, ProgrammeOfferingDTO.class);
+        }
+        return programmeOfferingMapper;
+    }
+
+    public synchronized oeapiDTOMapper<ComponentOffering, LearningComponentOfferingDTO> learningComponentOfferingMapper() {
+        if (learningComponentOfferingMapper == null) {
+            learningComponentOfferingMapper = typedMapper(ComponentOffering.class, LearningComponentOfferingDTO.class);
+        }
+        return learningComponentOfferingMapper;
+    }
+
+    /** Offerings of one subtype, for any offering list (by organisation, academic session...). */
+    public static <E extends Offering> List<E> ofType(List<? extends Offering> offerings, Class<E> type) {
+        return offerings.stream().filter(type::isInstance).map(type::cast).collect(Collectors.toList());
+    }
+
+    public Optional<CourseOffering> getCourseOffering(String id) {
+        return getById(id).filter(CourseOffering.class::isInstance).map(CourseOffering.class::cast);
+    }
+
+    public Optional<ProgrammeOffering> getProgrammeOffering(String id) {
+        return getById(id).filter(ProgrammeOffering.class::isInstance).map(ProgrammeOffering.class::cast);
+    }
+
+    public Optional<ComponentOffering> getLearningComponentOffering(String id) {
+        return getById(id).filter(ComponentOffering.class::isInstance).map(ComponentOffering.class::cast);
+    }
+
+    public List<Offering> getByOrganisationId(String organisationId) {
+        return repository.findByOrganisation_OrganisationId(organisationId);
+    }
+
+    public List<Offering> getByAcademicSessionId(String academicSessionId) {
+        return repository.findByAcademicSession_AcademicSessionId(academicSessionId);
+    }
+
+    public List<ComponentOffering> getByLearningComponentId(String componentId) {
+        return componentOfferingRepository.findByComponent_ComponentId(componentId);
+    }
+
+    public List<ComponentOffering> getByCourseOfferingId(String courseOfferingId) {
+        return componentOfferingRepository.findByCourseOffering_OfferingId(courseOfferingId);
+    }
 
     public OfferingService() {
         super();

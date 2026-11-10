@@ -1,5 +1,9 @@
 package oeapi.controller;
 
+import oeapi.controller.requestparameters.oeapiOfferingRequestParam;
+
+import oeapi.service.OfferingService;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,6 +57,9 @@ import oeapi.service.ProgrammeService;
 public class OrganisationController extends oeapiDTOController<Organisation, OrganisationDTO> {
 
     @Autowired
+    private OfferingService offeringService;
+
+    @Autowired
     private oeapiObjectsValidator validator;
 
     @Autowired
@@ -96,35 +103,36 @@ public class OrganisationController extends oeapiDTOController<Organisation, Org
     }
 
     @GetMapping(value = "/{id}/course-offerings", produces = "application/json")
-    public ResponseEntity<?> getCourseOfferings(@PathVariable String id, oeapiRequestParam requestParam) {
+    public ResponseEntity<?> getCourseOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
 
         Optional<Organisation> existing = organisationService.getById(id);
         if (!existing.isPresent()) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organisation with Id: " + id);
         }
-        throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering for Organisation with Id " + id);
+        return oeapiOfferingLists.page(requestParam,
+                offeringService.courseOfferingMapper().toDTOList(OfferingService.ofType(offeringService.getByOrganisationId(id), oeapi.model.CourseOffering.class)));
     }
 
-    //V6
     @GetMapping(value = "/{id}/programme-offerings", produces = "application/json")
-    public ResponseEntity<?> getProgrammeOfferings(@PathVariable String id, oeapiRequestParam requestParam) {
+    public ResponseEntity<?> getProgrammeOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
 
         Optional<Organisation> existing = organisationService.getById(id);
         if (!existing.isPresent()) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organisation with Id: " + id);
         }
-        throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering for Organisation with Id " + id);
+        return oeapiOfferingLists.page(requestParam,
+                offeringService.programmeOfferingMapper().toDTOList(OfferingService.ofType(offeringService.getByOrganisationId(id), oeapi.model.ProgrammeOffering.class)));
     }
 
-    //V6
     @GetMapping(value = "/{id}/learning-component-offerings", produces = "application/json")
-    public ResponseEntity<?> getComponentOfferings(@PathVariable String id, oeapiRequestParam requestParam) {
+    public ResponseEntity<?> getComponentOfferings(@PathVariable String id, @ModelAttribute oeapiOfferingRequestParam requestParam) {
 
         Optional<Organisation> existing = organisationService.getById(id);
         if (!existing.isPresent()) {
             throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Organisation with Id: " + id);
         }
-        throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Offering for Organisation with Id " + id);
+        return oeapiOfferingLists.page(requestParam,
+                offeringService.learningComponentOfferingMapper().toDTOList(OfferingService.ofType(offeringService.getByOrganisationId(id), oeapi.model.ComponentOffering.class)));
     }
 
     @GetMapping(value = "/{id}/courses", produces = "application/json")

@@ -69,15 +69,15 @@ public class ComponentOffering extends Offering {
     /**
      * @return the resultWeight
      */
-    public int getResultWeight() {
+    public Integer getResultWeight() {
         return resultWeight;
     }
 
     /**
      * @param resultWeight the resultWeight to set
      */
-    public void setResultWeight(int resultWeight) {
-        this.resultWeight = resultWeight;
+    public void setResultWeight(Integer resultWeight) {
+        this.resultWeight = resultWeight == null ? 0 : resultWeight;
     }
 
     /**
