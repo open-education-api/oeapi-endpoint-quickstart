@@ -9,7 +9,7 @@ import java.util.TreeSet;
 
 import oeapi.model.Metadata;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,12 +40,13 @@ public class MetadataController {
     private static final Set<String> OEAPI_VERBS = Set.of("GET", "PUT", "PATCH", "POST");
 
     private final Metadata metadata;
-    private final RequestMappingHandlerMapping handlerMapping;
+    private final ApplicationContext context;
 
-    public MetadataController(Metadata metadata,
-            @Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping) {
+    // The handler mapping is looked up on first use rather than injected, so this
+    // controller never takes part in the creation of the mapping that detects it.
+    public MetadataController(Metadata metadata, ApplicationContext context) {
         this.metadata = metadata;
-        this.handlerMapping = handlerMapping;
+        this.context = context;
     }
 
     @GetMapping(produces = "application/json")
@@ -61,6 +62,8 @@ public class MetadataController {
 
     private List<Metadata.SupportedOperation> supportedOperations() {
         Map<String, Set<String>> verbsByPath = new TreeMap<>();
+        RequestMappingHandlerMapping handlerMapping =
+                context.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class);
 
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMapping.getHandlerMethods().entrySet()) {
             RequestMappingInfo info = entry.getKey();
