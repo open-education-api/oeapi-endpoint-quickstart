@@ -589,7 +589,7 @@ function fieldHtml(type, name, value = '', options = {}) {
         list.id = `${name}-options-${++datalistId}`;
         field.setAttribute('aria-controls', list.id);
 
-        (options.options || []).forEach(([valueOption, label]) => {
+        sortOptionsByLabel(options.options || []).forEach(([valueOption, label]) => {
             if (valueOption === '') {
                 return;
             }
@@ -847,8 +847,13 @@ function fieldOptionsHtml(field, options = {}) {
     });
 }
 
+function sortOptionsByLabel(options) {
+    return [...options].sort(([valueA, labelA], [valueB, labelB]) =>
+        String(labelA || valueA).localeCompare(String(labelB || valueB)));
+}
+
 function enumOptionsHtml(options, selectedValue, optionsConfig = {}) {
-    return options.map(([value, label]) => {
+    return sortOptionsByLabel(options).map(([value, label]) => {
         const displayLabel = optionsConfig.showValue ? `${label} (${value})` : label;
         const option = createElement('option', {text: displayLabel});
         option.value = value;
