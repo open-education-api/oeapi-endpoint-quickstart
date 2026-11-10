@@ -1,28 +1,5 @@
 window.SurfView = window.SurfView || {};
 
-/** Loads all academic sessions into the lookup cache. */
-async function loadAcademicSessions() {
-    if (academicSessionsLoadPromise) {
-        return academicSessionsLoadPromise;
-    }
-
-    academicSessionsLoadPromise = (async () => {
-        academicSessionsById.clear();
-        const items = await loadAllEndpointItems('/academic-sessions');
-        items.forEach(academicSession => {
-            const id = academicSessionIdValue(academicSession);
-            if (id) {
-                academicSessionsById.set(String(id), academicSession);
-            }
-        });
-    })().catch(error => {
-        academicSessionsLoadPromise = null;
-        throw error;
-    });
-
-    return academicSessionsLoadPromise;
-}
-
 SurfView.AcademicSessions = (() => {
 
     /** Builds the academic session read-only detail view. */
@@ -205,10 +182,6 @@ SurfView.AcademicSessions = (() => {
                     updatedEntity: updatedAcademicSession,
                     id,
                     matchId: payload.academicSessionId,
-                    cacheMap: academicSessionsById,
-                    invalidateCache: () => {
-                        academicSessionsLoadPromise = null;
-                    },
                     title: academicSession => academicSessionLabel(academicSession) || id,
                     detailsHtml: academicSessionDetailsHtml,
                     renderList: SurfView.State.tab === 'academicSessions'
@@ -259,10 +232,6 @@ SurfView.AcademicSessions = (() => {
             id: academicSessionIdValue(SurfView.State.currentModalEntity),
             endpoint: id => `/academic-sessions/${encodeURIComponent(id)}`,
             confirmMessage: id => `Delete academic session ${id}?`,
-            cacheMap: academicSessionsById,
-            invalidateCache: () => {
-                academicSessionsLoadPromise = null;
-            },
             errorMessage: 'Unable to delete academic session'
         });
     }

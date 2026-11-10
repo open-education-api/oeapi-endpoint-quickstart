@@ -203,21 +203,22 @@ SurfView.UserAdmin = (() => {
         });
         form()?.addEventListener('submit', submit);
         form()?.addEventListener('keydown', event => {
+            const {target, key, shiftKey} = event;
             const password = form().elements.password;
             const roleInputs = [...form().querySelectorAll('[name="roles"]')];
-            if (event.key === 'Tab' && !event.shiftKey && event.target === password && roleInputs.length) {
+            if (key === 'Tab' && !shiftKey && target === password && roleInputs.length) {
                 event.preventDefault();
                 roleInputs[0].focus();
                 return;
             }
-            const roleIndex = roleInputs.indexOf(event.target);
-            if (event.key === 'Tab' && !event.shiftKey && roleIndex >= 0 && roleIndex < roleInputs.length - 1) {
+            const roleIndex = roleInputs.indexOf(target);
+            if (key === 'Tab' && !shiftKey && roleIndex >= 0 && roleIndex < roleInputs.length - 1) {
                 event.preventDefault();
                 roleInputs[roleIndex + 1].focus();
-            } else if (event.key === 'Tab' && event.shiftKey && roleIndex > 0) {
+            } else if (key === 'Tab' && shiftKey && roleIndex > 0) {
                 event.preventDefault();
                 roleInputs[roleIndex - 1].focus();
-            } else if (event.key === 'Tab' && event.shiftKey && roleIndex === 0) {
+            } else if (key === 'Tab' && shiftKey && roleIndex === 0) {
                 event.preventDefault();
                 password.focus();
             }

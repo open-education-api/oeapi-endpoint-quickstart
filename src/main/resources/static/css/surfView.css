@@ -1,14 +1,36 @@
 :root {
-    --blue: #2d66ad;
-    --blue-dark: #205995;
-    --blue-link: #2a70b8;
-    --yellow: #ffe24b;
-    --text: #1f2328;
-    --muted: #5d6673;
-    --line: #d6d8dc;
-    --soft-line: #e7e8ea;
-    --page: #ffffff;
+    /* Blues */
+    --active-link-background: #edf4fc;
     --filter-highlight: #cfe2fb;
+    --button-line: #7fa7cc;
+    --chip-line: #b9cbe0;
+    --blue: #2d66ad;
+    --spinner-color: #0077a8;
+    --blue-dark: #205995;
+
+    /* Reds */
+    --danger-background: #fff5f5;
+    --danger-line: #c58d8d;
+    --danger-text: #a12622;
+    --error-text: #8a1f1f;
+    --debug-text: #7a1f1f;
+
+    /* Greys */
+    --detail-nav-background: #f6f8fa;
+    --soft-line: #e7e8ea;
+    --line: #cfd2d7;
+    --placeholder-text: #b2b8c0;
+    --medium-grey: #9ba1a8;
+    --muted: #5d6673;
+
+    /* Blacks */
+    --text: #1f2328;
+    --charcoal: #333;
+    --dark-text: #111;
+
+    /* Others */
+    --yellow: #ffe24b;
+    --white: #ffffff;
 }
 
 * {
@@ -18,7 +40,7 @@
 body {
     margin: 0;
     color: var(--text);
-    background: var(--page);
+    background: var(--white);
     font-family: "Nunito Sans", "Open Sans", "Helvetica Neue", Arial, sans-serif;
     font-size: 15px;
     letter-spacing: 0;
@@ -37,7 +59,7 @@ select {
     min-height: 82px;
     padding: 0 28px;
     background: var(--blue);
-    color: #fff;
+    color: var(--white);
 }
 
 .brand {
@@ -80,7 +102,7 @@ select {
     border: 0;
     border-bottom: 7px solid transparent;
     background: transparent;
-    color: #fff;
+    color: var(--white);
     cursor: pointer;
     font-size: 18px;
     font-weight: 700;
@@ -93,7 +115,7 @@ select {
 }
 
 .tab-button.active {
-    border-bottom-color: #fff;
+    border-bottom-color: var(--white);
 }
 
 .auth-actions {
@@ -130,7 +152,7 @@ select {
     display: block;
     height: 3px;
     border-radius: 2px;
-    background: #fff;
+    background: var(--white);
 }
 
 .account-menu-items {
@@ -142,7 +164,7 @@ select {
     padding: 6px;
     border: 1px solid var(--line);
     border-radius: 8px;
-    background: #fff;
+    background: var(--white);
     box-shadow: 0 10px 28px rgba(24, 40, 55, 0.22);
 }
 
@@ -160,7 +182,7 @@ select {
 
 .account-menu-items button:hover,
 .account-menu-items button:focus-visible {
-    background: #edf4fc;
+    background: var(--active-link-background);
     outline: none;
 }
 
@@ -211,7 +233,7 @@ select {
 .user-row-actions button {
     border: 0;
     background: transparent;
-    color: var(--blue-link);
+    color: var(--blue);
     cursor: pointer;
     font-weight: 700;
 }
@@ -255,13 +277,13 @@ select {
 }
 
 .login-link {
-    color: #fff;
+    color: var(--white);
     font-size: 18px;
     text-decoration: none;
 }
 
 .auth-status-label {
-    color: #fff;
+    color: var(--white);
     font-size: 15px;
     font-weight: 800;
     white-space: nowrap;
@@ -322,7 +344,7 @@ select {
     align-items: center;
     gap: 10px;
     margin: 12px 0;
-    color: #333;
+    color: var(--charcoal);
     font-size: 16px;
 }
 
@@ -334,7 +356,7 @@ select {
 }
 
 .checkbox-row.disabled {
-    color: #9ba1a8;
+    color: var(--medium-grey);
 }
 
 .main {
@@ -363,14 +385,14 @@ select {
     width: 100%;
     height: 58px;
     padding: 0 64px 0 22px;
-    border: 1px solid #8e98a4;
+    border: 1px solid var(--medium-grey);
     border-radius: 12px;
     color: var(--text);
     font-size: 16px;
 }
 
 .search input::placeholder {
-    color: #b2b8c0;
+    color: var(--placeholder-text);
 }
 
 .search-icon {
@@ -379,7 +401,7 @@ select {
     top: 50%;
     width: 31px;
     height: 31px;
-    border: 6px solid var(--blue-link);
+    border: 6px solid var(--blue);
     border-radius: 50%;
     transform: translateY(-58%);
 }
@@ -390,7 +412,7 @@ select {
     bottom: -12px;
     width: 16px;
     height: 6px;
-    background: var(--blue-link);
+    background: var(--blue);
     border-radius: 4px;
     content: "";
     transform: rotate(45deg);
@@ -404,7 +426,7 @@ select {
 
 .table-wrap {
     overflow-x: auto;
-    background: #fff;
+    background: var(--white);
 }
 
 table {
@@ -416,7 +438,7 @@ table {
 th,
 td {
     padding: 18px 16px;
-    border-bottom: 1px solid #cfd2d7;
+    border-bottom: 1px solid var(--line);
     text-align: left;
     vertical-align: middle;
 }
@@ -424,8 +446,8 @@ td {
 th {
     padding-top: 0;
     padding-bottom: 14px;
-    border-bottom: 2px solid #3d3d3d;
-    color: #111;
+    border-bottom: 2px solid var(--charcoal);
+    color: var(--dark-text);
     font-size: 16px;
     font-weight: 700;
 }
@@ -436,12 +458,12 @@ td {
 
 .name-cell {
     max-width: 560px;
-    color: var(--blue-link);
+    color: var(--blue);
     font-weight: 700;
 }
 
 .name-cell a {
-    color: var(--blue-link);
+    color: var(--blue);
     text-decoration: none;
 }
 
@@ -454,7 +476,7 @@ td {
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--blue-link);
+    color: var(--blue);
     cursor: pointer;
     font-weight: 700;
     text-align: left;
@@ -477,15 +499,15 @@ td {
 .empty,
 .error {
     padding: 48px 20px;
-    border-top: 2px solid #3d3d3d;
-    border-bottom: 1px solid #cfd2d7;
+    border-top: 2px solid var(--charcoal);
+    border-bottom: 1px solid var(--line);
     color: var(--muted);
     font-size: 17px;
     text-align: center;
 }
 
 .error {
-    color: #8a1f1f;
+    color: var(--error-text);
 }
 
 .pager {
@@ -503,16 +525,16 @@ td {
 .pager button {
     min-width: 112px;
     min-height: 46px;
-    border: 1px solid #7fa7cc;
+    border: 1px solid var(--button-line);
     border-radius: 8px;
-    background: #fff;
-    color: var(--blue-link);
+    background: var(--white);
+    color: var(--blue);
     cursor: pointer;
     font-weight: 700;
 }
 
 .pager button:disabled {
-    color: #9ba1a8;
+    color: var(--medium-grey);
     cursor: not-allowed;
 }
 
@@ -541,7 +563,7 @@ td {
     width: min(1120px, 100%);
     max-height: min(860px, 92vh);
     overflow: hidden;
-    background: #fff;
+    background: var(--white);
     border-radius: 4px;
     box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
 }
@@ -620,7 +642,7 @@ td {
     overflow: hidden;
     padding: 24px 18px;
     border-right: 1px solid var(--line);
-    background: #f7f9fb;
+    background: var(--detail-nav-background);
 }
 
 .detail-nav-label {
@@ -649,13 +671,13 @@ td {
     width: auto;
     padding: 5px 8px;
     border: 1px solid var(--line);
-    background: #fff;
+    background: var(--white);
     font-size: 13px;
 }
 
 .detail-nav a.language-nav-link.active {
-    border-color: var(--blue-link);
-    background: #e7f1fb;
+    border-color: var(--blue);
+    background: var(--active-link-background);
     color: var(--blue-dark);
 }
 
@@ -665,8 +687,8 @@ td {
     padding: 5px 8px;
     border: 1px solid var(--line);
     border-radius: 4px;
-    background: #fff;
-    color: var(--blue-link);
+    background: var(--white);
+    color: var(--blue);
     cursor: pointer;
     font: inherit;
     font-size: 13px;
@@ -674,8 +696,8 @@ td {
 }
 
 .language-nav-button.active {
-    border-color: var(--blue-link);
-    background: #e7f1fb;
+    border-color: var(--blue);
+    background: var(--active-link-background);
     color: var(--blue-dark);
 }
 
@@ -685,7 +707,7 @@ td {
     width: 100%;
     padding: 9px 10px;
     border-radius: 4px;
-    color: var(--blue-link);
+    color: var(--blue);
     font-size: 15px;
     font-weight: 700;
     line-height: 1.25;
@@ -695,7 +717,7 @@ td {
 
 .detail-nav a:hover,
 .detail-nav a:focus-visible {
-    background: #e7f1fb;
+    background: var(--active-link-background);
     outline: none;
 }
 
@@ -774,10 +796,10 @@ td {
     width: 132px;
     min-height: 38px;
     padding: 0 14px;
-    border: 1px solid #7fa7cc;
+    border: 1px solid var(--button-line);
     border-radius: 4px;
-    background: #fff;
-    color: var(--blue-link);
+    background: var(--white);
+    color: var(--blue);
     cursor: pointer;
     font-size: 14px;
     font-weight: 800;
@@ -785,27 +807,27 @@ td {
 
 .detail-action-button:hover,
 .detail-action-button:focus-visible {
-    border-color: var(--blue-link);
-    background: #e7f1fb;
+    border-color: var(--blue);
+    background: var(--active-link-background);
     outline: none;
 }
 
 .detail-action-button:disabled {
     border-color: var(--line);
-    background: #f6f8fa;
-    color: #9ba1a8;
+    background: var(--detail-nav-background);
+    color: var(--medium-grey);
     cursor: not-allowed;
 }
 
 .danger-button {
-    border-color: #c58d8d;
-    color: #a12622;
+    border-color: var(--danger-line);
+    color: var(--danger-text);
 }
 
 .danger-button:hover,
 .danger-button:focus-visible {
-    border-color: #a12622;
-    background: #fff5f5;
+    border-color: var(--danger-text);
+    background: var(--danger-background);
 }
 
 .main-action-button {
@@ -822,10 +844,10 @@ td {
     margin-top: 12px;
     min-height: 34px;
     padding: 0 12px;
-    border: 1px solid #7fa7cc;
+    border: 1px solid var(--button-line);
     border-radius: 4px;
-    background: #fff;
-    color: var(--blue-link);
+    background: var(--white);
+    color: var(--blue);
     cursor: pointer;
     font: inherit;
     font-size: 13px;
@@ -834,8 +856,8 @@ td {
 
 .json-preview-button:hover,
 .json-preview-button:focus-visible {
-    border-color: var(--blue-link);
-    background: #e7f1fb;
+    border-color: var(--blue);
+    background: var(--active-link-background);
     outline: none;
 }
 
@@ -869,7 +891,7 @@ td {
     margin: 0;
     overflow: auto;
     padding: 22px 30px 30px;
-    background: #f6f8fa;
+    background: var(--detail-nav-background);
     color: var(--text);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     font-size: 13px;
@@ -882,8 +904,8 @@ td {
     margin: 0;
     overflow: auto;
     padding: 22px 30px 30px;
-    background: #f6f8fa;
-    color: #7a1f1f;
+    background: var(--detail-nav-background);
+    color: var(--debug-text);
     border-top: 1px solid var(--line);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     font-size: 13px;
@@ -918,7 +940,7 @@ td {
 }
 
 .required-marker {
-    color: #b42318;
+    color: var(--danger-text);
     font-weight: 800;
 }
 
@@ -947,7 +969,7 @@ td {
     appearance: none;
     -webkit-appearance: none;
     padding-right: 30px;
-    background-color: #fff;
+    background-color: var(--white);
     background-image:
         linear-gradient(45deg, transparent 50%, var(--muted) 50%),
         linear-gradient(135deg, var(--muted) 50%, transparent 50%);
@@ -974,7 +996,7 @@ td {
     padding: 4px;
     border: 1px solid var(--line);
     border-radius: 4px;
-    background: #fff;
+    background: var(--white);
     box-shadow: 0 12px 28px rgba(21, 32, 43, 0.18);
     text-transform: none;
 }
@@ -985,7 +1007,7 @@ td {
     align-items: center;
     padding: 10px 12px;
     border-radius: 3px;
-    background: #fff;
+    background: var(--white);
     color: var(--text);
     cursor: pointer;
     font-size: 15px;
@@ -993,14 +1015,13 @@ td {
     line-height: 1.25;
 }
 
-.datalist-option:hover,
 .datalist-option.active {
-    background: #e7f1fb;
+    background: var(--active-link-background);
     color: var(--blue-dark);
 }
 
 .offering-form input[readonly] {
-    background: #f6f8fa;
+    background: var(--detail-nav-background);
     color: var(--muted);
     cursor: default;
 }
@@ -1057,7 +1078,7 @@ td {
     padding: 8px;
     border: 1px solid var(--line);
     border-radius: 4px;
-    background: #fff;
+    background: var(--white);
 }
 
 .offering-form .module-array-editor input {
@@ -1083,9 +1104,9 @@ td {
     gap: 6px;
     max-width: 100%;
     padding: 4px 7px;
-    border: 1px solid #b9cbe0;
+    border: 1px solid var(--chip-line);
     border-radius: 4px;
-    background: #eef5fc;
+    background: var(--active-link-background);
     color: var(--text);
     font-size: 13px;
     font-weight: 600;
@@ -1101,7 +1122,7 @@ td {
     border: 0;
     padding: 0 2px;
     background: transparent;
-    color: #b42318;
+    color: var(--danger-text);
     cursor: pointer;
     font: inherit;
     font-weight: 800;
@@ -1193,7 +1214,7 @@ td {
 .offering-form-status.error {
     gap: 10px;
     max-width: min(520px, 100%);
-    color: #8a1f1f;
+    color: var(--error-text);
 }
 
 .offering-form-status-text {
@@ -1207,10 +1228,10 @@ td {
     flex: 0 0 auto;
     min-height: 30px;
     padding: 0 10px;
-    border: 1px solid #c58d8d;
+    border: 1px solid var(--danger-line);
     border-radius: 4px;
-    background: #fff;
-    color: #8a1f1f;
+    background: var(--white);
+    color: var(--error-text);
     cursor: pointer;
     font: inherit;
     font-size: 12px;
@@ -1219,7 +1240,7 @@ td {
 
 .error-maximize-button:hover,
 .error-maximize-button:focus-visible {
-    background: #fff5f5;
+    background: var(--danger-background);
     outline: none;
 }
 
@@ -1228,7 +1249,7 @@ td {
     padding: 14px;
     border: 1px solid var(--line);
     border-radius: 4px;
-    background: #fff;
+    background: var(--white);
 }
 
 .consumer-panel,
@@ -1279,18 +1300,18 @@ td {
 
 .language-delete-button {
     min-width: 30px;
-    border: 1px solid #c58d8d;
+    border: 1px solid var(--danger-line);
     border-left: 0;
     border-radius: 0 4px 4px 0;
-    background: #fff;
-    color: #a12622;
+    background: var(--white);
+    color: var(--danger-text);
     cursor: pointer;
     font: inherit;
 }
 
 .language-delete-button:hover:not(:disabled) {
-    border-color: #a12622;
-    background: #fff5f5;
+    border-color: var(--danger-text);
+    background: var(--danger-background);
 }
 
 .language-delete-button:disabled {
@@ -1328,7 +1349,7 @@ td {
     flex: 0 0 auto;
     border: 0;
     background: transparent;
-    color: #b42318;
+    color: var(--danger-text);
     cursor: pointer;
     font: inherit;
     font-size: 13px;
@@ -1345,7 +1366,7 @@ td {
 .nested-item-edit {
     border: 0;
     background: transparent;
-    color: var(--blue-link);
+    color: var(--blue);
     cursor: pointer;
     font: inherit;
     font-size: 13px;
@@ -1373,7 +1394,7 @@ td {
     padding: 16px;
     border: 1px solid var(--line);
     border-radius: 4px;
-    background: #fff;
+    background: var(--white);
 }
 
 .offering-card + .offering-card {
@@ -1385,9 +1406,9 @@ td {
     overflow: auto;
     margin: 0;
     padding: 16px;
-    background: #f6f8fa;
+    background: var(--detail-nav-background);
     border: 1px solid var(--line);
-    color: #1f2328;
+    color: var(--text);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     font-size: 13px;
     line-height: 1.45;
@@ -1510,7 +1531,7 @@ button.logout-link {
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 4px;
     background: transparent;
-    color: #fff;
+    color: var(--white);
     cursor: pointer;
     font: inherit;
     font-size: 14px;
@@ -1542,4 +1563,51 @@ body.private-login-required #login-modal-backdrop {
 
 .hidden {
     display: none !important;
+}
+
+.lookup-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    border: 2px solid var(--line);
+    border-top-color: var(--spinner-color);
+    border-radius: 50%;
+    animation: lookup-spin 0.75s linear infinite;
+}
+
+@keyframes lookup-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* The readonly input that stands in for a lookup select; styled like the
+   select it replaces regardless of the enclosing form. */
+.datalist-combobox > input[data-lookup-input] {
+    color: var(--text);
+    cursor: pointer;
+    padding-right: 30px;
+    background-color: var(--white);
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position:
+        calc(100% - 15px) 50%,
+        calc(100% - 10px) 50%;
+    background-repeat: no-repeat;
+    background-size: 5px 5px;
+}
+
+.datalist-combobox:has(> .lookup-spinner) > input[data-lookup-input] {
+    background-image: none;
+}
+
+.datalist-combobox > .lookup-spinner {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.6rem;
+    pointer-events: none;
+}
+
+.datalist-combobox > select[hidden] {
+    display: none;
 }
