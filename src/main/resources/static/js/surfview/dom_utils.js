@@ -581,9 +581,12 @@ function fieldHtml(type, name, value = '', options = {}) {
         const wrapper = cloneTemplate('datalist-combobox-template');
 
         field = wrapper.querySelector('input');
-        field.name = name;
-        field.value = fieldValue;
-        field.setAttribute('value', fieldValue);
+        const submittedField = document.createElement('input');
+        submittedField.type = 'hidden';
+        submittedField.name = name;
+        submittedField.value = fieldValue;
+        submittedField.dataset.datalistSubmittedValue = '';
+        wrapper.append(submittedField);
 
         const list = wrapper.querySelector('.datalist-options');
         list.id = `${name}-options-${++datalistId}`;
@@ -600,6 +603,16 @@ function fieldHtml(type, name, value = '', options = {}) {
             option.setAttribute('role', 'option');
             option.textContent = options.showValue && label ? `${label} (${valueOption})` : label || valueOption;
             list.append(option);
+        });
+
+        const selectedOption = [...list.children].find(option => option.dataset.datalistValue === String(fieldValue));
+        field.value = selectedOption ? selectedOption.textContent : fieldValue;
+        field.setAttribute('value', field.value);
+        field.addEventListener('input', () => {
+            const enteredValue = field.value.trim();
+            const matchingOption = [...list.children].find(option =>
+                option.textContent === enteredValue || option.dataset.datalistValue === enteredValue);
+            submittedField.value = matchingOption ? matchingOption.dataset.datalistValue : field.value;
         });
 
         fieldOptionsHtml(field, options);
@@ -724,7 +737,7 @@ function selectDatalistOption(input, option) {
         lookupSelect.dispatchEvent(new Event('change', {bubbles: true}));
         input.value = textContent;
     } else {
-        input.value = datalistValue || textContent;
+        input.value = textContent;
         input.dispatchEvent(new Event('input', {bubbles: true}));
         input.dispatchEvent(new Event('change', {bubbles: true}));
     }
