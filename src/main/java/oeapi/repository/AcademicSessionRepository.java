@@ -18,6 +18,4 @@ public interface AcademicSessionRepository extends oeapiUnitaRepositoryBase<Acad
 
     Page<AcademicSession> findByAcademicSessionType(String academicSessionType, Pageable pageable);
 
-    List<AcademicSession> findByParent_AcademicSessionId(String parentId);
-
 }

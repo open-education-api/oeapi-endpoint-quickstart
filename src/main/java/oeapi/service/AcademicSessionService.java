@@ -22,7 +22,11 @@ import org.springframework.stereotype.Service;
 public class AcademicSessionService extends oeapiEndpointService<AcademicSession, AcademicSessionRepository> {
 
     public List<AcademicSession> getChildren(String parentId) {
-        return repository.findByParent_AcademicSessionId(parentId);
+        // AcademicSession.parent carries no JPA association (Hibernate keeps it as a
+        // plain value), so it cannot be used in a query: filter in memory instead.
+        return repository.findAll().stream()
+                .filter(session -> parentId.equals(session.getParentId()))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     public AcademicSessionService() {
