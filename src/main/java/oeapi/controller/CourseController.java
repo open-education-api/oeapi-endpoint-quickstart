@@ -174,45 +174,6 @@ public class CourseController extends oeapiDTOController<Course, CourseDTO> impl
         return super.createOrUpdate(courseId, dto, courseService);
     }
 
-    // Igual no es necesario
-    @PostMapping(value = "/{courseId}/update", produces = "application/json")
-    public ResponseEntity<?> postCourse(@PathVariable String courseId, @Valid
-            @RequestBody Course course ) {
-
-        Errors errors = new BeanPropertyBindingResult(course, "course");
-        super.Validate(course, errors);
-
-        if (errors.hasErrors()) {
-            throw new oeapiException(HttpStatus.NOT_FOUND, errors.getAllErrors().toString());
-        }
-
-        logger.debug("Update by post: Course is valid");
-
-        /* Check course Id  */
-        Optional<Course> existing = courseService.getById(courseId);
-
-        if (existing.isPresent()) {
-
-            logger.debug("Update by post: Ok, previous Course exists");
-
-//     In case the update is done with a JSON with less attributes
-//     or just the ones we want to update, something like could be done:
-//
-//           CourseDTO updatedCourse = existing.get();
-//           logger.debug("Updating by post: Update entity fields");
-//           copyNonNullProperties(course, updatedCourse);
-//
-//     Enforce to mantain same UID, just in case
-//           updatedCourse.setCourseId(courseId);
-            course.setCourseId(existing.get().getCourseId());
-            logger.debug("Updating by post: Calling Service to update BD");
-            return super.update(course, courseService);
-
-        } else {
-            return super.createErrorResponse(HttpStatus.BAD_REQUEST, "Course does not exist", "Course [" + courseId + "] exists");
-        }
-    }
-
     @PostMapping(value = {"/loadbyjson"}, produces = "application/json")
     public ResponseEntity<String> createByCoursesJSON(@RequestBody List<CourseDTO> items) {
         return super.createByJSON(items, courseService);

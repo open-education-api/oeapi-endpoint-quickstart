@@ -190,46 +190,6 @@ public class OrganisationController extends oeapiDTOController<Organisation, Org
         return super.createDTO(o, organisationService);
     }
 
-    @PutMapping(value = "/{organisationId}", produces = "application/json")
-    public ResponseEntity<?> updateOrganisation(@PathVariable String organisationId, @RequestBody OrganisationDTO o) {
- 
-        // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 
-        if ((o.getOrganisationId() == null) || (!o.getOrganisationId().equalsIgnoreCase(organisationId))) {
-            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organisation: organisationId on JSON does not match URL request or is missing : [" + organisationId + "," + o.getOrganisationId() + "]");
-        }
-        
-        // Check organisation is not parent of itself.  This may lead to an infinite loop getting its children
-        if ((o.getParent() != null) && o.getParent().getOrganisationId().equalsIgnoreCase(organisationId)) {
-            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organisation: organisation cannot be parent of itself! Check organisation and parent ids");
-        }
-        
-        Errors errors = new BeanPropertyBindingResult(o, "organisation");
-        validator.validate(o, errors);
-        if (errors.hasErrors()) {
-            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error updating Organisation at validate: " + errors.getAllErrors());
-        }
-        return super.updateDTO(o, organisationService);
-    }
-
-    @Deprecated
-    @PostMapping("/{organisationId}/update")
-    public ResponseEntity<?> updateOrganisation(@PathVariable String organisationId, @RequestBody Organisation o) {
-
-        // Check Id first. Id might not be necessary in JSON but we ask for it to double check we update the right object. 
-        if ((o.getOrganisationId() == null) || (!o.getOrganisationId().equalsIgnoreCase(organisationId))) {
-            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error putting Organisation: organisationId on JSON does not match URL request or is missing : [" + organisationId + "," + o.getOrganisationId() + "]");
-        }
-
-        Errors errors = new BeanPropertyBindingResult(o, "organisation");
-        validator.validate(o, errors);
-        if (errors.hasErrors()) {
-            throw new oeapiException(HttpStatus.BAD_REQUEST, "Error updating Organisation at validate: " + errors.getAllErrors());
-        }
-        organisationService.update(organisationId, o);
-
-        return ResponseEntity.ok("Organisation updated successfully");
-    }
-
     @DeleteMapping("/{organisationId}")
     public ResponseEntity<?> deleteOrganisation(@PathVariable String organisationId) {
 

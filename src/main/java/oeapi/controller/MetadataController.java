@@ -35,7 +35,7 @@ public class MetadataController {
     /** Paths of this implementation that are not part of the OEAPI specification. */
     private static final List<String> NON_SPEC_PATH_PARTS = List.of(
             "/auth", "/admin", "/health", "/_quickdashboard", "/enumerator", "/fieldsofstudy",
-            "/loadbyjson", "/update", "/deleteBy", "/error");
+            "/loadbyjson", "/error");
 
     private static final Set<String> OEAPI_VERBS = Set.of("GET", "PUT", "PATCH", "POST");
 
