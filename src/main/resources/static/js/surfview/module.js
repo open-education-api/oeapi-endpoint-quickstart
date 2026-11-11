@@ -47,7 +47,7 @@ SurfView.Module = (() => {
         const hasAssessment = assessment.length > 0;
         const hasQualificationRequirements = qualificationRequirements.length > 0;
         const hasRequirements = hasAdmissionRequirements || hasQualificationRequirements;
-        const resources = (Array.isArray(module.resources) ? module.resources : []).filter(Boolean);
+        const resources = (module.resources ?? []).filter(Boolean);
         const hasResources = resources.length > 0;
         const hasConsumers = Array.isArray(module.consumers) && module.consumers.length > 0;
         const moduleDetailId = entityId(kind, module);
@@ -271,7 +271,7 @@ SurfView.Module = (() => {
 
     function moduleEditFormHtml(kind, module, mode = 'edit') {
         moduleDraftLanguageController.initialize({kind, module});
-        SurfView.State.draftEntity.addresses = Array.isArray(module.addresses) ? structuredClone(module.addresses) : [];
+        SurfView.State.draftEntity.addresses = structuredClone(module.addresses ?? []);
         const id = entityId(kind, module);
         const studyLoad = module.studyLoad || {};
         const studyLoadUnit = studyLoad.studyLoadUnit || studyLoad.unit || 'ects';
@@ -337,7 +337,7 @@ SurfView.Module = (() => {
     }
 
     function coordinatorIds(module) {
-        return (Array.isArray(module?.coordinators) ? module.coordinators : [])
+        return (module?.coordinators ?? [])
             .map(coordinator => typeof coordinator === 'string' ? coordinator : entityId('person', coordinator))
             .filter(Boolean)
             .map(String);
@@ -801,7 +801,7 @@ SurfView.Module = (() => {
     }
 
     function moduleConsumersFromForm(form, originalModule) {
-        const originalConsumers = Array.isArray(originalModule?.consumers) ? originalModule.consumers : [];
+        const originalConsumers = originalModule?.consumers ?? [];
 
         return [...form.querySelectorAll('.module-consumer-row')].map(consumerRow => {
             const originalConsumerIndex = originalIndex(consumerRow.dataset.originalConsumerIndex);
@@ -810,7 +810,7 @@ SurfView.Module = (() => {
                 : {};
             const consumer = structuredClone(originalConsumer || {});
             const allianceRows = [...consumerRow.querySelectorAll('.module-alliance-row')];
-            const originalAlliances = Array.isArray(originalConsumer?.alliances) ? originalConsumer.alliances : [];
+            const originalAlliances = originalConsumer?.alliances ?? [];
 
             consumer.consumerKey = consumerRow.querySelector('input[name="consumerKey"]')?.value.trim() || '';
             consumer.alliances = allianceRows.map(allianceRow => moduleAllianceFromRow(allianceRow, originalAlliances));

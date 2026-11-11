@@ -62,7 +62,7 @@ function selectedActiveEnrollmentFilters() {
 }
 
 function entityMatchesSelectedAffiliation(entity, selectedAffiliations) {
-    const affiliations = new Set((Array.isArray(entity.affiliations) ? entity.affiliations : [])
+    const affiliations = new Set((entity.affiliations ?? [])
         .map(normalizeFilterValue));
     return selectedAffiliations.some(affiliation => affiliations.has(affiliation));
 }

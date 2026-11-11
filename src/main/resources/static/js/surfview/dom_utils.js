@@ -170,7 +170,7 @@ function surfConsumerSelection(source = {}, options = {}) {
         return {consumer: source.consumer, index: ''};
     }
 
-    const consumers = Array.isArray(source.consumers) ? source.consumers : [];
+    const consumers = source.consumers ?? [];
     let index = consumers.findIndex(consumer => consumer?.consumerKey === Constants.offeringConsumer.consumerKey);
     if (index < 0 && options.fallbackFirst && consumers.length) {
         index = 0;
@@ -182,7 +182,7 @@ function surfConsumerSelection(source = {}, options = {}) {
 }
 
 function surfAllianceSelection(consumer = {}, options = {}) {
-    const alliances = Array.isArray(consumer.alliances) ? consumer.alliances : [];
+    const alliances = consumer.alliances ?? [];
     const names = options.names || [Constants.offeringConsumer.defaultAllianceName];
     let index = alliances.findIndex(alliance => names.includes(alliance?.name));
     if (index < 0 && options.fallbackFirst && alliances.length) {

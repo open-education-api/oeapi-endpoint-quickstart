@@ -14,9 +14,9 @@ SurfView.Organizations = (() => {
             ['Logo', organization.logo]
         ];
         const description = detailTextValue(organization.description);
-        const consumers = Array.isArray(organization.consumers) ? organization.consumers : [];
-        const otherCodes = Array.isArray(organization.otherCodes) ? organization.otherCodes : [];
-        const addresses = Array.isArray(organization.addresses) ? organization.addresses : [];
+        const consumers = organization.consumers ?? [];
+        const otherCodes = organization.otherCodes ?? [];
+        const addresses = organization.addresses ?? [];
         const layout = cloneTemplate('detail-layout-template', null, {navLabel: 'Organization detail sections'});
         const nav = layout.querySelector('.detail-nav');
         nav.append(
@@ -92,7 +92,7 @@ SurfView.Organizations = (() => {
 
     function organizationFormFragment(organization, mode = 'edit') {
         organizationDraftLanguageController.initialize(organization);
-        SurfView.State.draftEntity.addresses = Array.isArray(organization.addresses) ? structuredClone(organization.addresses) : [];
+        SurfView.State.draftEntity.addresses = structuredClone(organization.addresses ?? []);
         const form = entityEditFormElement('organization', mode);
         form.append(
             ...primaryCodeFormFields({
@@ -189,7 +189,7 @@ SurfView.Organizations = (() => {
             section.querySelector('button').dataset['addOrganizationCode'] = '';
         }, {title: 'Other codes', buttonText: 'Add code'})
         const list = createElement('div#organization-code-list.organization-code-list');
-        (Array.isArray(codes) ? codes : []).forEach((code, index) => list.append(organizationCodeRow(code, index)));
+        (codes ?? []).forEach((code, index) => list.append(organizationCodeRow(code, index)));
         section.append(list);
         return section;
     }
@@ -307,7 +307,7 @@ SurfView.Organizations = (() => {
         payload.logo = value('logo');
         Object.assign(payload, organizationDraftLanguageController.payloadValues());
         payload.consumers = organizationConsumersFromForm(form, originalOrganization);
-        const originalCodes = Array.isArray(originalOrganization?.otherCodes) ? originalOrganization.otherCodes : [];
+        const originalCodes = originalOrganization?.otherCodes ?? [];
         payload.otherCodes = [...form.querySelectorAll('.organization-code-row')].map(row => {
             const original = organizationOriginalItem(row, originalCodes);
             return {...original, codeType: row.querySelector('[name="otherCodeType"]').value.trim(), code: row.querySelector('[name="otherCode"]').value.trim()};
@@ -328,12 +328,12 @@ SurfView.Organizations = (() => {
 
     function organizationConsumersFromForm(form, originalOrganization = {}) {
         const consumerRow = form.querySelector('.organization-consumer-row');
-        const originalConsumers = Array.isArray(originalOrganization?.consumers) ? originalOrganization.consumers : [];
+        const originalConsumers = originalOrganization?.consumers ?? [];
         const originalConsumerIndex = originalIndex(consumerRow?.dataset.originalConsumerIndex);
         const originalConsumer = originalConsumerIndex !== null ? originalConsumers[originalConsumerIndex] : {};
         const consumer = structuredClone(originalConsumer || {});
         const allianceRow = consumerRow?.querySelector('.organization-alliance-row');
-        const originalAlliances = Array.isArray(originalConsumer?.alliances) ? originalConsumer.alliances : [];
+        const originalAlliances = originalConsumer?.alliances ?? [];
         const originalAllianceIndex = originalIndex(allianceRow?.dataset.originalAllianceIndex);
         const originalAlliance = originalAllianceIndex !== null ? originalAlliances[originalAllianceIndex] : {};
         const alliance = structuredClone(originalAlliance || {});
