@@ -16,6 +16,24 @@ Requests may ask for the version explicitly with `Accept: application/vnd.oeapi+
 
 Upgrading an existing installation built on OEAPI v5? Read [docs/migration-v5-to-v6.md](./docs/migration-v5-to-v6.md) and run [docs/sql/v5-to-v6-migration.sql](./docs/sql/v5-to-v6-migration.sql) on your database before starting the new version.
 
+### Endpoints outside the OEAPI v6 specification
+
+The endpoint serves the v6 resources described by the specification. Besides them it keeps a few
+implementation specific operations. Consumers of the OEAPI contract should not rely on them.
+`GET /` lists in `supportedOperations` every GET, PUT, PATCH and POST served on an OEAPI path, so
+extension writes such as `POST /courses` appear there too; `DELETE`, `/loadbyjson` and the
+infrastructure paths do not.
+
+| Kind | Operations | Used by |
+|---|---|---|
+| Quickstart infrastructure | `/auth/*`, `/admin/users`, `/admin/roles`, `/health`, `/_quickdashboard_config.json`, `/enumerator`, `/fieldsofstudy` | login, user administration, dashboard |
+| Writes the specification does not define | `POST` on `/courses`, `/programmes`, `/organisations`, `/academic-sessions`, `/learning-components`, `/rooms`, `/buildings`, `/groups`, `/course-offerings`, `/programme-offerings`, `/learning-component-offerings`; `PUT` on `/courses/{id}`, `/programmes/{id}`, `/academic-sessions/{id}`, `/learning-components/{id}`; `DELETE` on most resources | dashboard, data loading, tests |
+| Bulk loading | `POST /{resource}/loadbyjson` (organisations, programmes, courses, learning-components, academic-sessions, persons, groups, rooms, buildings) | data loading |
+| v5 operations kept until persons, groups and associations are migrated | `GET /news-feeds`, `GET /persons/{id}/groups`, `GET /groups/{id}/persons`, `GET /associations/{id}`, `POST /associations/external/me`, `GET /persons/{id}/associations` | nothing in this repository |
+
+In v6 the writable resources are organisations, persons and groups (`PUT`), persons (`POST`) and
+the offering and association resources (`PUT`, `PATCH`).
+
 ## Installing the OEAPI EndPoint
 
 Installing the EndPoint could be done in two ways; as a docker component or compiling sources and running it as a jar.
