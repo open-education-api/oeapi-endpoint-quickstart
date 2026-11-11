@@ -1,22 +1,19 @@
 package oeapi.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
@@ -24,6 +21,7 @@ import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
 import oeapi.validation.ValidLanguageTypedString;
 import oeapi.validation.ValidObjectYaml;
 
+@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY)
 @Entity(name = "ooapiGroup")
 public class Group extends PrimaryCode {
 
@@ -32,7 +30,9 @@ public class Group extends PrimaryCode {
     @JsonProperty("groupId")
     private String groupId = UUID.randomUUID().toString();
 
+    @JsonIgnore
     private LocalDate startDate;
+    @JsonIgnore
     private LocalDate endDate;
     private Integer personCount;
 
@@ -46,13 +46,18 @@ public class Group extends PrimaryCode {
     @Convert(converter = oeapiExtConverter.class)
     private Ext ext;
 
-    @ValidObjectYaml(yamlfile = "enum/groupType.yml")
+    @oeapi.validation.ValidEnumYaml(yamlfile = "groupType.yml")
     private String groupType;
 
     @ManyToOne
     @JoinColumn(name = "organisation_id", nullable = true)
-    @JsonBackReference("groupOrganisation")
+    @JsonIgnore
     private Organisation organisation;
+
+    @ManyToOne
+    @JoinColumn(name = "academic_session_id", nullable = true)
+    @JsonIgnore
+    private AcademicSession academicSession;
 
     @ManyToMany(
             cascade = CascadeType.ALL,
@@ -67,9 +72,6 @@ public class Group extends PrimaryCode {
                     name = "person_id"
             )
     )
-    @JsonBackReference("personsGroups")
-    private List<Person> members;
-
     @JsonProperty("abbreviation")
     private String abbreviation;
 
@@ -127,14 +129,6 @@ public class Group extends PrimaryCode {
         this.abbreviation = abbreviation;
     }
 
-    public void addMember(Person user) {
-        if (getMembers() == null) {
-            setMembers(new ArrayList<>());
-        }
-
-        getMembers().add(user);
-    }
-
     /**
      * @return the groupId
      */
@@ -152,6 +146,7 @@ public class Group extends PrimaryCode {
     /**
      * @return the startDate
      */
+    @JsonIgnore
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -159,6 +154,7 @@ public class Group extends PrimaryCode {
     /**
      * @param startDate the startDate to set
      */
+    @JsonIgnore
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
@@ -166,6 +162,7 @@ public class Group extends PrimaryCode {
     /**
      * @return the endDate
      */
+    @JsonIgnore
     public LocalDate getEndDate() {
         return endDate;
     }
@@ -173,6 +170,7 @@ public class Group extends PrimaryCode {
     /**
      * @param endDate the endDate to set
      */
+    @JsonIgnore
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
@@ -220,6 +218,7 @@ public class Group extends PrimaryCode {
     /**
      * @return the organisation
      */
+    @JsonIgnore
     public Organisation getOrganisation() {
         return organisation;
     }
@@ -227,22 +226,9 @@ public class Group extends PrimaryCode {
     /**
      * @param organisation the organisation to set
      */
+    @JsonIgnore
     public void setOrganisation(Organisation organisation) {
         this.organisation = organisation;
-    }
-
-    /**
-     * @return the members
-     */
-    public List<Person> getMembers() {
-        return members;
-    }
-
-    /**
-     * @param members the members to set
-     */
-    public void setMembers(List<Person> members) {
-        this.members = members;
     }
 
     /**
@@ -273,4 +259,63 @@ public class Group extends PrimaryCode {
         this.ext = ext;
     }
 
+
+    public Group() {
+    }
+
+    public Group(String groupId) {
+        this.groupId = groupId;
+    }
+
+    @JsonIgnore
+    public AcademicSession getAcademicSession() {
+        return academicSession;
+    }
+
+    @JsonIgnore
+    public void setAcademicSession(AcademicSession academicSession) {
+        this.academicSession = academicSession;
+    }
+
+    // ---- OEAPI v6 JSON view: date-times and ids, objects with ?expand ---------
+
+    @JsonProperty("startDateTime")
+    public OffsetDateTime getStartDateTime() {
+        return startDate == null ? null : startDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+    }
+
+    @JsonProperty("startDateTime")
+    public void setStartDateTime(OffsetDateTime startDateTime) {
+        this.startDate = startDateTime == null ? null : startDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate();
+    }
+
+    @JsonProperty("endDateTime")
+    public OffsetDateTime getEndDateTime() {
+        return endDate == null ? null : endDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+    }
+
+    @JsonProperty("endDateTime")
+    public void setEndDateTime(OffsetDateTime endDateTime) {
+        this.endDate = endDateTime == null ? null : endDateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDate();
+    }
+
+    @JsonProperty("organisationId")
+    public String getOrganisationId() {
+        return organisation == null ? null : organisation.getOrganisationId();
+    }
+
+    @JsonProperty("organisationId")
+    public void setOrganisationId(String organisationId) {
+        this.organisation = organisationId == null ? null : new Organisation(organisationId);
+    }
+
+    @JsonProperty("academicSessionId")
+    public String getAcademicSessionId() {
+        return academicSession == null ? null : academicSession.getAcademicSessionId();
+    }
+
+    @JsonProperty("academicSessionId")
+    public void setAcademicSessionId(String academicSessionId) {
+        this.academicSession = academicSessionId == null ? null : new AcademicSession(academicSessionId);
+    }
 }

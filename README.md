@@ -27,9 +27,8 @@ infrastructure paths do not.
 | Kind | Operations | Used by |
 |---|---|---|
 | Quickstart infrastructure | `/auth/*`, `/admin/users`, `/admin/roles`, `/health`, `/_quickdashboard_config.json`, `/enumerator`, `/fieldsofstudy` | login, user administration, dashboard |
-| Writes the specification does not define | `POST` on `/courses`, `/programmes`, `/organisations`, `/academic-sessions`, `/learning-components`, `/rooms`, `/buildings`, `/groups`, `/course-offerings`, `/programme-offerings`, `/learning-component-offerings`; `PUT` on `/courses/{id}`, `/programmes/{id}`, `/academic-sessions/{id}`, `/learning-components/{id}`; `DELETE` on most resources | dashboard, data loading, tests |
+| Writes the specification does not define | `POST` on `/courses`, `/programmes`, `/organisations`, `/academic-sessions`, `/learning-components`, `/rooms`, `/buildings`, `/groups`, `/course-offerings`, `/programme-offerings`, `/learning-component-offerings`; `PUT` on `/courses/{id}`, `/programmes/{id}`, `/academic-sessions/{id}`, `/learning-components/{id}`; `DELETE` on most resources (offering associations included) | dashboard, data loading, tests |
 | Bulk loading | `POST /{resource}/loadbyjson` (organisations, programmes, courses, learning-components, academic-sessions, persons, groups, rooms, buildings) | data loading |
-| v5 operations kept until persons, groups and associations are migrated | `GET /news-feeds`, `GET /persons/{id}/groups`, `GET /groups/{id}/persons`, `GET /associations/{id}`, `POST /associations/external/me`, `GET /persons/{id}/associations` | nothing in this repository |
 
 In v6 the writable resources are organisations, persons and groups (`PUT`), persons (`POST`) and
 the offering and association resources (`PUT`, `PATCH`).

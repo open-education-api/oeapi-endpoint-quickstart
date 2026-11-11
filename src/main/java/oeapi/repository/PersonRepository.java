@@ -14,4 +14,6 @@ public interface PersonRepository extends oeapiUnitaRepositoryBase<Person> {
 
     Page<Person> findByAffiliations(String affiliations, Pageable pageable);
 
+    java.util.Optional<Person> findFirstByEmailIgnoreCase(String email);
+
 }

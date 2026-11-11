@@ -1,3 +1,5 @@
+# OEAPI v6 Person: primaryCode and activeEnrolment are required, together with
+# at least one of surname, givenName or preferredName.
 type: object
 properties:
   primaryCode:
@@ -13,16 +15,33 @@ properties:
     format: uuid
   givenName:
     type: string
+  preferredName:
+    type: string
   surname:
     type: string
   displayName:
     type: string
-  activeEnrollment:
+  activeEnrolment:
     type: boolean
-  personAffiliations:
-    type: string
-    enum: ["student","employee","guest"]
-  mail:
+  affiliations:
+    type: array
+    items:
+      type: string
+  email:
     type: string
     format: email
-required: ["primaryCode","surname","givenName","displayName","mail"]
+  secondaryEmail:
+    type: string
+    format: email
+  dateOfBirth:
+    type: string
+    format: date
+  languageOfChoice:
+    type: array
+    items:
+      type: string
+required: ["primaryCode", "activeEnrolment"]
+anyOf:
+  - required: ["surname"]
+  - required: ["givenName"]
+  - required: ["preferredName"]

@@ -13,8 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GroupRepository extends oeapiUnitaRepositoryBase<Group> {
 
-    List<Group> findByMembers_PersonId(String personId);
-
     List<Group> findByOrganisation_OrganisationId(String organisationId);
 
     Page<Group> findByGroupType(String groupType, Pageable pageable);

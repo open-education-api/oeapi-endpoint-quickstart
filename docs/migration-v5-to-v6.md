@@ -20,13 +20,16 @@ columns renamed to British English. Existing databases: run `docs/sql/v5-to-v6-m
 | Organisations, programmes, courses, learning components: names, id/object split, expand, dates, `teachingLanguages`, `modesOfDelivery`, `enrolment`, `studyLoad[]` | done |
 | Course / programme / learning component offerings as typed resources + all offering sub-lists | done |
 | Academic sessions (`startDateTime`, `parentId`, `yearId`, `childIds`, expand), rooms (`buildingId`, expand) | done |
-| Education specifications, `sector` | removed |
+| Education specifications, `sector`, news feeds, v5 `/associations`, `/persons/{id}/groups`, `/groups/{id}/persons` | removed |
 | Dashboard (SURF view) and legacy pages | adapted through `static/js/surfview/oeapi_v6.js` |
 | `consumers[]` → v6 `consumer` (single object selected by `?consumer=`) | **pending** – still published as `consumers` |
 | `learningOutcomes` as resource (`/learning-outcomes`, `learningOutcomeIds`) | **pending** – still the v5 inline list |
 | Test components and test component offerings | **pending** |
-| Typed associations (+ attempts), persons v6 shape, groups/memberships | **pending** (still v5) |
-| `filter_query`, `fields`, `PATCH` on offerings, `supportedConsumers` configuration | **pending** (`fields` accepted but ignored) |
+| Persons v6 shape (`email`, `activeEnrolment`, `gender` m/f/x/o/u/n, `countryOfBirth`/`nationality` objects, `preferredName`, `languageOfChoice`, `address`…), `PUT` create-or-replace, `/persons/me` | done |
+| Groups v6 shape (`startDateTime`, `organisationId`, `academicSessionId`, expand), `PUT /groups/{id}`, memberships (`GET /groups/{id}/memberships`, `PUT /groups/{id}/memberships/{personId}`) | done |
+| Course, programme and learning component offering associations (GET with expand, PUT, PATCH, `external/me`, lists under offerings and persons) | done |
+| Test component offering associations and attempts | **pending** (needs test components) |
+| `filter_query`, `fields`, `PATCH` on offerings, `supportedConsumers` configuration | **pending** (`fields` accepted but ignored; `PATCH` exists for associations) |
 | `rootId`, `instructorIds`, `supplementaryInformation`, `timelineOverrides`, `qualificationDesignations` | **pending** (optional in v6) |
 
 Storage simplifications kept on purpose (the JSON is v6, the entity keeps one value):

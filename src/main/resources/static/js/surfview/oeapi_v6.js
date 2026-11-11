@@ -22,7 +22,8 @@ const OeapiV6 = (() => {
         [/\/programmes\/[^/]+\/courses(\/|$)/, 'course'],
         [/\/organisations(\/|$)/, 'organisation'],
         [/\/programmes(\/|$)/, 'programme'],
-        [/\/courses(\/|$)/, 'course']
+        [/\/courses(\/|$)/, 'course'],
+        [/\/persons(\/|$)/, 'person']
     ];
 
     const OFFERING_ID = {
@@ -56,6 +57,17 @@ const OeapiV6 = (() => {
         }
     }
 
+    // v6 Country / Nationality objects <-> the ISO code the dashboard edits
+    const isoCode = value => isObject(value)
+        ? (value['iso3166-1-alpha2'] || value['iso3166-1-alpha3'] || value['iso3166-3'] || '')
+        : value;
+    const isoObject = value => {
+        if (typeof value !== 'string' || value === '') {
+            return isObject(value) ? value : undefined;
+        }
+        return value.length === 3 ? {'iso3166-1-alpha3': value} : {'iso3166-1-alpha2': value};
+    };
+
     // ---- v6 -> dashboard -----------------------------------------------------
 
     function fromV6Entity(kind, entity) {
@@ -63,6 +75,14 @@ const OeapiV6 = (() => {
             return entity;
         }
         const e = {...entity};
+        if (kind === 'person') {
+            move(e, 'email', 'mail');
+            move(e, 'secondaryEmail', 'secondaryMail');
+            move(e, 'activeEnrolment', 'activeEnrollment');
+            move(e, 'countryOfBirth', 'countryOfBirth', isoCode);
+            move(e, 'nationality', 'nationality', isoCode);
+            return e;
+        }
         move(e, 'teachingLanguages', 'teachingLanguage', list => Array.isArray(list) ? (list[0] || '') : list);
         move(e, 'modesOfDelivery', 'modeOfDelivery');
         move(e, 'enrolment', 'enrollment');
@@ -124,6 +144,14 @@ const OeapiV6 = (() => {
             return entity;
         }
         const e = {...entity};
+        if (kind === 'person') {
+            move(e, 'mail', 'email');
+            move(e, 'secondaryMail', 'secondaryEmail');
+            move(e, 'activeEnrollment', 'activeEnrolment');
+            move(e, 'countryOfBirth', 'countryOfBirth', isoObject);
+            move(e, 'nationality', 'nationality', isoObject);
+            return e;
+        }
         move(e, 'teachingLanguage', 'teachingLanguages', value => value ? [value] : []);
         move(e, 'modeOfDelivery', 'modesOfDelivery');
         move(e, 'enrollment', 'enrolment');

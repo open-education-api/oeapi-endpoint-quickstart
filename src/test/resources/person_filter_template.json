@@ -1,5 +1,4 @@
 {
-
     "primaryCode": {
         "codeType": "identifier",
         "code": "--PERSON_CODE_TOBEINFORMED--"
@@ -9,21 +8,25 @@
     "surname": "Damme",
     "displayName": "Maartje van Damme",
     "initials": "MCW",
-    "activeEnrollment": false,
+    "activeEnrolment": false,
     "cityOfBirth": "Utrecht",
-    "countryOfBirth": "NL",
-    "nationality": "Dutch",
+    "countryOfBirth": {
+        "iso3166-1-alpha2": "NL"
+    },
+    "nationality": {
+        "iso3166-1-alpha2": "NL"
+    },
     "affiliations": [
         "--PERSON_affiliation1--",
         "--PERSON_affiliation2--"
     ],
-    "mail": "vandamme.mcw@universiteitvanharderwijk.nl",
-    "secondaryMail": "poekie@xyz.nl",
+    "email": "vandamme.mcw@universiteitvanharderwijk.nl",
+    "secondaryEmail": "poekie@xyz.nl",
     "telephoneNumber": "+31 123 456 789",
     "mobileNumber": "+31 612 345 678",
     "photoSocial": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Placeholder_female_superhero_c.png/203px-Placeholder_female_superhero_c.png",
     "photoOfficial": "https://upload.wikimedia.org/wikipedia/commons/6/66/Johannes_Vermeer_%281632-1675%29_-_The_Girl_With_The_Pearl_Earring_%281665%29.jpg",
-    "gender": "F",
+    "gender": "f",
     "titlePrefix": "drs",
     "titleSuffix": "BSc",
     "office": "string",
@@ -54,13 +57,10 @@
     ],
     "otherCodes": [
         {
-            "codeType": "nationalIdentityNumber",
+            "codeType": "national_identity_number",
             "code": "00000"
         }
     ],
-    "consumers": [
-    ],
-    "groups": ["--GROUP_ID_TOBEINFORMED--"],
+    "consumers": [],
     "ext": {}
 }
-

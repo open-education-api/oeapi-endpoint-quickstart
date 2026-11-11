@@ -149,6 +149,47 @@ UPDATE offering   SET teaching_languages = CASE teaching_languages
     WHEN 'eus' THEN 'eu' WHEN 'baq' THEN 'eu' ELSE teaching_languages END;
 
 -- -----------------------------------------------------------------------------
+-- 3b. Persons, groups and memberships
+-- -----------------------------------------------------------------------------
+
+ALTER TABLE person
+    RENAME COLUMN mail TO email,
+    RENAME COLUMN secondary_mail TO secondary_email,
+    RENAME COLUMN active_enrollment TO active_enrolment;
+
+-- v5 kept gender as an ordinal (0=M, 1=F, 2=X, 3=U); v6 uses m, f, x, o, u, n
+ALTER TABLE person ADD COLUMN gender_code VARCHAR(255);
+UPDATE person SET gender_code = CASE gender WHEN 0 THEN 'm' WHEN 1 THEN 'f' WHEN 2 THEN 'x' WHEN 3 THEN 'u' END
+ WHERE gender IS NOT NULL;
+
+-- v5 "nationality" was free text in places (e.g. "Dutch"); v6 publishes ISO 3166 codes only.
+-- Values that are not a 2 or 3 letter code are not published; correct them by hand if needed:
+-- SELECT person_id, nationality, country_of_birth FROM person
+--  WHERE LENGTH(nationality) NOT IN (2, 3) OR LENGTH(country_of_birth) NOT IN (2, 3);
+
+-- Group members become v6 memberships (state active, role student)
+CREATE TABLE IF NOT EXISTS membership (
+    membership_id   VARCHAR(255) NOT NULL PRIMARY KEY,
+    group_id        VARCHAR(255) NOT NULL,
+    person_id       VARCHAR(255) NOT NULL,
+    start_date_time DATETIME(6),
+    end_date_time   DATETIME(6),
+    state           VARCHAR(255),
+    role            VARCHAR(255),
+    consumers       TEXT,
+    ext             TEXT,
+    UNIQUE KEY uk_membership_group_person (group_id, person_id),
+    FOREIGN KEY (group_id) REFERENCES ooapi_group (group_id),
+    FOREIGN KEY (person_id) REFERENCES person (person_id)
+);
+INSERT IGNORE INTO membership (membership_id, group_id, person_id, state, role)
+SELECT UUID(), group_id, person_id, 'active', 'student' FROM person_group;
+
+-- Associations: v6 uses the new table offering_association (created at start-up).
+-- The v5 table "association" did not store a usable link to its offering, so its
+-- rows cannot be carried over; it is left in place and can be dropped (section 4).
+
+-- -----------------------------------------------------------------------------
 -- 4. Optional clean-up of what v6 no longer uses (education specifications,
 --    sector). Hibernate ignores these columns, so they can also stay.
 --    Foreign keys on education_specification_id must be dropped first:
@@ -157,3 +198,7 @@ UPDATE offering   SET teaching_languages = CASE teaching_languages
 -- ALTER TABLE course    DROP COLUMN education_specification_id;
 -- ALTER TABLE programme DROP COLUMN education_specification_id, DROP COLUMN sector;
 -- DROP TABLE education_specification;
+-- DROP TABLE person_group;          -- after checking the membership rows
+-- DROP TABLE association;           -- v5 associations, see section 3b
+-- DROP TABLE news_feed;             -- news feeds are not part of OEAPI v6
+-- ALTER TABLE person DROP COLUMN gender;   -- the v5 ordinal, replaced by gender_code

@@ -29,4 +29,15 @@ public class LearningComponentOfferingController extends oeapiTypedOfferingContr
     protected oeapiDTOMapper<ComponentOffering, LearningComponentOfferingDTO> mapper() {
         return offeringService.learningComponentOfferingMapper();
     }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    private oeapi.service.OfferingAssociationService associationService;
+
+    @org.springframework.web.bind.annotation.GetMapping(value = "/{id}/learning-component-offering-associations", produces = "application/json")
+    public org.springframework.http.ResponseEntity<?> getAssociations(@org.springframework.web.bind.annotation.PathVariable String id,
+            @org.springframework.web.bind.annotation.ModelAttribute oeapi.controller.requestparameters.oeapiAssociationRequestParam requestParam) {
+        find(id).orElseThrow(() -> notFound(id));
+        return oeapiOfferingLists.page(requestParam,
+                oeapiTypedAssociationController.listForOffering(associationService, id, requestParam));
+    }
 }

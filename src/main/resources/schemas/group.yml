@@ -12,8 +12,7 @@ properties:
     type: string
     format: uuid
   groupType:
-    type: string
-    enum: ["learning group","class","team"]
+    type: string   # OEAPI v6 extensible enumeration, see enum/groupType.yml
   name:
     type: array
     items:

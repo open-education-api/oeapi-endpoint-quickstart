@@ -1,133 +1,133 @@
 package oeapi.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
+ * OEAPI v6 Result of an offering association.
+ *
+ * studyLoad is used by course and programme offering associations, weight by
+ * learning component offering associations.
  *
  * @author itziar
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"state", "pass", "comment", "score", "rawScore", "maxRawScore", "final",
+    "resultDateTime", "studyLoad", "weight", "assessorId", "ext"})
 public class Result extends oeapiEquals implements Serializable {
 
-    private String resultState;
-    private String pass;
+    private String state;           // resultState: in_progress, postponed, completed, queued
+    private String pass;            // passState: unknown, passed, failed
     private String comment;
     private String score;
-    private LocalDate resultDate;
-    private Ext ext;
+    private Integer rawScore;
+    private Integer maxRawScore;
+    private Boolean finalResult;
+    private OffsetDateTime resultDateTime;
     private StudyLoad studyLoad;
     private Integer weight;
+    private String assessorId;
+    private Ext ext;
 
-    /**
-     * @return the resultState
-     */
-    public String getResultState() {
-        return resultState;
+    public String getState() {
+        return state;
     }
 
-    /**
-     * @param resultState the resultState to set
-     */
-    public void setResultState(String resultState) {
-        this.resultState = resultState;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    /**
-     * @return the pass
-     */
     public String getPass() {
         return pass;
     }
 
-    /**
-     * @param pass the pass to set
-     */
     public void setPass(String pass) {
         this.pass = pass;
     }
 
-    /**
-     * @return the comment
-     */
     public String getComment() {
         return comment;
     }
 
-    /**
-     * @param comment the comment to set
-     */
     public void setComment(String comment) {
         this.comment = comment;
     }
 
-    /**
-     * @return the score
-     */
     public String getScore() {
         return score;
     }
 
-    /**
-     * @param score the score to set
-     */
     public void setScore(String score) {
         this.score = score;
     }
 
-    /**
-     * @return the resultDate
-     */
-    public LocalDate getResultDate() {
-        return resultDate;
+    public Integer getRawScore() {
+        return rawScore;
     }
 
-    /**
-     * @param resultDate the resultDate to set
-     */
-    public void setResultDate(LocalDate resultDate) {
-        this.resultDate = resultDate;
+    public void setRawScore(Integer rawScore) {
+        this.rawScore = rawScore;
     }
 
-    /**
-     * @return the ext
-     */
-    public Ext getExt() {
-        return ext;
+    public Integer getMaxRawScore() {
+        return maxRawScore;
     }
 
-    /**
-     * @param ext the ext to set
-     */
-    public void setExt(Ext ext) {
-        this.ext = ext;
+    public void setMaxRawScore(Integer maxRawScore) {
+        this.maxRawScore = maxRawScore;
     }
 
-    /**
-     * @return the studyLoad
-     */
+    // "final" is a Java keyword
+    @com.fasterxml.jackson.annotation.JsonProperty("final")
+    public Boolean getFinalResult() {
+        return finalResult;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("final")
+    public void setFinalResult(Boolean finalResult) {
+        this.finalResult = finalResult;
+    }
+
+    public OffsetDateTime getResultDateTime() {
+        return resultDateTime;
+    }
+
+    public void setResultDateTime(OffsetDateTime resultDateTime) {
+        this.resultDateTime = resultDateTime;
+    }
+
     public StudyLoad getStudyLoad() {
         return studyLoad;
     }
 
-    /**
-     * @param studyLoad the studyLoad to set
-     */
     public void setStudyLoad(StudyLoad studyLoad) {
         this.studyLoad = studyLoad;
     }
 
-    /**
-     * @return the weight
-     */
     public Integer getWeight() {
         return weight;
     }
 
-    /**
-     * @param weight the weight to set
-     */
     public void setWeight(Integer weight) {
         this.weight = weight;
     }
 
+    public String getAssessorId() {
+        return assessorId;
+    }
+
+    public void setAssessorId(String assessorId) {
+        this.assessorId = assessorId;
+    }
+
+    public Ext getExt() {
+        return ext;
+    }
+
+    public void setExt(Ext ext) {
+        this.ext = ext;
+    }
 }

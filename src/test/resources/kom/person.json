@@ -7,9 +7,9 @@
     "givenName": "Lise",
     "surname": "Poell",
     "displayName": "Lise Poell",
-    "activeEnrollment": false,
+    "activeEnrolment": false,
     "affiliations": [
         "employee"
     ],
-    "mail": "lise-poell@universiteit-van-zuidoostbeemster.nl"
+    "email": "lise-poell@universiteit-van-zuidoostbeemster.nl"
 }

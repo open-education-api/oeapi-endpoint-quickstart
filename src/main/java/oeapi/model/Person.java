@@ -2,23 +2,25 @@ package oeapi.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 
+import oeapi.converter.oeapiAddressConverter;
+import oeapi.converter.oeapiExtConverter;
 import oeapi.converter.oeapiUnitaListConsumerConverter;
+import oeapi.converter.oeapiUnitaListIdentifierEntryConverter;
 import oeapi.validation.ValidEnumYaml;
 
 
@@ -31,21 +33,19 @@ public class Person extends PrimaryCode {
     @JsonProperty(value = "personId")
     //@JsonProperty(value = "personId", access = JsonProperty.Access.WRITE_ONLY)
     private String personId = UUID.randomUUID().toString();
-    //@ValidEnumYaml(yamlfile = "gender.yml")
 
-    private enum GenderType {
-        M, F, X, U
-    }
-
-    @Enumerated(EnumType.ORDINAL)
-    private GenderType gender;
+    // OEAPI v6 gender (m, f, x, o, u, n). The v5 build stored an ordinal in
+    // column "gender"; the v6 value lives in "gender_code" (see the SQL migration).
+    @Column(name = "gender_code")
+    @ValidEnumYaml(yamlfile = "gender.yml")
+    private String gender;
 
     private String givenName;
     private String initials;
     private String surname;
     private String displayName;
-    private String mail;
-    private String secondaryMail;
+    private String email;
+    private String secondaryEmail;
     private String telephoneNumber;
     private String mobileNumber;
     private String cityOfBirth;
@@ -68,11 +68,31 @@ public class Person extends PrimaryCode {
     private List<String> affiliations;
 
     private LocalDate dateOfNationality;
-    private boolean activeEnrollment;
+    private boolean activeEnrolment;
 
-    @OneToMany(mappedBy = "person")
-    @JsonManagedReference("associationPesonReference")
-    private List<Association> associations;
+    // ---- OEAPI v6 additions ----------------------------------------------------
+
+    private String preferredName;
+    private String alternateName;
+    private String surnamePrefix;
+    private String idCheckName;
+
+    // RFC 5646 language tags, stored comma separated
+    @JsonIgnore
+    @Column(name = "language_of_choice")
+    private String languageOfChoice;
+
+    @Column(columnDefinition = "text")
+    @Convert(converter = oeapiAddressConverter.class)
+    private Address address;
+
+    @Column(columnDefinition = "text")
+    @Convert(converter = oeapiUnitaListIdentifierEntryConverter.class)
+    private List<oeapiIdentifierEntry> otherCodes;
+
+    @Column(columnDefinition = "text")
+    @Convert(converter = oeapiExtConverter.class)
+    private Ext ext;
 
     @JsonProperty("consumers")
     @Column(columnDefinition = "text")
@@ -101,20 +121,6 @@ public class Person extends PrimaryCode {
      */
     public void setPersonId(String personId) {
         this.personId = personId;
-    }
-
-    /**
-     * @return the gender
-     */
-    public GenderType getGender() {
-        return gender;
-    }
-
-    /**
-     * @param gender the gender to set
-     */
-    public void setGender(GenderType gender) {
-        this.gender = gender;
     }
 
     /**
@@ -174,31 +180,31 @@ public class Person extends PrimaryCode {
     }
 
     /**
-     * @return the mail
+     * @return the email
      */
-    public String getMail() {
-        return mail;
+    public String getEmail() {
+        return email;
     }
 
     /**
-     * @param mail the mail to set
+     * @param email the email to set
      */
-    public void setMail(String mail) {
-        this.mail = mail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**
-     * @return the secondaryMail
+     * @return the secondaryEmail
      */
-    public String getSecondaryMail() {
-        return secondaryMail;
+    public String getSecondaryEmail() {
+        return secondaryEmail;
     }
 
     /**
-     * @param secondaryMail the secondaryMail to set
+     * @param secondaryEmail the secondaryEmail to set
      */
-    public void setSecondaryMail(String secondaryMail) {
-        this.secondaryMail = secondaryMail;
+    public void setSecondaryEmail(String secondaryEmail) {
+        this.secondaryEmail = secondaryEmail;
     }
 
     /**
@@ -260,6 +266,7 @@ public class Person extends PrimaryCode {
     /**
      * @return the countryOfBirth
      */
+    @JsonIgnore
     public String getCountryOfBirth() {
         return countryOfBirth;
     }
@@ -267,6 +274,7 @@ public class Person extends PrimaryCode {
     /**
      * @param countryOfBirth the countryOfBirth to set
      */
+    @JsonIgnore
     public void setCountryOfBirth(String countryOfBirth) {
         this.countryOfBirth = countryOfBirth;
     }
@@ -274,6 +282,7 @@ public class Person extends PrimaryCode {
     /**
      * @return the nationality
      */
+    @JsonIgnore
     public String getNationality() {
         return nationality;
     }
@@ -281,6 +290,7 @@ public class Person extends PrimaryCode {
     /**
      * @param nationality the nationality to set
      */
+    @JsonIgnore
     public void setNationality(String nationality) {
         this.nationality = nationality;
     }
@@ -426,31 +436,17 @@ public class Person extends PrimaryCode {
     }
 
     /**
-     * @return the activeEnrollment
+     * @return the activeEnrolment
      */
-    public boolean isActiveEnrollment() {
-        return activeEnrollment;
+    public boolean isActiveEnrolment() {
+        return activeEnrolment;
     }
 
     /**
-     * @param activeEnrollment the activeEnrollment to set
+     * @param activeEnrolment the activeEnrolment to set
      */
-    public void setActiveEnrollment(boolean activeEnrollment) {
-        this.activeEnrollment = activeEnrollment;
-    }
-
-    /**
-     * @return the associations
-     */
-    public List<Association> getAssociations() {
-        return associations;
-    }
-
-    /**
-     * @param associations the associations to set
-     */
-    public void setAssociations(List<Association> associations) {
-        this.associations = associations;
+    public void setActiveEnrolment(boolean activeEnrolment) {
+        this.activeEnrolment = activeEnrolment;
     }
 
     /**
@@ -467,4 +463,130 @@ public class Person extends PrimaryCode {
         this.consumers = consumers;
     }
 
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        // v5 clients sent upper case (M, F, X, U)
+        this.gender = gender == null ? null : gender.toLowerCase(java.util.Locale.ROOT);
+    }
+
+    public String getPreferredName() {
+        return preferredName;
+    }
+
+    public void setPreferredName(String preferredName) {
+        this.preferredName = preferredName;
+    }
+
+    public String getAlternateName() {
+        return alternateName;
+    }
+
+    public void setAlternateName(String alternateName) {
+        this.alternateName = alternateName;
+    }
+
+    public String getSurnamePrefix() {
+        return surnamePrefix;
+    }
+
+    public void setSurnamePrefix(String surnamePrefix) {
+        this.surnamePrefix = surnamePrefix;
+    }
+
+    public String getIdCheckName() {
+        return idCheckName;
+    }
+
+    public void setIdCheckName(String idCheckName) {
+        this.idCheckName = idCheckName;
+    }
+
+    @JsonProperty("languageOfChoice")
+    public List<String> getLanguageOfChoice() {
+        return oeapi.oeapiUtils.splitCsv(languageOfChoice);
+    }
+
+    @JsonProperty("languageOfChoice")
+    public void setLanguageOfChoice(List<String> languageOfChoice) {
+        this.languageOfChoice = oeapi.oeapiUtils.joinCsv(languageOfChoice);
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public List<oeapiIdentifierEntry> getOtherCodes() {
+        return otherCodes;
+    }
+
+    public void setOtherCodes(List<oeapiIdentifierEntry> otherCodes) {
+        this.otherCodes = otherCodes;
+    }
+
+    public Ext getExt() {
+        return ext;
+    }
+
+    public void setExt(Ext ext) {
+        this.ext = ext;
+    }
+
+    // ---- v6 Country / Nationality objects over the stored ISO code -------------
+
+    @JsonProperty("countryOfBirth")
+    public Map<String, String> countryOfBirthObject() {
+        return isoObject(countryOfBirth);
+    }
+
+    @JsonProperty("countryOfBirth")
+    public void countryOfBirthObject(Map<String, String> country) {
+        this.countryOfBirth = isoCode(country);
+    }
+
+    @JsonProperty("nationality")
+    public Map<String, String> nationalityObject() {
+        return isoObject(nationality);
+    }
+
+    @JsonProperty("nationality")
+    public void nationalityObject(Map<String, String> value) {
+        this.nationality = isoCode(value);
+    }
+
+    /** {"iso3166-1-alpha2": "NL"} for a two letter code, alpha3 for three letters; null otherwise. */
+    static Map<String, String> isoObject(String code) {
+        if (code == null || code.isBlank()) {
+            return null;
+        }
+        Map<String, String> object = new LinkedHashMap<>();
+        if (code.length() == 2) {
+            object.put("iso3166-1-alpha2", code);
+        } else if (code.length() == 3) {
+            object.put("iso3166-1-alpha3", code);
+        } else {
+            return null;    // a v5 free text value such as "Dutch" has no v6 representation
+        }
+        return object;
+    }
+
+    static String isoCode(Map<String, String> object) {
+        if (object == null) {
+            return null;
+        }
+        for (String key : new String[]{"iso3166-1-alpha2", "iso3166-1-alpha3", "iso3166-3", "iso3166-2"}) {
+            String value = object.get(key);
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

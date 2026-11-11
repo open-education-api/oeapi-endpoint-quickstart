@@ -1,19 +1,14 @@
 package oeapi.controller;
 
 import oeapi.controller.requestparameters.oeapiAssociationRequestParam;
-import oeapi.controller.requestparameters.oeapiGroupRequestParam;
 import oeapi.controller.requestparameters.oeapiPersonRequestParam;
 import oeapi.controller.requestparameters.oeapiRequestParam;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import oeapi.model.Association;
-import oeapi.model.Group;
 import oeapi.model.Person;
 import oeapi.oeapiException;
-import oeapi.service.AssociationService;
-import oeapi.service.GroupService;
 import oeapi.service.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,16 +37,18 @@ public class PersonController extends oeapiController<Person> {
     private PersonService personService;
 
     @Autowired
-    private GroupService groupService;
+    private oeapi.service.OfferingAssociationService associationService;
 
-    @Autowired
-    private AssociationService associationService;
-
+    /** OEAPI v6: the person of the authenticated user (matched on e-mail address). */
     @GetMapping(value = "/me", produces = "application/json")
-    public ResponseEntity<?> getMe(@RequestParam(required = false) String primaryCode, oeapiRequestParam requestParam) {
-
-        // return super.NotFound("Me");
-        throw new oeapiException(HttpStatus.NOT_FOUND, " /me endpoint not yet implemented");
+    public ResponseEntity<?> getMe(java.security.Principal principal) {
+        if (principal == null) {
+            throw new oeapiException(HttpStatus.UNAUTHORIZED, "Unauthorized", "/persons/me needs an authenticated user");
+        }
+        Person me = personService.getByEmail(principal.getName())
+                .orElseThrow(() -> new oeapiException(HttpStatus.NOT_FOUND, "Person not found",
+                        "There is no person with e-mail " + principal.getName()));
+        return ResponseEntity.ok(me);
     }
 
     @GetMapping(produces = "application/json")
@@ -67,44 +64,20 @@ public class PersonController extends oeapiController<Person> {
 
     }
 
-    @GetMapping(value = "/{id}/groups", produces = "application/json")
-    public ResponseEntity<?> getGroups(@PathVariable String id, @ModelAttribute oeapiGroupRequestParam requestParam) {
-
-        Optional<Person> existing = personService.getById(id);
-        if (!existing.isPresent()) {
-            //return super.NotFound(id);
-            throw new oeapiException(HttpStatus.NOT_FOUND, "There is no Person with Id: " + id);
-        }
-        List<Group> groups = groupService.getPersonsByPersonId(id);
-        return super.getResponse(requestParam.toPageable(), groups);
-
-    }
-
-    @GetMapping(value = "/{id}/associations", produces = "application/json")
-    public ResponseEntity<?> getAssociations(@PathVariable String id, @ModelAttribute oeapiAssociationRequestParam requestParam) {
-
-        Optional<Person> existing = personService.getById(id);
-        if (existing.isPresent()) {
-
-            List<Association> associations = new ArrayList<>();
-            Association a = associationService.autoGenerateBasicItem(id);
-            a.setPerson(existing.get());
-            associations.add(a);
-
-            return super.getResponse(requestParam.toPageable(), associations);
-        }
-        // return super.NotFound(id);
-        throw new oeapiException(HttpStatus.NOT_FOUND, "There are not Associations for Id: " + id);
-
-    }
-
     @PostMapping(produces = "application/json")
     public ResponseEntity<?> create(@RequestBody Person person) {
         return super.create(person, personService);
     }
 
+    /** OEAPI v6 PUT: replaces the person, creating it when it does not exist yet. */
     @PutMapping(value = "/{personId}", produces = "application/json")
     public ResponseEntity<?> update(@PathVariable String personId, @RequestBody Person person) {
+        if (person.getPersonId() == null || !person.getPersonId().equalsIgnoreCase(personId)) {
+            person.setPersonId(personId);
+        }
+        if (!personService.getById(personId).isPresent()) {
+            return super.create(person, personService);
+        }
         return super.update(person, personService);
     }
 
@@ -136,4 +109,28 @@ public class PersonController extends oeapiController<Person> {
 
     }
 
+
+    @GetMapping(value = "/{id}/course-offering-associations", produces = "application/json")
+    public ResponseEntity<?> getCourseOfferingAssociations(@PathVariable String id, @ModelAttribute oeapiAssociationRequestParam requestParam) {
+        return associationsOf(id, oeapi.model.CourseOffering.class, requestParam);
+    }
+
+    @GetMapping(value = "/{id}/programme-offering-associations", produces = "application/json")
+    public ResponseEntity<?> getProgrammeOfferingAssociations(@PathVariable String id, @ModelAttribute oeapiAssociationRequestParam requestParam) {
+        return associationsOf(id, oeapi.model.ProgrammeOffering.class, requestParam);
+    }
+
+    @GetMapping(value = "/{id}/learning-component-offering-associations", produces = "application/json")
+    public ResponseEntity<?> getLearningComponentOfferingAssociations(@PathVariable String id, @ModelAttribute oeapiAssociationRequestParam requestParam) {
+        return associationsOf(id, oeapi.model.ComponentOffering.class, requestParam);
+    }
+
+    private ResponseEntity<?> associationsOf(String personId, Class<? extends oeapi.model.Offering> offeringType,
+            oeapiAssociationRequestParam requestParam) {
+        if (personService.getById(personId).isEmpty()) {
+            throw new oeapiException(HttpStatus.NOT_FOUND, "Person not found", "There is no Person with Id: " + personId);
+        }
+        return oeapiOfferingLists.page(requestParam, associationService.toDTOList(
+                requestParam.filter(associationService.getByPersonId(personId, offeringType))));
+    }
 }

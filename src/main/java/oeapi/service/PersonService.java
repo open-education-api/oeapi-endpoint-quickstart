@@ -81,6 +81,14 @@ public class PersonService extends oeapiEndpointService<Person, PersonRepository
         
     }    
 
+    /** The person behind an authenticated user: users log in with their e-mail address. */
+    public Optional<Person> getByEmail(String email) {
+        if (email == null) {
+            return Optional.empty();
+        }
+        return repository.findFirstByEmailIgnoreCase(email);
+    }
+
     @Override
     public Person autoGenerateBasicItem(String personId) {
 
@@ -89,11 +97,11 @@ public class PersonService extends oeapiEndpointService<Person, PersonRepository
         person.setSurname("AutoGen Surname-" + personId);
         person.setGivenName("AutoGen Givename-" + personId);
         person.setDisplayName("AutoGen employee-" + personId);
-        person.setActiveEnrollment(false);
+        person.setActiveEnrolment(false);
         List<String> affiliations = new ArrayList<>();
         affiliations.add("employee");
         person.setAffiliations(affiliations);
-        person.setMail("AutoGen.employee." + personId + "@unita.eu");
+        person.setEmail("AutoGen.employee." + personId + "@unita.eu");
 
         return person;
     }
