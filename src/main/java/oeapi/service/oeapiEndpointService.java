@@ -276,7 +276,9 @@ public abstract class oeapiEndpointService<T, R extends oeapiUnitaRepositoryBase
     public T update(String id, T obj) {
         Optional<T> existing = this.getById(id);
         if (existing.isPresent()) {
-            T updated = this.update(existing.get());
+            // Save the new state. This used to save existing.get(), so a PUT on an
+            // existing item answered 200 but kept the stored values.
+            T updated = this.update(obj);
             return updated;
         } else {
             return this.create(obj);

@@ -59,6 +59,12 @@ public class oeapiDTOMapper<T, S> {
         this.enumFields = enumFields;
         this.enumService = ooapiEnumService;
 
+        // A destination that matches several sources is left unmapped instead of failing
+        // the whole type map. v6 DTOs carry both an id and the object it identifies
+        // (academicSessionId / academicSession, whose getParentId() and getYearId() are
+        // also candidates); the setters of those pairs keep id and object in step.
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+
         Converter<String, LocalDate> stringToLocalDate = new Converter<String, LocalDate>() {
             @Override
             public LocalDate convert(MappingContext<String, LocalDate> context) {

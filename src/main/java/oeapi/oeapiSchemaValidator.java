@@ -56,7 +56,16 @@ public class oeapiSchemaValidator {
 
     public void validate(Object jsonToValidate) throws ValidationException {
         logger.debug("\n\n ---- validate(Object jsonToValidate)...");
-        JSONObject jsonObject = new JSONObject(jsonToValidate);
+        // Validate the JSON the API exchanges (Jackson, with the v6 date-time format and
+        // @JsonProperty names), not org.json's bean view of the object: that one wrote
+        // OffsetDateTime with toString(), which drops zero seconds ("2026-06-01T00:00Z").
+        JSONObject jsonObject;
+        try {
+            jsonObject = new JSONObject(oeapiUtils.ooapiObjectMapper().writeValueAsString(jsonToValidate));
+        } catch (RuntimeException ex) {
+            logger.debug("validate(Object): Jackson serialization failed, using bean properties. " + ex.getMessage());
+            jsonObject = new JSONObject(jsonToValidate);
+        }
         Map<String, Object> jsonflatten = oeapiUtils.flattenJSONObject(jsonObject);
         jsonObject = new JSONObject(jsonflatten);
 
