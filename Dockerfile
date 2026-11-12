@@ -9,7 +9,9 @@ COPY pom.xml .
 RUN mvn dependency:go-offline
 
 COPY src /usr/src/app/src  
-COPY pom.xml /usr/src/app  
+COPY pom.xml /usr/src/app
+# needed for git-commit-id-maven-plugin
+COPY .git /usr/src/app/.git
 RUN mvn -f /usr/src/app/pom.xml clean package
 
 FROM gcr.io/distroless/java21-debian12:nonroot
