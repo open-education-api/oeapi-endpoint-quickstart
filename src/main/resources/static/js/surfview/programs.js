@@ -1,10 +1,12 @@
 window.SurfView = window.SurfView || {};
 
 SurfView.Programs = (() => {
+    const UUID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
     // Return a suitable string for display (don't show UUIDs)
     function visibleLabel(value) {
         const text = typeof value === 'string' ? value.trim() : '';
-        return /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(text) ? '' : text;
+        return UUID_PATTERN.test(text) ? '' : text;
     }
 
     function programLabel(program) {
