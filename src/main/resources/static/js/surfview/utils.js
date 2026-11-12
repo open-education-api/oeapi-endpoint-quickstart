@@ -166,7 +166,7 @@ function localizedFieldValue(value, language) {
         return value;
     }
 
-    return flattenItems(Array.isArray(value) ? value : [])
+    return flattenItems(value ?? [])
         .find(item => item?.language === language)?.value || '';
 }
 
@@ -573,7 +573,7 @@ async function loadAllEndpointItems(endpoint) {
         }
 
         const payload = await response.json();
-        const items = Array.isArray(payload.items) ? payload.items : [];
+        const items = payload.items ?? [];
         entities.push(...items);
         totalPages = Math.max(Number(payload.totalPages) || 1, 1);
         pageNumber += 1;

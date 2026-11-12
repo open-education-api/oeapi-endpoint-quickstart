@@ -27,6 +27,7 @@ const entityMaps = Object.fromEntries(Object.entries(Constants.tabs).map(([tabKe
     idOf: entity => entityId(tab.kind, entity)
 })]));
 const courseById = entityMaps.courses;
+const programById = entityMaps.programs;
 const organizationsById = entityMaps.organizations;
 const personById = entityMaps.persons;
 const academicSessionsById = entityMaps.academicSessions;

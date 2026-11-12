@@ -46,7 +46,7 @@ SurfView.Persons = (() => {
     }
 
     function personAffiliationsPanel(affiliations = []) {
-        const selected = new Set(Array.isArray(affiliations) ? affiliations : []);
+        const selected = new Set(affiliations ?? []);
         const fieldset = createElement('fieldset.person-affiliations.full-width');
         const legend = createElement('legend', {text: 'Affiliations'});
         fieldset.append(legend);

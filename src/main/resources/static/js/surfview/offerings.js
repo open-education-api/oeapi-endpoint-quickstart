@@ -237,8 +237,8 @@ SurfView.Offerings = (() => {
         await preloadLookups([organizationsById, academicSessionsById]);
         const mode = options.mode || 'add';
         resetDraftOffering();
-        SurfView.State.draftOffering.addresses = Array.isArray(offering.addresses) ? structuredClone(offering.addresses) : [];
-        SurfView.State.draftOffering.priceInformation = Array.isArray(offering.priceInformation) ? structuredClone(offering.priceInformation) : [];
+        SurfView.State.draftOffering.addresses = structuredClone(offering.addresses ?? []);
+        SurfView.State.draftOffering.priceInformation = structuredClone(offering.priceInformation ?? []);
         initializeDraftOfferingLanguages(offering);
 
         offeringModal.title.textContent = `${mode === 'edit' ? 'Edit' : 'Add'} ${titleCase(kind)} offering`;
