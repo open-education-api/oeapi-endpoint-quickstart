@@ -157,6 +157,19 @@ ALTER TABLE person
     RENAME COLUMN secondary_mail TO secondary_email,
     RENAME COLUMN active_enrollment TO active_enrolment;
 
+-- If the v6 build has ALREADY been started on this database, Hibernate has added
+-- email, secondary_email, active_enrolment and gender_code next to the v5 columns,
+-- the RENAMEs above fail, and every insert into person fails with
+-- "Field 'active_enrollment' doesn't have a default value". In that case run this
+-- block instead of the ALTER TABLE above (and skip the ADD COLUMN gender_code below):
+--
+--   UPDATE person SET email = COALESCE(email, mail),
+--                     secondary_email = COALESCE(secondary_email, secondary_mail),
+--                     active_enrolment = active_enrollment;
+--   ALTER TABLE person DROP COLUMN mail, DROP COLUMN secondary_mail, DROP COLUMN active_enrollment;
+--   UPDATE person SET gender_code = CASE gender WHEN 0 THEN 'm' WHEN 1 THEN 'f' WHEN 2 THEN 'x' WHEN 3 THEN 'u' END
+--    WHERE gender IS NOT NULL AND gender_code IS NULL;
+
 -- v5 kept gender as an ordinal (0=M, 1=F, 2=X, 3=U); v6 uses m, f, x, o, u, n
 ALTER TABLE person ADD COLUMN gender_code VARCHAR(255);
 UPDATE person SET gender_code = CASE gender WHEN 0 THEN 'm' WHEN 1 THEN 'f' WHEN 2 THEN 'x' WHEN 3 THEN 'u' END
