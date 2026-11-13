@@ -1,0 +1,33 @@
+# OEAPI v6 LearningOutcome
+type: object
+properties:
+  primaryCode:
+    type: object
+    properties:
+      codeType:
+        type: string
+      code:
+        type: string
+    required: ["codeType", "code"]
+  learningOutcomeId:
+    type: string
+    format: uuid
+  name:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      properties:
+        language:
+          type: string
+        value:
+          type: string
+      required: ["language", "value"]
+  fieldsOfStudy:
+    type: string
+    maxLength: 6
+  parentIds:
+    type: array
+    items:
+      type: string
+required: ["primaryCode", "name"]

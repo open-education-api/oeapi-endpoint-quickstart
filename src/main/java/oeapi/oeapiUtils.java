@@ -338,4 +338,22 @@ public class oeapiUtils {
         return values.stream().filter(v -> v != null && !v.isBlank()).map(String::trim)
                 .collect(java.util.stream.Collectors.joining(","));
     }
+
+    /** Values of the ?expand parameter of the current HTTP request (empty outside a request). */
+    public static Set<String> requestExpands() {
+        org.springframework.web.context.request.RequestAttributes attributes =
+                org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+        if (!(attributes instanceof org.springframework.web.context.request.ServletRequestAttributes servlet)) {
+            return Collections.emptySet();
+        }
+        String expand = servlet.getRequest().getParameter("expand");
+        if (expand == null || expand.isBlank()) {
+            return Collections.emptySet();
+        }
+        Set<String> values = new HashSet<>();
+        for (String value : expand.split(",")) {
+            values.add(value.trim());
+        }
+        return values;
+    }
 }

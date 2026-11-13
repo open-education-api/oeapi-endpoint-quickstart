@@ -12,6 +12,7 @@ import oeapi.model.Address;
 import oeapi.model.Consumer;
 import oeapi.model.Ext;
 import oeapi.model.ModeOfDelivery;
+import oeapi.model.LearningOutcome;
 import oeapi.model.Organisation;
 import oeapi.model.PrimaryCode;
 import oeapi.model.oeapiIdentifierEntry;
@@ -102,17 +103,77 @@ public abstract class oeapiEducationDTO extends PrimaryCode {
         this.teachingLanguages = teachingLanguages;
     }
 
-    // learning outcomes
+    // learning outcomes (OEAPI v6: learningOutcomeIds, objects with ?expand=learning_outcomes)
 
-    @JsonProperty("learningOutcomes")
-    private List<List<oeapiLanguageTypedString>> learningOutcomes;
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public List<LearningOutcome> learningOutcomes;
 
-    public void setLearningOutcomes(List<List<oeapiLanguageTypedString>> learningOutcomes) {
+    // v5 style inline texts received on input; turned into LearningOutcome resources on save
+    @JsonIgnore
+    private List<List<oeapiLanguageTypedString>> learningOutcomeTexts;
+
+    @JsonIgnore
+    public List<LearningOutcome> getLearningOutcomes() {
+        return learningOutcomes;
+    }
+
+    @JsonIgnore
+    public void setLearningOutcomes(List<LearningOutcome> learningOutcomes) {
         this.learningOutcomes = learningOutcomes;
     }
 
-    public List<List<oeapiLanguageTypedString>> getLearningOutcomes() {
-        return learningOutcomes;
+    @JsonIgnore
+    public List<List<oeapiLanguageTypedString>> getLearningOutcomeTexts() {
+        return learningOutcomeTexts;
+    }
+
+    @JsonIgnore
+    public void setLearningOutcomeTexts(List<List<oeapiLanguageTypedString>> learningOutcomeTexts) {
+        this.learningOutcomeTexts = learningOutcomeTexts;
+    }
+
+    @JsonProperty("learningOutcomeIds")
+    public List<String> learningOutcomeIdList() {
+        return learningOutcomes == null ? null
+                : learningOutcomes.stream().map(LearningOutcome::getLearningOutcomeId).collect(java.util.stream.Collectors.toList());
+    }
+
+    @JsonProperty("learningOutcomeIds")
+    public void learningOutcomeIdsFromList(List<String> ids) {
+        this.learningOutcomes = ids == null ? null
+                : ids.stream().map(LearningOutcome::new).collect(java.util.stream.Collectors.toList());
+    }
+
+    /** The outcome objects, only when the request asks for ?expand=learning_outcomes (lists included). */
+    @JsonProperty("learningOutcomes")
+    public List<LearningOutcome> learningOutcomesIfExpanded() {
+        return oeapi.oeapiUtils.requestExpands().contains("learning_outcomes") ? learningOutcomes : null;
+    }
+
+    /**
+     * Input of "learningOutcomes": v6 LearningOutcome objects (their ids are used) or,
+     * for v5 style clients, a list of texts (each a list of language typed strings),
+     * which become LearningOutcome resources when the item is saved.
+     */
+    @JsonProperty("learningOutcomes")
+    public void learningOutcomesInput(tools.jackson.databind.JsonNode value) {
+        if (value == null || !value.isArray() || value.isEmpty()) {
+            return;
+        }
+        if (value.get(0).isArray()) {
+            this.learningOutcomeTexts = oeapi.oeapiUtils.ooapiObjectMapper().convertValue(value,
+                    new tools.jackson.core.type.TypeReference<List<List<oeapiLanguageTypedString>>>() { });
+        } else if (this.learningOutcomes == null) {
+            List<LearningOutcome> outcomes = new java.util.ArrayList<>();
+            for (tools.jackson.databind.JsonNode item : value) {
+                tools.jackson.databind.JsonNode id = item.get("learningOutcomeId");
+                if (id != null && !id.isNull()) {
+                    outcomes.add(new LearningOutcome(id.asString()));
+                }
+            }
+            this.learningOutcomes = outcomes;
+        }
     }
 
     // enrolment

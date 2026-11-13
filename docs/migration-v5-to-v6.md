@@ -22,8 +22,8 @@ columns renamed to British English. Existing databases: run `docs/sql/v5-to-v6-m
 | Academic sessions (`startDateTime`, `parentId`, `yearId`, `childIds`, expand), rooms (`buildingId`, expand) | done |
 | Education specifications, `sector`, news feeds, v5 `/associations`, `/persons/{id}/groups`, `/groups/{id}/persons` | removed |
 | Dashboard (SURF view) and legacy pages | adapted through `static/js/surfview/oeapi_v6.js` |
-| `consumers[]` → v6 `consumer` (single object selected by `?consumer=`) | **pending** – still published as `consumers` |
-| `learningOutcomes` as resource (`/learning-outcomes`, `learningOutcomeIds`) | **pending** – still the v5 inline list |
+| `consumers[]` → v6 `consumer` (single object selected by `?consumer=`; a single `consumer` on input is merged into the stored ones; `?consumer=all` extension for the dashboard) | done |
+| Learning outcomes as resource (`/learning-outcomes` with parents/children, `learningOutcomeIds` + expand on programmes, courses, learning components; v5 inline texts converted at start-up and still accepted on input) | done |
 | Test components and test component offerings | **pending** |
 | Persons v6 shape (`email`, `activeEnrolment`, `gender` m/f/x/o/u/n, `countryOfBirth`/`nationality` objects, `preferredName`, `languageOfChoice`, `address`…), `PUT` create-or-replace, `/persons/me` | done |
 | Groups v6 shape (`startDateTime`, `organisationId`, `academicSessionId`, expand), `PUT /groups/{id}`, memberships (`GET /groups/{id}/memberships`, `PUT /groups/{id}/memberships/{personId}`) | done |

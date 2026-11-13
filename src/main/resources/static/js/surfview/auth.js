@@ -209,7 +209,8 @@ async function callEndpoint(url, options = {}) {
         : new URL(url, window.location.origin).toString();
     // OEAPI v6: translate between the dashboard model and the v6 payloads (oeapi_v6.js)
     const body = typeof OeapiV6 !== 'undefined' ? OeapiV6.requestBody(resolvedUrl, options.body) : options.body;
-    const rawResponse = await fetch(resolvedUrl, {
+    const requestUrl = typeof OeapiV6 !== 'undefined' ? OeapiV6.requestUrl(resolvedUrl, options.method) : resolvedUrl;
+    const rawResponse = await fetch(requestUrl, {
         ...options,
         body,
         headers: {

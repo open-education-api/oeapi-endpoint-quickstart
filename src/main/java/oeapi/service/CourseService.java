@@ -48,6 +48,10 @@ import oeapi.repository.oeapiStudyLoadRepository;
 @Transactional
 public class CourseService extends oeapiEndpointDTOService<Course, CourseRepository, CourseDTO> implements oeapiRelatedObjServiceInterface<Course>, oeapiRelationalModelInterface<Course> {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private LearningOutcomeService learningOutcomeService;
+
+
     Logger logger = LoggerFactory.getLogger(CourseService.class);
 
     @Autowired
@@ -314,6 +318,9 @@ public class CourseService extends oeapiEndpointDTOService<Course, CourseReposit
 
     /* Check relations with other entities and avoid duplicates on JPA automatic save or cascade */
     public Course normalizeAttributes(Course course) {
+
+        // OEAPI v6 learning outcomes: resolve learningOutcomeIds, turn v5 texts into resources
+        learningOutcomeService.link(course, course.getCourseId() == null ? null : getById(course.getCourseId()).orElse(null));
 
         logger.debug("Course service normalize studyLoad and modeOfDeliveries...");
 

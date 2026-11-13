@@ -263,6 +263,18 @@ public abstract class oeapiEndpointService<T, R extends oeapiUnitaRepositoryBase
     @Override
     public T update(T obj) {
 
+        // OEAPI v6: a single "consumer" sent in the body is merged into the stored consumers
+        if (oeapi.OeapiConsumers.mergeRequested()) {
+            try {
+                String id = findIdOfObject(obj);
+                if (id != null) {
+                    this.getById(id).ifPresent(stored -> oeapi.OeapiConsumers.mergeWithStored(obj, stored));
+                }
+            } catch (RuntimeException ex) {
+                logger.debug("No consumers to merge: " + ex.getMessage());
+            }
+        }
+
         try {
             T created = repository.save(obj);
             repository.flush();

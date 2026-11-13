@@ -79,7 +79,8 @@ class KomTest {
     private void doGet(String resourcePath, String resource, String altResource) throws Exception {
         String content = slurp("kom/" + altResource + ".json");
         String id = extractId(content, resource);
-        String path = resourcePath + "/" + id;
+        // consumer=all (implementation extension) returns the stored consumers list as posted
+        String path = resourcePath + "/" + id + "?consumer=all";
 
         logger.info("GET {}", path);
 

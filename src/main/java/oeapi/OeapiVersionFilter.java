@@ -1,6 +1,10 @@
 package oeapi;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -12,10 +16,14 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
@@ -49,7 +57,7 @@ public class OeapiVersionFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDED_PREFIXES = List.of(
             "/auth", "/admin", "/health", "/_quickdashboard", "/css/", "/js/", "/img/", "/error");
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = oeapiUtils.ooapiObjectMapper();
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -78,8 +86,113 @@ public class OeapiVersionFilter extends OncePerRequestFilter {
         String consumerVersion = params == null ? null : params.get("consumer-version");
         String contentType = OeapiMediaType.contentType(consumer, consumerVersion);
 
-        chain.doFilter(new JsonAcceptRequest(request, params != null),
-                       new VndContentTypeResponse(response, contentType));
+        // OEAPI v6 consumer: ?consumer=<key>, or the consumer of the Accept header
+        String requestedConsumer = request.getParameter("consumer") != null ? request.getParameter("consumer") : consumer;
+
+        HttpServletRequest oeapiRequest = new JsonAcceptRequest(request, params != null);
+        oeapiRequest = consumerRequest(oeapiRequest);
+
+        ContentCachingResponseWrapper body = new ContentCachingResponseWrapper(new VndContentTypeResponse(response, contentType));
+        chain.doFilter(oeapiRequest, body);
+        publishConsumers(body, requestedConsumer);
+        body.copyBodyToResponse();
+    }
+
+    /** Applies the v6 consumer rule to a successful JSON response body. */
+    private void publishConsumers(ContentCachingResponseWrapper body, String requestedConsumer) {
+        String type = body.getContentType();
+        if (body.getStatus() >= 300 || type == null || !type.contains("json") || type.contains("problem")
+                || body.getContentSize() == 0) {
+            return;
+        }
+        try {
+            JsonNode tree = objectMapper.readTree(body.getContentAsByteArray());
+            OeapiConsumers.publish(tree, requestedConsumer);
+            byte[] out = objectMapper.writeValueAsBytes(tree);
+            body.resetBuffer();
+            body.getOutputStream().write(out);
+        } catch (RuntimeException | IOException ex) {
+            // not a JSON document after all: leave it untouched
+        }
+    }
+
+    /** For writes carrying a single v6 "consumer": rewrite the body and flag the merge. */
+    private HttpServletRequest consumerRequest(HttpServletRequest request) throws IOException {
+        String method = request.getMethod();
+        String type = request.getContentType();
+        if (!("POST".equals(method) || "PUT".equals(method) || "PATCH".equals(method))
+                || type == null || !type.contains("json")) {
+            return request;
+        }
+        byte[] raw = request.getInputStream().readAllBytes();
+        byte[] content = raw;
+        try {
+            JsonNode tree = objectMapper.readTree(raw);
+            if (OeapiConsumers.acceptSingle(tree)) {
+                request.setAttribute(OeapiConsumers.MERGE_ATTRIBUTE, Boolean.TRUE);
+                content = objectMapper.writeValueAsBytes(tree);
+            }
+        } catch (RuntimeException ex) {
+            // not JSON: pass it on as received
+        }
+        return new BodyRequest(request, content);
+    }
+
+    /** A request whose body has been read and is served again from memory. */
+    private static final class BodyRequest extends HttpServletRequestWrapper {
+
+        private final byte[] content;
+
+        BodyRequest(HttpServletRequest request, byte[] content) {
+            super(request);
+            this.content = content;
+        }
+
+        @Override
+        public ServletInputStream getInputStream() {
+            ByteArrayInputStream in = new ByteArrayInputStream(content);
+            return new ServletInputStream() {
+                @Override
+                public int read() {
+                    return in.read();
+                }
+
+                @Override
+                public int read(byte[] b, int off, int len) {
+                    return in.read(b, off, len);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return in.available() == 0;
+                }
+
+                @Override
+                public boolean isReady() {
+                    return true;
+                }
+
+                @Override
+                public void setReadListener(ReadListener listener) {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+
+        @Override
+        public BufferedReader getReader() {
+            return new BufferedReader(new InputStreamReader(getInputStream(), StandardCharsets.UTF_8));
+        }
+
+        @Override
+        public int getContentLength() {
+            return content.length;
+        }
+
+        @Override
+        public long getContentLengthLong() {
+            return content.length;
+        }
     }
 
     /** True when the requested version has the major version this server implements. */

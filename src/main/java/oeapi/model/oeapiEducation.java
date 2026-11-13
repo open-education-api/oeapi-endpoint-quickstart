@@ -3,6 +3,7 @@ package oeapi.model;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
@@ -42,11 +43,18 @@ public abstract class oeapiEducation extends PrimaryCode {
     @ValidLanguageTypedString(isNull = true)
     private List<oeapiLanguageTypedString> enrolment;
 
-    @JsonProperty("learningOutcomes")
-    @Column(columnDefinition = "text")
+    // OEAPI v6: learning outcomes are a resource of their own (/learning-outcomes).
+    @ManyToMany
+    @JsonIgnore
+    private List<LearningOutcome> learningOutcomes;
+
+    // v5 kept learning outcomes inline as texts. The column stays as an input area:
+    // texts sent by v5 style clients (and the ones already stored) are turned into
+    // LearningOutcome resources by LearningOutcomeService and the column is emptied.
+    @JsonIgnore
+    @Column(name = "learning_outcomes", columnDefinition = "text")
     @Convert(converter = oeapiUnitaLanguageTypedStringListConverter.class)
-    //@ValidLanguageTypedString(isNull = true)
-    private List<List<oeapiLanguageTypedString>> learningOutcomes;
+    private List<List<oeapiLanguageTypedString>> learningOutcomeTexts;
 
     @JsonProperty("assessment")
     @Column(columnDefinition = "text")
@@ -173,20 +181,6 @@ public abstract class oeapiEducation extends PrimaryCode {
      */
     public void setEnrolment(List<oeapiLanguageTypedString> enrolment) {
         this.enrolment = enrolment;
-    }
-
-    /**
-     * @return the learningOutcomes
-     */
-    public List<List<oeapiLanguageTypedString>> getLearningOutcomes() {
-        return learningOutcomes;
-    }
-
-    /**
-     * @param learningOutcomes the learningOutcomes to set
-     */
-    public void setLearningOutcomes(List<List<oeapiLanguageTypedString>> learningOutcomes) {
-        this.learningOutcomes = learningOutcomes;
     }
 
     /**
@@ -329,4 +323,31 @@ public abstract class oeapiEducation extends PrimaryCode {
         this.duration = duration;
     }
 
+
+    @JsonIgnore
+    public List<LearningOutcome> getLearningOutcomes() {
+        return learningOutcomes;
+    }
+
+    @JsonIgnore
+    public void setLearningOutcomes(List<LearningOutcome> learningOutcomes) {
+        this.learningOutcomes = learningOutcomes;
+    }
+
+    @JsonIgnore
+    public List<List<oeapiLanguageTypedString>> getLearningOutcomeTexts() {
+        return learningOutcomeTexts;
+    }
+
+    @JsonIgnore
+    public void setLearningOutcomeTexts(List<List<oeapiLanguageTypedString>> learningOutcomeTexts) {
+        this.learningOutcomeTexts = learningOutcomeTexts;
+    }
+
+    /** v6 learningOutcomeIds in the entity's own JSON (not a bean getter, ModelMapper ignores it). */
+    @JsonProperty("learningOutcomeIds")
+    public List<String> learningOutcomeIdList() {
+        return learningOutcomes == null ? null
+                : learningOutcomes.stream().map(LearningOutcome::getLearningOutcomeId).collect(java.util.stream.Collectors.toList());
+    }
 }

@@ -202,6 +202,10 @@ SELECT UUID(), group_id, person_id, 'active', 'student' FROM person_group;
 -- The v5 table "association" did not store a usable link to its offering, so its
 -- rows cannot be carried over; it is left in place and can be dropped (section 4).
 
+-- Learning outcomes: nothing to run. On start-up the v6 build turns the inline
+-- texts of the learning_outcomes columns (course, programme, component) into rows
+-- of the new learning_outcome table and empties those columns.
+
 -- -----------------------------------------------------------------------------
 -- 4. Optional clean-up of what v6 no longer uses (education specifications,
 --    sector). Hibernate ignores these columns, so they can also stay.

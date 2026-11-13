@@ -46,6 +46,10 @@ import oeapi.repository.oeapiStudyLoadRepository;
 
 public class ProgrammeService extends oeapiEndpointDTOService<Programme, ProgrammeRepository, ProgrammeDTO> implements oeapiRelatedObjServiceInterface<Programme>, oeapiRelationalModelInterface<Programme> {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private LearningOutcomeService learningOutcomeService;
+
+
     @Value("${ooapi.config.autoCreateProgIfNotExists:false}")
     private boolean autoCreateIfNotExists;
 
@@ -226,6 +230,9 @@ public class ProgrammeService extends oeapiEndpointDTOService<Programme, Program
 
     /* Check relations with other entities and avoid duplicates on JPA automatic save or cascade */
     public Programme normalizeAttributes(Programme programme) {
+
+        // OEAPI v6 learning outcomes: resolve learningOutcomeIds, turn v5 texts into resources
+        learningOutcomeService.link(programme, programme.getProgrammeId() == null ? null : getById(programme.getProgrammeId()).orElse(null));
 
         // Check studyLoad 
         if (programme.getStudyLoad() != null) {

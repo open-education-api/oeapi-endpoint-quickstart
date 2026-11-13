@@ -86,7 +86,7 @@ const API = (function() {
             options.body = OeapiV6.requestBody(new URL(url, window.location.href).toString(), options.body)
         }
         const rawRes = await window.fetch(
-            url,
+            v6 ? OeapiV6.requestUrl(new URL(url, window.location.href).toString(), options.method) : url,
             addHeaders(options, {'Content-Type': 'application/json',
                                  'Authorization': getAuthorizationHeader()})
         )

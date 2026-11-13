@@ -91,6 +91,11 @@ const OeapiV6 = (() => {
         move(e, 'childIds', 'children');
         move(e, 'coordinatorIds', 'coordinators');
         move(e, 'programmeIds', 'programmes');
+        if (Array.isArray(e.learningOutcomes) && e.learningOutcomes.every(isObject)) {
+            // v6 LearningOutcome objects (requested with expand) -> the dashboard's texts
+            e.learningOutcomes = e.learningOutcomes.map(outcome => outcome.name || []);
+        }
+        delete e.learningOutcomeIds;
         move(e, 'validFrom', 'validFrom', day);
         move(e, 'validTo', 'validTo', day);
         if (Array.isArray(e.studyLoad)) {
@@ -169,6 +174,12 @@ const OeapiV6 = (() => {
         }
         if (Array.isArray(e.programmes) && e.programmes.every(p => typeof p === 'string')) {
             move(e, 'programmes', 'programmeIds');
+        }
+        if (Array.isArray(e.learningOutcomes) && e.learningOutcomes.length === 0
+                && ['course', 'programme'].includes(kind)) {
+            // texts are sent as v5 style learningOutcomes; none left means: unlink all
+            delete e.learningOutcomes;
+            e.learningOutcomeIds = [];
         }
         move(e, 'validFrom', 'validFrom', dateTime);
         move(e, 'validTo', 'validTo', dateTime);
@@ -257,5 +268,29 @@ const OeapiV6 = (() => {
         });
     }
 
-    return {kindOf, fromV6, toV6, requestBody, response};
+    /**
+     * Query parameters the dashboard needs on reads: consumer=all (implementation
+     * extension: the full consumers list) and the learning outcome objects.
+     */
+    function requestUrl(url, method) {
+        const kind = kindOf(url);
+        if (!kind || (method && method.toUpperCase() !== 'GET')) {
+            return url;
+        }
+        let parsed;
+        try {
+            parsed = new URL(url, window.location.origin);
+        } catch (e) {
+            return url;
+        }
+        if (!parsed.searchParams.has('consumer')) {
+            parsed.searchParams.set('consumer', 'all');
+        }
+        if (['course', 'programme'].includes(kind) && !parsed.searchParams.has('expand')) {
+            parsed.searchParams.set('expand', 'learning_outcomes');
+        }
+        return parsed.toString();
+    }
+
+    return {kindOf, fromV6, toV6, requestBody, response, requestUrl};
 })();

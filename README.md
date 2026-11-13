@@ -16,6 +16,15 @@ Requests may ask for the version explicitly with `Accept: application/vnd.oeapi+
 
 Upgrading an existing installation built on OEAPI v5? Read [docs/migration-v5-to-v6.md](./docs/migration-v5-to-v6.md) and run [docs/sql/v5-to-v6-migration.sql](./docs/sql/v5-to-v6-migration.sql) on your database before starting the new version.
 
+### Consumers
+
+Per resource the endpoint keeps the data of every consumer (rio, eduxchange…). As OEAPI v6
+requires, a response carries a single `consumer` object, and only when it is asked for:
+`GET /courses/{id}?consumer=rio` (or the `consumer` of the `Accept` header). Without it no
+consumer data is returned. A write with a single `consumer` updates that consumer and keeps
+the others. List the consumers you serve in `ooapi.metadata.supported-consumers` (see
+`application.properties`) so they appear in `GET /`.
+
 ### Endpoints outside the OEAPI v6 specification
 
 The endpoint serves the v6 resources described by the specification. Besides them it keeps a few
@@ -28,6 +37,8 @@ infrastructure paths do not.
 |---|---|---|
 | Quickstart infrastructure | `/auth/*`, `/admin/users`, `/admin/roles`, `/health`, `/_quickdashboard_config.json`, `/enumerator`, `/fieldsofstudy` | login, user administration, dashboard |
 | Writes the specification does not define | `POST` on `/courses`, `/programmes`, `/organisations`, `/academic-sessions`, `/learning-components`, `/rooms`, `/buildings`, `/groups`, `/course-offerings`, `/programme-offerings`, `/learning-component-offerings`; `PUT` on `/courses/{id}`, `/programmes/{id}`, `/academic-sessions/{id}`, `/learning-components/{id}`; `DELETE` on most resources (offering associations included) | dashboard, data loading, tests |
+| Consumer data | `?consumer=all` returns the stored `consumers` list instead of the single v6 `consumer`; a `consumers` list in a write body replaces the stored list | dashboard, data loading, KOM test |
+| Learning outcome writes | `POST /learning-outcomes`, `PUT` and `DELETE /learning-outcomes/{id}`; v5 style inline `learningOutcomes` texts on programmes, courses and learning components are turned into learning outcome resources | dashboard, legacy forms |
 | Bulk loading | `POST /{resource}/loadbyjson` (organisations, programmes, courses, learning-components, academic-sessions, persons, groups, rooms, buildings) | data loading |
 
 In v6 the writable resources are organisations, persons and groups (`PUT`), persons (`POST`) and

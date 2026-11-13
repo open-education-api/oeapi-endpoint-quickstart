@@ -66,28 +66,6 @@
         }
     ],
     "firstStartDate": "2021-12-17T00:00:00Z",
-    "learningOutcomes": [
-        [
-            {
-                "language": "en-GB",
-                "value": "EN TRANSLATION: kennis van de meestgebruikte ingrediënten in dit vak"
-            },
-            {
-                "language": "nl-NL",
-                "value": "NL VERTALING: kennis van de meestgebruikte ingrediënten in dit vak"
-            }
-        ],
-        [
-            {
-                "language": "en-GB",
-                "value": "EN TRANSLATION: nieuw talent op het gebied van programmeren"
-            },
-            {
-                "language": "nl-NL",
-                "value": "NL VERTALING: nieuw talent op het gebied van programmeren"
-            }
-        ]
-    ],
     "qualificationRequirements": [
         {
             "language": "en-GB",
