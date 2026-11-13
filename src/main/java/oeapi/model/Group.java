@@ -59,19 +59,6 @@ public class Group extends PrimaryCode {
     @JsonIgnore
     private AcademicSession academicSession;
 
-    @ManyToMany(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER // fetches the child entities along with parent (not when required)
-    )
-    @JoinTable(
-            name = "person_group",
-            joinColumns = @JoinColumn(
-                    name = "group_id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "person_id"
-            )
-    )
     @JsonProperty("abbreviation")
     private String abbreviation;
 
