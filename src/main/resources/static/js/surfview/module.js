@@ -73,29 +73,10 @@ SurfView.Module = (() => {
         const details = detailGridElement();
         details.append(...fields.map(([label, value]) => detailFieldElement(label, value)));
         if (kind === 'course') {
-            const field = detailFieldElement('Programs', '');
-            const value = field.querySelector('.detail-value');
-            const programs = module.programs ?? [];
-            if (programs.length) {
-                value.replaceChildren();
-                programs.forEach((id, index) => {
-                    if (index) value.append(document.createTextNode(', '));
-                    // Keep filters in the href so opening it in a new tab matches in-app navigation.
-                    const params = new URLSearchParams(languageHrefQuery('program', id, SurfView.State.currentModalLanguage || ''));
-                    params.set('tab', 'programs');
-                    params.delete('section');
-                    params.delete('action');
-                    if (!SurfView.State.currentModalLanguage) {
-                        params.delete('lang');
-                    }
-                    value.append(createElement('a', {
-                        text: SurfView.Programs.programLabelById(id),
-                        dataset: {programLink: id},
-                        attributes: {href: `?${params}`}
-                    }));
-                });
-            }
-            details.append(field);
+            details.append(programLinksField('Programs', module.programs ?? []));
+        } else if (kind === 'program') {
+            const parent = SurfView.Programs.parentId(module);
+            details.append(programLinksField('Parent program', parent ? [parent] : [], 'No parent'));
         }
         overview.append(details);
         content.append(overview);
@@ -136,6 +117,31 @@ SurfView.Module = (() => {
         }
         content.append(moduleOfferingsSection(kind, moduleDetailId, offerings, loadingOfferings));
         return layout;
+    }
+
+    function programLinksField(label, programs, emptyValue = '') {
+        const field = detailFieldElement(label, emptyValue);
+        const value = field.querySelector('.detail-value');
+        if (programs.length) {
+            value.replaceChildren();
+            programs.forEach((id, index) => {
+                if (index) value.append(document.createTextNode(', '));
+                // Keep filters in the href so opening it in a new tab matches in-app navigation.
+                const params = new URLSearchParams(languageHrefQuery('program', id, SurfView.State.currentModalLanguage || ''));
+                params.set('tab', 'programs');
+                params.delete('section');
+                params.delete('action');
+                if (!SurfView.State.currentModalLanguage) {
+                    params.delete('lang');
+                }
+                value.append(createElement('a', {
+                    text: SurfView.Programs.programLabelById(id),
+                    dataset: {programLink: id},
+                    attributes: {href: `?${params}`}
+                }));
+            });
+        }
+        return field;
     }
 
     function moduleSectionLinks(state) {
@@ -269,6 +275,24 @@ SurfView.Module = (() => {
         return fragment;
     }
 
+    function eligibleParentPrograms(programId) {
+        const childrenByParentId = new Map();
+        for (const candidate of programById.values()) {
+            const parent = SurfView.Programs.parentId(candidate);
+            if (!parent) continue;
+            if (!childrenByParentId.has(parent)) childrenByParentId.set(parent, []);
+            childrenByParentId.get(parent).push(entityId('program', candidate));
+        }
+
+        const excluded = new Set([programId]);
+        // Exclude the program and all its descendants: choosing one as parent would create a cycle.
+        // (Set iteration visits elements added during the loop, so this walks the whole subtree.)
+        for (const excludedId of excluded) {
+            for (const child of childrenByParentId.get(excludedId) || []) excluded.add(child);
+        }
+        return [...programById.values()].filter(candidate => !excluded.has(entityId('program', candidate)));
+    }
+
     function moduleEditFormHtml(kind, module, mode = 'edit') {
         moduleDraftLanguageController.initialize({kind, module});
         SurfView.State.draftEntity.addresses = structuredClone(module.addresses ?? []);
@@ -295,6 +319,15 @@ SurfView.Module = (() => {
             fields.push(fieldLabelHtml('Program type', 'select', 'programType', module.programType || 'program', {
                 required: true,
                 options: Constants.enumOptions.programType
+            }));
+
+            fields.push(fieldLabelHtml('Parent program', 'select', 'parent', SurfView.Programs.parentId(module), {
+                options: entityOptionEntries({
+                    items: eligibleParentPrograms(id),
+                    emptyLabel: 'No parent',
+                    label: SurfView.Programs.programLabel,
+                    idValue: candidate => entityId('program', candidate)
+                })
             }));
         }
 
@@ -623,7 +656,7 @@ SurfView.Module = (() => {
             return;
         }
 
-        await preloadLookups([organizationsById, personById, ...(kind === 'course' ? [programById] : [])]);
+        await preloadLookups([organizationsById, personById, programById]);
 
         const module = defaultModule(kind);
         SurfView.State.currentModalKind = kind;
@@ -676,7 +709,7 @@ SurfView.Module = (() => {
             return;
         }
 
-        await preloadLookups([organizationsById, personById, ...(SurfView.State.currentModalKind === 'course' ? [programById] : [])]);
+        await preloadLookups([organizationsById, personById, programById]);
 
         resetDraftEntity();
         modalBody.replaceChildren(moduleEditFormHtml(SurfView.State.currentModalKind, SurfView.State.currentModalEntity, 'edit'));
@@ -767,6 +800,7 @@ SurfView.Module = (() => {
         payload.abbreviation = value('abbreviation');
         if (kind === 'program') {
             payload.programType = value('programType');
+            payload.parent = value('parent');
         }
         payload.teachingLanguage = value('teachingLanguage');
         payload.level = value('level');

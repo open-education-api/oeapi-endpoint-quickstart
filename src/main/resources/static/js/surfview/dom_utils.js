@@ -863,9 +863,11 @@ function fieldOptionsHtml(field, options = {}) {
     });
 }
 
+// Placeholder options (empty value, such as 'No parent') stay on top instead of being sorted among the labels.
 function sortOptionsByLabel(options) {
     return [...options].sort(([valueA, labelA], [valueB, labelB]) =>
-        String(labelA || valueA).localeCompare(String(labelB || valueB)));
+        (valueB === '') - (valueA === '')
+        || String(labelA || valueA).localeCompare(String(labelB || valueB)));
 }
 
 function enumOptionsHtml(options, selectedValue, optionsConfig = {}) {
@@ -912,9 +914,16 @@ const lookupDropdowns = [
     {
         selector: 'select[data-module-program-select]',
         load: () => programById.load(),
-        options: select => SurfView.Programs.programOptionEntries(
-            SurfView.Module.courseProgramValues(select.closest('.module-programs-panel'))
-        ),
+        options: select => {
+            const excluded = new Set(SurfView.Module.courseProgramValues(select.closest('.module-programs-panel')));
+            const items = [...programById.values()].filter(program => !excluded.has(entityId('program', program)));
+            return entityOptionEntries({
+                items,
+                emptyLabel: items.length ? 'Select program' : 'No programs available',
+                label: SurfView.Programs.programLabel,
+                idValue: program => entityId('program', program)
+            });
+        },
         afterRebuild: (select, options) => {
             select.closest('.module-programs-panel').querySelector('[data-add-module-program]').disabled = options.length <= 1;
         }
