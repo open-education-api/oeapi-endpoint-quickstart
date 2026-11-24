@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
@@ -323,7 +324,12 @@ public class Program extends oeapiEducation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", nullable = true)
+    @JsonBackReference
     private Program parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Program> children;
 
     public Program getParent() {
         return parent;
@@ -332,10 +338,6 @@ public class Program extends oeapiEducation {
     public void setParent(Program parent) {
         this.parent = parent;
     }
-
-    @JsonBackReference("programParent")
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Program> children;
 
     public List<Program> getChildren() {
         return children;

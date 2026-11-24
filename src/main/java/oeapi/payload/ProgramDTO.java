@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import oeapi.model.EducationSpecification;
 import oeapi.model.Person;
-import oeapi.model.Program;
 import oeapi.model.StudyLoad;
 import oeapi.model.oeapiLanguageTypedString;
 
@@ -21,6 +21,10 @@ import oeapi.model.oeapiLanguageTypedString;
 @JsonPropertyOrder({"programId", "primaryCode", "name", "abbreviation", "description", "programType", "teachingLanguage", "level", "parent", "children"})
 
 public class ProgramDTO extends oeapiEducationDTO {
+    public ProgramDTO() { }
+    public ProgramDTO(String id) {
+        this.programId = id;
+    }
 
     // program id
 
@@ -228,30 +232,39 @@ public class ProgramDTO extends oeapiEducationDTO {
     @JsonProperty("parent")
     private String parentId;
 
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public ProgramDTO parent;
+
+    @JsonProperty("children")
+    private List<String> childrenIds;
+
+    @JsonIgnore
+    @oeapiDTOExpandable
+    public List<ProgramDTO> children;
+
     public String getParentId() {
         return parentId;
     }
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
-        this.parent = parentId == null ? null : new Program(parentId);
+
+        if (parentId == null) {
+            this.parent = null;
+        } else if (this.parent == null || !parentId.equals(this.parent.getProgramId())) {
+            this.parent = new ProgramDTO(parentId);
+        }
     }
 
-    @JsonIgnore
-    @oeapiDTOExpandable
-    public Program parent;
-
-    public Program getParent() {
+    public ProgramDTO getParent() {
         return parent;
     }
 
-    public void setParent(Program parent) {
+    public void setParent(ProgramDTO parent) {
         this.parent = parent;
         this.parentId = parent == null ? null : parent.getProgramId();
     }
-
-    @JsonProperty("children")
-    private List<String> childrenIds;
 
     public List<String> getChildrenIds() {
         return childrenIds;
@@ -259,22 +272,18 @@ public class ProgramDTO extends oeapiEducationDTO {
 
     public void setChildrenIds(List<String> childrenIds) {
         this.childrenIds = childrenIds;
-        List<Program> children = new ArrayList<Program>();
-        for (String id : childrenIds) {
-            children.add(new Program(id));
-        }
-        this.children = children;
     }
 
-    @JsonIgnore
-    @oeapiDTOExpandable
-    public List<Program> children;
-
-    public List<Program> getChildren() {
+    public List<ProgramDTO> getChildren() {
         return children;
     }
 
-    public void setChildren(List<Program> children) {
+    public void setChildren(List<ProgramDTO> children) {
         this.children = children;
+        this.childrenIds = (children == null) ? null
+                : children.stream()
+                        .filter(c -> c != null && c.getProgramId() != null)
+                        .map(ProgramDTO::getProgramId)
+                        .collect(Collectors.toList());
     }
 }

@@ -8,11 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.http.MediaType;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -115,8 +118,8 @@ class ProgramTest {
     @Test
     void FilterProgramCode() throws IOException {
 
-        logStep("Filter Program Code");        
-        
+        logStep("Filter Program Code");
+
         String randomCode = TU.genRandomCode();
         String levelRandom = TU.genRandomValue("levelType");
         String programTypeRandom = TU.genRandomValue("programType");
@@ -127,7 +130,9 @@ class ProgramTest {
 
         logStep("Program [" + randomCode + "] load...");
 
-        String programPayload = new String(Files.readAllBytes(Paths.get("src/test/resources/" + entity + "_filter_template.json")),StandardCharsets.UTF_8);
+        String programPayload = new String(
+                Files.readAllBytes(Paths.get("src/test/resources/" + entity + "_filter_template.json")),
+                StandardCharsets.UTF_8);
 
         String payload = programPayload.replace("--" + templateAbrev + "_CODE_TOBEINFORMED--", randomCode)
                 .replace("--" + templateAbrev + "_level--", levelRandom)
@@ -139,6 +144,100 @@ class ProgramTest {
 
         TUCudRest.post_testCode(restResource, payload, randomCode, webTestClient);
         TUGetRest.get_primaryCode(restResource, randomCode, webTestClient);
+    }
+
+    @Test
+    void CreateParentChildAndRepostParent() throws Exception {
+        logStep("CreateParentChildAndRepostParent...");
+
+        // POST parent
+        String parentId = "11111111-1111-4111-8111-111111111111";
+        String parentJson = """
+            {
+                "programId": "%s",
+                "primaryCode": { "codeType": "identifier", "code": "parent-program" },
+                "programType": "minor",
+                "name": [{"language": "en-GB", "value": "parent"}],
+                "abbreviation": "parent",
+                "description": [{"language": "en-GB", "value": "parent"}],
+                "teachingLanguage": "eng",
+                "level": "master"
+            }
+        """.formatted(parentId);
+        TUCudRest.post_testId("programs", "program", parentJson, parentId, webTestClient);
+
+        // POST child (with parentId)
+        String childId = "22222222-2222-4222-8222-222222222222";
+        String childJson = """
+            {
+                "programId": "%s",
+                "primaryCode": { "codeType": "identifier", "code": "child-program" },
+                "programType": "minor",
+                "name": [{"language": "en-GB", "value": "child"}],
+                "abbreviation": "child",
+                "description": [{"language": "en-GB", "value": "child"}],
+                "teachingLanguage": "eng",
+                "level": "master",
+                "parent": "%s"
+            }
+        """.formatted(childId, parentId);
+        TUCudRest.post_testId("programs", "program", childJson, childId, webTestClient);
+
+        // GET child (should have parentId)
+        webTestClient.get()
+            .uri("/programs/%s".formatted(childId))
+            .header("Authorization", TU.authHeaderForTest())
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.parent").exists();
+
+        // GET parent (should have children)
+        webTestClient.get()
+            .uri("/programs/%s".formatted(parentId))
+            .header("Authorization", TU.authHeaderForTest())
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.children").exists()
+            .jsonPath("$.children[0]").isEqualTo(childId);
+    
+        // GET parent JSON
+        String parentBody = webTestClient.get()
+            .uri("/programs/%s".formatted(parentId))
+            .header("Authorization", TU.authHeaderForTest())
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(String.class)
+            .returnResult()
+            .getResponseBody();
+
+        // PUT parent JSON
+        webTestClient.put()
+            .uri("/programs/%s".formatted(parentId))
+            .header("Authorization", TU.authHeaderForTest())
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(parentBody)
+            .exchange()
+            .expectStatus().isOk();
+
+        // GET parent JSON and compare to PUT JSON
+        String parentBodyAfterPut = webTestClient.get()
+            .uri("/programs/%s".formatted(parentId))
+            .header("Authorization", TU.authHeaderForTest())
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(String.class)
+            .returnResult()
+            .getResponseBody();
+        assertEquals(parentBody, parentBodyAfterPut, "parent still the same");
+
+        // GET child (see if it still exists)
+        webTestClient.get()
+            .uri("/programs/%s".formatted(childId))
+            .header("Authorization", TU.authHeaderForTest())
+            .exchange()
+            .expectStatus().isOk();
     }
 
     private void logStep(String title) {
