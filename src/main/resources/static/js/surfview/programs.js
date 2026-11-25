@@ -22,17 +22,9 @@ SurfView.Programs = (() => {
         return programLabel(programById.get(id));
     }
 
-    function programOptionEntries(excludedProgramIds) {
-        const excluded = new Set(excludedProgramIds);
-        const items = [...programById.values()]
-            .filter(program => !excluded.has(entityId('program', program)));
-        return entityOptionEntries({
-            items,
-            emptyLabel: items.length ? 'Select program' : 'No programs available',
-            label: programLabel,
-            idValue: program => entityId('program', program)
-        });
+    function parentId(program) {
+        return typeof program?.parent === 'string' ? program.parent : entityId('program', program?.parent);
     }
 
-    return {programLabelById, programOptionEntries};
+    return {programLabel, programLabelById, parentId};
 })();
