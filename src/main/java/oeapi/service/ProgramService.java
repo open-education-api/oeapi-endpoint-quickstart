@@ -2,6 +2,8 @@ package oeapi.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,7 +82,7 @@ public class ProgramService extends oeapiEndpointDTOService<Program, ProgramRepo
     @Override
     public void initializeMapper() {
         super.initializeMapper(Program.class, ProgramDTO.class, enumService, Arrays.asList("level"));
-        super.setMapper(new oeapiProgramMapper(enumService, Arrays.asList("level"), fieldsOfStudyRepository));
+        super.setMapper(new oeapiProgramMapper(enumService, Arrays.asList("level"), fieldsOfStudyRepository, this::findChildren));
     }
 
     @Override
@@ -98,6 +100,33 @@ public class ProgramService extends oeapiEndpointDTOService<Program, ProgramRepo
         }
     }
     
+    /**
+     * Direct children of a program: the programs whose "parent" is programId.
+     * Children are not a JPA collection on Program (see issue #183); they are always
+     * derived from the child's parent_id, so saving a parent can never touch them.
+     */
+    public List<Program> findChildren(String programId) {
+        if (programId == null || repository == null) {
+            return new ArrayList<>();
+        }
+        return repository.findByParent_ProgramId(programId);
+    }
+
+    /**
+     * Same, for several parents in ONE query: parentId -> its direct children.
+     * Used by the mapper so that a page of programs does not cost a query per program.
+     */
+    public Map<String, List<Program>> findChildren(Collection<String> programIds) {
+        Map<String, List<Program>> byParent = new HashMap<>();
+        if (programIds == null || programIds.isEmpty() || repository == null) {
+            return byParent;
+        }
+        for (Program child : repository.findByParent_ProgramIdIn(programIds)) {
+            byParent.computeIfAbsent(child.getParent().getProgramId(), k -> new ArrayList<>()).add(child);
+        }
+        return byParent;
+    }
+
     @Override
     public Optional<Program> getById(String id) {
         return super.getById(id);
@@ -293,6 +322,15 @@ public class ProgramService extends oeapiEndpointDTOService<Program, ProgramRepo
         Program program = programExisting.get();
  
         //ToDo program child offerings and components deletion (not implmented yet)
+
+        // Children used to be cascade-deleted through the JPA collection. Now they are
+        // detached instead, so deleting a parent never removes other programs nor
+        // fails on the parent_id foreign key.
+        for (Program child : findChildren(program.getProgramId())) {
+            logger.debug("*>-ProgramService delete: detaching child program " + child.getProgramId());
+            child.setParent(null);
+            repository.save(child);
+        }
         
         // Clear all rest relatons
         logger.debug("*>-ProgramService delete:  Clear program relations for Program with ID:"+program.getProgramId()); 
