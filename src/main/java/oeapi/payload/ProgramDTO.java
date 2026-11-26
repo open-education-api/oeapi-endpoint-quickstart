@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -260,8 +261,10 @@ public class ProgramDTO extends oeapiEducationDTO {
     public void setChildrenIds(List<String> childrenIds) {
         this.childrenIds = childrenIds;
         List<Program> children = new ArrayList<Program>();
-        for (String id : childrenIds) {
-            children.add(new Program(id));
+        if (childrenIds != null) {
+            for (String id : childrenIds) {
+                children.add(new Program(id));
+            }
         }
         this.children = children;
     }
@@ -274,7 +277,14 @@ public class ProgramDTO extends oeapiEducationDTO {
         return children;
     }
 
+    /**
+     * Keeps childrenIds in sync, so "children" is serialized as an array of ids while
+     * ?expand=children still gets the full objects. Filled by oeapiProgramMapper.toDTO
+     * from ProgramService.findChildren(); ignored on write (children follow "parent").
+     */
     public void setChildren(List<Program> children) {
         this.children = children;
+        this.childrenIds = (children == null) ? null
+                : children.stream().map(Program::getProgramId).collect(Collectors.toList());
     }
 }

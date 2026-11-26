@@ -1,5 +1,6 @@
 package oeapi.repository;
 
+import java.util.Collection;
 import java.util.List;
 import oeapi.model.Course;
 import oeapi.model.Program;
@@ -37,5 +38,9 @@ public interface ProgramRepository extends oeapiUnitaRepositoryBase<Program> {
     Page<Program> findByFieldsOfStudyId(String fieldsOfStudyId, Pageable pageable);
 
     Page<Program> findByTeachingLanguage(String teachingLanguage, Pageable pageable);
+
+    List<Program> findByParent_ProgramId(String parentId);
+
+    List<Program> findByParent_ProgramIdIn(Collection<String> parentIds);
 
 }

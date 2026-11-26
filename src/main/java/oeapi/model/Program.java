@@ -19,7 +19,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 
 import oeapi.converter.oeapiUnitaLanguageTypedStringConverter;
 import oeapi.validation.ValidEnumYaml;
@@ -333,15 +332,8 @@ public class Program extends oeapiEducation {
         this.parent = parent;
     }
 
-    @JsonBackReference("programParent")
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Program> children;
-
-    public List<Program> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<Program> children) {
-        this.children = children;
-    }
+    // Children are NOT mapped here. They are derived from "parent" and resolved at service
+    // level (ProgramService.findChildren), like AcademicSession and EducationSpecification.
+    // A @OneToMany(cascade = ALL, orphanRemoval = true) collection made a PUT that omitted
+    // "children" delete every child row (issue #183).
 }

@@ -2,7 +2,12 @@ package oeapi.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +30,9 @@ public class oeapiProgramMapper extends oeapiDTOMapper<Program, ProgramDTO> {
 
     private oeapiFieldsOfStudyRepository fosRepo;
 
+    /** parentIds -> (parentId -> direct children); supplied by ProgramService.findChildren. */
+    private Function<Collection<String>, Map<String, List<Program>>> childrenFinder;
+
     public oeapiProgramMapper(oeapiEnumConversionService ooapiEnumService, List<String> enumFields) {
         super(Program.class, ProgramDTO.class, ooapiEnumService, enumFields);
 
@@ -33,6 +41,45 @@ public class oeapiProgramMapper extends oeapiDTOMapper<Program, ProgramDTO> {
     public oeapiProgramMapper(oeapiEnumConversionService ooapiEnumService, List<String> enumFields, oeapiFieldsOfStudyRepository fieldsOfStudyRepository) {
         super(Program.class, ProgramDTO.class, ooapiEnumService, enumFields);
         this.fosRepo = fieldsOfStudyRepository;
+    }
+
+    public oeapiProgramMapper(oeapiEnumConversionService ooapiEnumService, List<String> enumFields,
+                              oeapiFieldsOfStudyRepository fieldsOfStudyRepository,
+                              Function<Collection<String>, Map<String, List<Program>>> childrenFinder) {
+        this(ooapiEnumService, enumFields, fieldsOfStudyRepository);
+        this.childrenFinder = childrenFinder;
+    }
+
+    @Override
+    public ProgramDTO toDTO(Program e) {
+        if (e == null) {
+            return null;
+        }
+        return toDTO(e, findChildren(Collections.singletonList(e.getProgramId())));
+    }
+
+    /** One children query for the whole list instead of one per program. */
+    @Override
+    public List<ProgramDTO> toDTOList(List<Program> items) {
+        if (items == null) {
+            return new ArrayList<>();
+        }
+        Map<String, List<Program>> children = findChildren(
+                items.stream().map(Program::getProgramId).collect(Collectors.toList()));
+
+        return items.stream().map(e -> toDTO(e, children)).collect(Collectors.toList());
+    }
+
+    private ProgramDTO toDTO(Program e, Map<String, List<Program>> childrenByParent) {
+        ProgramDTO dto = super.toDTO(e);
+        // Always a list, never null: without expand an empty one is dropped by
+        // @JsonInclude(NON_EMPTY), with ?expand=children it answers [].
+        dto.setChildren(childrenByParent.getOrDefault(e.getProgramId(), new ArrayList<>()));
+        return dto;
+    }
+
+    private Map<String, List<Program>> findChildren(Collection<String> parentIds) {
+        return (childrenFinder == null) ? Collections.emptyMap() : childrenFinder.apply(parentIds);
     }
 
     public void init() {
